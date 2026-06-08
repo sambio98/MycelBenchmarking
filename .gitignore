@@ -1,0 +1,19 @@
+# Secrets
+.env
+
+# Biomni data lake (large, ~11 GB) and benchmark outputs
+biomni_data/
+data/data_lake/
+*.results.jsonl
+results.jsonl
+out.jsonl
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/

@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "biomni-benchmark"
+version = "0.1.0"
+description = "A single CLI command to benchmark Biomni over Q&A pairs with a configurable LLM."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+dependencies = [
+    "biomni",
+    "tqdm",
+    "python-dotenv",
+]
+
+[project.optional-dependencies]
+dev = ["pytest"]
+
+[project.scripts]
+biomni-benchmark = "biomni_benchmark.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
