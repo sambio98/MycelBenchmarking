@@ -14,11 +14,12 @@ scoring path.
 | Grader | `src/npbench_c/grading/grade.py` | pure declarative comparator |
 | Grader identity | `src/npbench_c/grading/version.py` | semver + content hash |
 | Readiness gate | `src/npbench_c/readiness/gate.py` | 16 mechanical checks, 5 pending-on-agent-runs |
-| Campaign L1 | `campaigns/construct-ecoli-rebh-01/` | oracle 1.0, all 4 rungs G1 |
+| Campaign: construct design | `campaigns/construct-ecoli-rebh-01/` | oracle 1.0, gate 17/0/5 |
+| Campaign: NRPS mass balance | `campaigns/massbalance-nrps-malleobactin-01/` | oracle 1.0, gate 17/0/5 |
 | Internal sweep | `src/npbench_c/sweep/` | runner, stats, gates, stub fixtures |
 | Catalog | `docs/catalog.md` | 24 templates / 32 campaigns, grounded |
 | Provisioning | `docs/environment.md` | tools, DBs, sandbox contract |
-| Tests | `tests/unit/` | 76 passing |
+| Tests | `tests/unit/` | 98 passing |
 
 ```bash
 PYTHONPATH=src python3 -m pytest tests -q
@@ -281,6 +282,32 @@ sweep on record the gate reports **16 pass / 0 fail / 5 pending**.
 
 Harness self-test result (fixtures, not evidence): clear rates 1.00 / 0.75 /
 0.50 / 0.25 across R1-R4, cold depths 1/2/3/4, all five gates green.
+
+## Campaign 2: NRPS mass balance
+
+`massbalance-nrps-malleobactin-01` — MIBiG BGC0000386, a four-module NRPS line
+in *Burkholderia thailandensis* with four annotated congeners including a dimer.
+Compute the assembly the modules would produce, quantify the gap to each
+congener, predict every single-module deletion. All four rungs G1, solvable at
+tool surface S0, stub discrimination 1/2/3/4, all five sweep gates green.
+
+Three design decisions worth carrying to the other mass-balance instantiations:
+
+- **Every annotated congener is analysed, not `compounds[0]`.** 17 of 43
+  admissible entries annotate more than one compound, so "the" product is not
+  well defined and picking the first listed would bake an undeclared convention
+  into gold and mark a correct answer about another congener wrong.
+- **Monomer formulas are resolved once with RDKit and pinned** into
+  `reference/monomer_formulas.json` with their SMILES source. The oracle needs
+  no chemistry toolkit at run time, so a toolkit version bump cannot move a
+  score and the campaign stays S0-solvable.
+- **The residual is quantified, never attributed.** Naming the chemistry that
+  closes the gap is expert inference; its gold would be judgement. Excluded with
+  the reason recorded in `task.yaml`.
+
+Also: this campaign's stubs read **only the sandbox**, with no privileged oracle
+path, precisely because the construct-design stubs' oracle access hid an
+unsolvable campaign.
 
 ## Open items
 

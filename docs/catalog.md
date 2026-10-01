@@ -206,7 +206,7 @@ entries with strong `loci[].evidence`.
 |---|---|---|---|
 | T-L4-1 ×2 | MS² dereplication vs reference standards | likely | image |
 | T-L4-2 | Molecular networking, mis-seeded annotation | likely | image |
-| T-L4-3 ×2 | Mass balance & route validation (NRPS) | verified | now |
+| T-L4-3 ×2 | Mass balance & route validation (NRPS) | verified | **BUILT** |
 | T-L4-4 | Chemical space / scaffold analysis | likely | now |
 
 **T-L4-1** Dereplication against authentic-standard libraries only — MassBank
@@ -225,20 +225,31 @@ unconfirmed annotation. R1 network edge table · R2 matches gold · R3 claim:
 which annotation is unsupported and why, closed enum from the confound
 vocabulary · R4 the planted annotation is removed — predict the network change.
 
-**T-L4-3** **Verified and ready to author.** NRPS mass balance: given the module
-architecture and the product formula, validate the route.
-R1 route table — ordered modules, each with monomer identity and molecular
-formula, formulas parse · R2 naive assembly closes: Σ monomer formulas −
-(n−1)·H₂O, atom-balanced per element, matched against the product formula ·
-R3 claim: the residual between naive assembly and the actual product formula,
-attributed to specific `modification_domains` (methyltransferase +CH₂,
-ketoreductase/dehydratase H/O changes) and/or a starter unit, with the signed
-per-element discrepancy · R4 a module is deleted — predict the new product
-formula and the exact mass shift. All G1. 43 admissible entries; instantiation
-axis: module count (BGC0001873, 2 modules, C13H20N2O2 is the smallest; orfamide A
-BGC0000399, 10 modules, C64H114N10O17 exercises a fatty-acid starter).
-Monomer formulas come from a hash-pinned table with ChEBI provenance, computed
-from the SMILES MIBiG supplies.
+**T-L4-3** **Built**: `campaigns/massbalance-nrps-malleobactin-01` (BGC0000386,
+4 modules, 4 congeners including a dimer). Oracle 1.0 on all four rungs, stub
+discrimination 1/2/3/4, all five sweep gates green.
+
+*Scope correction made during the build.* "Validate the route" is **not**
+buildable: only 1 of 43 admissible entries is exactly balanced and 4 differ by
+one water, because MIBiG annotates the enzymatic module count rather than the
+number of monomer incorporations — iterative reuse, fatty-acid starters, prenyl
+groups and metal centres all break the correspondence. The campaign instead
+computes what the annotated modules *would* produce and quantifies the gap,
+which is well-posed; attributing the gap to named chemistry would be judgement
+and is excluded with its reason recorded in `task.yaml`.
+R1 ordered module route, each with monomer identity and a parsing formula ·
+R2 monomer formulas correct, naive assembly Σ monomers − (n−1)·H₂O correct per
+element, peptide-bond count and assembly monoisotopic mass correct · R3 the
+signed per-element residual **for every annotated congener** plus a mechanical
+verdict from a closed vocabulary · R4 for **each** single-module deletion, the
+resulting assembly formula and exact mass shift. All G1.
+
+Monomer formulas are resolved once at construction with RDKit and pinned into
+`reference/monomer_formulas.json` with their SMILES source, so the oracle needs
+no chemistry toolkit at run time and the campaign is solvable at **S0**.
+Second instantiation: sevadicin (BGC0000426, 3 modules, exactly balanced) gives
+the `balanced` verdict, where this entry gives `additional_chemistry_required`
+on all four congeners.
 
 **T-L4-4** Scaffold / chemical-space analysis keyed on InChIKey block 1
 (connectivity), which is the right granularity where stereochemistry is not

@@ -117,6 +117,10 @@ def _bind(arg: Any, submission: Mapping[str, Any], gold: Mapping[str, Any]) -> A
             value = resolve(gold, arg[5:])
             if value is _MISSING:
                 raise GradingSpecError(f"gold path not found: {arg[5:]!r}")
+            if value is None:
+                # Gold is never null. A null here is a campaign bug, and
+                # silently scoring it would hide a broken gold artifact.
+                raise GradingSpecError(f"gold path is null: {arg[5:]!r}")
             return value
     return arg
 
@@ -135,8 +139,12 @@ def _score_component(
 
     # A missing or null prediction is a wrong answer, scored zero, never an
     # exception -- an agent that omits a field has failed the rung, and the
-    # grader must not crash on it.
-    if any(v is _MISSING for v in args.values()):
+    # grader must not crash on it. None must be caught alongside _MISSING: a
+    # measurer records an omitted numeric field as JSON null, which *resolves*
+    # successfully to None, and passing that to a numeric scorer raises and
+    # takes down the whole grade. Gold nulls already raised in _bind, so any
+    # None reaching here came from the submission.
+    if any(v is _MISSING or v is None for v in args.values()):
         return P.rnd(0.0)
 
     if scorer_name in _BOOL_SCORERS:

@@ -6,7 +6,7 @@ layer: L6_translation_and_design
 version: 1.0.0
 horizon_tier: T-short
 license_class: open
-grader_version: "2.0.0+a239f0f0"
+grader_version: "2.0.0+9fc95658"
 grading_spec_version: "1.0.0"
 
 objective: >
@@ -96,6 +96,17 @@ rungs:
 
 harness:
   measure_command: ["python3", "oracle/measure.py", "{submission}", "inputs/rebh.faa", "{measurement}"]
+  stub_module: npbench_c.sweep.stubs.stub_system
+  # This campaign's stubs need the oracle path: they reuse the optimiser rather
+  # than reimplementing it. That privilege is why they could not detect the
+  # sandbox-solvability defect, and why newer stubs read only the sandbox.
+  stub_args: ["--oracle", "{oracle}"]
+  stub_levels:
+    - {name: stub-naive,       level: naive}
+    - {name: stub-constrained, level: constrained}
+    - {name: stub-analyst,     level: analyst, reference: true}
+    - {name: stub-complete,    level: complete}
+    - {name: stub-parametric,  level: parametric, mode: no_tool}
 
 structural_elements: [verification, abstention_free, counterfactual]
 

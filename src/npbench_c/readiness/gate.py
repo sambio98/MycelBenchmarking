@@ -47,26 +47,39 @@ def _check(name: str, ok: bool, detail: str) -> Check:
 
 
 def _oracle_and_purity(campaign: pathlib.Path) -> list[Check]:
+    import yaml
+
     checks = []
-    oracle_dir = campaign / "oracle"
     sub = campaign / "oracle_submission"
+    measurement = sub / "measurement.json"
+
+    # The measure command comes from the campaign's own task.yaml, exactly as it
+    # does for the sweep runner. The gate previously globbed for a *.faa input,
+    # which is a construct-design assumption that broke the moment a campaign
+    # had different inputs.
+    task = yaml.safe_load((campaign / "task.yaml").read_text())
+    measure_command = ((task.get("harness") or {}).get("measure_command"))
+    if not measure_command:
+        return [Check("oracle_runs", FAIL,
+                      "task.yaml declares no harness.measure_command")]
+
     try:
         subprocess.run(
             [sys.executable, "solve.py", str(sub)],
-            cwd=oracle_dir, check=True, capture_output=True, timeout=1800,
+            cwd=campaign / "oracle", check=True, capture_output=True, timeout=1800,
         )
-        inputs = sorted(campaign.glob("inputs/*.faa"))
         subprocess.run(
-            [sys.executable, "measure.py", str(sub), str(inputs[0]), str(sub / "measurement.json")],
-            cwd=oracle_dir, check=True, capture_output=True, timeout=1800,
+            [tok.format(submission=str(sub), measurement=str(measurement))
+             for tok in measure_command],
+            cwd=campaign, check=True, capture_output=True, timeout=1800,
         )
-    except (subprocess.CalledProcessError, subprocess.TimeoutExpired, IndexError) as exc:
+    except (subprocess.CalledProcessError, subprocess.TimeoutExpired, OSError) as exc:
         return [Check("oracle_runs", FAIL, f"oracle pipeline failed: {exc}")]
 
-    measurement = json.loads((sub / "measurement.json").read_text())
+    measurement_data = json.loads(measurement.read_text())
     gold = json.loads((campaign / "gold" / "gold.json").read_text())
     spec = json.loads((campaign / "grading.json").read_text())
-    result = grade(measurement, gold, spec)
+    result = grade(measurement_data, gold, spec)
 
     checks.append(_check("oracle_scores_1.0", result["score"] == 1.0,
                          f"score={result['score']} depth={result['depth']}"))
@@ -80,8 +93,8 @@ def _oracle_and_purity(campaign: pathlib.Path) -> list[Check]:
                          f"discriminating={result['discriminating_chance_floor']} "
                          f"(full={result['chance_floor']}) limit={MAX_CHANCE_FLOOR}"))
 
-    reference = grade_json(measurement, gold, spec)
-    identical = all(grade_json(measurement, gold, spec) == reference
+    reference = grade_json(measurement_data, gold, spec)
+    identical = all(grade_json(measurement_data, gold, spec) == reference
                     for _ in range(PURITY_REPEATS))
     checks.append(_check("grader_purity", identical,
                          f"{PURITY_REPEATS} repeat gradings byte-identical={identical}"))

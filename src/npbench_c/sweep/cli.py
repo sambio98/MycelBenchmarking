@@ -3,36 +3,50 @@
 from __future__ import annotations
 
 import argparse
+import os
 import pathlib
 import sys
+
+import yaml
 
 from npbench_c.sweep.runner import SystemSpec
 from npbench_c.sweep.sweep import REPEATS, sweep_campaign
 
-STUB = [sys.executable, "-m", "npbench_c.sweep.stubs.stub_system"]
-
 
 def stub_systems(campaign: pathlib.Path) -> list[SystemSpec]:
-    """Harness self-test systems. Never part of a published result."""
-    oracle = str((campaign / "oracle").resolve())
-    import os
+    """Harness self-test systems, declared by the campaign in task.yaml.
 
-    env = {"PYTHONPATH": str(pathlib.Path("src").resolve()) + os.pathsep + os.environ.get("PYTHONPATH", "")}
-
-    def spec(name, level, **kw):
-        return SystemSpec(
-            name=name,
-            command=[*STUB, "--level", level, "--oracle", oracle, "--submission", "{submission}"],
-            timeout_s=600, env=env, is_stub=True, **kw,
+    Never part of a published result: a stub-based sweep marks itself and the
+    readiness gate keeps every agent-run check PENDING.
+    """
+    task = yaml.safe_load((campaign / "task.yaml").read_text())
+    harness = task.get("harness") or {}
+    module = harness.get("stub_module")
+    levels = harness.get("stub_levels") or []
+    if not module or not levels:
+        raise SystemExit(
+            f"{campaign.name}: task.yaml declares no harness.stub_module/stub_levels"
         )
 
-    return [
-        spec("stub-naive", "naive"),
-        spec("stub-constrained", "constrained"),
-        spec("stub-analyst", "analyst", is_reference=True),
-        spec("stub-complete", "complete"),
-        spec("stub-parametric", "parametric", mode="no_tool"),
-    ]
+    subs = {"oracle": str((campaign / "oracle").resolve())}
+    extra = [a.format(**subs) for a in (harness.get("stub_args") or [])]
+    env = {"PYTHONPATH": os.pathsep.join(
+        [str(pathlib.Path("src").resolve()), os.environ.get("PYTHONPATH", "")]
+    )}
+
+    systems = []
+    for spec in levels:
+        systems.append(SystemSpec(
+            name=spec["name"],
+            command=[sys.executable, "-m", module, "--level", spec["level"],
+                     *extra, "--submission", "{submission}"],
+            mode=spec.get("mode", "tooled"),
+            is_reference=bool(spec.get("reference")),
+            is_stub=True,
+            timeout_s=int(spec.get("timeout_s", 600)),
+            env=env,
+        ))
+    return systems
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -54,9 +68,10 @@ def main(argv: list[str] | None = None) -> int:
         campaign.parent.parent / ".sweep_sandbox" / campaign.name
     report = sweep_campaign(campaign, stub_systems(campaign), sandbox, args.repeats)
 
-    print(f"campaign: {report['_meta']['campaign_id']}  repeats={report['_meta']['repeats']}")
-    print(f"chance floor: {report['_meta']['chance_floor']:.4f}")
-    print(f"run status: {report['_meta']['run_status_counts']}")
+    meta = report["_meta"]
+    print(f"campaign: {meta['campaign_id']}  repeats={meta['repeats']}")
+    print(f"chance floor: {meta['chance_floor']:.4f}")
+    print(f"run status: {meta['run_status_counts']}")
     h = report["_headline"]
     if h["cold_mean_score"] is not None:
         print(f"cold mean score: {h['cold_mean_score']:.4f} "
@@ -68,11 +83,12 @@ def main(argv: list[str] | None = None) -> int:
     for name, p in report["_per_system"].items():
         print(f"  {name:<18} mode={p['mode']:<8} depths={p['cold_depths']}")
     print("\ngates:")
-    width = max(len(k) for k in report if not k.startswith("_"))
-    for name, c in sorted((k, v) for k, v in report.items() if not k.startswith("_")):
+    gates = sorted((k, v) for k, v in report.items() if not k.startswith("_"))
+    width = max(len(k) for k, _ in gates)
+    for name, c in gates:
         mark = "  ok  " if c["pass"] else " FAIL "
         print(f"[{mark}] {name:<{width}}  {c['detail']}")
-    failed = [k for k, v in report.items() if not k.startswith("_") and not v["pass"]]
+    failed = [k for k, v in gates if not v["pass"]]
     print(f"\n{len(failed)} gate(s) failing: {failed or 'none'}")
     return 0 if not failed else 1
 

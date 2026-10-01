@@ -84,3 +84,42 @@ def test_scoring_path_imports_no_third_party_modules():
                     assert alias.name.split(".")[0] in allowed, f"{path.name}: {alias.name}"
             elif isinstance(node, ast.ImportFrom) and node.level == 0 and node.module:
                 assert node.module.split(".")[0] in allowed, f"{path.name}: {node.module}"
+
+
+def test_null_prediction_scores_zero_instead_of_crashing():
+    """An omitted field is a wrong answer, not a grader error.
+
+    Regression: a measurer records an omitted numeric field as JSON null, which
+    resolves successfully to None rather than missing. Passing that to a numeric
+    scorer raised TypeError and aborted the entire grade -- one omitted field
+    would have taken down a whole sweep.
+    """
+    spec = {
+        "campaign_id": "t",
+        "rungs": [{
+            "rung_id": "r1", "ordinal": 1, "chance_level": 0.1,
+            "components": [
+                {"name": "mass", "scorer": "abs_tol_match",
+                 "args": {"pred": "pred:mass", "gold": "gold:mass", "abs_tol": 0.001}},
+                {"name": "label", "scorer": "exact",
+                 "args": {"pred": "pred:label", "gold": "gold:label"}},
+            ],
+        }],
+    }
+    gold = {"mass": 508.2129, "label": "x"}
+    result = grade({"mass": None, "label": None}, gold, spec)
+    assert result["rungs"][0]["components"] == {"label": 0.0, "mass": 0.0}
+    assert result["score"] == 0.0
+
+
+def test_null_gold_raises_as_a_campaign_bug():
+    spec = {
+        "campaign_id": "t",
+        "rungs": [{
+            "rung_id": "r1", "ordinal": 1,
+            "components": [{"name": "m", "scorer": "exact",
+                            "args": {"pred": "pred:m", "gold": "gold:m"}}],
+        }],
+    }
+    with pytest.raises(Exception):
+        grade({"m": 1}, {"m": None}, spec)
