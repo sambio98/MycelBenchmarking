@@ -58,12 +58,15 @@ output_contract:
     flipped_constraints: >
       Symmetric difference of the two hosts' non_binding_constraints sets.
 
+# Everything an agent needs to answer every rung is in reference/, which is
+# shipped into the sandbox. The oracle loads the same files, so the tables used
+# to compute gold and the tables given to the agent cannot drift.
 constraints:
-  pinned_tables: oracle/tables.py       # hash-pinned; CAI weights and host ranges
-  max_homopolymer: 5
-  max_direct_repeat: 10
-  gc_window_size: 50
-  internal_rbs_motif: AGGAGG
+  reference_dir: reference
+  pinned_tables:
+    - reference/codon_tables.json        # per-host weights, GC global and window ranges
+    - reference/cloning_strategies.json  # forbidden sites per strategy
+    - reference/composition_limits.json  # homopolymer, repeat, window, RBS, counting rules
 
 snapshots_required:
   shipped: []

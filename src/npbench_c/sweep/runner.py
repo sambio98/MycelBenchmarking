@@ -22,8 +22,11 @@ from typing import Mapping, Sequence
 
 from npbench_c.grading.grade import grade
 
-# Only these campaign paths are ever visible to a system.
-PUBLIC_CAMPAIGN_PATHS = ("inputs", "task.yaml")
+# Only these campaign paths are ever visible to a system. "reference" carries
+# the pinned tables the task requires an agent to use: without them this
+# campaign is literally unsolvable, since R3's gold is a function of the codon
+# weights. Stub systems hid that, because they were handed the oracle directory.
+PUBLIC_CAMPAIGN_PATHS = ("inputs", "reference", "task.yaml")
 
 # These must never appear in a sandbox, except as an explicitly declared
 # warm-start input.

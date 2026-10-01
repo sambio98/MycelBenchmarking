@@ -146,6 +146,21 @@ def _contract_and_provenance(campaign: pathlib.Path) -> list[Check]:
     checks.append(_check("output_contract_present", bool(contract),
                          f"{len(contract)} artifacts contracted"))
 
+    # Every pinned table the task requires must be inside a path the sandbox
+    # ships, or the campaign is unsolvable and no run can tell you so: the
+    # agent simply fails and looks incapable.
+    from npbench_c.sweep.runner import PUBLIC_CAMPAIGN_PATHS
+
+    pinned = task.get("constraints", {}).get("pinned_tables") or []
+    pinned = [pinned] if isinstance(pinned, str) else pinned
+    reachable = [p for p in pinned
+                 if pathlib.PurePath(p).parts[0] in PUBLIC_CAMPAIGN_PATHS
+                 and (campaign / p).exists()]
+    checks.append(_check("pinned_tables_reachable_by_agent",
+                         bool(pinned) and len(reachable) == len(pinned),
+                         f"{len(reachable)}/{len(pinned)} pinned tables are under a "
+                         f"public sandbox path and present on disk"))
+
     # Every rung must carry the key so the declaration is explicit; R1 has no
     # earlier rung to start from, so null is the correct value there. Bundles
     # above R1 must exist on disk: a missing bundle silently turns a warm run

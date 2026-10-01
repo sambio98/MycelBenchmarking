@@ -161,3 +161,65 @@ def test_stub_based_sweep_is_not_promoted_to_pass():
 def test_system_spec_defaults_are_conservative():
     s = SystemSpec(name="x", command=["true"])
     assert s.mode == "tooled" and s.is_reference is False and s.is_stub is False
+
+
+# ------------------------------------------------------------------ solvability
+
+def test_campaign_is_solvable_from_its_sandbox(tmp_path):
+    """R3's gold must be recomputable using only files the agent can see.
+
+    This campaign was briefly unsolvable: the codon weight table lived in
+    oracle/, which the sandbox excludes, so R3's unconstrained_violations could
+    not be derived from anything an agent was given. The stub systems hid it
+    because they were handed the oracle directory. The check here reimplements
+    the rule from the reference files alone and compares to gold.
+    """
+    s = build_sandbox(CAMPAIGN, tmp_path / "solvable")
+    codon = json.loads((s / "reference" / "codon_tables.json").read_text())
+    cloning = json.loads((s / "reference" / "cloning_strategies.json").read_text())
+    limits = json.loads((s / "reference" / "composition_limits.json").read_text())
+
+    protein = "".join(
+        l.strip() for l in (s / "inputs" / "rebh.faa").read_text().splitlines()[1:]
+    ) + "*"
+
+    # Rebuild the genetic code from the weight table's own keys, then apply the
+    # documented rule: highest weight, ties to the lexicographically smallest.
+    weights = codon["hosts"]["ecoli_bl21"]["weights"]
+    from npbench_c.grading import primitives  # noqa: F401  (import sanity only)
+    import collections
+
+    stops = {"TAA", "TAG", "TGA"}
+    table = {
+        "A": "GCT GCC GCA GCG", "R": "CGT CGC CGA CGG AGA AGG", "N": "AAT AAC",
+        "D": "GAT GAC", "C": "TGT TGC", "Q": "CAA CAG", "E": "GAA GAG",
+        "G": "GGT GGC GGA GGG", "H": "CAT CAC", "I": "ATT ATC ATA",
+        "L": "TTA TTG CTT CTC CTA CTG", "K": "AAA AAG", "M": "ATG",
+        "F": "TTT TTC", "P": "CCT CCC CCA CCG", "S": "TCT TCC TCA TCG AGT AGC",
+        "T": "ACT ACC ACA ACG", "W": "TGG", "Y": "TAT TAC",
+        "V": "GTT GTC GTA GTG", "*": " ".join(sorted(stops)),
+    }
+    nt = "".join(
+        min(table[aa].split(), key=lambda c: (-weights[c], c)) for aa in protein
+    )
+
+    sites = cloning["strategies"]["pet28a_ndei_xhoi"]["forbidden_sites"]
+    n_sites = sum(
+        sum(1 for i in range(len(nt)) if nt.startswith(motif, i))
+        for motif in sites.values()
+    )
+
+    k = limits["max_direct_repeat"] + 1
+    counts = collections.Counter(nt[i:i + k] for i in range(len(nt) - k + 1))
+    n_repeats = sum(1 for c in counts.values() if c > 1)
+
+    gold = json.loads((CAMPAIGN / "gold" / "gold.json").read_text())
+    uv = gold["hosts"]["ecoli"]["unconstrained_violations"]
+    assert n_sites == uv["forbidden_sites"]
+    assert n_repeats == uv["direct_repeat"]
+
+
+def test_reference_dir_is_public_and_oracle_dir_is_not(tmp_path):
+    s = build_sandbox(CAMPAIGN, tmp_path / "paths")
+    assert (s / "reference").is_dir()
+    assert not (s / "oracle").exists()

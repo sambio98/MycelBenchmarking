@@ -16,7 +16,9 @@ scoring path.
 | Readiness gate | `src/npbench_c/readiness/gate.py` | 16 mechanical checks, 5 pending-on-agent-runs |
 | Campaign L1 | `campaigns/construct-ecoli-rebh-01/` | oracle 1.0, all 4 rungs G1 |
 | Internal sweep | `src/npbench_c/sweep/` | runner, stats, gates, stub fixtures |
-| Tests | `tests/unit/` | 74 passing |
+| Catalog | `docs/catalog.md` | 24 templates / 32 campaigns, grounded |
+| Provisioning | `docs/environment.md` | tools, DBs, sandbox contract |
+| Tests | `tests/unit/` | 76 passing |
 
 ```bash
 PYTHONPATH=src python3 -m pytest tests -q
@@ -154,9 +156,29 @@ after a domain expert spent three hours on it has burned the scarcest resource
 in the project. Order is: build → internal sweep → drop/fix → audit → ship.
 Author ~44 to ship 32.
 
+## Campaign solvability
+
+**A campaign must be solvable from its own sandbox.** Every table, vocabulary,
+counting rule and convention its gold depends on must be in `reference/` or
+`task.yaml`.
+
+This campaign shipped briefly with its codon weight table in `oracle/`, which
+the sandbox excludes. R3's gold is a pure function of those weights, so the
+campaign was unanswerable — and no run would have reported it: an agent would
+simply have failed and looked incapable. The stub systems hid it because they
+were handed `--oracle` on the command line.
+
+Guards: `pinned_tables_reachable_by_agent` in the readiness gate, and a test
+that recomputes R3's gold from sandbox files alone. The oracle loads the same
+`reference/` JSON the agent receives, so the two cannot drift — verified by
+regenerating gold after the extraction and diffing byte-for-byte.
+
+See `docs/environment.md` for the full sandbox contract, the tool surfaces, and
+the per-template database and tool requirements.
+
 ## A note on what the gate caught
 
-Two real defects surfaced during this build, both by machinery rather than by
+Three real defects surfaced during this build, all by machinery rather than by
 reading the code:
 
 1. **Grader float boundary.** `abs_tol_match(1.0, 1.1, 0.1)` returned 0.0,
@@ -171,8 +193,11 @@ reading the code:
    *matched* what just ran, so a manual comparison caught what the gate should
    have. `grader_version_matches_pin` now closes it.
 
-Both are worth repeating because they are the failure class the benchmark is
-built to detect in others: reproducible, confidently reported, and wrong.
+3. **An unsolvable campaign.** Covered above: the pinned tables the task
+   requires were outside every path the sandbox ships.
+
+All three are worth repeating because they are the failure class the benchmark
+is built to detect in others: reproducible, confidently reported, and wrong.
 
 ## The internal sweep
 
@@ -259,13 +284,14 @@ Harness self-test result (fixtures, not evidence): clear rates 1.00 / 0.75 /
 
 ## Open items
 
-1. **CAI table provenance.** The relative-adaptiveness values in
-   `campaigns/*/oracle/tables.py` are representative values for highly-expressed
-   genes and are flagged in-file. They need a cited source release, or a table
-   computed over a declared gene set, with a hash — before the audit packet
-   ships. The gold does not depend on them being *the* correct measurement, only
-   on their being frozen, hashed and published; but an auditor will and should
-   ask.
+1. **CAI table provenance.** The relative-adaptiveness values now live in
+   `campaigns/*/reference/codon_tables.json` (shipped to agents; the oracle
+   loads the same file). They are representative values for highly-expressed
+   genes, flagged in the JSON, and need a cited source release — a named
+   Kazusa / HIVE-CUT release, or a table computed over a declared
+   ribosomal-protein gene set — with a hash, before the audit packet ships. Gold
+   does not depend on them being *the* correct measurement, only on their being
+   frozen, hashed and published; but an auditor will and should ask.
 2. **Release packaging must exclude `gold/`, `oracle/` and `oracle_submission/`.**
    They are committed here because this is the build repo. Gold is never
    published for either split.
