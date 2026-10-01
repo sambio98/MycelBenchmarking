@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import json
 import pathlib
+import shutil
 import sys
 
 import construct as C
@@ -61,6 +62,44 @@ def analyse(protein: str, host: str, strategy: str) -> dict:
     }
 
 
+def write_warm_bundles(protein: str, gold: dict) -> None:
+    """Materialise exactly what each rung's warm start may see.
+
+    Warm inputs are rendered bundles, never whole gold files. Declaring
+    "gold/gold.json#hosts.ecoli" and copying the file would hand an R4 warm run
+    the Streptomyces answer it is being asked to compute -- a leak that nothing
+    downstream would detect, because the run would simply look successful.
+    """
+    warm = CAMPAIGN / "gold" / "warm"
+    if warm.exists():
+        shutil.rmtree(warm)
+
+    def fasta(seq: str, name: str) -> str:
+        return f">{name}\n" + "\n".join(seq[i:i + 60] for i in range(0, len(seq), 60)) + "\n"
+
+    # R2 starts from R1's deliverable: a schema-valid ORF that does NOT yet
+    # satisfy the constraints. The naive reverse translation is exactly that.
+    (warm / "r2").mkdir(parents=True)
+    (warm / "r2" / "orf_ecoli_start.fasta").write_text(
+        fasta(C.unconstrained_optimum(protein, "ecoli_bl21"), "r1_schema_valid_start"))
+
+    # R3 starts from the correct E. coli construct.
+    (warm / "r3").mkdir(parents=True)
+    shutil.copyfile(CAMPAIGN / "gold" / "orf_ecoli.fasta",
+                    warm / "r3" / "orf_ecoli.fasta")
+
+    # R4 adds the R3 answer for E. coli only -- never the Streptomyces block.
+    (warm / "r4").mkdir(parents=True)
+    shutil.copyfile(CAMPAIGN / "gold" / "orf_ecoli.fasta",
+                    warm / "r4" / "orf_ecoli.fasta")
+    e = gold["hosts"]["ecoli"]
+    (warm / "r4" / "analysis_ecoli.json").write_text(json.dumps({
+        "unconstrained_violations": e["unconstrained_violations"],
+        "binding_constraint": e["binding_constraint"],
+        "non_binding_constraints": e["non_binding_constraints"],
+    }, sort_keys=True, indent=2) + "\n")
+
+
 def main() -> int:
     protein = read_fasta(CAMPAIGN / "inputs" / "rebh.faa") + "*"
     gold: dict = {"protein_length_aa": len(protein) - 1, "hosts": {}}
@@ -88,6 +127,7 @@ def main() -> int:
     gold["binding_constraint_flips"] = int(e["binding_constraint"] != s["binding_constraint"])
 
     (CAMPAIGN / "gold" / "gold.json").write_text(json.dumps(gold, sort_keys=True, indent=2) + "\n")
+    write_warm_bundles(protein, gold)
     print(json.dumps(gold, sort_keys=True, indent=2))
     return 0
 

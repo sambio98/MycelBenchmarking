@@ -6,7 +6,7 @@ layer: L6_translation_and_design
 version: 1.0.0
 horizon_tier: T-short
 license_class: open
-grader_version: "2.0.0+6cf0aacc"
+grader_version: "2.0.0+a239f0f0"
 grading_spec_version: "1.0.0"
 
 objective: >
@@ -82,11 +82,17 @@ budgets:
   memory_gb: 4
   network: off
 
+# Warm starts are pre-rendered bundles, never whole gold files: copying
+# gold/gold.json to give a rung "the previous answer" would also hand over the
+# answer that rung is being asked to compute.
 rungs:
-  - {rung_id: r1, ordinal: 1, name: execute,        gold_tier: G1, warm_start_inputs: []}
-  - {rung_id: r2, ordinal: 2, name: correct,        gold_tier: G1, warm_start_inputs: [gold/orf_ecoli.fasta]}
-  - {rung_id: r3, ordinal: 3, name: commit,         gold_tier: G1, warm_start_inputs: [gold/orf_ecoli.fasta]}
-  - {rung_id: r4, ordinal: 4, name: counterfactual, gold_tier: G1, warm_start_inputs: [gold/orf_ecoli.fasta, gold/gold.json#hosts.ecoli]}
+  - {rung_id: r1, ordinal: 1, name: execute,        gold_tier: G1, warm_start_bundle: null}
+  - {rung_id: r2, ordinal: 2, name: correct,        gold_tier: G1, warm_start_bundle: gold/warm/r2}
+  - {rung_id: r3, ordinal: 3, name: commit,         gold_tier: G1, warm_start_bundle: gold/warm/r3}
+  - {rung_id: r4, ordinal: 4, name: counterfactual, gold_tier: G1, warm_start_bundle: gold/warm/r4}
+
+harness:
+  measure_command: ["python3", "oracle/measure.py", "{submission}", "inputs/rebh.faa", "{measurement}"]
 
 structural_elements: [verification, abstention_free, counterfactual]
 

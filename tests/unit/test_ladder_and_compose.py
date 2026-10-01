@@ -10,6 +10,7 @@ from npbench_c.grading.compose import GEOMETRIC_FLOOR, compose
 from npbench_c.grading.ladder import (
     MAX_CHANCE_FLOOR,
     chance_floor,
+    discriminating_chance_floor,
     check_monotonicity,
     score_ladder,
     score_rung,
@@ -74,6 +75,23 @@ def test_chance_floor_catches_a_three_way_enum_rung():
 
 def test_chance_floor_is_monotone_in_guessability():
     assert chance_floor([0.9, 0.9, 0.9, 0.9]) > chance_floor([0.9, 0.9, 0.9, 0.1])
+
+
+def test_discriminating_floor_excludes_an_easy_r1():
+    """An execution rung any no-tool system clears must not consume the cap."""
+    levels = [1.0, 0.02, 0.001, 0.001]
+    assert chance_floor(levels) > MAX_CHANCE_FLOOR          # full floor: ~0.26
+    assert discriminating_chance_floor(levels) <= MAX_CHANCE_FLOOR
+
+
+def test_discriminating_floor_still_catches_a_small_enum():
+    """Excluding R1 must not let a guessable R3 through."""
+    assert discriminating_chance_floor([1.0, 0.5, 1 / 3, 0.5]) > MAX_CHANCE_FLOOR
+
+
+def test_discriminating_floor_needs_two_rungs():
+    with pytest.raises(ValueError):
+        discriminating_chance_floor([0.5])
 
 
 def test_monotonicity_check():

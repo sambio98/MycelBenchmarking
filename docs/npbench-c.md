@@ -15,10 +15,12 @@ scoring path.
 | Grader identity | `src/npbench_c/grading/version.py` | semver + content hash |
 | Readiness gate | `src/npbench_c/readiness/gate.py` | 16 mechanical checks, 5 pending-on-agent-runs |
 | Campaign L1 | `campaigns/construct-ecoli-rebh-01/` | oracle 1.0, all 4 rungs G1 |
-| Tests | `tests/unit/` | 55 passing |
+| Internal sweep | `src/npbench_c/sweep/` | runner, stats, gates, stub fixtures |
+| Tests | `tests/unit/` | 74 passing |
 
 ```bash
 PYTHONPATH=src python3 -m pytest tests -q
+PYTHONPATH=src python3 -m npbench_c.sweep.cli campaigns/construct-ecoli-rebh-01 --stubs
 PYTHONPATH=src python3 -m npbench_c.readiness.gate campaigns/construct-ecoli-rebh-01
 ```
 
@@ -144,8 +146,8 @@ never PASS: the gate does not launder an unmeasured property into a green tick.
 Current state for L1: **16 pass / 0 fail / 5 pending**.
 
 The five pending checks (monotonicity, R1 clear rate, no-tool leakage,
-difficulty gate, discrimination) need the internal sweep. They are satisfied by
-dropping an `internal_sweep.json` into the campaign directory.
+difficulty gate, discrimination) are satisfied by an `internal_sweep.json` from
+a sweep over **real** systems. A stub-based sweep leaves them pending by design.
 
 **Never audit before calibrating.** A campaign dropped for non-discrimination
 after a domain expert spent three hours on it has burned the scarcest resource
@@ -172,6 +174,89 @@ reading the code:
 Both are worth repeating because they are the failure class the benchmark is
 built to detect in others: reproducible, confidently reported, and wrong.
 
+## The internal sweep
+
+Turns the readiness gate's five PENDING checks into numbers. Agent-agnostic: a
+system is a `SystemSpec` (a command, a mode, a timeout), so a bash-only coding
+agent, a general biomedical agent and a tool-equipped system all plug in without
+the harness knowing anything about them.
+
+```
+cold runs   agent gets the objective, attempts everything  -> depth distribution
+warm runs   agent starts from rung k-1 gold, attempts k     -> per-rung profile
+```
+
+Both are needed. Cold runs alone cannot calibrate a ladder: a failure at R2
+censors every rung above it, so cold R3/R4 clear rates conflate "could not do
+it" with "never got there".
+
+### Gold isolation is the load-bearing property
+
+If gold reaches a sandbox, every number the sweep produces is silently invalid
+and nothing downstream notices — the runs simply look successful. So sandboxes
+are built from an allowlist (`inputs/`, `task.yaml`) and then **audited**; a
+violation raises.
+
+Warm starts are **pre-rendered bundles**, never whole gold files. Declaring
+`gold/gold.json#hosts.ecoli` as an R4 warm input and copying the file would hand
+the run the *Streptomyces* answer it is being asked to compute. `gold/warm/r4/`
+contains exactly the E. coli construct and the E. coli analysis, nothing more,
+and a test asserts the *Streptomyces* gold values are absent.
+
+### Statistics at n=3
+
+Three repeats cannot support a claim if the unit of analysis is the campaign.
+With a ladder the unit is the rung-run — 32 campaigns x 4 rungs x 3 repeats =
+384 observations — and CIs come from a **cluster bootstrap resampling
+campaigns**, which absorbs correlation between rungs of one campaign and
+between repeats of one run. Once campaigns are instantiated from templates,
+resample at the **template** level: four instantiations share an oracle and a
+failure mode and are not four independent campaigns.
+
+Pre-register the resulting resolution: **NPBench-C separates systems differing
+by roughly 8 points or more at n=3, and makes no claim about finer ordering.**
+Pass@1 and Pass^3 are both reported; the gap between them is the only variance
+story available without paying for more repeats.
+
+Infra failures (timeout, crash) are excluded from scores and reported
+separately in `run_status_counts`, so the headline is not partly measuring our
+own container.
+
+### Two chance floors
+
+The sweep exposed a contradiction in the original design. R1 is *meant* to be
+easy — its gate is a >= 80% clear rate — and for a construct-design campaign a
+no-tool system clears it by reverse-translating the protein, which needs the
+genetic code and nothing else. The ablation measured R1's no-tool clear rate at
+1.0 against a declared estimate of 0.30. So any four-rung ladder gives a no-tool
+agent 0.25 for free, and a 0.10 cap on the **full** floor is unsatisfiable by
+construction.
+
+Resolved by splitting them:
+
+- `chance_floor` — all rungs (~0.26 here). The baseline the **leakage ablation**
+  is compared against.
+- `discriminating_chance_floor` — R2 upward (~0.007 here). What the **0.10 cap**
+  applies to, since R1 is an execution precondition, not a measurement.
+
+A test asserts the split still catches a guessable R3, so excluding R1 has not
+widened the hole the cap was for.
+
+### Stub fixtures, and why they cannot turn a gate green
+
+`src/npbench_c/sweep/stubs/` holds deterministic stub systems that reach preset
+depths. They exist so the harness's arithmetic and gate logic can be validated
+before any compute is spent — a sweep whose statistics are wrong is worse than
+no sweep, because its numbers look authoritative.
+
+A stub-based sweep therefore marks itself `stub_based: true`, and the readiness
+gate keeps all five checks **PENDING** with the harness result shown but not
+promoted. `ready_to_audit` stays `False` until real systems run. With the stub
+sweep on record the gate reports **16 pass / 0 fail / 5 pending**.
+
+Harness self-test result (fixtures, not evidence): clear rates 1.00 / 0.75 /
+0.50 / 0.25 across R1-R4, cold depths 1/2/3/4, all five gates green.
+
 ## Open items
 
 1. **CAI table provenance.** The relative-adaptiveness values in
@@ -184,7 +269,9 @@ built to detect in others: reproducible, confidently reported, and wrong.
 2. **Release packaging must exclude `gold/`, `oracle/` and `oracle_submission/`.**
    They are committed here because this is the build repo. Gold is never
    published for either split.
-3. Internal sweep harness (the five PENDING checks).
+3. Real systems for the sweep. The harness is built and self-tested; it needs
+   `SystemSpec` entries for the actual agents (bash-only, general biomedical,
+   tool-equipped) before the five checks can go green.
 4. Construct-validity study: inter-rater agreement first, then expert-grader
    agreement with Gwet's AC1 / Krippendorff's alpha alongside kappa, gate on
    Spearman against the continuous rating. This is the one place humans are

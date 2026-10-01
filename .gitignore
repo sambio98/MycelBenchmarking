@@ -21,3 +21,4 @@ venv/
 # NPBench-C derived artifacts
 __pycache__/
 *.pyc
+.sweep_sandbox/

@@ -20,7 +20,13 @@ import re
 from typing import Any, Mapping
 
 from . import primitives as P
-from .ladder import LadderResult, chance_floor, score_ladder, score_rung
+from .ladder import (
+    LadderResult,
+    chance_floor,
+    discriminating_chance_floor,
+    score_ladder,
+    score_rung,
+)
 from .version import grader_version
 
 __all__ = ["grade", "GradingSpecError", "resolve"]
@@ -184,6 +190,8 @@ def grade(
 
     ladder: LadderResult = score_ladder(scored)
     floor = chance_floor(chances) if any(chances) else 0.0
+    disc_floor = (discriminating_chance_floor(chances)
+                  if any(chances) and len(chances) >= 2 else 0.0)
 
     return {
         "campaign_id": spec.get("campaign_id"),
@@ -193,6 +201,7 @@ def grade(
         "rungs_cleared": ladder.rungs_cleared,
         "monotonic": ladder.monotonic,
         "chance_floor": floor,
+        "discriminating_chance_floor": disc_floor,
         "rungs": [
             {
                 "rung_id": r.rung_id,

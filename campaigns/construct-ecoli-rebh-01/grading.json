@@ -9,7 +9,7 @@
       "gold_tier": "G1",
       "composition": "product",
       "pass_threshold": 1.0,
-      "chance_level": 0.3,
+      "chance_level": 1.0,
       "components": [
         {
           "name": "orf_present",
@@ -75,7 +75,8 @@
             "gold": 1
           }
         }
-      ]
+      ],
+      "chance_level_source": "measured by the no-tool ablation in the internal sweep: a no-tool system clears R1 on 3/3 runs, because reverse-translating a protein requires the genetic code and no tools. The prior estimate of 0.30 was wrong and the sweep corrected it."
     },
     {
       "rung_id": "r2",

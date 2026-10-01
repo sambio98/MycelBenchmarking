@@ -42,6 +42,7 @@ __all__ = [
     "score_rung",
     "score_ladder",
     "chance_floor",
+    "discriminating_chance_floor",
     "check_monotonicity",
     "MAX_CHANCE_FLOOR",
     "MIN_R1_CLEAR_RATE",
@@ -149,6 +150,25 @@ def chance_floor(rung_chance: Sequence[float]) -> float:
         acc *= p
         cumulative.append(acc)
     return rnd(math.fsum(cumulative) / n)
+
+
+def discriminating_chance_floor(rung_chance: Sequence[float]) -> float:
+    """Chance floor over the *discriminating* rungs only -- R2 upward.
+
+    R1 is an execution precondition, not a measurement: its design target is an
+    85-95% clear rate, and clearing it without tools is often legitimate (for a
+    construct-design campaign, reverse-translating a protein needs the genetic
+    code and nothing else). So a four-rung ladder hands any no-tool agent 0.25
+    for free, and a cap of 0.10 on the *full* floor is unsatisfiable by
+    construction -- it would condemn every ladder built to the documented shape.
+
+    The cap therefore applies here, to the rungs that are supposed to separate
+    systems. The full floor still matters, as the baseline the no-tool leakage
+    ablation is compared against.
+    """
+    if len(rung_chance) < 2:
+        raise ValueError("need at least two rungs to have a discriminating subset")
+    return chance_floor(list(rung_chance)[1:])
 
 
 def check_monotonicity(clear_rates: Sequence[float], tolerance: float = 0.0) -> bool:

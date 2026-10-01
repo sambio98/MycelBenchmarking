@@ -72,9 +72,13 @@ def _oracle_and_purity(campaign: pathlib.Path) -> list[Check]:
                          f"score={result['score']} depth={result['depth']}"))
     checks.append(_check("oracle_ladder_monotonic", result["monotonic"],
                          f"rungs_cleared={result['rungs_cleared']} depth={result['depth']}"))
+    # The cap applies to the discriminating rungs (R2 upward). R1 is an
+    # execution precondition whose design target is an 85-95% clear rate, so
+    # including it would make the cap unsatisfiable for every well-formed ladder.
     checks.append(_check("chance_floor_within_limit",
-                         result["chance_floor"] <= MAX_CHANCE_FLOOR,
-                         f"chance_floor={result['chance_floor']} limit={MAX_CHANCE_FLOOR}"))
+                         result["discriminating_chance_floor"] <= MAX_CHANCE_FLOOR,
+                         f"discriminating={result['discriminating_chance_floor']} "
+                         f"(full={result['chance_floor']}) limit={MAX_CHANCE_FLOOR}"))
 
     reference = grade_json(measurement, gold, spec)
     identical = all(grade_json(measurement, gold, spec) == reference
@@ -142,9 +146,22 @@ def _contract_and_provenance(campaign: pathlib.Path) -> list[Check]:
     checks.append(_check("output_contract_present", bool(contract),
                          f"{len(contract)} artifacts contracted"))
 
-    warm = [r.get("warm_start_inputs") is not None for r in task.get("rungs", [])]
-    checks.append(_check("warm_start_declared_per_rung", bool(warm) and all(warm),
-                         f"{sum(warm)}/{len(warm)} rungs declare warm-start inputs"))
+    # Every rung must carry the key so the declaration is explicit; R1 has no
+    # earlier rung to start from, so null is the correct value there. Bundles
+    # above R1 must exist on disk: a missing bundle silently turns a warm run
+    # into a cold one and the per-rung difficulty profile becomes a fiction.
+    rungs = sorted(task.get("rungs", []), key=lambda r: r["ordinal"])
+    declared = [("warm_start_bundle" in r) for r in rungs]
+    bundles_ok = all(
+        (r.get("warm_start_bundle") is None) if i == 0
+        else bool(r.get("warm_start_bundle"))
+        and (campaign / r["warm_start_bundle"]).is_dir()
+        for i, r in enumerate(rungs)
+    )
+    checks.append(_check("warm_start_declared_per_rung",
+                         bool(rungs) and all(declared) and bundles_ok,
+                         f"{sum(declared)}/{len(rungs)} rungs declare the key; "
+                         f"bundles present and non-empty above R1: {bundles_ok}"))
 
     checks.append(_check("excluded_fields_justified",
                          all("reason" in e for e in task.get("excluded_from_grading", [])),
@@ -171,14 +188,26 @@ def _pending_agent_runs(campaign: pathlib.Path) -> list[Check]:
         return [Check(name, PENDING, "no internal_sweep.json; requires internal agent runs")
                 for name in AGENT_RUN_CHECKS]
     data = json.loads(sweep.read_text())
+
+    # A stub-based sweep is a harness self-test. Its systems are built to reach
+    # preset depths, so promoting its numbers to PASS would launder a fixture
+    # into evidence -- the exact thing this gate exists to prevent.
+    stub_based = bool(data.get("_meta", {}).get("stub_based"))
+    stubs = data.get("_meta", {}).get("stub_systems", [])
+
     out = []
     for name in AGENT_RUN_CHECKS:
         if name not in data:
             out.append(Check(name, PENDING, "absent from internal_sweep.json"))
+            continue
+        entry = data[name]
+        detail = str(entry.get("detail", ""))
+        if stub_based:
+            out.append(Check(name, PENDING,
+                             f"stub-based sweep (fixtures: {', '.join(stubs)}); "
+                             f"real systems required. Harness result: {detail}"))
         else:
-            entry = data[name]
-            out.append(Check(name, PASS if entry.get("pass") else FAIL,
-                             str(entry.get("detail", ""))))
+            out.append(Check(name, PASS if entry.get("pass") else FAIL, detail))
     return out
 
 
