@@ -1,4 +1,10 @@
-"""Reference solution. Must score exactly 1.0 or the campaign does not ship."""
+"""Reference solution for a campaign of this template.
+
+Must score exactly 1.0 through the real grader or the campaign does not ship.
+Used by the readiness gate; never shipped to agents.
+
+Usage: python -m npbench_c.templates.mass_balance_nrps.solve <campaign> <submission>
+"""
 
 from __future__ import annotations
 
@@ -6,13 +12,15 @@ import json
 import pathlib
 import sys
 
-CAMPAIGN = pathlib.Path(__file__).resolve().parent.parent
 
-
-def main() -> int:
-    out = pathlib.Path(sys.argv[1]) if len(sys.argv) > 1 else CAMPAIGN / "oracle_submission"
+def main(argv: list[str] | None = None) -> int:
+    argv = list(sys.argv[1:] if argv is None else argv)
+    if len(argv) != 2:
+        print("usage: solve <campaign_dir> <submission_dir>", file=sys.stderr)
+        return 2
+    campaign, out = pathlib.Path(argv[0]), pathlib.Path(argv[1])
     out.mkdir(parents=True, exist_ok=True)
-    gold = json.loads((CAMPAIGN / "gold" / "gold.json").read_text())
+    gold = json.loads((campaign / "gold" / "gold.json").read_text())
 
     route = {
         "modules": [

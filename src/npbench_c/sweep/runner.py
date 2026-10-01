@@ -134,6 +134,25 @@ def _format(tokens: Sequence[str], **subs: str) -> list[str]:
     return [t.format(**subs) for t in tokens]
 
 
+def _absolute_pythonpath(env: Mapping[str, str]) -> dict[str, str]:
+    """Resolve PYTHONPATH entries to absolute paths.
+
+    Subprocesses run with cwd set to a sandbox or a campaign directory, so a
+    relative PYTHONPATH such as "src" silently resolves against the wrong root
+    and every `python -m npbench_c...` invocation fails. The failure surfaces as
+    a crashed run rather than an import error, which is hard to read.
+    """
+    import os
+
+    out = dict(env)
+    raw = out.get("PYTHONPATH", "")
+    if not raw:
+        return out
+    parts = [p for p in raw.split(os.pathsep) if p]
+    out["PYTHONPATH"] = os.pathsep.join(str(pathlib.Path(p).resolve()) for p in parts)
+    return out
+
+
 def run_once(
     campaign: pathlib.Path,
     system: SystemSpec,
@@ -152,10 +171,12 @@ def run_once(
     )
     submission = sandbox / "submission"
 
-    env = {**os.environ, **system.env, "NPBENCH_MODE": system.mode}
+    env = _absolute_pythonpath({**os.environ, **system.env,
+                                "NPBENCH_MODE": system.mode})
     try:
         proc = subprocess.run(
-            _format(system.command, submission=str(submission), sandbox=str(sandbox)),
+            _format(system.command, campaign=str(campaign),
+                    submission=str(submission), sandbox=str(sandbox)),
             cwd=sandbox, env=env, capture_output=True, timeout=system.timeout_s, text=True,
         )
     except subprocess.TimeoutExpired:
@@ -171,9 +192,10 @@ def run_once(
     measurement = sandbox / "measurement.json"
     try:
         subprocess.run(
-            _format(measure_command, submission=str(submission),
-                    measurement=str(measurement)),
-            cwd=campaign, check=True, capture_output=True, timeout=1800, text=True,
+            _format(measure_command, campaign=str(campaign),
+                    submission=str(submission), measurement=str(measurement)),
+            cwd=campaign, env=env, check=True, capture_output=True,
+            timeout=1800, text=True,
         )
     except (subprocess.CalledProcessError, subprocess.TimeoutExpired) as exc:
         return RunResult(system.name, run_index, rung_mode, CRASHED, None,

@@ -247,9 +247,16 @@ resulting assembly formula and exact mass shift. All G1.
 Monomer formulas are resolved once at construction with RDKit and pinned into
 `reference/monomer_formulas.json` with their SMILES source, so the oracle needs
 no chemistry toolkit at run time and the campaign is solvable at **S0**.
-Second instantiation: sevadicin (BGC0000426, 3 modules, exactly balanced) gives
-the `balanced` verdict, where this entry gives `additional_chemistry_required`
-on all four congeners.
+Second instantiation **built**: `campaigns/massbalance-nrps-sevadicin-01`
+(BGC0000426, 3 modules, 1 compound, residual exactly zero). It exercises the
+`balanced` verdict branch, which the malleobactin instantiation never reaches —
+all four of its congeners are `additional_chemistry_required`.
+
+Both campaigns now contain **no code at all**: the oracle is shared at
+`npbench_c.templates.mass_balance_nrps`, so an instantiation is an entry file, a
+`task.yaml` and two build commands. That is the template architecture the
+catalog's authoring model assumes, and it was factored out at two
+instantiations rather than at eight.
 
 **T-L4-4** Scaffold / chemical-space analysis keyed on InChIKey block 1
 (connectivity), which is the right granularity where stereochemistry is not

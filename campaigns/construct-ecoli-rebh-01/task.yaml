@@ -95,6 +95,8 @@ rungs:
   - {rung_id: r4, ordinal: 4, name: counterfactual, gold_tier: G1, warm_start_bundle: gold/warm/r4}
 
 harness:
+  gold_command: ["python3", "oracle/generate_gold.py"]
+  solve_command: ["python3", "oracle/solve.py", "{submission}"]
   measure_command: ["python3", "oracle/measure.py", "{submission}", "inputs/rebh.faa", "{measurement}"]
   stub_module: npbench_c.sweep.stubs.stub_system
   # This campaign's stubs need the oracle path: they reuse the optimiser rather

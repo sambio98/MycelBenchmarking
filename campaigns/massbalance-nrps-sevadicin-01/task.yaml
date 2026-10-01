@@ -1,4 +1,4 @@
-campaign_id: massbalance-nrps-malleobactin-01
+campaign_id: massbalance-nrps-sevadicin-01
 template_id: mass-balance-nrps
 track: EX
 family: mass_balance_and_route_validation
@@ -12,24 +12,24 @@ grading_spec_version: "1.1.0"
 min_tool_surface: S0
 
 objective: >
-  MIBiG entry BGC0000386 annotates a four-module NRPS assembly line in
-  Burkholderia thailandensis E264 and four malleobactin congeners. Compute the
-  molecular formula of the linear assembly those modules would produce, quantify
-  how far each annotated congener is from it, and predict the assembly that
-  results from deleting each single module.
+  MIBiG entry BGC0000426 annotates a three-module NRPS assembly line in
+  Paenibacillus larvae and the tripeptide sevadicin. Compute the molecular
+  formula of the linear assembly those modules would produce, quantify how far
+  the annotated compound is from it, and predict the assembly that results from
+  deleting each single module.
 
 method_guidance: partial
 
 scope_note: >
-  MIBiG annotates the enzymatic module count, which is not the number of monomer
-  incorporations in the final product: iterative module reuse, non-NRPS moieties
-  such as fatty-acid starters and prenyl groups, and metal coordination all break
-  the correspondence. Across the 43 entries meeting this template's admission
-  filter, only one is exactly balanced and four differ by a single water. A
-  non-zero residual is therefore the normal case, and quantifying it is the task.
-  This campaign does not ask which chemistry closes the gap -- that would be
-  judgement, not computation.
+  MIBiG annotates the enzymatic module count, which is not in general the number
+  of monomer incorporations in the final product. For this entry the two do
+  coincide and the residual is exactly zero, which is the uncommon case: across
+  the 43 entries meeting this template's admission filter only this one is
+  exactly balanced and four differ by a single water. The campaign does not ask
+  which chemistry closes a gap -- that would be judgement, not computation.
 
+# Identical in substance to the other instantiation of this template; the shared
+# oracle enforces the same conventions, and reference/ ships the pinned tables.
 output_contract:
   route.json:
     modules: >
@@ -46,11 +46,12 @@ output_contract:
     naive_assembly_monoisotopic_mass: daltons, 4 decimal places, tolerance 0.001
     per_compound: >
       One object per formula-bearing compound the entry annotates, keyed by the
-      compound name exactly as the entry gives it. Each carries "residual"
-      (product minus naive assembly, element by element, signed, elements with a
+      compound name exactly as the entry gives it, each carrying "residual"
+      (product minus naive assembly, element by element, signed; elements with a
       zero difference may be omitted) and "verdict" from the closed vocabulary.
+      This entry annotates one compound; other instantiations annotate several.
     single_module_deletions: >
-      Keyed by the 1-based module index as a string. Each carries the Hill-order
+      Keyed by the 1-based module index as a string, each carrying the Hill-order
       "formula" of the assembly remaining after that module is deleted and the
       "mass_shift" in daltons relative to the full assembly. A map, not a list,
       so the answer is not order-dependent.
@@ -60,9 +61,9 @@ output_contract:
 constraints:
   reference_dir: reference
   pinned_tables:
-    - reference/monomer_formulas.json   # monomer formulas, derived from the entry's SMILES
-    - reference/assembly_rules.json     # element order, peptide-bond rule, residual and verdict rules
-    - reference/atomic_masses.json      # monoisotopic atomic masses
+    - reference/monomer_formulas.json
+    - reference/assembly_rules.json
+    - reference/atomic_masses.json
 
 snapshots_required:
   shipped: [mibig@4.0]
@@ -70,8 +71,7 @@ snapshots_required:
   inputs_pinned:
     - source: MIBiG
       version: "4.0"
-      accession: BGC0000386
-      sha256_entry: d695bbe8743228a7
+      accession: BGC0000426
       license: CC BY 4.0
       admission: loci[].evidence contains "Knock-out studies"
 
@@ -89,9 +89,6 @@ rungs:
 
 structural_elements: [verification, counterfactual, planted]
 
-# A campaign of this template contains no code: the oracle is shared at
-# npbench_c.templates.mass_balance_nrps, so an instantiation is a data change
-# plus one build command.
 harness:
   gold_command: ["python3", "-m", "npbench_c.templates.mass_balance_nrps.build", "{campaign}"]
   solve_command: ["python3", "-m", "npbench_c.templates.mass_balance_nrps.solve", "{campaign}", "{submission}"]
@@ -106,27 +103,28 @@ harness:
     - {name: stub-parametric, level: parametric, mode: no_tool}
 
 grading:
-  chance_levels: {r1: 1.0, r2: 0.01, r3: 0.004, r4: 0.0005}
+  chance_levels: {r1: 1.0, r2: 0.01, r3: 0.06, r4: 0.0005}
   chance_level_notes:
     r1: >
-      Measured by the no-computation ablation in the internal sweep: R1 asks only
-      that the entry and the pinned monomer table be read and echoed in schema,
-      which a non-computing system does on 3/3 runs. The prior estimate of 0.6
-      was wrong and the sweep corrected it. A no-tool ablation is not meaningful
-      for an S0 campaign -- there is no tool to withhold -- so the ablation
-      withholds computation instead.
+      Measured by the no-computation ablation: R1 asks only that the entry and
+      the pinned monomer table be read and echoed in schema. A no-tool ablation
+      is not meaningful for an S0 campaign, so the ablation withholds
+      computation instead.
     r3: >
-      The four verdicts are identical for this entry, so one lucky enum guess
-      clears all four verdict components (~1/5, not (1/5)^4). R3's information is
-      carried by the four residual vectors, which is what this figure reflects.
+      Higher than the malleobactin instantiation's 0.004 for an honest reason:
+      this entry annotates a single compound whose residual is exactly zero, so
+      R3 reduces to one residual vector plus one five-way verdict. A system that
+      assumes a curated assembly line accounts for its product guesses
+      'balanced' and the empty residual correctly. That is a real weakness of
+      this instantiation, and it is why the template needs at least one
+      non-balanced instantiation in the shipped set.
 
 excluded_from_grading:
   - field: residual attribution to specific tailoring chemistry
     reason: >
-      Attributing a residual to a named biosynthetic step (a fatty-acid starter,
-      a prenylation, iterative module reuse) is expert inference, not
-      computation, and its gold would be human judgement. The signed residual
-      vector and a mechanical classification of it are graded instead.
+      Attributing a residual to a named biosynthetic step is expert inference,
+      not computation, and its gold would be human judgement. The signed
+      residual vector and a mechanical classification of it are graded instead.
   - field: product monoisotopic mass
     reason: >
       The entry supplies compounds[].mass, so grading it would test transcription
@@ -134,11 +132,8 @@ excluded_from_grading:
       supply, is graded instead.
 
 notes_for_audit:
-  - This entry annotates four congeners including a dimer (malleobactin D,
-    C46H80N16O23). All four residuals are computed; taking compounds[0] would
-    have baked an undeclared choice into gold.
-  - All four verdicts are additional_chemistry_required, so the verdict field
-    carries no discriminating power within this campaign; R3's information is in
-    the residual vectors. The verdict varies across instantiations of this
-    template (sevadicin BGC0000426 is exactly balanced, obafluorin BGC0001437
-    differs by one water).
+  - Residual is exactly zero, so this is the template's only 'balanced' case so
+    far and the verdict branch it exercises is otherwise untested.
+  - Both epimerase domains (modules 1 and 2) are stereochemical and do not change
+    the molecular formula, which is why a balanced residual is correct here
+    rather than evidence of missing annotation.

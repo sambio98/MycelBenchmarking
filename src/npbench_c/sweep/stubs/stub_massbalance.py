@@ -70,11 +70,17 @@ def main() -> int:
     }
 
     if args.level == "parametric":
-        # Answers from plausible priors: echoes the inputs, then guesses that a
-        # curated assembly line accounts for its product.
+        # Answers from plausible priors, campaign-agnostically: sums the monomers
+        # without condensing any water (the error a non-computing system makes),
+        # and assumes a curated assembly line accounts for its own product.
+        total: dict[str, int] = {}
+        for n in monomers:
+            for el, v in parse(formulas[n], order).items():
+                total[el] = total.get(el, 0) + v
         route["peptide_bonds"] = len(monomers)          # off by one
-        route["naive_assembly_formula"] = "C18H32N6O11"
-        route["naive_assembly_monoisotopic_mass"] = 508.0
+        route["naive_assembly_formula"] = render(total, order)
+        route["naive_assembly_monoisotopic_mass"] = round(
+            math.fsum(masses[el] * total[el] for el in order if total.get(el)), dec)
         for c in compounds:
             route["per_compound"][c] = {"residual": {}, "verdict": "balanced"}
         (sub / "route.json").write_text(json.dumps(route, indent=2, sort_keys=True))

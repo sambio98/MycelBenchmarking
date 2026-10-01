@@ -11,12 +11,14 @@ are green and the agent-run checks have real numbers.
 from __future__ import annotations
 
 import json
+import os
 import pathlib
 import subprocess
 import sys
 from dataclasses import dataclass
 
 from npbench_c.grading.grade import grade, grade_json
+from npbench_c.sweep.runner import _absolute_pythonpath
 from npbench_c.grading.ladder import MAX_CHANCE_FLOOR
 from npbench_c.grading.version import grader_version
 
@@ -58,20 +60,27 @@ def _oracle_and_purity(campaign: pathlib.Path) -> list[Check]:
     # which is a construct-design assumption that broke the moment a campaign
     # had different inputs.
     task = yaml.safe_load((campaign / "task.yaml").read_text())
-    measure_command = ((task.get("harness") or {}).get("measure_command"))
+    harness = task.get("harness") or {}
+    measure_command = harness.get("measure_command")
     if not measure_command:
         return [Check("oracle_runs", FAIL,
                       "task.yaml declares no harness.measure_command")]
 
+    # A campaign built from a shared template carries no oracle directory at
+    # all, so the solve step is whatever task.yaml declares. The legacy form --
+    # a campaign-local oracle/solve.py -- is still honoured.
+    solve_command = harness.get("solve_command") or [sys.executable, "oracle/solve.py",
+                                                     "{submission}"]
+    env = _absolute_pythonpath(os.environ)
     try:
         subprocess.run(
-            [sys.executable, "solve.py", str(sub)],
-            cwd=campaign / "oracle", check=True, capture_output=True, timeout=1800,
+            [tok.format(campaign=str(campaign), submission=str(sub)) for tok in solve_command],
+            cwd=campaign, env=env, check=True, capture_output=True, timeout=1800,
         )
         subprocess.run(
-            [tok.format(submission=str(sub), measurement=str(measurement))
-             for tok in measure_command],
-            cwd=campaign, check=True, capture_output=True, timeout=1800,
+            [tok.format(campaign=str(campaign), submission=str(sub),
+                        measurement=str(measurement)) for tok in measure_command],
+            cwd=campaign, env=env, check=True, capture_output=True, timeout=1800,
         )
     except (subprocess.CalledProcessError, subprocess.TimeoutExpired, OSError) as exc:
         return [Check("oracle_runs", FAIL, f"oracle pipeline failed: {exc}")]
@@ -117,12 +126,18 @@ def _oracle_and_purity(campaign: pathlib.Path) -> list[Check]:
 
 def _oracle_determinism(campaign: pathlib.Path) -> Check:
     """Regenerate gold and require byte-identity with what is committed."""
+    import yaml
+
+    task = yaml.safe_load((campaign / "task.yaml").read_text())
+    gold_command = ((task.get("harness") or {}).get("gold_command")
+                    or [sys.executable, "oracle/generate_gold.py"])
     gold_path = campaign / "gold" / "gold.json"
     before = gold_path.read_bytes()
     try:
-        subprocess.run([sys.executable, "generate_gold.py"], cwd=campaign / "oracle",
+        subprocess.run([tok.format(campaign=str(campaign)) for tok in gold_command],
+                       cwd=campaign, env=_absolute_pythonpath(os.environ),
                        check=True, capture_output=True, timeout=3600)
-    except (subprocess.CalledProcessError, subprocess.TimeoutExpired) as exc:
+    except (subprocess.CalledProcessError, subprocess.TimeoutExpired, OSError) as exc:
         return Check("oracle_determinism", FAIL, f"regeneration failed: {exc}")
     after = gold_path.read_bytes()
     if before != after:

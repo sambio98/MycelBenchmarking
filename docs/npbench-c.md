@@ -15,11 +15,13 @@ scoring path.
 | Grader identity | `src/npbench_c/grading/version.py` | semver + content hash |
 | Readiness gate | `src/npbench_c/readiness/gate.py` | 16 mechanical checks, 5 pending-on-agent-runs |
 | Campaign: construct design | `campaigns/construct-ecoli-rebh-01/` | oracle 1.0, gate 17/0/5 |
-| Campaign: NRPS mass balance | `campaigns/massbalance-nrps-malleobactin-01/` | oracle 1.0, gate 17/0/5 |
+| Template: NRPS mass balance | `src/npbench_c/templates/mass_balance_nrps/` | shared oracle, 2 instantiations |
+| Campaign: malleobactin | `campaigns/massbalance-nrps-malleobactin-01/` | oracle 1.0, gate 17/0/5 |
+| Campaign: sevadicin | `campaigns/massbalance-nrps-sevadicin-01/` | oracle 1.0, gate 17/0/5 |
 | Internal sweep | `src/npbench_c/sweep/` | runner, stats, gates, stub fixtures |
 | Catalog | `docs/catalog.md` | 24 templates / 32 campaigns, grounded |
 | Provisioning | `docs/environment.md` | tools, DBs, sandbox contract |
-| Tests | `tests/unit/` | 98 passing |
+| Tests | `tests/unit/` | 103 passing |
 
 ```bash
 PYTHONPATH=src python3 -m pytest tests -q
@@ -308,6 +310,32 @@ Three design decisions worth carrying to the other mass-balance instantiations:
 Also: this campaign's stubs read **only the sandbox**, with no privileged oracle
 path, precisely because the construct-design stubs' oracle access hid an
 unsolvable campaign.
+
+## Template architecture
+
+A campaign of a factored template contains **no code**: only `inputs/`,
+`reference/`, `task.yaml`, `grading.json` and `gold/`. The oracle is shared, and
+an instantiation is a data change plus two commands:
+
+```bash
+python3 -m npbench_c.templates.mass_balance_nrps.build_reference campaigns/<id>  # RDKit, once
+python3 -m npbench_c.templates.mass_balance_nrps.build           campaigns/<id>  # stdlib, re-runnable
+```
+
+Reference generation is split from gold generation deliberately: the readiness
+gate re-runs gold to check determinism, and it must be able to do that without a
+chemistry toolkit and without silently re-deriving the pinned monomer table.
+`grading.json` is **generated from gold**, so the spec cannot drift from the data
+it grades.
+
+`task.yaml` declares the three harness commands (`gold_command`, `solve_command`,
+`measure_command`) and the stub fixtures, so neither the gate nor the sweep knows
+anything campaign-specific. The construct-design campaign keeps a local oracle
+and declares it the same way, so there is one code path rather than a fallback.
+
+The payoff is measurable: the sevadicin instantiation is 2 JSON files and a
+`task.yaml`. Copying six oracle files per campaign would have made drift between
+instantiations invisible, and the catalog expects eight doubled templates.
 
 ## Open items
 
