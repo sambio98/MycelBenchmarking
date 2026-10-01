@@ -1,0 +1,93 @@
+{
+  "claims": {
+    "r3": {
+      "binding_constraint": "gc_window",
+      "non_binding_constraints": [
+        "gc_global",
+        "internal_rbs"
+      ],
+      "unconstrained_violations": {
+        "direct_repeat": 11,
+        "forbidden_sites": 3,
+        "gc_global": 0,
+        "gc_window": 50,
+        "homopolymer": 1,
+        "internal_rbs": 0
+      }
+    },
+    "r4": {
+      "binding_constraint": "direct_repeat",
+      "flipped_constraints": [
+        "forbidden_sites",
+        "gc_window",
+        "homopolymer",
+        "internal_rbs"
+      ],
+      "non_binding_constraints": [
+        "forbidden_sites",
+        "gc_global",
+        "gc_window",
+        "homopolymer"
+      ],
+      "unconstrained_violations": {
+        "direct_repeat": 15,
+        "forbidden_sites": 0,
+        "gc_global": 0,
+        "gc_window": 0,
+        "homopolymer": 0,
+        "internal_rbs": 1
+      }
+    }
+  },
+  "ecoli": {
+    "all_constraints_satisfied": 1,
+    "cai": 0.955127,
+    "gc": 0.526679,
+    "protein_identity": 1,
+    "schema": {
+      "ends_stop": 1,
+      "in_frame": 1,
+      "length_matches_protein": 1,
+      "no_internal_stop": 1,
+      "starts_atg": 1,
+      "valid_alphabet": 1
+    },
+    "total_violations": 0,
+    "violations": {
+      "direct_repeat": 0,
+      "forbidden_sites": 0,
+      "gc_global": 0,
+      "gc_window": 0,
+      "homopolymer": 0,
+      "internal_rbs": 0
+    }
+  },
+  "present": {
+    "analysis": 1,
+    "orf_ecoli": 1,
+    "orf_streptomyces": 1
+  },
+  "streptomyces": {
+    "all_constraints_satisfied": 1,
+    "cai": 0.981777,
+    "gc": 0.674827,
+    "protein_identity": 1,
+    "schema": {
+      "ends_stop": 1,
+      "in_frame": 1,
+      "length_matches_protein": 1,
+      "no_internal_stop": 1,
+      "starts_atg": 1,
+      "valid_alphabet": 1
+    },
+    "total_violations": 0,
+    "violations": {
+      "direct_repeat": 0,
+      "forbidden_sites": 0,
+      "gc_global": 0,
+      "gc_window": 0,
+      "homopolymer": 0,
+      "internal_rbs": 0
+    }
+  }
+}

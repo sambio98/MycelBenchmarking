@@ -17,3 +17,7 @@ build/
 dist/
 .venv/
 venv/
+
+# NPBench-C derived artifacts
+__pycache__/
+*.pyc

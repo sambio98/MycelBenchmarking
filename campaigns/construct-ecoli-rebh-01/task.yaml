@@ -1,0 +1,109 @@
+campaign_id: construct-ecoli-rebh-01
+template_id: construct-design
+track: EX
+family: construct_and_sequence_design
+layer: L6_translation_and_design
+version: 1.0.0
+horizon_tier: T-short
+license_class: open
+grader_version: "2.0.0+6cf0aacc"
+grading_spec_version: "1.0.0"
+
+objective: >
+  Design a synthetic open reading frame for heterologous expression of the
+  flavin-dependent tryptophan 7-halogenase RebH (UniProt Q8KHZ8, sequence
+  version 1, 530 aa), then analyse which of the declared design constraints
+  actually binds for this protein, and how that changes when the expression
+  host changes.
+
+method_guidance: partial
+
+# The ORF contract, pinned so that no legitimate answer can be marked wrong on
+# a convention the task never stated (audit form item 4).
+output_contract:
+  orf_ecoli.fasta:
+    description: ORF for Escherichia coli BL21(DE3) in pET-28a(+), NdeI/XhoI
+    includes_start_codon: true
+    includes_stop_codon: true           # TAA, TAG or TGA as the final codon
+    includes_vector_tag: false          # the pET-28a His6 tag is NOT part of the ORF
+    alphabet: ACGT
+    strand: coding
+  orf_streptomyces.fasta:
+    description: ORF for Streptomyces coelicolor A3(2) in pSET152, NdeI/XhoI
+    includes_start_codon: true
+    includes_stop_codon: true
+    includes_vector_tag: false
+    alphabet: ACGT
+    strand: coding
+  analysis.json:
+    description: per-rung analytical claims
+    constraint_vocabulary:                 # closed; the only admissible names
+      - forbidden_sites
+      - gc_window
+      - gc_global
+      - homopolymer
+      - direct_repeat
+      - internal_rbs
+    unconstrained_violations: >
+      Violation counts measured on the unconstrained optimum -- the sequence in
+      which every residue takes its single most-adapted codon under the pinned
+      host table, ties broken by lexicographically smallest codon. Counting
+      rules: forbidden_sites = site occurrences; gc_window = 50-nt windows
+      (step 1) outside the host range; gc_global = 1 if whole-ORF GC is outside
+      the host range else 0; homopolymer = maximal runs longer than the limit;
+      direct_repeat = distinct 11-mers occurring more than once;
+      internal_rbs = occurrences of AGGAGG.
+    non_binding_constraints: >
+      Constraints whose relaxation does not increase achievable CAI (cost <= 0).
+    flipped_constraints: >
+      Symmetric difference of the two hosts' non_binding_constraints sets.
+
+constraints:
+  pinned_tables: oracle/tables.py       # hash-pinned; CAI weights and host ranges
+  max_homopolymer: 5
+  max_direct_repeat: 10
+  gc_window_size: 50
+  internal_rbs_motif: AGGAGG
+
+snapshots_required:
+  shipped: []
+  fetched: []
+  inputs_pinned:
+    - source: UniProtKB
+      accession: Q8KHZ8
+      sequence_version: 1
+      length_aa: 530
+      sha256_sequence: 2853460230442a06
+      license: CC BY 4.0
+
+budgets:
+  wall_clock_minutes: 25
+  cpu: 2
+  memory_gb: 4
+  network: off
+
+rungs:
+  - {rung_id: r1, ordinal: 1, name: execute,        gold_tier: G1, warm_start_inputs: []}
+  - {rung_id: r2, ordinal: 2, name: correct,        gold_tier: G1, warm_start_inputs: [gold/orf_ecoli.fasta]}
+  - {rung_id: r3, ordinal: 3, name: commit,         gold_tier: G1, warm_start_inputs: [gold/orf_ecoli.fasta]}
+  - {rung_id: r4, ordinal: 4, name: counterfactual, gold_tier: G1, warm_start_inputs: [gold/orf_ecoli.fasta, gold/gold.json#hosts.ecoli]}
+
+structural_elements: [verification, abstention_free, counterfactual]
+
+# Quantities deliberately NOT graded, with the measurement that excluded them.
+excluded_from_grading:
+  - field: binding_cost
+    reason: >
+      Cross-optimiser spread (0.0356 for gc_window) exceeds the between-constraint
+      signal for four of six constraints, so the magnitude is not gradable. The
+      argmax is stable across all four optimiser policies and is graded instead.
+      Measured by oracle/generate_gold.py; recorded in gold/gold.json.
+  - field: cai_full
+    reason: >
+      Spread 0.0528 across legitimate optimiser policies. Graded as a floor
+      (cai >= 0.902 for E. coli, >= 0.929 for Streptomyces) rather than against
+      the oracle's value, so a different valid optimiser is never penalised.
+
+notes_for_audit:
+  - The CAI relative-adaptiveness tables need a cited source release before this
+    packet ships. See the PROVENANCE GAP note in oracle/tables.py.
