@@ -1,0 +1,16 @@
+{
+  "constraint_order": [
+    "forbidden_sites",
+    "gc_window",
+    "gc_global",
+    "homopolymer",
+    "direct_repeat",
+    "internal_rbs"
+  ],
+  "description": "Host-independent sequence-composition limits and the counting rules the output contract refers to.",
+  "gc_window_size": 50,
+  "internal_rbs_motif": "AGGAGG",
+  "max_direct_repeat": 10,
+  "max_homopolymer": 5,
+  "unconstrained_optimum_rule": "Each residue takes its highest-weight codon under the host table; ties break to the lexicographically smallest codon."
+}

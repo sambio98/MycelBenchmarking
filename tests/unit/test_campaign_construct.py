@@ -79,17 +79,21 @@ def test_graded_quantities_are_stable_across_optimiser_policies():
 def test_unconstrained_violations_are_optimiser_independent():
     """R3's highest-information field is a pure function of protein and tables:
     the unconstrained optimum involves no search at all."""
-    import sys
-    sys.path.insert(0, str(CAMPAIGN / "oracle"))
-    import construct as C
-    from measure import read_fasta
+    from npbench_c.templates.construct_design.core import ConstructEngine
+    from npbench_c.templates.construct_design.params import read_protein
 
-    protein = read_fasta(CAMPAIGN / "inputs" / "rebh.faa") + "*"
+    engine = ConstructEngine.load(CAMPAIGN)
+    protein = read_protein(CAMPAIGN, "inputs/rebh.faa")
     gold = json.loads((CAMPAIGN / "gold" / "gold.json").read_text())
     for host, strategy, key in (
         ("ecoli_bl21", "pet28a_ndei_xhoi", "ecoli"),
         ("streptomyces_coelicolor", "pset152_ndei_xhoi", "streptomyces"),
     ):
-        opt = C.unconstrained_optimum(protein, host)
-        counts = C.violation_counts(opt, host, strategy)
+        opt = engine.unconstrained_optimum(protein, host)
+        counts = engine.violation_counts(opt, host, strategy)
         assert counts == gold["hosts"][key]["unconstrained_violations"]
+
+
+def test_campaign_carries_no_code_after_template_factoring():
+    assert not (CAMPAIGN / "oracle").exists()
+    assert not list(CAMPAIGN.rglob("*.py"))

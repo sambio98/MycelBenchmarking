@@ -14,14 +14,16 @@ scoring path.
 | Grader | `src/npbench_c/grading/grade.py` | pure declarative comparator |
 | Grader identity | `src/npbench_c/grading/version.py` | semver + content hash |
 | Readiness gate | `src/npbench_c/readiness/gate.py` | 16 mechanical checks, 5 pending-on-agent-runs |
+| Template: construct design | `src/npbench_c/templates/construct_design/` | shared engine, 2 ladders |
 | Campaign: construct design | `campaigns/construct-ecoli-rebh-01/` | oracle 1.0, gate 17/0/5 |
+| Campaign: constraint conflict | `campaigns/constraint-conflict-ecoli-rebh-01/` | oracle 1.0, gate 17/0/5 |
 | Template: NRPS mass balance | `src/npbench_c/templates/mass_balance_nrps/` | shared oracle, 2 instantiations |
 | Campaign: malleobactin | `campaigns/massbalance-nrps-malleobactin-01/` | oracle 1.0, gate 17/0/5 |
 | Campaign: sevadicin | `campaigns/massbalance-nrps-sevadicin-01/` | oracle 1.0, gate 17/0/5 |
 | Internal sweep | `src/npbench_c/sweep/` | runner, stats, gates, stub fixtures |
 | Catalog | `docs/catalog.md` | 24 templates / 32 campaigns, grounded |
 | Provisioning | `docs/environment.md` | tools, DBs, sandbox contract |
-| Tests | `tests/unit/` | 103 passing |
+| Tests | `tests/unit/` | 116 passing |
 
 ```bash
 PYTHONPATH=src python3 -m pytest tests -q
@@ -311,6 +313,43 @@ Also: this campaign's stubs read **only the sandbox**, with no privileged oracle
 path, precisely because the construct-design stubs' oracle access hid an
 unsolvable campaign.
 
+## Abstention gold that is provable
+
+The constraint-conflict campaign is the first where the correct answer is to
+**produce nothing** and say why. That makes its gold the most dangerous in the
+catalog: if the constraints are merely hard rather than impossible, an agent
+with a better optimiser finds a design and we mark it wrong.
+
+So infeasibility is established by arithmetic, never by search failure. For each
+residue independently, the highest-GC admissible codon is determined; because
+codon choices are independent, the resulting whole-ORF bound is **attained**, not
+merely valid — a test constructs the attaining sequence and confirms it encodes
+the protein. A requirement above that bound is unreachable for every sequence,
+whatever other constraints apply, because adding constraints only shrinks the
+feasible set.
+
+```
+unrestricted achievable GC max        0.677338
+after forbidding the 8 GC3 codons     0.584432
+required minimum                      0.620000   -> impossible
+```
+
+Each constraint alone is satisfiable, so the conflict is genuinely pairwise, and
+the build **refuses to emit gold** otherwise: it raises if the requirement is
+still reachable, and separately if it exceeds even the unrestricted maximum.
+Both refusals are tested.
+
+Fabricating a design is a graded component, not advice: `no_design_claimed`
+must be 0, which is the Output-Fabrication failure mode made measurable.
+
+**The control this needs.** Abstention scored on its own rewards reflexive
+abstention — a system that always answers "infeasible" scores full marks here.
+`task.yaml` carries a blocking `required_sibling`: a feasible instantiation of
+the same template whose correct verdict is `feasible`, with precision and recall
+reported separately across the pair. Note the asymmetry that makes the sibling
+harder: infeasibility is provable by arithmetic, but feasibility of the full set
+is only provable *constructively*, by the oracle actually finding a design.
+
 ## Template architecture
 
 A campaign of a factored template contains **no code**: only `inputs/`,
@@ -332,6 +371,12 @@ it grades.
 `measure_command`) and the stub fixtures, so neither the gate nor the sweep knows
 anything campaign-specific. The construct-design campaign keeps a local oracle
 and declares it the same way, so there is one code path rather than a fallback.
+
+Both template families now work this way. `construct_design` holds one engine
+and two ladders — `design/` (T-L6-1) and `conflict/` (T-L6-2) — which share the
+constraint arithmetic and must not diverge. Migrating the construct campaign
+onto it reproduced its gold **byte-identically**, which is how the port was
+verified rather than assumed.
 
 The payoff is measurable: the sevadicin instantiation is 2 JSON files and a
 `task.yaml`. Copying six oracle files per campaign would have made drift between

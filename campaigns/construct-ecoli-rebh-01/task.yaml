@@ -61,6 +61,12 @@ output_contract:
 # Everything an agent needs to answer every rung is in reference/, which is
 # shipped into the sandbox. The oracle loads the same files, so the tables used
 # to compute gold and the tables given to the agent cannot drift.
+template_params:
+  protein_input: inputs/rebh.faa
+  hosts:
+    ecoli: {host: ecoli_bl21, strategy: pet28a_ndei_xhoi}
+    streptomyces: {host: streptomyces_coelicolor, strategy: pset152_ndei_xhoi}
+
 constraints:
   reference_dir: reference
   pinned_tables:
@@ -94,15 +100,15 @@ rungs:
   - {rung_id: r3, ordinal: 3, name: commit,         gold_tier: G1, warm_start_bundle: gold/warm/r3}
   - {rung_id: r4, ordinal: 4, name: counterfactual, gold_tier: G1, warm_start_bundle: gold/warm/r4}
 
+# A campaign of this template contains no code: the engine and both ladders are
+# shared at npbench_c.templates.construct_design, so an instantiation is a data
+# change plus one build command.
 harness:
-  gold_command: ["python3", "oracle/generate_gold.py"]
-  solve_command: ["python3", "oracle/solve.py", "{submission}"]
-  measure_command: ["python3", "oracle/measure.py", "{submission}", "inputs/rebh.faa", "{measurement}"]
+  gold_command: ["python3", "-m", "npbench_c.templates.construct_design.design.build", "{campaign}"]
+  solve_command: ["python3", "-m", "npbench_c.templates.construct_design.design.solve", "{campaign}", "{submission}"]
+  measure_command: ["python3", "-m", "npbench_c.templates.construct_design.design.measure", "{campaign}", "{submission}", "{measurement}"]
   stub_module: npbench_c.sweep.stubs.stub_system
-  # This campaign's stubs need the oracle path: they reuse the optimiser rather
-  # than reimplementing it. That privilege is why they could not detect the
-  # sandbox-solvability defect, and why newer stubs read only the sandbox.
-  stub_args: ["--oracle", "{oracle}"]
+  stub_args: []
   stub_levels:
     - {name: stub-naive,       level: naive}
     - {name: stub-constrained, level: constrained}

@@ -1,0 +1,14 @@
+{
+  "conflicting_constraints": [
+    "forbidden_codons",
+    "gc_global_min"
+  ],
+  "restricted_gc_max": 0.584432,
+  "unrestricted_gc_max": 0.677338,
+  "verdict": "infeasible_gc_unreachable",
+  "witness": {
+    "margin": 0.035568,
+    "max_achievable_gc_under_forbidden_codons": 0.584432,
+    "required_gc_min": 0.62
+  }
+}

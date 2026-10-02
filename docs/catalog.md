@@ -299,20 +299,47 @@ R3 claim: which residues line the pocket and the pocket volume (interval-scored)
 | # | Template | Data | Build |
 |---|---|---|---|
 | T-L6-1 ×2 | Construct & sequence design | verified | **BUILT** |
-| T-L6-2 | Multi-constraint conflict resolution | verified | now |
+| T-L6-2 | Multi-constraint conflict resolution | verified | **BUILT** |
 | T-L6-3 | Prioritisation under budget | likely | image |
 
 **T-L6-1** **Built**: `campaigns/construct-ecoli-rebh-01`. Oracle 1.0 on all
 four rungs, measured discrimination 1/2/3/3/4, binding constraint flips between
-hosts. Second instantiation: PrnA (UniProt P95480, 538 aa, reviewed) — the
-instantiation axis is the enzyme, with the host swap staying as R4.
+hosts. Now factored onto the shared `construct_design` engine and carrying no
+code, so the second instantiation — PrnA (UniProt P95480, 538 aa, reviewed) — is
+a data change plus one build command. Gold was verified byte-identical across
+the factoring.
 
-**T-L6-2** A variant where the declared constraint set is **unsatisfiable** and
-the correct answer is to identify the conflicting pair and abstain on the
-design. Abstention gold is **constructed, not curated**: the conflict is created
-by tightening two constraints past feasibility, so `insufficient` is true by
-construction and regenerable. R4: one constraint is relaxed — predict whether
-the design becomes feasible and which constraint now binds.
+**T-L6-2** **Built**: `campaigns/constraint-conflict-ecoli-rebh-01`. The
+declared constraint set is unsatisfiable and the correct answer is to abstain on
+the design, name the conflicting pair and prove it.
+
+Abstention gold is **constructed, not curated** — and crucially, *provable*. A
+greedy optimiser failing to find a design proves nothing, so the conflict is
+built where exact arithmetic decides it: for each residue independently the
+highest-GC admissible codon is determined, and because codon choices are
+independent the resulting whole-ORF bound is **attained** (a test constructs the
+attaining sequence). A GC requirement above that bound cannot be met by any
+sequence, whatever else applies, since adding constraints only shrinks the
+feasible set.
+
+For RebH: forbidding the eight GC3 codons drops the achievable maximum from
+0.677338 to 0.584432, and requiring 0.62 is then impossible — while each
+constraint alone is satisfiable. Margins of 0.036 and 0.057, so an auditor
+recomputing it does not land on a rounding boundary. The build **refuses to emit
+gold** if the requirement is still reachable, or if it exceeds even the
+unrestricted maximum (which would make the conflict non-pairwise).
+
+R4 asks, for each single relaxation, the new achievable maximum and whether the
+requirement becomes reachable. Only the two GC-relevant constraints move it; the
+five composition constraints restrict which sequences are admissible without
+changing what GC any sequence can reach, and R4 tests exactly that distinction.
+
+**Blocking requirement, recorded in `task.yaml`:** this campaign must not ship
+without a feasible sibling instantiation whose correct verdict is `feasible`.
+Abstention measured without a sufficient-evidence control rewards reflexive
+abstention — a system that always answers "infeasible" scores full marks here.
+Report abstention precision and recall separately across the pair, never F1
+alone.
 
 **T-L6-3** Candidate prioritisation under a hard container query cap.
 R1 ranked table · R2 ranking matches gold by Spearman within tolerance ·
