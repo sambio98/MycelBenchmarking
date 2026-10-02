@@ -12,7 +12,7 @@ import argparse
 import json
 import pathlib
 
-LEVELS = ("naive", "bounds", "analyst", "complete", "optimist")
+LEVELS = ("naive", "bounds", "analyst", "complete", "optimist", "pessimist")
 
 AA_CODONS = {
     "A": "GCT GCC GCA GCG", "R": "CGT CGC CGA CGG AGA AGG", "N": "AAT AAC",
@@ -65,6 +65,15 @@ def main() -> int:
         "design_orf": None,
         "relaxations": {},
     }
+
+    if args.level == "pessimist":
+        # The mirror of the optimist, and the reason the control pair exists:
+        # declares a vendor-constrained set unsatisfiable without computing any
+        # bound. Correct on the infeasible campaign by luck, wrong on this one.
+        report["verdict"] = "infeasible_gc_unreachable"
+        report["conflicting_constraints"] = sorted(["forbidden_codons", "gc_global_min"])
+        (sub / "feasibility_report.json").write_text(json.dumps(report, indent=2, sort_keys=True))
+        return 0
 
     if args.level == "optimist":
         # The no-computation ablation: restates the constraints, assumes a

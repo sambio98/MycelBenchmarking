@@ -1,0 +1,16 @@
+{
+  "cloning_strategy": "pet28a_ndei_xhoi",
+  "forbidden_codons": [
+    "CCC",
+    "CCG",
+    "CGC",
+    "CGG",
+    "GCC",
+    "GCG",
+    "GGC",
+    "GGG"
+  ],
+  "gc_global_min": 0.55,
+  "host": "ecoli_bl21",
+  "orf_length_nt": 1593
+}

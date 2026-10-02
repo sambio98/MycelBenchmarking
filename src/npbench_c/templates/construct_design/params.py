@@ -58,6 +58,7 @@ class ConflictSpec:
     host: str
     strategy: str
     protein_input: str
+    expect: str          # "infeasible" | "feasible", verified against the arithmetic
 
     @classmethod
     def load(cls, campaign: pathlib.Path) -> "ConflictSpec":
@@ -69,6 +70,7 @@ class ConflictSpec:
             host=params["host"],
             strategy=params["strategy"],
             protein_input=params["protein_input"],
+            expect=conflict["expect"],
         )
 
     def write_reference(self, campaign: pathlib.Path) -> None:

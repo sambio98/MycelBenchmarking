@@ -197,3 +197,141 @@ def test_campaign_is_solvable_from_its_sandbox(tmp_path, engine):
     assert round(total / (3 * len(protein)), 6) == _gold()["restricted_gc_max"]
     assert spec["gc_global_min"] == _gold()["gc_global_min"]
     assert not (s / "oracle").exists()
+
+
+# =============================================================== control pair
+
+FEASIBLE = (pathlib.Path(__file__).resolve().parents[2]
+            / "campaigns" / "constraint-feasible-ecoli-rebh-01")
+pair_ready = pytest.mark.skipif(not (FEASIBLE / "gold" / "gold.json").is_file(),
+                                reason="feasible sibling not built")
+
+
+def _feasible_gold():
+    return json.loads((FEASIBLE / "gold" / "gold.json").read_text())
+
+
+@pair_ready
+def test_the_pair_differs_by_exactly_one_number():
+    """The control is only a control if nothing else varies."""
+    import yaml
+    a = yaml.safe_load((CAMPAIGN / "task.yaml").read_text())["template_params"]
+    b = yaml.safe_load((FEASIBLE / "task.yaml").read_text())["template_params"]
+    assert a["protein_input"] == b["protein_input"]
+    assert a["host"] == b["host"] and a["strategy"] == b["strategy"]
+    assert a["conflict"]["forbidden_codons"] == b["conflict"]["forbidden_codons"]
+    assert a["conflict"]["gc_global_min"] != b["conflict"]["gc_global_min"]
+    assert a["conflict"]["expect"] == "infeasible"
+    assert b["conflict"]["expect"] == "feasible"
+
+
+@pair_ready
+def test_the_pair_reaches_opposite_verdicts():
+    assert _gold()["verdict"] == "infeasible_gc_unreachable"
+    assert _feasible_gold()["verdict"] == "feasible"
+    # Same achievable bounds in both: only the requirement moved.
+    for key in ("unrestricted_gc_max", "restricted_gc_max"):
+        assert _gold()[key] == _feasible_gold()[key]
+
+
+@pair_ready
+def test_feasibility_rests_on_a_verified_constructive_witness():
+    """Feasibility is not decidable by the achievable-GC arithmetic, so the
+    verdict must rest on an exhibited design that was actually checked."""
+    witness = _feasible_gold()["constructive_witness"]
+    assert witness is not None
+    assert sum(witness["violations"].values()) == 0
+    assert witness["encodes_declared_protein"] is True
+    assert witness["gc_fraction"] >= _feasible_gold()["gc_global_min"]
+    # The infeasible half has no witness, because none can exist.
+    assert _gold()["constructive_witness"] is None
+
+
+def _grade_with_verdict(campaign: pathlib.Path, verdict: str,
+                        conflicting: list[str]) -> dict:
+    """Grade a submission that computes every bound correctly but commits to a
+    given verdict, which isolates R3 from R1/R2."""
+    gold = json.loads((campaign / "gold" / "gold.json").read_text())
+    spec = json.loads((campaign / "grading.json").read_text())
+    measurement = json.loads(
+        (campaign / "oracle_submission" / "measurement.json").read_text())
+    measurement = json.loads(json.dumps(measurement))  # copy
+    measurement["verdict"] = verdict
+    measurement["conflicting_constraints"] = sorted(conflicting)
+    return grade(measurement, gold, spec)
+
+
+@pair_ready
+def test_reflexive_abstention_fails_the_feasible_half():
+    """A system that always answers "infeasible" scores full marks on the
+    conflict campaign alone. The pair is what stops that.
+
+    Both ablation stubs happen to die at R2 in the sweep, so this property is
+    checked at the grader rather than inferred from stub depths.
+    """
+    r = _grade_with_verdict(FEASIBLE, "infeasible_gc_unreachable",
+                            ["forbidden_codons", "gc_global_min"])
+    assert r["rungs"][2]["passed"] is False
+    assert r["depth"] == 2
+
+
+@pair_ready
+def test_reflexive_optimism_fails_the_infeasible_half():
+    r = _grade_with_verdict(CAMPAIGN, "feasible", [])
+    assert r["rungs"][2]["passed"] is False
+    assert r["depth"] == 2
+
+
+@pair_ready
+def test_each_half_passes_its_own_verdict():
+    for campaign, verdict, pair in (
+        (CAMPAIGN, "infeasible_gc_unreachable", ["forbidden_codons", "gc_global_min"]),
+        (FEASIBLE, "feasible", []),
+    ):
+        r = _grade_with_verdict(campaign, verdict, pair)
+        assert r["score"] == 1.0, campaign.name
+
+
+@pair_ready
+def test_design_is_graded_only_where_none_can_exist():
+    """no_design_claimed belongs on the infeasible half and must be absent, not
+    inverted, on the feasible half, where a design is admissible."""
+    def has_component(campaign):
+        spec = json.loads((campaign / "grading.json").read_text())
+        r3 = next(r for r in spec["rungs"] if r["rung_id"] == "r3")
+        return any(c["name"] == "no_design_claimed" for c in r3["components"])
+
+    assert has_component(CAMPAIGN) is True
+    assert has_component(FEASIBLE) is False
+
+
+@pair_ready
+def test_build_refuses_to_contradict_its_declared_expectation(tmp_path):
+    """A campaign must not silently become the opposite of what it was authored
+    to be."""
+    from npbench_c.templates.construct_design.conflict import build as conflict_build
+    from npbench_c.templates.construct_design.core import OracleFailure
+
+    campaign = tmp_path / "declared"
+    (campaign / "inputs").mkdir(parents=True)
+    (campaign / "reference").mkdir()
+    for name in ("codon_tables.json", "cloning_strategies.json",
+                 "composition_limits.json", "conflict_constraints.json"):
+        (campaign / "reference" / name).write_text(
+            (CAMPAIGN / "reference" / name).read_text())
+    (campaign / "inputs" / "rebh.faa").write_text(
+        (CAMPAIGN / "inputs" / "rebh.faa").read_text())
+    task = (CAMPAIGN / "task.yaml").read_text()
+
+    # Declared infeasible, but the requirement is reachable.
+    (campaign / "task.yaml").write_text(
+        task.replace("gc_global_min: 0.62", "gc_global_min: 0.50"))
+    with pytest.raises(OracleFailure, match="declared infeasible"):
+        conflict_build.analyse(campaign)
+
+    # Declared feasible, but the requirement is out of reach.
+    (campaign / "task.yaml").write_text(
+        task.replace("gc_global_min: 0.62", "gc_global_min: 0.60")
+            .replace("expect: infeasible", "expect: feasible"))
+    with pytest.raises(OracleFailure, match="declared feasible"):
+        conflict_build.analyse(campaign)

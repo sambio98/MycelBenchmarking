@@ -17,13 +17,14 @@ scoring path.
 | Template: construct design | `src/npbench_c/templates/construct_design/` | shared engine, 2 ladders |
 | Campaign: construct design | `campaigns/construct-ecoli-rebh-01/` | oracle 1.0, gate 17/0/5 |
 | Campaign: constraint conflict | `campaigns/constraint-conflict-ecoli-rebh-01/` | oracle 1.0, gate 17/0/5 |
+| Campaign: feasible control | `campaigns/constraint-feasible-ecoli-rebh-01/` | oracle 1.0, gate 17/0/5 |
 | Template: NRPS mass balance | `src/npbench_c/templates/mass_balance_nrps/` | shared oracle, 2 instantiations |
 | Campaign: malleobactin | `campaigns/massbalance-nrps-malleobactin-01/` | oracle 1.0, gate 17/0/5 |
 | Campaign: sevadicin | `campaigns/massbalance-nrps-sevadicin-01/` | oracle 1.0, gate 17/0/5 |
 | Internal sweep | `src/npbench_c/sweep/` | runner, stats, gates, stub fixtures |
 | Catalog | `docs/catalog.md` | 24 templates / 32 campaigns, grounded |
 | Provisioning | `docs/environment.md` | tools, DBs, sandbox contract |
-| Tests | `tests/unit/` | 116 passing |
+| Tests | `tests/unit/` | 124 passing |
 
 ```bash
 PYTHONPATH=src python3 -m pytest tests -q
@@ -342,13 +343,38 @@ Both refusals are tested.
 Fabricating a design is a graded component, not advice: `no_design_claimed`
 must be 0, which is the Output-Fabrication failure mode made measurable.
 
-**The control this needs.** Abstention scored on its own rewards reflexive
-abstention — a system that always answers "infeasible" scores full marks here.
-`task.yaml` carries a blocking `required_sibling`: a feasible instantiation of
-the same template whose correct verdict is `feasible`, with precision and recall
-reported separately across the pair. Note the asymmetry that makes the sibling
-harder: infeasibility is provable by arithmetic, but feasibility of the full set
-is only provable *constructively*, by the oracle actually finding a design.
+**The control, now built.** Abstention scored on its own rewards reflexive
+abstention — a system that always answers "infeasible" would score full marks on
+the conflict campaign. `constraint-feasible-ecoli-rebh-01` differs from it by
+**one number** (GC floor 0.55 rather than 0.62); everything else is identical.
+Precision and recall are reported separately across the pair, never F1 alone.
+
+Both halves of the property are tested **at the grader**, not inferred from the
+sweep: a submission with every bound correct but a reflexive verdict fails R3 at
+depth 2 on each campaign. That check matters because both ablation stubs happen
+to die at R2, so stub depths alone would have told us nothing about R3.
+
+**The asymmetry.** Infeasibility is decidable by arithmetic. Feasibility of the
+full set is only provable **constructively** — the achievable-GC bound settles
+the GC axis, but the composition constraints could still exclude every
+candidate. So the feasible half rests on an exhibited design, verified to have
+zero violations and to encode the declared protein (GC 0.569994), recorded in
+gold for the audit packet and **not graded**: many designs qualify, so grading
+one would grade our optimiser rather than the agent's reasoning.
+
+Building that witness needed a new engine mode. The greedy repair used by the
+design ladder cannot climb a *global* GC floor — a single synonymous
+substitution rarely crosses the threshold, so the violation count never strictly
+improves and the search stalls. `design_under_conflict_set` instead starts from
+the GC-maximising admissible assignment and repairs composition constraints
+while refusing any substitution that would drop GC back below the floor, with
+the GC delta computed in O(1) and a bounded rotating candidate window. First
+attempt was quadratic in ORF length and too slow for the gate's determinism
+re-run; second was too narrow and stalled on 50-nt GC windows.
+
+**The build refuses to contradict its declared expectation**, in either
+direction, so a campaign cannot silently become the opposite of what it was
+authored to be. Tested both ways.
 
 ## Template architecture
 

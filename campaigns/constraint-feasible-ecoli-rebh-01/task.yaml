@@ -1,4 +1,4 @@
-campaign_id: constraint-conflict-ecoli-rebh-01
+campaign_id: constraint-feasible-ecoli-rebh-01
 template_id: construct-conflict
 track: EX
 family: construct_and_sequence_design
@@ -12,38 +12,46 @@ min_tool_surface: S0
 
 objective: >
   A synthesis vendor has disallowed a set of codons for this order, and the
-  project requires a construct whose whole-ORF GC content is at least 0.62.
+  project requires a construct whose whole-ORF GC content is at least 0.55.
   Assess whether the combined constraint set can be satisfied by any open
   reading frame encoding the flavin-dependent tryptophan 7-halogenase RebH
-  (UniProt Q8KHZ8, sequence version 1, 530 aa). If it cannot, identify which
-  two constraints conflict and prove it, and say which single relaxations would
-  resolve the conflict.
+  (UniProt Q8KHZ8, sequence version 1, 530 aa). If constraints conflict,
+  identify which and prove it; report which single relaxations change the
+  achievable GC range.
 
 method_guidance: partial
 
-abstention_note: >
-  The correct answer to this campaign is that no design exists. Do not supply
-  one: leave design_orf null. The constraint set is unsatisfiable by exact
-  arithmetic, so a supplied sequence is necessarily a fabricated feasibility
-  claim, and that is graded.
+control_note: >
+  This campaign is the sufficient-evidence control for
+  constraint-conflict-ecoli-rebh-01. It differs from it by ONE number: the GC
+  floor is 0.55 rather than 0.62. Same protein, same forbidden-codon set, same
+  host, same composition constraints. A system that reflexively answers
+  "infeasible" fails here; a system that reflexively answers "feasible" fails
+  there. Neither campaign's abstention behaviour means anything without the
+  other, which is why the pair ships together and why precision and recall are
+  reported separately across it rather than F1 alone.
+
+  Supplying a design is admissible here and is NOT graded: many sequences
+  satisfy the set, so grading one would grade our optimiser rather than the
+  agent's reasoning. The no_design_claimed component is therefore absent from
+  this variant rather than inverted.
 
 gold_construction: >
-  Infeasibility here is CONSTRUCTED, never curated. The campaign tightens two
-  constraints past the point where any sequence can satisfy both, so
-  "infeasible" is true by arithmetic and regenerable by re-running the build; no
-  expert judged it. Specifically: for each residue independently the highest-GC
-  admissible codon is determined, and because codon choices are independent the
-  resulting whole-ORF bound is attained and therefore exact. A GC requirement
-  above that bound cannot be met by ANY sequence, whatever other constraints
-  apply, since adding constraints only shrinks the feasible set. A greedy
-  optimiser failing to find a design would prove nothing; this does.
+  Feasibility is proved CONSTRUCTIVELY, by exhibiting a design, because the
+  achievable-GC arithmetic settles only whether the GC floor is reachable and
+  not whether the composition constraints leave any candidate. The build finds a
+  sequence satisfying every constraint, verifies it encodes the declared protein
+  and has zero violations, and refuses to emit gold otherwise. That asymmetry is
+  deliberate and worth stating: infeasibility is decidable by arithmetic,
+  feasibility only by construction, and a failure to find a design would prove
+  nothing either way.
 
-  Verified at build time, and the build refuses to produce gold otherwise:
-    forbidden_codons alone  satisfiable (every residue retains a codon)
-    gc_global_min alone     satisfiable (0.62 <= 0.677338 unrestricted maximum)
-    the two together        impossible  (0.62 >  0.584432 restricted maximum)
-  Margins of 0.0356 and 0.0573 rather than a knife-edge, so the proof survives
-  an auditor recomputing it.
+  The build also checks the declared expectation against the arithmetic, so a
+  campaign cannot silently become the opposite of what it was authored to be:
+    expect: feasible    requires gc_global_min <= the restricted maximum
+    expect: infeasible  requires gc_global_min >  the restricted maximum
+  Here 0.55 <= 0.584432, and the witness design reaches GC 0.569994 with zero
+  violations.
 
 template_params:
   protein_input: inputs/rebh.faa
@@ -54,8 +62,8 @@ template_params:
     # residue at least one admissible codon, so this constraint is satisfiable
     # on its own and the conflict is genuinely pairwise.
     forbidden_codons: [CCC, CCG, CGC, CGG, GCC, GCG, GGC, GGG]
-    gc_global_min: 0.62
-    expect: infeasible
+    gc_global_min: 0.55
+    expect: feasible
 
 output_contract:
   feasibility_report.json:
@@ -80,8 +88,8 @@ output_contract:
       The two numbers that prove the verdict: required_gc_min and
       max_achievable_gc_under_forbidden_codons.
     design_orf: >
-      null. No sequence satisfies this set; supplying one is a fabricated
-      feasibility claim and is graded as such.
+      Optional and ungraded. A satisfying sequence exists; supplying one is
+      admissible but many designs qualify, so it is not compared.
     relaxations: >
       Keyed by constraint name. For each, the max_achievable_gc once that single
       constraint is relaxed and whether the GC requirement becomes reachable.
@@ -119,7 +127,7 @@ rungs:
   - {rung_id: r3, ordinal: 3, name: commit,         gold_tier: G1, warm_start_bundle: gold/warm/r3}
   - {rung_id: r4, ordinal: 4, name: counterfactual, gold_tier: G1, warm_start_bundle: gold/warm/r4}
 
-structural_elements: [abstention, verification, counterfactual, planted]
+structural_elements: [verification, counterfactual, control]
 
 harness:
   gold_command: ["python3", "-m", "npbench_c.templates.construct_design.conflict.build", "{campaign}"]
@@ -132,10 +140,10 @@ harness:
     - {name: stub-bounds,     level: bounds}
     - {name: stub-analyst,    level: analyst, reference: true}
     - {name: stub-complete,   level: complete}
-    - {name: stub-optimist,   level: optimist, mode: no_tool}
+    - {name: stub-pessimist,  level: pessimist, mode: no_tool}
 
 grading:
-  chance_levels: {r1: 1.0, r2: 0.01, r3: 0.01, r4: 0.0005}
+  chance_levels: {r1: 1.0, r2: 0.01, r3: 0.02, r4: 0.002}
   chance_level_notes:
     r1: >
       R1 asks only that the constraint set be restated and the codon counts
@@ -143,27 +151,22 @@ grading:
       no-tool ablation is not meaningful for an S0 campaign, so the ablation
       withholds computation instead.
     r3: >
-      Higher than it looks at first: a system that notices "forbidden codons"
-      and "GC minimum" are the only two GC-relevant constraints can name the
-      pair without computing either bound, and "infeasible_gc_unreachable" is
-      the most guessable verdict given the framing. The two witness numbers are
-      what make R3 real, and they are not guessable. The feasible sibling
-      instantiation (see required_sibling) is what stops reflexive abstention
-      from scoring.
+      An optimistic system guesses "feasible" with an empty conflicting set and
+      gets both of those components for free, which is exactly what this control
+      is for. The two witness numbers are what make R3 real here.
+    r4: >
+      Every relaxation leaves the requirement reachable, since it is already
+      reachable, so the seven booleans are guessable as a block. The seven
+      achievable-GC values are not, and they carry R4 on this variant.
 
-control_pair_with: constraint-feasible-ecoli-rebh-01
-
-required_sibling: >
-  SATISFIED by constraint-feasible-ecoli-rebh-01, which differs by one number
-  (gc_global_min 0.55 rather than 0.62) and whose correct verdict is feasible.
-  The requirement was: a feasible instantiation of the same
-  template -- same protein, same forbidden-codon set, a gc_global_min below the
-  restricted maximum -- whose correct verdict is "feasible". Abstention measured
-  without a sufficient-evidence control rewards reflexive abstention: a system
-  that always answers "infeasible" would score full marks here. Report
-  abstention precision and recall separately across the pair, never F1 alone.
+control_pair_with: constraint-conflict-ecoli-rebh-01
 
 excluded_from_grading:
+  - field: the supplied design, if any
+    reason: >
+      Many sequences satisfy this set, so comparing one would grade our
+      optimiser rather than the agent's reasoning. The build keeps a constructive
+      witness in gold for the audit packet and does not grade it.
   - field: whether a design exists after a constraint is relaxed
     reason: >
       Relaxing a constraint makes the GC bound reachable, which is exact
@@ -177,12 +180,11 @@ excluded_from_grading:
 
 notes_for_audit:
   - >
-    The proof is four numbers an auditor can recompute by hand from
-    reference/codon_tables.json - unrestricted GC max 0.677338, restricted GC
-    max 0.584432, required minimum 0.62, and the per-residue admissible codon
-    counts.
+    This is the feasible half of a control pair. Check it against
+    constraint-conflict-ecoli-rebh-01 - the two differ only in gc_global_min
+    (0.55 here, 0.62 there) - and confirm that the verdicts differ accordingly.
   - >
-    Only forbidden_codons and gc_global_min can move the achievable GC bound;
-    the five composition constraints restrict which sequences are admissible
-    without changing what GC any sequence can reach. R4 tests exactly that
-    distinction.
+    Feasibility rests on a constructive witness, recorded in
+    gold/gold.json under constructive_witness with its GC fraction and violation
+    counts. It is not graded; it is there so an auditor can confirm a satisfying
+    design really exists rather than taking the verdict on trust.

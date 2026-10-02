@@ -299,7 +299,7 @@ R3 claim: which residues line the pocket and the pocket volume (interval-scored)
 | # | Template | Data | Build |
 |---|---|---|---|
 | T-L6-1 ×2 | Construct & sequence design | verified | **BUILT** |
-| T-L6-2 | Multi-constraint conflict resolution | verified | **BUILT** |
+| T-L6-2 ×2 | Multi-constraint conflict + feasible control | verified | **BUILT** |
 | T-L6-3 | Prioritisation under budget | likely | image |
 
 **T-L6-1** **Built**: `campaigns/construct-ecoli-rebh-01`. Oracle 1.0 on all
@@ -334,12 +334,29 @@ requirement becomes reachable. Only the two GC-relevant constraints move it; the
 five composition constraints restrict which sequences are admissible without
 changing what GC any sequence can reach, and R4 tests exactly that distinction.
 
-**Blocking requirement, recorded in `task.yaml`:** this campaign must not ship
-without a feasible sibling instantiation whose correct verdict is `feasible`.
-Abstention measured without a sufficient-evidence control rewards reflexive
-abstention — a system that always answers "infeasible" scores full marks here.
-Report abstention precision and recall separately across the pair, never F1
-alone.
+**The control pair, now built.** `campaigns/constraint-feasible-ecoli-rebh-01`
+is the sufficient-evidence control, and it differs from the conflict campaign by
+**one number**: the GC floor is 0.55 rather than 0.62. Same protein, same
+forbidden-codon set, same host, same composition constraints. Reflexive
+"infeasible" fails there; reflexive "feasible" fails here. Both properties are
+tested at the grader rather than inferred, because both ablation stubs happen to
+die at R2 before R3 matters.
+
+Abstention precision and recall are reported separately across the pair, never
+F1 alone.
+
+**The asymmetry to keep in mind when reusing this template.** Infeasibility is
+decidable by arithmetic; feasibility of the *full* set is only provable
+**constructively**, by exhibiting a design, since the achievable-GC bound settles
+the GC axis but not whether the composition constraints leave any candidate. The
+feasible half therefore rests on a verified witness (GC 0.569994, zero
+violations, protein preserved) recorded in gold for the audit packet and
+deliberately **not graded** — many designs qualify, so grading one would grade
+our optimiser rather than the agent's reasoning.
+
+The build checks the **declared expectation** against the arithmetic and refuses
+to emit gold when they disagree, in either direction, so a campaign cannot
+silently become the opposite of what it was authored to be.
 
 **T-L6-3** Candidate prioritisation under a hard container query cap.
 R1 ranked table · R2 ranking matches gold by Spearman within tolerance ·

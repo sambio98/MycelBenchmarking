@@ -28,6 +28,11 @@ CONSTANTS = pathlib.Path(__file__).resolve().parent / "constants"
 MAX_REPAIR_ITERATIONS = 20000
 OPTIMIZER_POLICIES = ("first_improve", "best_improve", "reverse_order", "lex_tiebreak")
 
+# Violating codon positions examined per repair iteration in the constructive
+# search. Bounds the per-iteration cost while leaving every position reachable,
+# because the window rotates with the iteration counter.
+CANDIDATE_POSITION_CAP = 48
+
 # The genetic code. Not a tunable table: it belongs in code, unlike codon usage
 # weights, which are campaign data.
 AA_CODONS: dict[str, tuple[str, ...]] = {
@@ -390,3 +395,121 @@ class ConstructEngine:
             "gc_min": round(lo / n, 6),
             "gc_max": round(hi / n, 6),
         }
+
+    # ------------------------------------- designing under a conflict set
+
+    COMPOSITION_CONSTRAINTS = ("forbidden_sites", "gc_window", "homopolymer",
+                               "direct_repeat", "internal_rbs")
+
+    def conflict_violations(self, nt: str, host: str, strategy: str,
+                            forbidden_codons: Iterable[str],
+                            gc_global_min: float) -> dict[str, int]:
+        """Violation counts under a conflict set.
+
+        The host's gc_global window is replaced by the explicit gc_global_min
+        requirement, and two constraint types the design ladder does not use are
+        added: forbidden_codons and gc_global_min.
+        """
+        base = self.violation_counts(nt, host, strategy)
+        forbidden = set(forbidden_codons)
+        codons = [nt[i:i + 3] for i in range(0, len(nt), 3)]
+        out = {c: base[c] for c in self.COMPOSITION_CONSTRAINTS}
+        out["forbidden_codons"] = sum(1 for c in codons if c in forbidden)
+        out["gc_global_min"] = int(self.gc_fraction(nt) < gc_global_min)
+        return out
+
+    def design_under_conflict_set(self, protein: str, host: str, strategy: str,
+                                  forbidden_codons: Iterable[str],
+                                  gc_global_min: float) -> str:
+        """Construct a sequence satisfying a conflict set, or raise.
+
+        Feasibility of a full constraint set is NOT decidable by the achievable-
+        GC arithmetic: that arithmetic settles whether the GC floor is reachable,
+        but the composition constraints could still exclude every candidate. So
+        feasibility is established CONSTRUCTIVELY -- by exhibiting a sequence --
+        which is a proof, where a failure to find one is not.
+
+        The greedy repair used by ``optimize`` cannot climb a global GC floor: a
+        single synonymous substitution rarely crosses the threshold, so the
+        violation count never strictly improves and the search stalls. This
+        starts from the GC-maximising admissible assignment, which satisfies the
+        floor whenever it is reachable at all, and then repairs the composition
+        constraints while refusing any substitution that would drop GC back
+        below the floor.
+        """
+        forbidden = set(forbidden_codons)
+        allowed: dict[str, tuple[str, ...]] = {}
+        for aa in sorted(set(protein)):
+            options = tuple(c for c in AA_CODONS[aa] if c not in forbidden)
+            if not options:
+                raise OracleFailure(f"residue {aa!r} has no admissible codon")
+            allowed[aa] = options
+
+        # GC-maximising start: highest GC per residue, ties lexicographic.
+        nt = "".join(max(allowed[aa], key=lambda c: (gc_count(c), c)) for aa in protein)
+        if self.gc_fraction(nt) < gc_global_min:
+            raise OracleFailure(
+                f"GC floor {gc_global_min} exceeds the achievable maximum "
+                f"{self.gc_fraction(nt):.6f}; the set is infeasible, not feasible")
+
+        active = list(self.COMPOSITION_CONSTRAINTS)
+        gc_total = sum(1 for c in nt if c in "GC")
+        floor_count = math.ceil(gc_global_min * len(nt))
+        visited = {nt}
+
+        for step in range(MAX_REPAIR_ITERATIONS):
+            counts = self.conflict_violations(nt, host, strategy, forbidden, gc_global_min)
+            total = sum(counts[c] for c in active)
+            if total == 0:
+                if counts["forbidden_codons"] or counts["gc_global_min"]:
+                    raise OracleFailure(f"repair broke an invariant: {counts}")
+                return nt
+
+            # Candidate positions are the violating codons, scanned in order
+            # and capped per iteration. Scanning all of them with a full
+            # violation recount per candidate was quadratic in the ORF length
+            # and far too slow for the gate's determinism re-run; scanning only
+            # the earliest violation's span was too narrow, since a 50-nt GC
+            # window cannot be repaired by two codon substitutions. The cap
+            # rotates so every position is reachable across iterations.
+            positions = self._violating_positions(nt, host, strategy, active)
+            if not positions:
+                return nt
+            codon_idxs = sorted({p // 3 for p in positions})
+            if len(codon_idxs) > CANDIDATE_POSITION_CAP:
+                offset = step % len(codon_idxs)
+                codon_idxs = (codon_idxs[offset:] + codon_idxs[:offset])[:CANDIDATE_POSITION_CAP]
+
+            improve = plateau = None
+            for ci in codon_idxs:
+                aa = protein[ci]
+                current = nt[ci * 3:ci * 3 + 3]
+                # Prefer substitutions that keep GC high, so repeated repairs do
+                # not erode the floor; ties lexicographic for determinism.
+                for codon in sorted(allowed[aa], key=lambda c: (-gc_count(c), c)):
+                    if codon == current:
+                        continue
+                    # GC in O(1) from the codon delta rather than rescanning.
+                    if gc_total - gc_count(current) + gc_count(codon) < floor_count:
+                        continue
+                    cand = nt[:ci * 3] + codon + nt[ci * 3 + 3:]
+                    cc = self.conflict_violations(cand, host, strategy, forbidden,
+                                                  gc_global_min)
+                    score = sum(cc[c] for c in active)
+                    if score < total:
+                        if improve is None or cand < improve:
+                            improve = cand
+                    elif score == total and cand not in visited and plateau is None:
+                        plateau = cand
+                if improve is not None:
+                    break
+
+            nxt = improve or plateau
+            if nxt is None:
+                raise OracleFailure(
+                    f"stuck with {total} composition violations while holding GC "
+                    f">= {gc_global_min}; cannot prove this set feasible")
+            nt = nxt
+            gc_total = sum(1 for c in nt if c in "GC")
+            visited.add(nt)
+        raise OracleFailure(f"exceeded {MAX_REPAIR_ITERATIONS} repair iterations")
