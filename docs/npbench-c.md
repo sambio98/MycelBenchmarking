@@ -24,7 +24,9 @@ scoring path.
 | Internal sweep | `src/npbench_c/sweep/` | runner, stats, gates, stub fixtures |
 | Catalog | `docs/catalog.md` | 24 templates / 32 campaigns, grounded |
 | Provisioning | `docs/environment.md` | tools, DBs, sandbox contract |
-| Tests | `tests/unit/` | 124 passing |
+| Template: MIBiG release diff | `src/npbench_c/templates/mibig_diff/` | shared oracle |
+| Campaign: MIBiG 3.1→4.0 diff | `campaigns/mibig-diff-3_1-to-4_0-01/` | oracle 1.0, gate 17/0/5 |
+| Tests | `tests/unit/` | 139 passing |
 
 ```bash
 PYTHONPATH=src python3 -m pytest tests -q
@@ -375,6 +377,31 @@ re-run; second was too narrow and stalled on 50-nt GC windows.
 **The build refuses to contradict its declared expectation**, in either
 direction, so a campaign cannot silently become the opposite of what it was
 authored to be. Tested both ways.
+
+## A leakage ablation is not a competence probe
+
+The MIBiG campaign made a distinction explicit that the earlier ones let slide.
+Its `stub-nonormalise` loads both corpora, computes the raw diff correctly, and
+reports it as the classified result — clearing R2 and failing R3. Labelling that
+the no-tool ablation made the leakage gate **fail**, and the gate was right to
+complain: it asks "is this answerable without doing the work?", and that system
+did the work.
+
+So the two are now separate roles:
+
+- **competence probe** — a tooled system missing one skill. Useful for
+  discrimination, meaningless for leakage.
+- **leakage ablation** — withholds *computation itself*, which for an S0
+  campaign is the only thing there is to withhold. `stub-noncompute` never opens
+  the archives and answers with round numbers, so it fails R1 at depth 0.
+
+This also corrected a claim carried in the earlier campaigns' chance levels. In
+those, R1 is free — reverse-translating a protein or echoing a table needs no
+computation — and the measured no-computation clear rate was 1.0. Here it is
+**not**: the entry counts cannot be guessed, so the ablation fails R1. R1's
+declared chance level stays 1.0 because any system that reads the inputs clears
+it, and the capped floor is computed over R2 upward regardless, but the note in
+`task.yaml` records that it is nominal here rather than measured.
 
 ## Template architecture
 

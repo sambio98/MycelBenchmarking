@@ -161,7 +161,7 @@ table. Perturbation: `rescale_units`. Tag `license_class: open` but Tier F.
 |---|---|---|---|
 | T-L3-1 ×2 | BGC detection & boundary calling | likely | image |
 | T-L3-2 | GCF clustering cutoff sensitivity | likely | image |
-| T-L3-3 ×2 | MIBiG version diff reconciliation | verified | now |
+| T-L3-3 ×2 | MIBiG version diff reconciliation | verified | **BUILT** |
 | T-L3-4 | RiPP precursor annotation | likely | image |
 | T-L3-5 | Self-resistance target identification | verified | now |
 
@@ -179,14 +179,55 @@ cutoff is changed — report the range over which membership flips, scored with
 `interval_score`. Absorbs the AN-5 robustness family. Pin BiG-SCAPE version,
 `--mibig-version`, antiSMASH version, pyhmmer version, classification mode.
 
-**T-L3-3** MIBiG 3.0 → 4.0 diff. **Verified**: `changelog.releases[]` and
-`status` ∈ {active, retired, pending} are present, and 4.0 added 557 entries and
-modified 590. R1 diff table (created / modified / retired) · R2 matches gold ·
-R3 claim: for a given entry, what changed and in which field, closed enum ·
-R4 a specific entry's prior version is supplied — predict the 4.0 delta.
-Mechanically generable from the two tarballs, so this template can produce many
-instantiations and is the natural private-split generator. Instantiation axis:
-change class (retirement vs re-annotation).
+**T-L3-3** **Built**: `campaigns/mibig-diff-3_1-to-4_0-01` (3.1 → 4.0, the
+consecutive-release pair; 3.1 is the last 3.x).
+
+*Scope correction made during the build.* "What changed and in which field" is
+**ill-posed**: 4.0 restructured the schema entirely — 3.1 nests everything under
+a `cluster` object, 4.0 is flat with twelve top-level keys — so a raw
+field-by-field diff reports almost every field of almost every entry as changed.
+True and useless.
+
+What is well-posed, and better: **reconcile the two releases on a declared field
+mapping, separating a change in representation from a change in substance.** The
+campaign publishes the mapping, the per-field normalisation rules, the verdict
+vocabulary and the precedence over it.
+
+The sharpest case is supplied by the corpus rather than planted: 3.1 stores the
+NCBI taxon id as a JSON **string**, 4.0 as an **integer**. Compared raw, all
+2442 shared entries look re-annotated; compared as strings, **8** genuine
+corrections remain. R2 asks for the raw counts and R3 for the classified ones,
+so a system that never normalises clears R2 and fails R3 — which the sweep
+demonstrates directly, since `stub-nonormalise` lands at depth 2.
+
+Measured gold, 2502 → 3013 entries, 2442 shared:
+
+| field | raw diff | classified |
+|---|---|---|
+| ncbi_tax_id | 2442 | 2434 representation-only, **8** substantive |
+| biosynthetic_class | 2442 | 2353 representation-only, 73 retired-term, **16** substantive |
+| compound_formulas | 181 | 1380 unchanged, 1015 absent-in-source, 39 substantive |
+| compound_names | 152 | 2289 unchanged, 152 substantive |
+| organism | 8 | 8 substantive |
+| locus_accession | 0 | 2442 unchanged |
+
+3.1's `Alkaloid` class has no 4.0 counterpart and 73 of its entries persist
+reclassified, which is why `no_counterpart_in_target` precedes
+`substantive_change` in the published precedence. The 8 taxon-id and 8
+organism-name corrections are nearly disjoint (overlap: BGC0002347), so they are
+independent curation events.
+
+R4 applies five **declared operations** to a base record — taxon id retyped,
+taxon id revalued, a formula altered, the class set replaced with the retired
+term, the organism removed — and asks the resulting verdict. The first is the
+campaign in miniature: retyping moves the verdict from `representation_only` to
+`unchanged`, which a system that has not modelled the distinction gets wrong.
+
+The build **refuses to emit gold** if no field's raw count differs from its
+classified substantive count, since R3 would then merely restate R2.
+
+Still the natural private-split generator: the field mapping and the
+perturbation operations generalise to any release pair.
 
 **T-L3-4** RiPP precursor annotation: core vs leader peptide boundary.
 R1 precursor table · R2 matches gold · R3 claim: the core peptide sequence and
