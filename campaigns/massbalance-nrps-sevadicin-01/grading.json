@@ -1,0 +1,208 @@
+{
+  "campaign_id": "massbalance-nrps-sevadicin-01",
+  "template_id": "mass-balance-nrps",
+  "grading_spec_version": "1.1.0",
+  "rungs": [
+    {
+      "rung_id": "r1",
+      "ordinal": 1,
+      "name": "execute",
+      "gold_tier": "G1",
+      "composition": "product",
+      "pass_threshold": 1.0,
+      "chance_level": 1.0,
+      "components": [
+        {
+          "name": "route_present",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:present.route",
+            "gold": 1
+          }
+        },
+        {
+          "name": "all_formulas_parse",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:all_formulas_parse",
+            "gold": 1
+          }
+        },
+        {
+          "name": "n_modules",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:n_modules",
+            "gold": "gold:n_modules"
+          }
+        },
+        {
+          "name": "monomer_order",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:monomers",
+            "gold": "gold:monomers"
+          }
+        }
+      ],
+      "chance_level_note": "Measured by the no-computation ablation: R1 asks only that the entry and the pinned monomer table be read and echoed in schema. A no-tool ablation is not meaningful for an S0 campaign, so the ablation withholds computation instead.\n"
+    },
+    {
+      "rung_id": "r2",
+      "ordinal": 2,
+      "name": "correct",
+      "gold_tier": "G1",
+      "composition": "product",
+      "pass_threshold": 1.0,
+      "chance_level": 0.01,
+      "components": [
+        {
+          "name": "peptide_bonds",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:peptide_bonds",
+            "gold": "gold:peptide_bonds"
+          }
+        },
+        {
+          "name": "naive_assembly_formula",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:naive_assembly_formula",
+            "gold": "gold:naive_assembly_formula"
+          }
+        },
+        {
+          "name": "naive_assembly_mass",
+          "scorer": "abs_tol_match",
+          "args": {
+            "pred": "pred:naive_assembly_monoisotopic_mass",
+            "gold": "gold:naive_assembly_monoisotopic_mass",
+            "abs_tol": 0.001
+          }
+        },
+        {
+          "name": "formula_alanine",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:monomer_formulas.alanine",
+            "gold": "gold:monomer_formulas.alanine"
+          }
+        },
+        {
+          "name": "formula_phenylalanine",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:monomer_formulas.phenylalanine",
+            "gold": "gold:monomer_formulas.phenylalanine"
+          }
+        },
+        {
+          "name": "formula_tryptophan",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:monomer_formulas.tryptophan",
+            "gold": "gold:monomer_formulas.tryptophan"
+          }
+        }
+      ]
+    },
+    {
+      "rung_id": "r3",
+      "ordinal": 3,
+      "name": "commit",
+      "gold_tier": "G1",
+      "composition": "product",
+      "pass_threshold": 1.0,
+      "chance_level": 0.06,
+      "components": [
+        {
+          "name": "residual_sevadicin",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:per_compound.sevadicin.residual_full",
+            "gold": "gold:per_compound.sevadicin.residual_full"
+          }
+        },
+        {
+          "name": "verdict_sevadicin",
+          "scorer": "enum_exact",
+          "args": {
+            "pred": "pred:per_compound.sevadicin.verdict",
+            "gold": "gold:per_compound.sevadicin.verdict",
+            "vocabulary": [
+              "balanced",
+              "cyclisation_only",
+              "additional_chemistry_required",
+              "deficit_unexplained",
+              "insufficient"
+            ]
+          }
+        }
+      ],
+      "chance_level_note": "Higher than the malleobactin instantiation's 0.004 for an honest reason: this entry annotates a single compound whose residual is exactly zero, so R3 reduces to one residual vector plus one five-way verdict. A system that assumes a curated assembly line accounts for its product guesses 'balanced' and the empty residual correctly. That is a real weakness of this instantiation, and it is why the template needs at least one non-balanced instantiation in the shipped set.\n"
+    },
+    {
+      "rung_id": "r4",
+      "ordinal": 4,
+      "name": "counterfactual",
+      "gold_tier": "G1",
+      "composition": "product",
+      "pass_threshold": 1.0,
+      "chance_level": 0.0005,
+      "components": [
+        {
+          "name": "del1_formula",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:deletions.1.formula",
+            "gold": "gold:single_module_deletions.1.formula"
+          }
+        },
+        {
+          "name": "del1_mass_shift",
+          "scorer": "abs_tol_match",
+          "args": {
+            "pred": "pred:deletions.1.mass_shift",
+            "gold": "gold:single_module_deletions.1.mass_shift",
+            "abs_tol": 0.001
+          }
+        },
+        {
+          "name": "del2_formula",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:deletions.2.formula",
+            "gold": "gold:single_module_deletions.2.formula"
+          }
+        },
+        {
+          "name": "del2_mass_shift",
+          "scorer": "abs_tol_match",
+          "args": {
+            "pred": "pred:deletions.2.mass_shift",
+            "gold": "gold:single_module_deletions.2.mass_shift",
+            "abs_tol": 0.001
+          }
+        },
+        {
+          "name": "del3_formula",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:deletions.3.formula",
+            "gold": "gold:single_module_deletions.3.formula"
+          }
+        },
+        {
+          "name": "del3_mass_shift",
+          "scorer": "abs_tol_match",
+          "args": {
+            "pred": "pred:deletions.3.mass_shift",
+            "gold": "gold:single_module_deletions.3.mass_shift",
+            "abs_tol": 0.001
+          }
+        }
+      ]
+    }
+  ]
+}

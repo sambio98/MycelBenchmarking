@@ -1,0 +1,203 @@
+campaign_id: residues-prna-01
+template_id: structure-features
+track: EX
+family: cross_database_reconciliation
+layer: L2_enzyme_and_function
+np_class: mixed
+version: 1.0.0
+horizon_tier: T-short
+license_class: open
+grader_version: "2.0.0+9fc95658"
+grading_spec_version: "1.0.0"
+min_tool_surface: S0
+
+objective: >
+  UniProt annotates individual residues of PrnA as catalytic or ligand-binding,
+  and records for each annotation how it was established -- including, under
+  ECO:0007744, which deposited structure the claim rests on. Census those
+  annotations, classify their evidence, then check each one against the geometry
+  of the structure it cites: does the annotated residue actually line the
+  ligand's contact shell in those coordinates? Then repeat the check against a
+  second entry of the same protein that has a different substrate bound.
+
+method_guidance: partial
+
+scope_note: >
+  The campaign grades three distinct things and they must not be conflated.
+  First, what the annotation set CONTAINS: record counts under a declared dedup
+  rule, where two substitutions at one position are two records and a
+  byte-identical repeat is one. Second, what SUPPORTS it: the ECO class of each
+  record, where published experiment, cited structure, and inference by
+  similarity are different classes and an empty evidence list is not a class at
+  all. Third, whether the cited structure CONFIRMS it: a position is confirmed
+  only when the record names that entry under ECO:0007744, the ligand it names
+  is actually present in those coordinates, and the position falls in that
+  ligand's contact shell at the pinned cutoff. A system that treats "annotated"
+  as "confirmed" clears R2 and fails R3.
+
+template_params:
+  accession: P95480
+  annotation_input: inputs/P95480.json
+  structures:
+    focal:
+      pdb_id: 2AQJ
+      input: inputs/2AQJ.cif
+      chain: A
+    alternate:
+      pdb_id: 2AR8
+      input: inputs/2AR8.cif
+  # The declared join between UniProt's ChEBI ligand identifiers and the
+  # three-character chemical component ids used in deposited coordinates.
+  # Neither file states the correspondence, so it is given, not inferred.
+  ligand_components:
+    "ChEBI:CHEBI:57692": FAD
+    "ChEBI:CHEBI:57912": TRP
+    "ChEBI:CHEBI:17996": CL
+    "ChEBI:CHEBI:58713": CTE
+  policy_variants:
+    v1_experimental_only:
+      accepted_classes: ["experimental"]
+    v2_structural_only:
+      accepted_classes: ["structural"]
+    v3_include_inferred:
+      accepted_classes: ["experimental", "structural", "inferred"]
+    v4_inferred_only:
+      accepted_classes: ["inferred"]
+
+output_contract:
+  residue_report.json:
+    accession / sequence_length: From the annotation input.
+    functional_record_counts: >
+      Per functional feature type, the number of records after the declared
+      dedup rule in eco_policy.json#counting_rules.record_identity.
+    secondary_structure_counts: >
+      Per secondary-structure feature type, the raw record count. Reported so
+      the two vocabularies are visibly separate; not part of the functional
+      census.
+    annotated_positions: Sorted UniProt positions carrying any functional feature.
+    ligand_vocabulary: ChEBI id to ligand name, over binding-site records.
+    pdb_cross_references: Sorted PDB ids cross-referenced by the entry.
+    mutagenesis_original_residue_agreements / _disagreements: >
+      For each mutagenesis record, whether the residue it records as mutated
+      matches the sequence at that position.
+    eco_code_citation_totals: >
+      Per ECO code, the number of (record, code, source id) citations. A record
+      citing two PubMed ids under one code contributes two.
+    record_class_counts: >
+      Per feature type, records per evidence class. A record's class is the
+      strongest among its citations; a record with no citations is class none.
+    binding_positions_by_ligand: Per ChEBI id, sorted binding-site positions.
+    pdb_evidence_index: >
+      Per PDB id cited under ECO:0007744, the sorted positions citing it.
+    unevidenced_records / inferred_only_records: >
+      Records of class none and of class inferred, as TYPE@POSITION labels.
+    focal_structure: Atom and ligand-copy inventory of the focal entry.
+    confirmation: >
+      For the focal structure: the numbering offsets read from _struct_ref_seq,
+      and per ligand the positions annotated as citing this entry, the geometric
+      contact positions, how many are confirmed, and the two disagreement sets.
+      Plus the active-site position, its residue, and which ligands it contacts.
+    structure_swap: >
+      The same confirmation recomputed on the alternate entry, with the
+      per-ligand change in confirmed count.
+    policy_variants: >
+      Per declared variant, the records admitted under that set of accepted
+      evidence classes, by feature type and by ligand.
+
+constraints:
+  reference_dir: reference
+  pinned_tables:
+    - reference/eco_policy.json        # feature vocabulary, ECO classes, counting rules
+    - reference/geometry_rules.json    # atom selection, contact and numbering rules
+    - reference/residue_alphabet.json  # three-letter to one-letter mapping
+    - reference/campaign_keys.json     # ChEBI to component join, focal chain, variants
+
+snapshots_required:
+  shipped: [uniprot@P95480.1, pdb@2AQJ, pdb@2AR8]
+  fetched: []
+
+budgets:
+  wall_clock_minutes: 25
+  cpu: 2
+  memory_gb: 4
+  network: off
+
+rungs:
+  - {rung_id: r1, ordinal: 1, name: execute,        gold_tier: G1, warm_start_bundle: null}
+  - {rung_id: r2, ordinal: 2, name: correct,        gold_tier: G1, warm_start_bundle: gold/warm/r2}
+  - {rung_id: r3, ordinal: 3, name: commit,         gold_tier: G1, warm_start_bundle: gold/warm/r3}
+  - {rung_id: r4, ordinal: 4, name: counterfactual, gold_tier: G1, warm_start_bundle: gold/warm/r4}
+
+structural_elements: [verification, counterfactual, planted]
+
+harness:
+  gold_command: ["python3", "-m", "npbench_c.templates.structure_features.residues.build", "{campaign}"]
+  solve_command: ["python3", "-m", "npbench_c.templates.structure_features.residues.solve", "{campaign}", "{submission}"]
+  measure_command: ["python3", "-m", "npbench_c.templates.structure_features.residues.measure", "{campaign}", "{submission}", "{measurement}"]
+  stub_module: npbench_c.sweep.stubs.stub_structure
+  stub_args: ["--ladder", "residues"]
+  stub_levels:
+    - {name: stub-parser,      level: parser}
+    - {name: stub-evidence,    level: evidence, reference: true}
+    - {name: stub-confirm,     level: confirm}
+    - {name: stub-complete,    level: complete}
+    - {name: stub-annotated,   level: annotated}
+    - {name: stub-noncompute,  level: noncompute, mode: no_tool}
+
+grading:
+  chance_levels: {r1: 1.0, r2: 0.003, r3: 0.002, r4: 0.001}
+  chance_level_notes:
+    r1: >
+      Nominal rather than measured. The record counts and the annotated-position
+      list cannot be guessed, so the no-computation ablation fails R1 outright;
+      the level is kept at 1.0 because any system that reads the entry clears
+      it, and the capped floor is computed over R2 upward.
+    r3: >
+      A confirmation table over four ligands with contact sets of 5 to 42
+      positions. Guessing the confirmed sets is not a realistic strategy, so the
+      level is a nominal small number rather than a combinatorial computation
+      that would imply more precision than it has.
+
+excluded_from_grading:
+  - field: per-contact minimum distances in the confirmation tables
+    reason: >
+      A distance is a square root of a sum, so its last reported decimal depends
+      on reduction order. The contact SET is order-independent and is what the
+      confirmation claim rests on, so the sets are graded and the distances are
+      reported for audit only. The pocket ladder grades the one distance whose
+      reduction order is pinned by a declared tie-break.
+  - field: the alternate structure's numbering offsets
+    reason: >
+      Both deposited entries of this protein align to UniProt with the same two
+      offsets, so a component for the alternate's offsets would restate R3's and
+      would be answered by the warm R4 bundle. The offsets are still reported,
+      because a system should show it read the second alignment record rather
+      than assuming the first one carried over.
+  - field: the free-text description of each Site and Mutagenesis record
+    reason: >
+      Grading "Loss of halogenase activity" against gold would be grading a
+      transcription of curator prose. The structured fields -- position, ECO
+      code, ligand ChEBI id, substitution -- carry everything the ladder claims.
+  - field: whether an annotation is biologically correct
+    reason: >
+      Out of scope and not decidable from the shipped inputs. The campaign asks
+      whether the cited structure supports the annotation, which is arithmetic,
+      not whether the annotation is right.
+
+notes_for_audit:
+  - >
+    The confirmation table is the campaign's centre. Check that at least one
+    ligand has a non-empty contact_not_annotated set and at least one has an
+    empty annotated set -- the first shows the annotation is a curated subset of
+    the geometry, the second shows a ligand whose annotation cites the OTHER
+    entry. The build refuses to emit gold if neither holds.
+  - >
+    7-chloro-L-tryptophan is annotated from 2AR8 and is absent from 2AQJ, so its
+    focal row is a true zero rather than a missing computation. The R4 swap is
+    what makes that visible, and the per-ligand confirmed_delta should be
+    positive for that ligand and negative for L-tryptophan.
+  - >
+    Position 79 carries four records at once -- Active site, Binding site for
+    7-chloro-L-tryptophan, an unevidenced Site, and a mutagenesis substitution.
+    It is the clearest test of the dedup rule, and of the rule that a position
+    is counted once per feature type.

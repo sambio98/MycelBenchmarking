@@ -1,0 +1,598 @@
+{
+  "banned_binaries": {
+    "declared": {
+      "FastTreeMP": "Thread order affects the neighbour-joining heuristic, so it can never sit on a gold-producing path. It arrives as part of the fasttree package, which antiSMASH depends on, so the image deletes the binary after install and this check fails the build if it reappears. Single-threaded FastTree stays."
+    },
+    "present": []
+  },
+  "fixtures": [
+    "bgc_triplet.embl",
+    "halogenases.afa",
+    "halogenases.faa",
+    "provenance.json",
+    "synthetic.fna"
+  ],
+  "not_in_image": {
+    "bigscape": "Needed by T-L3-2. Its pin depends on the antiSMASH and pyhmmer versions, so it follows antiSMASH, which is now in the image.",
+    "iqtree": "Not needed by any catalogued template. If it ever is: always --seed, always fixed -T N, never AUTO, and a single-gene ML tree is not admissible as gold.",
+    "matchms": "Needed by T-L4-1 and T-L4-2. Pip-installable, but what those rows need first is an MS2 fixture set from MassBank with its own grounding pass: for a spectral match the invariance question becomes a tolerance question, and that is a different suite."
+  },
+  "repeats": 2,
+  "summary": {
+    "fail": 0,
+    "invocations": 10,
+    "measured": 7,
+    "needed_canonicalisation": [
+      "mmseqs2"
+    ],
+    "pass": 7,
+    "skip": 0,
+    "xfail": 1,
+    "xpass": 0
+  },
+  "thread_counts": [
+    1,
+    8
+  ],
+  "tools": {
+    "antismash": {
+      "canonicalisation": null,
+      "controls": [
+        "pin the exact version AND the database release; they are one pin, not two",
+        "NEVER compare results across versions: the detection rule set grew from 58 rules at v5 to 88 at v7.1 and 103 at 8.0.4 (90 strict, 7 relaxed, 6 loose), so a region set is a function of the rules that produced it",
+        "fixed --cpus",
+        "input must be annotated (GenBank or EMBL), not FASTA: letting antiSMASH call genes folds the gene caller's determinism into antiSMASH's verdict and the two can no longer be told apart",
+        "the graded artifact is the declared projection of the JSON, never the HTML and never the whole JSON"
+      ],
+      "detail": "2/2 invocation(s) invariant at (1, 8)",
+      "fingerprint": "04add3eb0e86a816",
+      "fingerprint_paths": [
+        "detection/hmm_detection/cluster_rules/strict.txt",
+        "detection/hmm_detection/cluster_rules/relaxed.txt",
+        "detection/hmm_detection/cluster_rules/loose.txt"
+      ],
+      "invocations": [
+        {
+          "canonical_identical": true,
+          "canonicalisation": null,
+          "compared": "projection:antismash_regions",
+          "detail": "the antismash_regions projection is identical across all runs; the raw artifact is not, and by this invocation's declaration is not a result",
+          "digests": {
+            "t1_r0": {
+              "canonical": "8dd3733500657695",
+              "normalised": "8dd3733500657695",
+              "raw": "8dd3733500657695"
+            },
+            "t1_r1": {
+              "canonical": "8dd3733500657695",
+              "normalised": "8dd3733500657695",
+              "raw": "8dd3733500657695"
+            },
+            "t8_r0": {
+              "canonical": "8dd3733500657695",
+              "normalised": "8dd3733500657695",
+              "raw": "8dd3733500657695"
+            },
+            "t8_r1": {
+              "canonical": "8dd3733500657695",
+              "normalised": "8dd3733500657695",
+              "raw": "8dd3733500657695"
+            }
+          },
+          "invocation": "minimal_detection",
+          "normalisation_rules_fired": [],
+          "normalised_identical": true,
+          "projection": "antismash_regions",
+          "projection_identical": true,
+          "raw_identical": false,
+          "raw_identical_incidental": false,
+          "repeatable_at_fixed_threads": true,
+          "runs": 4,
+          "status": "PASS",
+          "thread_counts": [
+            1,
+            8
+          ]
+        },
+        {
+          "canonical_identical": true,
+          "canonicalisation": null,
+          "compared": "projection:antismash_nrps_pks_domains",
+          "detail": "the antismash_nrps_pks_domains projection is identical across all runs; the raw artifact is not, and by this invocation's declaration is not a result",
+          "digests": {
+            "t1_r0": {
+              "canonical": "9d122d8493ed2f2b",
+              "normalised": "9d122d8493ed2f2b",
+              "raw": "9d122d8493ed2f2b"
+            },
+            "t1_r1": {
+              "canonical": "9d122d8493ed2f2b",
+              "normalised": "9d122d8493ed2f2b",
+              "raw": "9d122d8493ed2f2b"
+            },
+            "t8_r0": {
+              "canonical": "9d122d8493ed2f2b",
+              "normalised": "9d122d8493ed2f2b",
+              "raw": "9d122d8493ed2f2b"
+            },
+            "t8_r1": {
+              "canonical": "9d122d8493ed2f2b",
+              "normalised": "9d122d8493ed2f2b",
+              "raw": "9d122d8493ed2f2b"
+            }
+          },
+          "invocation": "default_modules_domains",
+          "normalisation_rules_fired": [],
+          "normalised_identical": true,
+          "projection": "antismash_nrps_pks_domains",
+          "projection_identical": true,
+          "raw_identical": false,
+          "raw_identical_incidental": false,
+          "repeatable_at_fixed_threads": true,
+          "runs": 4,
+          "status": "PASS",
+          "thread_counts": [
+            1,
+            8
+          ]
+        }
+      ],
+      "needed_by": [
+        "T-L3-1",
+        "T-L3-5"
+      ],
+      "status": "PASS",
+      "tool": "antismash",
+      "version": "8.0.4"
+    },
+    "blast": {
+      "canonicalisation": null,
+      "controls": [
+        "pin version",
+        "fixed -num_threads",
+        "explicit -max_target_seqs"
+      ],
+      "detail": "1/1 invocation(s) invariant at (1, 8)",
+      "fingerprint": null,
+      "fingerprint_paths": null,
+      "invocations": [
+        {
+          "canonical_identical": true,
+          "canonicalisation": null,
+          "compared": "artifact",
+          "detail": "identical across all runs with no normalisation",
+          "digests": {
+            "t1_r0": {
+              "canonical": "0ab5d2a82a4c3906",
+              "normalised": "0ab5d2a82a4c3906",
+              "raw": "0ab5d2a82a4c3906"
+            },
+            "t1_r1": {
+              "canonical": "0ab5d2a82a4c3906",
+              "normalised": "0ab5d2a82a4c3906",
+              "raw": "0ab5d2a82a4c3906"
+            },
+            "t8_r0": {
+              "canonical": "0ab5d2a82a4c3906",
+              "normalised": "0ab5d2a82a4c3906",
+              "raw": "0ab5d2a82a4c3906"
+            },
+            "t8_r1": {
+              "canonical": "0ab5d2a82a4c3906",
+              "normalised": "0ab5d2a82a4c3906",
+              "raw": "0ab5d2a82a4c3906"
+            }
+          },
+          "invocation": "blastp_tabular",
+          "normalisation_rules_fired": [],
+          "normalised_identical": true,
+          "projection": null,
+          "projection_identical": false,
+          "raw_identical": true,
+          "raw_identical_incidental": false,
+          "repeatable_at_fixed_threads": true,
+          "runs": 4,
+          "status": "PASS",
+          "thread_counts": [
+            1,
+            8
+          ]
+        }
+      ],
+      "needed_by": [
+        "T-L1-3",
+        "T-L2-2"
+      ],
+      "status": "PASS",
+      "tool": "blast",
+      "version": "2.17.0"
+    },
+    "diamond": {
+      "canonicalisation": null,
+      "controls": [
+        "version >= 2.2.7",
+        "fixed --threads",
+        "explicit --max-target-seqs, which changes which hits survive",
+        "NEVER --no-reorder: measured here, that flag is what BREAKS determinism rather than what provides it"
+      ],
+      "detail": "2/2 invocation(s) invariant at (1, 8)",
+      "fingerprint": null,
+      "fingerprint_paths": null,
+      "invocations": [
+        {
+          "canonical_identical": true,
+          "canonicalisation": null,
+          "compared": "artifact",
+          "detail": "identical across all runs with no normalisation",
+          "digests": {
+            "t1_r0": {
+              "canonical": "47918f1aa4148c9e",
+              "normalised": "47918f1aa4148c9e",
+              "raw": "47918f1aa4148c9e"
+            },
+            "t1_r1": {
+              "canonical": "47918f1aa4148c9e",
+              "normalised": "47918f1aa4148c9e",
+              "raw": "47918f1aa4148c9e"
+            },
+            "t8_r0": {
+              "canonical": "47918f1aa4148c9e",
+              "normalised": "47918f1aa4148c9e",
+              "raw": "47918f1aa4148c9e"
+            },
+            "t8_r1": {
+              "canonical": "47918f1aa4148c9e",
+              "normalised": "47918f1aa4148c9e",
+              "raw": "47918f1aa4148c9e"
+            }
+          },
+          "invocation": "blastp_tabular",
+          "normalisation_rules_fired": [],
+          "normalised_identical": true,
+          "projection": null,
+          "projection_identical": false,
+          "raw_identical": true,
+          "raw_identical_incidental": false,
+          "repeatable_at_fixed_threads": true,
+          "runs": 4,
+          "status": "PASS",
+          "thread_counts": [
+            1,
+            8
+          ]
+        },
+        {
+          "canonical_identical": false,
+          "canonicalisation": null,
+          "compared": "artifact",
+          "detail": "expected: --no-reorder leaves query output order unspecified under multithreading; measured, 2.2.8 gives three distinct orderings over four runs with an identical hit set",
+          "digests": {
+            "t1_r0": {
+              "canonical": "47918f1aa4148c9e",
+              "normalised": "47918f1aa4148c9e",
+              "raw": "47918f1aa4148c9e"
+            },
+            "t1_r1": {
+              "canonical": "47918f1aa4148c9e",
+              "normalised": "47918f1aa4148c9e",
+              "raw": "47918f1aa4148c9e"
+            },
+            "t8_r0": {
+              "canonical": "7a7406ea7970fc1c",
+              "normalised": "7a7406ea7970fc1c",
+              "raw": "7a7406ea7970fc1c"
+            },
+            "t8_r1": {
+              "canonical": "c6172a09e0d8e389",
+              "normalised": "c6172a09e0d8e389",
+              "raw": "c6172a09e0d8e389"
+            }
+          },
+          "invocation": "blastp_tabular_no_reorder",
+          "normalisation_rules_fired": [],
+          "normalised_identical": false,
+          "projection": null,
+          "projection_identical": false,
+          "raw_identical": false,
+          "raw_identical_incidental": false,
+          "repeatable_at_fixed_threads": false,
+          "runs": 4,
+          "status": "XFAIL",
+          "thread_counts": [
+            1,
+            8
+          ]
+        }
+      ],
+      "needed_by": [
+        "T-L1-3",
+        "T-L2-3"
+      ],
+      "status": "PASS",
+      "tool": "diamond",
+      "version": "2.2.8"
+    },
+    "hmmer": {
+      "canonicalisation": null,
+      "controls": [
+        "pin version",
+        "fixed --cpu"
+      ],
+      "detail": "2/2 invocation(s) invariant at (1, 8)",
+      "fingerprint": null,
+      "fingerprint_paths": null,
+      "invocations": [
+        {
+          "canonical_identical": true,
+          "canonicalisation": null,
+          "compared": "artifact",
+          "detail": "identical after 1 declared normalisation rule(s)",
+          "digests": {
+            "t1_r0": {
+              "canonical": "7ae34b5010d56a59",
+              "normalised": "7ae34b5010d56a59",
+              "raw": "a5d21b11fa19864b"
+            },
+            "t1_r1": {
+              "canonical": "7ae34b5010d56a59",
+              "normalised": "7ae34b5010d56a59",
+              "raw": "1a4e96e3b31c64a4"
+            },
+            "t8_r0": {
+              "canonical": "7ae34b5010d56a59",
+              "normalised": "7ae34b5010d56a59",
+              "raw": "dd42ba2d1f440e05"
+            },
+            "t8_r1": {
+              "canonical": "7ae34b5010d56a59",
+              "normalised": "7ae34b5010d56a59",
+              "raw": "f77bc8833c7e7d93"
+            }
+          },
+          "invocation": "hmmsearch_tblout",
+          "normalisation_rules_fired": [
+            "^# (Program|Version|Pipeline mode|Query file|Target file|Option settings|Current dir|Date|hmmsearch|hmmbuild|HMMER|Copyright|Freely distributed|- - -)"
+          ],
+          "normalised_identical": true,
+          "projection": null,
+          "projection_identical": false,
+          "raw_identical": false,
+          "raw_identical_incidental": false,
+          "repeatable_at_fixed_threads": true,
+          "runs": 4,
+          "status": "PASS",
+          "thread_counts": [
+            1,
+            8
+          ]
+        },
+        {
+          "canonical_identical": true,
+          "canonicalisation": null,
+          "compared": "artifact",
+          "detail": "identical after 1 declared normalisation rule(s); the raw bytes also agreed, but a declared-unstable field is present and only happened to match",
+          "digests": {
+            "t1_r0": {
+              "canonical": "318074301e70c24b",
+              "normalised": "318074301e70c24b",
+              "raw": "4ea87c4c43042b2f"
+            },
+            "t1_r1": {
+              "canonical": "318074301e70c24b",
+              "normalised": "318074301e70c24b",
+              "raw": "4ea87c4c43042b2f"
+            },
+            "t8_r0": {
+              "canonical": "318074301e70c24b",
+              "normalised": "318074301e70c24b",
+              "raw": "4ea87c4c43042b2f"
+            },
+            "t8_r1": {
+              "canonical": "318074301e70c24b",
+              "normalised": "318074301e70c24b",
+              "raw": "4ea87c4c43042b2f"
+            }
+          },
+          "invocation": "hmmbuild",
+          "normalisation_rules_fired": [
+            "^DATE\\s"
+          ],
+          "normalised_identical": true,
+          "projection": null,
+          "projection_identical": false,
+          "raw_identical": false,
+          "raw_identical_incidental": true,
+          "repeatable_at_fixed_threads": true,
+          "runs": 4,
+          "status": "PASS",
+          "thread_counts": [
+            1,
+            8
+          ]
+        }
+      ],
+      "needed_by": [
+        "T-L1-2",
+        "T-L2-1",
+        "T-L3-4"
+      ],
+      "status": "PASS",
+      "tool": "hmmer",
+      "version": "3.4"
+    },
+    "mafft": {
+      "canonicalisation": null,
+      "controls": [
+        "pin major version",
+        "prefer deterministic modes: fixed --retree and --maxiterate rather than the --auto strategy chooser, whose choice depends on the input size it measures"
+      ],
+      "detail": "1/1 invocation(s) invariant at (1, 8)",
+      "fingerprint": null,
+      "fingerprint_paths": null,
+      "invocations": [
+        {
+          "canonical_identical": true,
+          "canonicalisation": null,
+          "compared": "artifact",
+          "detail": "identical across all runs with no normalisation",
+          "digests": {
+            "t1_r0": {
+              "canonical": "672a7efc720d5bb2",
+              "normalised": "672a7efc720d5bb2",
+              "raw": "672a7efc720d5bb2"
+            },
+            "t1_r1": {
+              "canonical": "672a7efc720d5bb2",
+              "normalised": "672a7efc720d5bb2",
+              "raw": "672a7efc720d5bb2"
+            },
+            "t8_r0": {
+              "canonical": "672a7efc720d5bb2",
+              "normalised": "672a7efc720d5bb2",
+              "raw": "672a7efc720d5bb2"
+            },
+            "t8_r1": {
+              "canonical": "672a7efc720d5bb2",
+              "normalised": "672a7efc720d5bb2",
+              "raw": "672a7efc720d5bb2"
+            }
+          },
+          "invocation": "retree2_noiterate",
+          "normalisation_rules_fired": [],
+          "normalised_identical": true,
+          "projection": null,
+          "projection_identical": false,
+          "raw_identical": true,
+          "raw_identical_incidental": false,
+          "repeatable_at_fixed_threads": true,
+          "runs": 4,
+          "status": "PASS",
+          "thread_counts": [
+            1,
+            8
+          ]
+        }
+      ],
+      "needed_by": [
+        "T-L2-3"
+      ],
+      "status": "PASS",
+      "tool": "mafft",
+      "version": "7.526"
+    },
+    "mmseqs2": {
+      "canonicalisation": "sort_lines",
+      "controls": [
+        "pin post-fix build",
+        "always createindex",
+        "fixed --threads",
+        "explicit --max-seqs; upstream issue #277 reports results differing by core count, so this is the tool the suite exists for",
+        "declared canonical line order: measured here, multithreaded runs emit the SAME hit set in a different order, and no flag changes that, so the order is fixed by the invocation contract instead"
+      ],
+      "detail": "1/1 invocation(s) invariant at (1, 8)",
+      "fingerprint": null,
+      "fingerprint_paths": null,
+      "invocations": [
+        {
+          "canonical_identical": true,
+          "canonicalisation": "sort_lines",
+          "compared": "artifact",
+          "detail": "identical only after the declared canonicalisation (sort_lines); the hit set is the same in every run and only its order moved",
+          "digests": {
+            "t1_r0": {
+              "canonical": "bc8281ff54bf6376",
+              "normalised": "80c0744d52f400f9",
+              "raw": "80c0744d52f400f9"
+            },
+            "t1_r1": {
+              "canonical": "bc8281ff54bf6376",
+              "normalised": "80c0744d52f400f9",
+              "raw": "80c0744d52f400f9"
+            },
+            "t8_r0": {
+              "canonical": "bc8281ff54bf6376",
+              "normalised": "e38e079bf035823a",
+              "raw": "e38e079bf035823a"
+            },
+            "t8_r1": {
+              "canonical": "bc8281ff54bf6376",
+              "normalised": "6d9ca178167c8665",
+              "raw": "6d9ca178167c8665"
+            }
+          },
+          "invocation": "search_convertalis",
+          "normalisation_rules_fired": [],
+          "normalised_identical": false,
+          "projection": null,
+          "projection_identical": false,
+          "raw_identical": false,
+          "raw_identical_incidental": false,
+          "repeatable_at_fixed_threads": true,
+          "runs": 4,
+          "status": "PASS",
+          "thread_counts": [
+            1,
+            8
+          ]
+        }
+      ],
+      "needed_by": [
+        "T-L2-3"
+      ],
+      "status": "PASS",
+      "tool": "mmseqs2",
+      "version": "18.8cc5c"
+    },
+    "prodigal": {
+      "canonicalisation": null,
+      "controls": [
+        "pin version AND mode: single and meta make different calls",
+        "single-threaded, so the suite measures repeat determinism only",
+        "Prodigal-GV is a different tool and is not in the image"
+      ],
+      "detail": "1/1 invocation(s) invariant at (1,) (no thread flag; repeat determinism only)",
+      "fingerprint": null,
+      "fingerprint_paths": null,
+      "invocations": [
+        {
+          "canonical_identical": true,
+          "canonicalisation": null,
+          "compared": "artifact",
+          "detail": "identical across all runs with no normalisation",
+          "digests": {
+            "t1_r0": {
+              "canonical": "b12a88a95252decb",
+              "normalised": "b12a88a95252decb",
+              "raw": "b12a88a95252decb"
+            },
+            "t1_r1": {
+              "canonical": "b12a88a95252decb",
+              "normalised": "b12a88a95252decb",
+              "raw": "b12a88a95252decb"
+            }
+          },
+          "invocation": "single_mode_proteins",
+          "normalisation_rules_fired": [],
+          "normalised_identical": true,
+          "projection": null,
+          "projection_identical": false,
+          "raw_identical": true,
+          "raw_identical_incidental": false,
+          "repeatable_at_fixed_threads": true,
+          "runs": 2,
+          "status": "PASS",
+          "thread_counts": [
+            1
+          ]
+        }
+      ],
+      "needed_by": [
+        "T-L1-1",
+        "T-L1-4"
+      ],
+      "status": "PASS",
+      "tool": "prodigal",
+      "version": "2.6.3"
+    }
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "description": "Evidence classes for UniProt per-residue functional annotations. The classification is by ECO code, which is a structured field, so no human judgement enters gold. Codes outside this table make the build refuse to emit gold rather than silently fall through to a default class.",
+  "functional_feature_types": [
+    "Active site",
+    "Binding site",
+    "Site",
+    "Mutagenesis"
+  ],
+  "functional_feature_types_rationale": "The residue-level functional vocabulary. Chain, Helix, Beta strand and Turn are also per-residue features but describe secondary structure rather than function, so they are counted separately and excluded from the functional census.",
+  "secondary_structure_feature_types": [
+    "Chain",
+    "Helix",
+    "Beta strand",
+    "Turn"
+  ],
+  "eco_classes": {
+    "ECO:0000269": "experimental",
+    "ECO:0000314": "experimental",
+    "ECO:0000315": "experimental",
+    "ECO:0007744": "structural",
+    "ECO:0000250": "inferred",
+    "ECO:0000255": "inferred",
+    "ECO:0000256": "inferred",
+    "ECO:0000259": "inferred",
+    "ECO:0000303": "inferred",
+    "ECO:0000305": "inferred",
+    "ECO:0000312": "inferred",
+    "ECO:0008006": "inferred"
+  },
+  "eco_class_vocabulary": [
+    "experimental",
+    "structural",
+    "inferred",
+    "none"
+  ],
+  "eco_class_notes": {
+    "experimental": "A published experiment on this protein. ECO:0000269 is the manual assertion from experiment code.",
+    "structural": "ECO:0007744 is combinatorial evidence used by UniProt to cite a specific PDB entry; the cited entry id is in the evidence record and is what makes structure-confirmation computable.",
+    "inferred": "Asserted by sequence similarity (ECO:0000250/0000255/0000256/0000259), from a publication's statement rather than its experiment (ECO:0000303), or by curator reasoning (ECO:0000305).",
+    "none": "The feature carries an empty evidence list. Not a class of evidence but the absence of one; counted separately because it is the strongest audit signal."
+  },
+  "accepted_classes_baseline": [
+    "experimental",
+    "structural"
+  ],
+  "counting_rules": {
+    "record_identity": "A feature record is identified by (type, start, end, ligand ChEBI id, alternative sequence). Two UniProt records sharing all five are one record. This rule matters: a binding site for two different ligands at one position is two records, and two mutagenesis substitutions at one position are two records, while a byte-identical repeat is one.",
+    "position_unit": "A position is counted once per feature type however many records touch it.",
+    "evidence_citation_unit": "An (record, ECO code, source id) triple. A record citing two PubMed ids under one code contributes two citations.",
+    "feature_class": "A record's census class is the strongest class among its citations, ordered experimental > structural > inferred, or none when it has no citations. One class per record, so the per-type class counts sum to the record count.",
+    "ligand_identity": "A ligand is identified by its ChEBI id, not its name.",
+    "policy_admission": "A record is admitted under a policy when AT LEAST ONE of its citations falls in an accepted class. This is deliberately not the same test as the record_class census: the census reports the STRONGEST class a record carries, so a record citing both a published experiment and a structure counts once as experimental, while a policy that accepts structural evidence admits it. Reporting one and computing the other would make the two blocks silently inconsistent, so both rules are stated."
+  }
+}

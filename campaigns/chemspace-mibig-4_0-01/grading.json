@@ -1,0 +1,277 @@
+{
+  "campaign_id": "chemspace-mibig-4_0-01",
+  "template_id": "chemical-space",
+  "grading_spec_version": "1.0.0",
+  "rungs": [
+    {
+      "rung_id": "r1",
+      "ordinal": 1,
+      "name": "execute",
+      "gold_tier": "G1",
+      "composition": "product",
+      "pass_threshold": 1.0,
+      "chance_level": 1.0,
+      "components": [
+        {
+          "name": "report_present",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:present.report",
+            "gold": 1
+          }
+        },
+        {
+          "name": "corpus_counts",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:corpus_counts",
+            "gold": "gold:corpus_counts"
+          }
+        },
+        {
+          "name": "distinct_keys",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:distinct_keys",
+            "gold": "gold:distinct_keys"
+          }
+        },
+        {
+          "name": "acyclic_compounds",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:acyclic_compounds",
+            "gold": "gold:acyclic_compounds"
+          }
+        },
+        {
+          "name": "duplicate_records",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:duplicate_records",
+            "gold": "gold:duplicate_records"
+          }
+        },
+        {
+          "name": "class_vocabulary",
+          "scorer": "set_exact",
+          "args": {
+            "pred": "pred:class_vocabulary",
+            "gold": "gold:class_vocabulary"
+          }
+        },
+        {
+          "name": "entries_per_class",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:entries_per_class",
+            "gold": "gold:entries_per_class"
+          }
+        },
+        {
+          "name": "multi_class_entries",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:multi_class_entries",
+            "gold": "gold:multi_class_entries"
+          }
+        }
+      ],
+      "chance_level_note": "Nominal rather than measured. The record and distinct-key counts cannot be guessed, so the no-computation ablation fails R1 outright; the level is kept at 1.0 because any system that opens the table clears it, and the capped floor is computed over R2 upward.\n"
+    },
+    {
+      "rung_id": "r2",
+      "ordinal": 2,
+      "name": "correct",
+      "gold_tier": "G1",
+      "composition": "product",
+      "pass_threshold": 1.0,
+      "chance_level": 0.003,
+      "components": [
+        {
+          "name": "connectivity_groups_with_multiple_compound_keys",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:connectivity_groups_with_multiple_compound_keys",
+            "gold": "gold:connectivity_groups_with_multiple_compound_keys"
+          }
+        },
+        {
+          "name": "distinctions_lost_at_connectivity",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:distinctions_lost_at_connectivity",
+            "gold": "gold:distinctions_lost_at_connectivity"
+          }
+        },
+        {
+          "name": "cross_entry_duplicates",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:cross_entry_duplicates",
+            "gold": "gold:cross_entry_duplicates"
+          }
+        },
+        {
+          "name": "records_per_class",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:records_per_class",
+            "gold": "gold:records_per_class"
+          }
+        },
+        {
+          "name": "distinct_compounds_per_class",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:distinct_compounds_per_class",
+            "gold": "gold:distinct_compounds_per_class"
+          }
+        },
+        {
+          "name": "distinct_scaffolds_per_class",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:distinct_scaffolds_per_class",
+            "gold": "gold:distinct_scaffolds_per_class"
+          }
+        },
+        {
+          "name": "scaffold_ring_count_histogram",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:scaffold_ring_count_histogram",
+            "gold": "gold:scaffold_ring_count_histogram"
+          }
+        }
+      ]
+    },
+    {
+      "rung_id": "r3",
+      "ordinal": 3,
+      "name": "commit",
+      "gold_tier": "G1",
+      "composition": "product",
+      "pass_threshold": 1.0,
+      "chance_level": 0.001,
+      "components": [
+        {
+          "name": "informative_rule",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:informative_rule",
+            "gold": "gold:informative_rule"
+          }
+        },
+        {
+          "name": "informative_records",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:informative_records",
+            "gold": "gold:informative_records"
+          }
+        },
+        {
+          "name": "informative_scaffold_keys",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:informative_scaffold_keys",
+            "gold": "gold:informative_scaffold_keys"
+          }
+        },
+        {
+          "name": "shared_scaffolds",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:shared_scaffolds",
+            "gold": "gold:shared_scaffolds"
+          }
+        },
+        {
+          "name": "cross_class_scaffolds",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:cross_class_scaffolds",
+            "gold": "gold:cross_class_scaffolds"
+          }
+        },
+        {
+          "name": "cross_class_informative_entries",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:cross_class_informative_entries",
+            "gold": "gold:cross_class_informative_entries"
+          }
+        },
+        {
+          "name": "most_shared_informative_scaffold",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:most_shared_informative_scaffold",
+            "gold": "gold:most_shared_informative_scaffold"
+          }
+        }
+      ],
+      "chance_level_note": "Four counts in the hundreds plus a committed set of scaffold keys. A nominal small number rather than an enumeration, which would imply more precision than a chance baseline has here.\n"
+    },
+    {
+      "rung_id": "r4",
+      "ordinal": 4,
+      "name": "counterfactual",
+      "gold_tier": "G1",
+      "composition": "product",
+      "pass_threshold": 1.0,
+      "chance_level": 0.001,
+      "components": [
+        {
+          "name": "threshold_variant_records",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:threshold_variant_records",
+            "gold": "gold:threshold_variant_records"
+          }
+        },
+        {
+          "name": "threshold_variant_scaffolds",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:threshold_variant_scaffolds",
+            "gold": "gold:threshold_variant_scaffolds"
+          }
+        },
+        {
+          "name": "threshold_variant_sharing",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:threshold_variant_sharing",
+            "gold": "gold:threshold_variant_sharing"
+          }
+        },
+        {
+          "name": "evidence_gate_counts",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:evidence_gate_counts",
+            "gold": "gold:evidence_gate_counts"
+          }
+        },
+        {
+          "name": "evidence_gate_sharing",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:evidence_gate_sharing",
+            "gold": "gold:evidence_gate_sharing"
+          }
+        },
+        {
+          "name": "evidence_gate_cross_class_keys",
+          "scorer": "set_exact",
+          "args": {
+            "pred": "pred:evidence_gate_cross_class_keys",
+            "gold": "gold:evidence_gate.cross_class_informative_keys"
+          }
+        }
+      ]
+    }
+  ]
+}

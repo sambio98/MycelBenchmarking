@@ -1,0 +1,41 @@
+{
+  "accession": "Q8KHZ8",
+  "atom_inventory": {
+    "excluded_altloc_records": 0,
+    "excluded_hydrogen_records": 0,
+    "ligand_atom_records": 30,
+    "polymer_atom_records": 8475,
+    "water_atom_records": 833
+  },
+  "ligand_copies": {
+    "TRP:A:1001": 15,
+    "TRP:B:1000": 15
+  },
+  "numbering": {
+    "auth_to_uniprot": 0,
+    "label_to_uniprot": -20
+  },
+  "pdb_id": "2E4G",
+  "polymer_chains": [
+    "A",
+    "B"
+  ],
+  "resolved_residues_per_chain": {
+    "A": 528,
+    "B": 528
+  },
+  "resolved_span_per_chain": {
+    "A": [
+      1,
+      528
+    ],
+    "B": [
+      2,
+      529
+    ]
+  },
+  "sequence_agreement": {
+    "agreements": 1056,
+    "disagreements": 0
+  }
+}

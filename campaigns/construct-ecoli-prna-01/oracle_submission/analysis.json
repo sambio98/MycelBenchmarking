@@ -1,0 +1,40 @@
+{
+  "r3": {
+    "binding_constraint": "gc_window",
+    "non_binding_constraints": [
+      "gc_global",
+      "homopolymer",
+      "internal_rbs"
+    ],
+    "unconstrained_violations": {
+      "direct_repeat": 20,
+      "forbidden_sites": 1,
+      "gc_global": 0,
+      "gc_window": 29,
+      "homopolymer": 0,
+      "internal_rbs": 0
+    }
+  },
+  "r4": {
+    "binding_constraint": "direct_repeat",
+    "flipped_constraints": [
+      "forbidden_sites",
+      "gc_window",
+      "internal_rbs"
+    ],
+    "non_binding_constraints": [
+      "forbidden_sites",
+      "gc_global",
+      "gc_window",
+      "homopolymer"
+    ],
+    "unconstrained_violations": {
+      "direct_repeat": 23,
+      "forbidden_sites": 0,
+      "gc_global": 0,
+      "gc_window": 0,
+      "homopolymer": 0,
+      "internal_rbs": 1
+    }
+  }
+}

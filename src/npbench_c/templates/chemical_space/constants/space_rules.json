@@ -1,0 +1,65 @@
+{
+  "description": "How this campaign counts a compound, a scaffold and a class. Every number it grades is a set-arithmetic consequence of these three choices, and the choices are not forced by the data -- which is the campaign's subject. A chemical-space statistic without a declared identity key is not reproducible, and two careful analysts reading the same corpus will disagree by hundreds of compounds.",
+  "record_identity": {
+    "rule": "A compound record is identified by (accession, ordinal), where ordinal is the compound's zero-based position in the entry's compounds array.",
+    "why_not_the_name": "Compound names are NOT unique within an entry. Two entries in this release list the same name twice (BGC0002024 lists 'nargenicin A1' twice; BGC0002072 lists 'linearmycin C' twice), so keying on (accession, name) silently drops records and every downstream count shifts."
+  },
+  "identity_keys": {
+    "compound": {
+      "key": "inchikey",
+      "description": "The full standard InChIKey. Distinguishes stereochemistry, protonation and isotopic labelling."
+    },
+    "connectivity": {
+      "key": "inchikey_block1",
+      "description": "The first hyphen-separated block of the InChIKey, 14 characters, which encodes the molecular skeleton and connectivity only.",
+      "rule": "Computed from the shipped inchikey by taking the text before the first hyphen. Nothing else.",
+      "why": "Where stereochemistry is not determinable from the available evidence, the connectivity block is the honest granularity: counting stereoisomers as distinct natural products overstates the corpus."
+    },
+    "scaffold": {
+      "key": "scaffold_inchikey",
+      "description": "The standard InChIKey of the compound's Bemis-Murcko scaffold, as pinned in chemistry_table.json.",
+      "why_not_the_smiles": "The table also carries scaffold_smiles, and it is NOT the key. Canonical SMILES is a toolkit output that is not stable across versions, so it cannot identify anything in a benchmark whose scores must stay comparable. Keying on the InChIKey instead merges a small number of scaffolds whose SMILES differ -- InChI normalises tautomers and charge states that the SMILES writer keeps apart -- and the merge is part of the declared key, not an error.",
+      "null_case": "A compound with no ring system has an empty Bemis-Murcko scaffold and therefore no scaffold key. Such compounds are counted as acyclic and are excluded from every scaffold statistic rather than grouped under a shared empty key."
+    }
+  },
+  "informative_scaffold_rule": {
+    "min_ring_count": 2,
+    "min_heavy_atom_coverage": 0.5,
+    "coverage": "scaffold_heavy_atoms divided by compound_heavy_atoms, both from chemistry_table.json. Compared against the threshold without rounding.",
+    "rule": "A scaffold is informative for a compound when the scaffold has at least min_ring_count rings AND covers at least min_heavy_atom_coverage of the compound's heavy atoms.",
+    "why_this_exists": "Bemis-Murcko reduction keeps ring systems and the linkers between them and discards everything else, so a natural product carrying one aromatic ring reduces to benzene. Over this corpus the most shared scaffold is plain benzene, in 76 entries, and the second is tetrahydropyran, in 26. 'These 76 compounds share a scaffold' is true and says nothing. The threshold is a declared filter on that failure mode, not a claim about chemistry, and the campaign grades BOTH the unfiltered and the filtered counts so the size of the effect is visible rather than hidden inside a choice."
+  },
+  "cross_class_rule": {
+    "rule": "A scaffold crosses biosynthetic classes when at least two of the entries carrying it have DISJOINT class sets.",
+    "naive_alternative": "The obvious rule -- the union of the classes of a scaffold's entries contains more than one class name -- is also computed and reported, because it is what most analyses do and it is badly inflated: 456 ACTIVE entries in this release carry more than one class, so a single hybrid PKS/NRPS entry makes its scaffold 'cross classes' on its own without any two clusters sharing anything.",
+    "class_field": "biosynthesis.classes[].class, a closed six-term vocabulary.",
+    "class_vocabulary": [
+      "NRPS",
+      "PKS",
+      "other",
+      "ribosomal",
+      "saccharide",
+      "terpene"
+    ]
+  },
+  "corpus_filter": {
+    "status": "active",
+    "rule": "Only entries whose status is active are counted. Retired and pending entries are diff material for the release-reconciliation campaign and must never be corpus for this one.",
+    "requires_structure": "A compound record is counted only when it carries a structure (SMILES) in the entry and therefore appears in chemistry_table.json."
+  },
+  "evidence_gate": {
+    "accepted_locus_evidence": [
+      "Knock-out studies",
+      "Heterologous expression"
+    ],
+    "rule": "An entry passes the evidence gate when at least one of its loci[].evidence methods is accepted. This is the same G2 admission rule the benchmark applies elsewhere, and it reads loci[].evidence -- how the cluster was linked to its product -- not compounds[].evidence, which records how the structure was determined.",
+    "why_it_belongs_here": "A chemical-space claim inherits the evidence of the cluster-product links underneath it. Restricting the corpus to experimentally linked clusters is the honest version of the same statistic, and the gap between the two is the campaign's counterfactual."
+  },
+  "counting_rules": {
+    "distinct_counts": "Every 'distinct' count is over the declared key, after the corpus filter, across the whole corpus. A key appearing in ten records counts once.",
+    "duplicate_records": "compound records minus distinct compound keys. Counts records that restate a structure, whether inside one entry or across entries.",
+    "cross_entry_duplicates": "The number of keys that appear in more than one DISTINCT accession. A key repeated twice inside one entry is a duplicate record but not a cross-entry duplicate.",
+    "shared_scaffold": "A scaffold key carried by more than one distinct accession.",
+    "per_class": "A record contributes to every class its entry carries, so per-class counts sum to more than the corpus total. This is stated because the alternative -- assigning each entry one primary class -- would require a rule MIBiG does not supply."
+  }
+}

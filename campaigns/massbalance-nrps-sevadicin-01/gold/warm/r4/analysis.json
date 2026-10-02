@@ -1,0 +1,22 @@
+{
+  "monomer_formulas": {
+    "alanine": "C3H7NO2",
+    "phenylalanine": "C9H11NO2",
+    "tryptophan": "C11H12N2O2"
+  },
+  "monomers": [
+    "phenylalanine",
+    "alanine",
+    "tryptophan"
+  ],
+  "n_modules": 3,
+  "naive_assembly_formula": "C23H26N4O4",
+  "peptide_bonds": 2,
+  "per_compound": {
+    "sevadicin": {
+      "product_formula": "C23H26N4O4",
+      "residual": {},
+      "verdict": "balanced"
+    }
+  }
+}

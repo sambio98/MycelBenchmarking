@@ -1,0 +1,47 @@
+{
+  "description": "How a MIBiG gene-function annotation is judged experimentally supported. This mirrors the benchmark's own G2 gold-admission doctrine: a claim counts as evidence-backed only when a structured evidence field says so, never because a curator asserted it.",
+  "function_vocabulary": [
+    "Activation / processing",
+    "Precursor biosynthesis",
+    "Regulation",
+    "Resistance/immunity",
+    "Scaffold biosynthesis",
+    "Tailoring",
+    "Transport"
+  ],
+  "function_evidence_methods": [
+    "Knock-out",
+    "Activity assay",
+    "Heterologous expression",
+    "Other in vivo study"
+  ],
+  "locus_evidence_methods": [
+    "Knock-out studies",
+    "Heterologous expression",
+    "Enzymatic assays",
+    "Gene expression correlated with compound production",
+    "Correlation of genomic and metabolomic data",
+    "Homology-based prediction",
+    "In vitro expression"
+  ],
+  "baseline_policy": {
+    "name": "strict",
+    "function_evidence_accepted": ["Knock-out", "Heterologous expression"],
+    "locus_evidence_accepted": ["Knock-out studies", "Heterologous expression"],
+    "require_active_status": true,
+    "note": "An annotation is admissible when its own evidence list contains an accepted function method, AND its entry's loci evidence contains an accepted locus method, AND the entry is active. All three conditions, which is why the admissible count is far below the merely-backed count."
+  },
+  "paths": {
+    "annotations": "genes.annotations[]",
+    "function_name": "functions[].function.name",
+    "function_evidence": "functions[].evidence[].method",
+    "locus_evidence": "loci[].evidence[].method",
+    "status": "status"
+  },
+  "counting_rules": {
+    "backed": "the annotation's own functions[].evidence list is non-empty",
+    "unbacked": "the annotation's own functions[].evidence list is empty",
+    "admissible": "backed by an accepted function method AND the entry passes the locus and status conditions",
+    "unit": "One count per (annotation, function) pair, not per gene: a gene carrying two functions contributes two."
+  }
+}
