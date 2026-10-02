@@ -1,4 +1,4 @@
-campaign_id: construct-ecoli-rebh-01
+campaign_id: construct-ecoli-prna-01
 template_id: construct-design
 track: EX
 family: construct_and_sequence_design
@@ -11,8 +11,8 @@ grading_spec_version: "1.0.0"
 
 objective: >
   Design a synthetic open reading frame for heterologous expression of the
-  flavin-dependent tryptophan 7-halogenase RebH (UniProt Q8KHZ8, sequence
-  version 1, 530 aa), then analyse which of the declared design constraints
+  flavin-dependent tryptophan 7-halogenase PrnA (UniProt P95480, sequence
+  version 1, 538 aa), then analyse which of the declared design constraints
   actually binds for this protein, and how that changes when the expression
   host changes.
 
@@ -62,7 +62,7 @@ output_contract:
 # shipped into the sandbox. The oracle loads the same files, so the tables used
 # to compute gold and the tables given to the agent cannot drift.
 template_params:
-  protein_input: inputs/rebh.faa
+  protein_input: inputs/prna.faa
   hosts:
     ecoli: {host: ecoli_bl21, strategy: pet28a_ndei_xhoi}
     streptomyces: {host: streptomyces_coelicolor, strategy: pset152_ndei_xhoi}
@@ -79,10 +79,10 @@ snapshots_required:
   fetched: []
   inputs_pinned:
     - source: UniProtKB
-      accession: Q8KHZ8
+      accession: P95480
       sequence_version: 1
-      length_aa: 530
-      sha256_sequence: 2853460230442a06
+      length_aa: 538
+      sha256_sequence: f6ad6a376a4ccae7
       license: CC BY 4.0
 
 budgets:
@@ -132,6 +132,14 @@ excluded_from_grading:
       (cai >= 0.902 for E. coli, >= 0.929 for Streptomyces) rather than against
       the oracle's value, so a different valid optimiser is never penalised.
 
+instantiation_note: >
+  Second instantiation of the construct-design template; the first is
+  construct-ecoli-rebh-01. The instantiation axis is the enzyme, with the host
+  swap staying as R4. PrnA is a low-GC proteobacterial halogenase where RebH is
+  a high-GC actinomycete one, so the two are not near-duplicates: the per-residue
+  codon demand differs and the binding-constraint analysis is recomputed rather
+  than inherited.
+
 split_constraint: >
   These two instantiations MUST NOT be split across the public and private sets.
   Measured against construct-ecoli-rebh-01, 3 of 6 graded sub-answers are
@@ -153,5 +161,12 @@ split_constraint: >
   either of these.
 
 notes_for_audit:
-  - The CAI relative-adaptiveness tables need a cited source release before this
-    packet ships. See the PROVENANCE GAP note in oracle/tables.py.
+  - >
+    The CAI relative-adaptiveness tables need a cited source release before this
+    packet ships. See the PROVENANCE GAP note in
+    reference/codon_tables.json; the tables are shared with every instantiation
+    of this template, so the gap closes for all of them at once.
+  - >
+    Compare the binding constraint and the flipped-constraint set against
+    construct-ecoli-rebh-01. If they were identical, the second instantiation
+    would add coverage without adding discrimination.

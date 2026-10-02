@@ -1,0 +1,70 @@
+{
+  "binding_constraint_flips": 1,
+  "flipped_constraints": [
+    "forbidden_sites",
+    "gc_window",
+    "internal_rbs"
+  ],
+  "hosts": {
+    "ecoli": {
+      "binding_constraint": "gc_window",
+      "cai_floor": 0.908,
+      "cai_max_across_policies": 0.982789,
+      "cai_min_across_policies": 0.932775,
+      "cai_spread_across_policies": 0.050014,
+      "cost_spread_across_policies": {
+        "direct_repeat": 0.024742,
+        "forbidden_sites": 8e-05,
+        "gc_global": 0.0,
+        "gc_window": 0.021214,
+        "homopolymer": 0.0,
+        "internal_rbs": 0.0
+      },
+      "non_binding_constraints": [
+        "gc_global",
+        "homopolymer",
+        "internal_rbs"
+      ],
+      "reference_cai": 0.950799,
+      "unconstrained_violations": {
+        "direct_repeat": 20,
+        "forbidden_sites": 1,
+        "gc_global": 0,
+        "gc_window": 29,
+        "homopolymer": 0,
+        "internal_rbs": 0
+      }
+    },
+    "streptomyces": {
+      "binding_constraint": "direct_repeat",
+      "cai_floor": 0.914,
+      "cai_max_across_policies": 0.990736,
+      "cai_min_across_policies": 0.93949,
+      "cai_spread_across_policies": 0.051246,
+      "cost_spread_across_policies": {
+        "direct_repeat": 0.050608,
+        "forbidden_sites": 0.0,
+        "gc_global": 0.0,
+        "gc_window": 0.0,
+        "homopolymer": 0.0,
+        "internal_rbs": 0.00056
+      },
+      "non_binding_constraints": [
+        "forbidden_sites",
+        "gc_global",
+        "gc_window",
+        "homopolymer"
+      ],
+      "reference_cai": 0.968238,
+      "unconstrained_violations": {
+        "direct_repeat": 23,
+        "forbidden_sites": 0,
+        "gc_global": 0,
+        "gc_window": 0,
+        "homopolymer": 0,
+        "internal_rbs": 1
+      }
+    }
+  },
+  "protein_length_aa": 538
+}
