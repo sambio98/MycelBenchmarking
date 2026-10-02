@@ -544,7 +544,9 @@ updated. Headline: **the S0 buildable set is 3 templates, not 7.**
   alignment and any S0 route is a lookup.
 
 So nine of the remaining rows need the Phase 1 container, which makes Phase 1
-load-bearing sooner than this catalog implied.
+load-bearing sooner than this catalog implied. **Built since**: the image exists
+for the six sequence-analysis tools and clears 8 of the 12 `build: image` rows;
+antiSMASH, BiG-SCAPE and matchms are the remaining provisioning work.
 
 ## Authoring order
 
@@ -553,8 +555,20 @@ load-bearing sooner than this catalog implied.
    container.
 2. **`build: now` + `data: likely`** — T-L1-3, T-L2-2, T-L2-5, T-L4-4, T-L5-1,
    T-L5-2, T-L5-3. Probe each source first.
-3. **`build: image`** — everything else, blocked on Phase 1 and on the
-   thread-invariance suite for MMseqs2, DIAMOND, HMMER, antiSMASH.
+3. **`build: image`** — everything else. **Phase 1 is now partly done**: the
+   pinned-tool image in `image/` carries HMMER 3.4, DIAMOND 2.2.8, MMseqs2
+   18.8cc5c, Prodigal 2.6.3, MAFFT 7.526 and BLAST+ 2.17.0, all six verified
+   thread-invariant at 1 and 8 threads, which **unblocks 8 of the 12 rows**:
+   T-L1-1, T-L1-2, T-L1-3, T-L1-4, T-L2-1, T-L2-3, T-L2-4, T-L3-4. The other four
+   wait on antiSMASH (T-L3-1, and the catalogued T-L3-5), BiG-SCAPE (T-L3-2) and
+   matchms (T-L4-1, T-L4-2).
+
+   Two determinism controls this catalog and the provisioning notes relied on
+   turned out to be wrong, and both were caught by measuring rather than by
+   reading: DIAMOND's `--no-reorder` *breaks* multithreaded determinism instead of
+   providing it, and MMseqs2 cannot be made order-stable by any flag and needs a
+   declared canonical line sort as part of its invocation contract. See
+   `docs/environment.md` §2.
 
 Author ~44 candidates to ship 32: the internal sweep will drop some for
 non-discrimination and the audit will drop some for gold problems.

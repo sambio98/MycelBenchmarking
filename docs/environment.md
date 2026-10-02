@@ -50,8 +50,8 @@ ClusterBlast DB ↔ MIBiG version ↔ pyhmmer move together.
 | **RDKit** | L4-3, L4-4, L5-1 | pin exact (2026.03.6 verified installable). **Formula and InChIKey only — never canonical SMILES**, which changed at 2022.09, 2023.03, 2023.09, 2026.03.1 and is not guaranteed idempotent |
 | **HMMER** | L1-2, L2-1, L3-4 | pin version, fixed `--cpu` |
 | **BLAST+** | L1-3, L2-2 | pin version, fixed `-num_threads` |
-| **DIAMOND** | L1-3, L2-3 | **≥ 2.2.7**, `--no-reorder`, fixed threads; note `-k/--max-target-seqs` changes which hits survive |
-| **MMseqs2** | L2-3 | pin post-fix build, always `createindex`, fixed `--threads`, explicit `--max-seqs` (issue #277: results differ by core count) |
+| **DIAMOND** | L1-3, L2-3 | **≥ 2.2.7**, fixed `--threads`, explicit `--max-target-seqs` (it changes which hits survive). **Never `--no-reorder`** — measured, that flag is what breaks determinism, not what provides it (see below) |
+| **MMseqs2** | L2-3 | pin post-fix build, always `createindex`, fixed `--threads`, explicit `--max-seqs` (issue #277: results differ by core count), **plus a declared canonical line order** — no flag fixes its multithreaded output order |
 | **Prodigal** | L1-1, L1-4 | pin version **and mode** (single vs meta changes calls); Prodigal-GV is a different tool |
 | **antiSMASH** | L3-1, L3-5 | pin exact version + ClusterBlast DB. **Never compare across versions** — detection rules went 58 → 88 across v5–v7.1 |
 | **BiG-SCAPE** | L3-2 | pin version, `--mibig-version`, antiSMASH version, pyhmmer version; set classification mode explicitly |
@@ -60,10 +60,57 @@ ClusterBlast DB ↔ MIBiG version ↔ pyhmmer move together.
 | **FastTree** | — | **FastTreeMP is banned from the image** (thread order affects the NJ heuristic) |
 | **IQ-TREE** | — | if ever used: always `--seed`, always fixed `-T N`, never `AUTO`. **Single-gene ML trees are not admissible as gold** |
 
-`tests/test_thread_invariance.py` (Phase 1) must run every tool at 1 and 8
-threads on fixed input and assert identical output. Anything that fails and
+`tests/test_thread_invariance.py` runs every tool at 1 and 8 threads, twice
+each, on pinned fixtures and asserts identical output. Anything that fails and
 cannot be pinned into determinism is made single-threaded in the image or
 excluded from gold-producing paths.
+
+### What measuring it found
+
+Run against the image (`image/thread_invariance.json` records the verdicts), on
+a 24-sequence halogenase fixture and a synthetic contig:
+
+| Tool | Verdict | What it took |
+|---|---|---|
+| BLAST+ 2.17.0 | invariant | nothing; byte-identical at 1 and 8 threads |
+| MAFFT 7.526 | invariant | nothing, at fixed `--retree`/`--maxiterate` |
+| Prodigal 2.6.3 | invariant | nothing; single-threaded, so repeat determinism only |
+| HMMER 3.4 | invariant | one declared normalisation: HMMER stamps its own command line, working directory and the wall-clock date into `--tblout` and into the HMM |
+| **DIAMOND 2.2.8** | invariant **only without `--no-reorder`** | dropping the flag this project had declared as a control |
+| **MMseqs2 18.8cc5c** | invariant **only after a declared canonical line sort** | no flag exists; the contract fixes the order instead |
+
+**The DIAMOND control was backwards.** This table previously listed
+`--no-reorder` as a required determinism control. Measured: *with* the flag,
+2.2.8 emits the same 192 hits in three different query orders across four
+multithreaded runs; *without* it, every run at 1, 4 and 8 threads is
+byte-identical. DIAMOND's default is to restore query order and `--no-reorder`
+documents itself as switching that off for speed, so the flag was the cause and
+not the cure. It is now forbidden on any gold-producing path, and a standing
+witness invocation keeps the fact under test so a future release that fixes it is
+noticed rather than assumed.
+
+**MMseqs2 needs a canonical order, and loses nothing to it.** At one thread every
+run is byte-identical; at eight the hit *multiset* is identical and only the order
+moves. No flag changes that, so the order is fixed by the invocation contract: the
+tabular output is sorted by line before anything reads it. That is sound only
+because the artifact has no header and each line is an independent record, which
+the declaration states — it would not be sound for an aligned or sectioned format.
+
+Worth separating, because the suite reports them separately and they are different
+properties:
+
+- a **normalisation** says a line is not a result, so ignore it when comparing. It
+  applies inside the suite only, and every rule carries a reason.
+- a **canonicalisation** says the content is right but its order is not
+  guaranteed, so fix the order before anybody reads it. It applies to the oracle
+  and the agent alike, and a tool that needs one and does not get it is not
+  admissible as a gold source.
+
+And one reporting rule that only looks pedantic until it bites: a raw byte match
+while a normalisation rule fired is reported as **incidental**, not as
+raw-identical. `hmmbuild` writes a build date, and four runs inside the same
+second agree on it; calling that raw-identical would turn a timing accident into a
+claim.
 
 ## 3. What the agent is given
 
@@ -243,6 +290,55 @@ the focal contact shell, and the shell is R3's answer. Listing those positions
 in `campaign_keys.json` would hand it over, so the scope is declared by rule
 (`truncation_scope: focal_shell`) and a test asserts that no number in the
 sandbox's declared keys is a shell position.
+
+## 5b. The Phase 1 image
+
+`image/` holds the pinned-tool image and its lock:
+
+| File | What it is |
+|---|---|
+| `image/Dockerfile` | Ubuntu 24.04 plus micromamba, creating `/opt/npbench-tools` from exact `version=build` specs. Fails the build if `registry --verify` reports pin drift |
+| `image/environment.lock.json` | the resolved 79-package closure with every artifact URL and sha256, so the image is rebuildable byte-for-byte rather than merely version-matched |
+| `image/thread_invariance.json` | the measured verdicts, recorded the way a campaign records `internal_sweep.json` |
+| `src/npbench_c/tools/registry.py` | per tool: the pin, what needs it, the controls it must run under, the invocation the suite exercises, and any declared normalisation or canonicalisation |
+| `src/npbench_c/tools/invariance.py` | the suite |
+| `src/npbench_c/tools/fixtures/` | the pinned inputs, with hashes and provenance |
+
+**The Dockerfile has not been built end to end.** The host this was written on
+had the Docker CLI but no daemon. Every step it performs was run directly instead
+— the micromamba download, the create with these exact `version=build` specs,
+`registry --verify` against the resulting prefix, and the full invariance suite,
+whose verdicts are recorded — so the pins and the determinism results are real
+while the layer sequence is not yet proven. Build it once before relying on it.
+
+**Ubuntu's archive cannot satisfy the pins**, which is why the image uses
+conda-forge and bioconda: `apt` ships DIAMOND 2.1.9 where the controls require
+≥ 2.2.7, and BLAST+ 2.12.0 against a 2.17.0 pin. HMMER, Prodigal and MAFFT would
+have been fine from `apt`; mixing sources for some tools and not others would make
+the lock harder to reason about than it is worth.
+
+**What this image unblocks: 8 of the 12 `build: image` templates** — T-L1-1,
+T-L1-2, T-L1-3, T-L1-4, T-L2-1, T-L2-3, T-L2-4 and T-L3-4, which between them
+need only Prodigal, HMMER, DIAMOND, BLAST+, MMseqs2 and MAFFT.
+
+**What it does not**, each a recorded decision rather than an omission:
+
+| Missing | Why it is a separate task |
+|---|---|
+| antiSMASH (T-L3-1, T-L3-5) | its pin is a *pair* — binary plus ClusterBlast and Pfam database releases — that has to be resolved together, and detection rules went 58 → 88 across v5–v7.1, so results must never be compared across versions |
+| BiG-SCAPE (T-L3-2) | its pin depends on the antiSMASH and pyhmmer versions, so it follows antiSMASH |
+| matchms / pyOpenMS (T-L4-1, T-L4-2) | the tools are pip-installable, but the invariance suite would need MS² fixtures from MassBank, and a spectral-matching fixture is its own grounding job |
+
+The fixtures are worth one note. They are committed files with hashes, because a
+determinism suite whose input moves measures nothing. `halogenases.faa` is 24
+reviewed UniProt entries carrying Pfam PF04820 — real homologs spanning the
+similarity range, including RebH and PrnA, which the benchmark already ships, plus
+one fragment, since a short record is where a tool's tie-breaks show.
+`synthetic.fna` is reverse-translated from that set under a declared codon cycle,
+so Prodigal has a contig with 24 known ORFs that is reproducible from the repo
+with no download. `halogenases.afa` is a frozen MAFFT alignment; that it came from
+a tool the suite also tests is not circular, because once written it is a file —
+a later MAFFT regression would not change the HMMER results computed from it.
 
 ## 6. Open provisioning questions
 

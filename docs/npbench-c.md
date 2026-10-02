@@ -34,7 +34,10 @@ scoring path.
 | Campaign: RebH pocket geometry | `campaigns/pocket-rebh-01/` | oracle 1.0, gate 18/0/5 |
 | Template: chemical space | `src/npbench_c/templates/chemical_space/` | shared oracle, RDKit pinned at instantiation |
 | Campaign: MIBiG 4.0 chemical space | `campaigns/chemspace-mibig-4_0-01/` | oracle 1.0, gate 18/0/5 |
-| Tests | `tests/unit/` | 236 passing, 1 skipped |
+| Phase 1 image | `image/Dockerfile`, `image/environment.lock.json` | 6 tools pinned to `version=build`, 79-package closure hashed |
+| Tool registry | `src/npbench_c/tools/registry.py` | pins, controls, invocations, declared normalisations |
+| Thread-invariance suite | `src/npbench_c/tools/invariance.py` | 6/6 tools invariant at 1 and 8 threads |
+| Tests | `tests/` | 271 passing, 1 skipped |
 
 ```bash
 PYTHONPATH=src python3 -m pytest tests -q
@@ -717,6 +720,100 @@ carries the correction. The lesson is narrower than the earlier one about
 catalogue entries being hypotheses: **a probe's summary statistic is a hypothesis
 until the oracle recomputes it**, because a probe has no gate behind it.
 
+
+## Phase 1: the pinned-tool image, and the two controls that were wrong
+
+The provisioning notes set the rule: every tool runs at 1 and 8 threads on fixed
+input and must produce identical output, and anything failing which cannot be
+pinned into determinism is made single-threaded or kept off gold-producing paths.
+`image/` now holds the image and `src/npbench_c/tools/` the suite that enforces
+the rule.
+
+One honest caveat first: **the Dockerfile has not been built end to end**, because
+the host had the Docker CLI and no daemon. Every step in it was run directly —
+the micromamba install of these exact specs, `registry --verify` against the
+resulting prefix, and the full invariance suite — so the pins and the measured
+determinism results are real, and the layer sequence is not yet proven.
+
+Six tools, each pinned to an exact `version=build` string with the resolved
+79-package closure and every artifact's sha256 in `image/environment.lock.json`:
+HMMER 3.4, DIAMOND 2.2.8, MMseqs2 18.8cc5c, Prodigal 2.6.3, MAFFT 7.526, BLAST+
+2.17.0. **Ubuntu's archive cannot satisfy two of the pins** — it ships DIAMOND
+2.1.9 against a ≥ 2.2.7 floor and BLAST+ 2.12.0 against 2.17.0 — which settled the
+question of whether `apt` would do.
+
+**This unblocks 8 of the 12 `build: image` templates**: T-L1-1, T-L1-2, T-L1-3,
+T-L1-4, T-L2-1, T-L2-3, T-L2-4, T-L3-4. The remaining four need antiSMASH,
+BiG-SCAPE or matchms, each deferred with a recorded reason rather than left as a
+gap in a table.
+
+### What measuring found
+
+Four tools are invariant with nothing asked of them: BLAST+, MAFFT, Prodigal and —
+after one declared normalisation — HMMER, which stamps its own command line, its
+working directory and the wall-clock date into both `--tblout` and the HMM file.
+The other two were not, and both answers were worth the trouble of getting.
+
+**DIAMOND: the control this project had declared was backwards.** The provisioning
+table listed `--no-reorder` as a required determinism control. Measured, *with*
+the flag 2.2.8 emits the same 192 hits in three different query orders across four
+multithreaded runs; *without* it every run at 1, 4 and 8 threads is byte-identical.
+DIAMOND's default restores query order and `--no-reorder` documents itself as
+switching that off for speed — so the flag was the cause, not the cure. It is now
+forbidden on any gold-producing path. A standing **witness invocation** keeps the
+failure under test and is reported as `xfail`, so a future release that fixes it
+shows up as an `XPASS` to re-read rather than as a silently changed assumption.
+
+**MMseqs2: no flag fixes it, so the contract does.** At one thread every run is
+byte-identical; at eight the hit *multiset* is identical and only its order moves.
+Nothing in the tool controls that, so the tabular output is sorted by line before
+anything reads it.
+
+### Normalisation and canonicalisation are not the same licence
+
+That second case forced a distinction the suite now carries explicitly, because
+collapsing it is how a determinism claim becomes cheap:
+
+- a **normalisation** says *this line is not a result, ignore it when comparing*.
+  It lives inside the suite, and each rule carries a reason.
+- a **canonicalisation** says *the content is right but its order is not
+  guaranteed, so fix the order before anybody reads it*. It is part of the
+  invocation contract for every gold-producing use — oracle and agent alike — and
+  a tool that needs one and does not get it is not admissible as a gold source.
+
+Sorting lines is sound for MMseqs2's tabular output only because it has no header
+and each line is an independent record, which the declaration states. It would not
+be sound for an aligned or sectioned format, and saying so is the difference
+between a declared transform and a convenient one.
+
+The suite reports the raw, normalised and canonical verdicts separately and names
+the rules that fired. Reporting only the last would let any tool pass by stripping
+whatever differs; reporting only the first would fail every tool that stamps its
+own command line, which says nothing about determinism.
+
+One smaller rule, which looks pedantic until it bites: **a raw byte match while a
+normalisation rule fired is reported as incidental, not as raw-identical.**
+`hmmbuild` writes a build date, and four runs inside the same second agree on it.
+The first suite run reported `hmmbuild` as raw-identical for exactly that reason
+and the next one did not, which is how the problem surfaced. Calling a timing
+accident a property is the same error as laundering an unmeasured check into a
+green tick, one layer down.
+
+### The fixtures are committed, hashed, and one of them is synthetic
+
+A determinism suite whose input moves measures nothing, so the fixtures are files
+in the repo with recorded provenance. `halogenases.faa` is 24 reviewed UniProt
+entries carrying Pfam PF04820: real homologs across the similarity range,
+including RebH and PrnA — already in the benchmark, so no new provenance — plus
+one fragment, because a short record is where a search tool's and an aligner's
+tie-breaks show. `synthetic.fna` is reverse-translated from that set under a
+declared codon cycle and spacer, giving Prodigal a contig with exactly 24 known
+ORFs that regenerates from the repo with no download; a test rebuilds it in pure
+Python and compares bytes. `halogenases.afa` is a frozen MAFFT alignment, and that
+it came from a tool the suite also tests is not circular: once written it is a
+file, so a later MAFFT regression cannot change the HMMER results computed from
+it.
+
 ## Open items
 
 1. **CAI table provenance.** The relative-adaptiveness values now live in
@@ -733,6 +830,16 @@ until the oracle recomputes it**, because a probe has no gate behind it.
 3. Real systems for the sweep. The harness is built and self-tested; it needs
    `SystemSpec` entries for the actual agents (bash-only, general biomedical,
    tool-equipped) before the five checks can go green.
+5. **antiSMASH and BiG-SCAPE in the image.** The next provisioning task, and the
+   one that unblocks T-L3-1, T-L3-2 and the catalogued T-L3-5. antiSMASH's pin is
+   a pair — binary plus ClusterBlast and Pfam database releases — resolved
+   together, and its detection rules went 58 → 88 across v5–v7.1, so a campaign
+   must never compare results across versions. BiG-SCAPE's pin then depends on
+   the antiSMASH and pyhmmer versions.
+6. **matchms fixtures.** T-L4-1 and T-L4-2 need matchms, which is pip-installable;
+   what they actually need first is an MS² fixture set from MassBank with its own
+   grounding pass, since a spectral-matching fixture is where the thread-invariance
+   question becomes a tolerance question.
 4. Construct-validity study: inter-rater agreement first, then expert-grader
    agreement with Gwet's AC1 / Krippendorff's alpha alongside kappa, gate on
    Spearman against the continuous rating. This is the one place humans are

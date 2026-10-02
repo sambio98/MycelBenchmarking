@@ -1,0 +1,29 @@
+{
+  "built_on": "2026-10-02",
+  "description": "Pinned inputs for the thread-invariance suite. A determinism claim is only as good as its fixture, so these are committed files with hashes, not downloads.",
+  "halogenases.afa": {
+    "columns": 1059,
+    "command": "mafft --thread 1 --anysymbol --retree 2 --maxiterate 0",
+    "derived_from": "halogenases.faa",
+    "note": "Produced by a tool the suite also tests. Not circular: once written this is a frozen file, so a later MAFFT invariance failure does not change the HMMER results computed from it.",
+    "sha256": "672a7efc720d5bb2a66b264304bf45173140ef650f2dcbef67b1c056e94e10a9"
+  },
+  "halogenases.faa": {
+    "license": "CC BY 4.0",
+    "note": "Flavin-dependent halogenases. Includes RebH (Q8KHZ8) and PrnA (P95480), already in the benchmark, and one fragment (P81540) whose partial length is deliberate: a short record is where an aligner's and a search tool's tie-breaks show.",
+    "query": "xref:pfam-PF04820 AND reviewed:true",
+    "records": 24,
+    "residues": 12287,
+    "sha256": "a7602f91c2d0feec4317564782e49bcab28e58e48b1cfdc72deaced72fcbf6c1",
+    "source": "UniProtKB",
+    "url": "https://rest.uniprot.org/uniprotkb/stream?query=xref:pfam-PF04820+AND+reviewed:true&format=fasta"
+  },
+  "synthetic.fna": {
+    "derived_from": "halogenases.faa",
+    "length_nt": 38455,
+    "note": "Synthetic on purpose: Prodigal needs a contig and no nucleotide source in this project ships one. Gene content is known exactly and the bytes are reproducible from the repo with no download.",
+    "orfs": 24,
+    "rule": "Each protein is reverse-translated by taking, for residue i, codon i modulo the number of synonyms for that amino acid, from the standard genetic code with codons sorted alphabetically. A stop codon is appended, cycling TAA, TAG, TGA. ORFs are separated and flanked by a fixed 60-nt spacer. Residues outside the standard twenty are dropped.",
+    "sha256": "9a0511a7abf6423eac8a028b7c574a47e150610c4026d2d3a371d1c043175f24"
+  }
+}
