@@ -163,7 +163,8 @@ table. Perturbation: `rescale_units`. Tag `license_class: open` but Tier F.
 | T-L3-2 | GCF clustering cutoff sensitivity | likely | image |
 | T-L3-3 ×2 | MIBiG version diff reconciliation | verified | **BUILT** |
 | T-L3-4 | RiPP precursor annotation | likely | image |
-| T-L3-5 | Self-resistance target identification | verified | now |
+| T-L3-5 | Self-resistance target identification | verified | **image** (re-tiered) |
+| T-L3-5a | Gene-function evidence audit | verified | **BUILT** |
 
 **T-L3-1** antiSMASH detection and boundary calling. R1 region table, coordinate
 convention pinned · R2 boundaries match gold by overlap-F1 within measured
@@ -234,12 +235,45 @@ R1 precursor table · R2 matches gold · R3 claim: the core peptide sequence and
 the cleavage motif · R4 the leader is altered — predict the new core. 447
 ribosomal-class entries available.
 
-**T-L3-5** Self-resistance target identification: a BGC carrying a resistant
-copy of the target the product inhibits. R1 gene table with the housekeeping
-paralog identified · R2 matches gold · R3 claim: the resistance gene and the
-inferred target, closed enum · R4 the resistance gene is removed — predict
-whether the target call survives and what evidence is lost. Gold restricted to
-entries with strong `loci[].evidence`.
+**T-L3-5** **Re-tiered to `build: image`.** MIBiG 4.0 *does* carry a structured
+`Resistance/immunity` gene-function category (43 annotations, 20 entries with
+strong `loci[].evidence`), which makes "identify the resistance gene" a field
+lookup rather than an inference. The **target** the product inhibits is not in
+MIBiG at all: establishing it needs either a free-text product string
+("resistant DNA gyrase subunit B" — transcription, not reasoning) or homology
+search to show the gene is a paralog of an essential enzyme, which needs
+HMMER/BLAST. So the inferential version belongs in the container tier, not at
+S0.
+
+**T-L3-5a** **Built**: `campaigns/mibig-gene-function-evidence-01` — the
+S0-feasible audit underneath it, which is the benchmark's own G2 gold-admission
+doctrine turned on the database that supplies much of its gold.
+
+MIBiG records **three independent evidence axes**, and conflating them is the
+error the campaign targets: `loci[].evidence` (how the cluster was linked to its
+product), `compounds[].evidence` (how the structure was determined),
+`functions[].evidence` (how a gene's function was established). An annotation is
+admissible only under all three conditions — accepted function evidence,
+accepted locus evidence, active status.
+
+Measured over 3013 entries, 272 with gene annotations, 2566 (annotation,
+function) pairs:
+
+| function | backed | unbacked | admissible | gap |
+|---|---|---|---|---|
+| Scaffold biosynthesis | 355 | 636 | 225 | 130 |
+| Tailoring | 303 | 334 | 204 | 99 |
+| Precursor biosynthesis | 134 | 269 | 84 | 50 |
+| Regulation | 82 | 151 | 63 | 19 |
+| Activation / processing | 32 | 51 | 20 | 12 |
+| **Transport** | **23** | **153** | 19 | 4 |
+| **Resistance/immunity** (focal) | **21** | 22 | **5** | 16 |
+
+950 backed collapses to **620 admissible**. R2 asks for the backed census and R3
+for the admissible one, so `stub-conflated` — which reports merely-backed as
+admissible — clears R2 and fails R3. R4 changes the evidence policy four ways
+and every variant moves the total (595 / 749 / 636 / 640 against 620); the build
+**refuses to emit gold** if they do not.
 
 ## L4 — Molecule & structure (4 templates, 6 campaigns)
 

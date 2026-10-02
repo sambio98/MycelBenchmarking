@@ -1,0 +1,14 @@
+{
+  "corpus_entries": 3013,
+  "entries_with_annotations": 272,
+  "function_vocabulary": [
+    "Activation / processing",
+    "Precursor biosynthesis",
+    "Regulation",
+    "Resistance/immunity",
+    "Scaffold biosynthesis",
+    "Tailoring",
+    "Transport"
+  ],
+  "total_function_annotations": 2566
+}

@@ -26,7 +26,10 @@ scoring path.
 | Provisioning | `docs/environment.md` | tools, DBs, sandbox contract |
 | Template: MIBiG release diff | `src/npbench_c/templates/mibig_diff/` | shared oracle |
 | Campaign: MIBiG 3.1→4.0 diff | `campaigns/mibig-diff-3_1-to-4_0-01/` | oracle 1.0, gate 17/0/5 |
-| Tests | `tests/unit/` | 139 passing |
+| Template: annotation audit | `src/npbench_c/templates/mibig_annotation_audit/` | shared oracle |
+| Campaign: PrnA construct | `campaigns/construct-ecoli-prna-01/` | oracle 1.0, gate 17/0/5 |
+| Campaign: gene-function evidence | `campaigns/mibig-gene-function-evidence-01/` | oracle 1.0, gate 17/0/5 |
+| Tests | `tests/unit/` | 153 passing |
 
 ```bash
 PYTHONPATH=src python3 -m pytest tests -q
@@ -434,6 +437,29 @@ verified rather than assumed.
 The payoff is measurable: the sevadicin instantiation is 2 JSON files and a
 `task.yaml`. Copying six oracle files per campaign would have made drift between
 instantiations invisible, and the catalog expects eight doubled templates.
+
+## Four catalogued designs corrected by grounding
+
+Each was checked against real data before any oracle was written, and each would
+have produced a plausible-looking campaign that could not be built or whose gold
+would have been wrong.
+
+1. **PKS mass balance** — `at_domain.substrates` is empty throughout MIBiG, so
+   extender-unit identity is absent. The template is NRPS-only.
+2. **"Validate the route"** — MIBiG annotates the enzymatic module count, not the
+   number of monomer incorporations; only 1 of 43 admissible entries is exactly
+   balanced. The campaign quantifies the gap instead.
+3. **"What changed and in which field"** between MIBiG releases — the 4.0
+   re-annotation restructured the schema, so a raw field diff is true and
+   useless. The campaign reconciles on a declared mapping instead, and my own
+   first pass reported 2442 taxon re-annotations where there are 8.
+4. **Self-resistance target identification** — the resistance gene is a field
+   lookup and the target is not in MIBiG; inferring it needs homology search.
+   Re-tiered to `build: image`, with the S0-feasible evidence audit built in its
+   place.
+
+The pattern is consistent enough to be a rule: a catalogue entry is a hypothesis
+about data until the fields are inspected.
 
 ## Open items
 

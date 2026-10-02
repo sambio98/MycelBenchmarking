@@ -1,0 +1,167 @@
+campaign_id: mibig-gene-function-evidence-01
+template_id: mibig-annotation-audit
+track: EX
+family: cross_database_reconciliation
+layer: L3_cluster_and_pathway
+np_class: mixed
+version: 1.0.0
+horizon_tier: T-short
+license_class: open
+grader_version: "2.0.0+9fc95658"
+grading_spec_version: "1.0.0"
+min_tool_surface: S0
+
+objective: >
+  MIBiG 4.0 assigns each annotated gene one or more functions from a closed
+  seven-term vocabulary, and records separately how each assignment was
+  established. Audit how well those functional claims are supported: census the
+  assignments per category, count which carry their own evidence, then apply the
+  declared three-condition admissibility policy and report how the admissible
+  set responds when the policy changes.
+
+method_guidance: partial
+
+catalog_deviation: >
+  This is NOT the catalogued T-L3-5 "self-resistance target identification", and
+  the difference matters. MIBiG 4.0 does carry a structured Resistance/immunity
+  gene-function category, which makes "identify the resistance gene" a field
+  lookup rather than an inference. The TARGET the product inhibits is not in
+  MIBiG at all: inferring it requires either reading a free-text product string
+  ("resistant DNA gyrase subunit B" -- transcription, not reasoning) or
+  establishing by homology search that the gene is a paralog of an essential
+  enzyme, which needs HMMER or BLAST and therefore the Phase 1 container.
+
+  Catalogued target inference is therefore re-tiered to build:image. What is
+  S0-buildable, and what this campaign does, is the evidence audit underneath
+  it -- which is the benchmark's own G2 gold-admission doctrine turned on the
+  database that supplies much of its gold. Resistance/immunity is retained as
+  the focal category.
+
+scope_note: >
+  MIBiG records three INDEPENDENT evidence axes and conflating them is the error
+  this campaign targets:
+    loci[].evidence       how the cluster was linked to its product
+    compounds[].evidence  how the compound's structure was determined
+    functions[].evidence  how a gene's function was established
+  An annotation is admissible only when its own function evidence is accepted
+  AND its entry's locus evidence is accepted AND the entry is active. All three,
+  which is why the admissible count sits far below the merely-backed count. R2
+  asks for the backed census and R3 for the admissible one, so a system that
+  conflates the axes clears R2 and fails R3.
+
+template_params:
+  corpus_release: "4.0"
+  corpus_archive: inputs/mibig_json_4.0.tar.gz
+  focal_function: Resistance/immunity
+  # Declared policy changes rather than hand-written expected numbers: each
+  # variant's admissible counts are computed by the oracle.
+  policy_variants:
+    v1_knockout_only:
+      function_evidence_accepted: ["Knock-out"]
+      locus_evidence_accepted: ["Knock-out studies", "Heterologous expression"]
+    v2_plus_activity_assay:
+      function_evidence_accepted: ["Knock-out", "Heterologous expression", "Activity assay"]
+      locus_evidence_accepted: ["Knock-out studies", "Heterologous expression"]
+    v3_any_locus_evidence:
+      function_evidence_accepted: ["Knock-out", "Heterologous expression"]
+      locus_evidence_accepted: ["Knock-out studies", "Heterologous expression",
+                                "Enzymatic assays",
+                                "Gene expression correlated with compound production",
+                                "Correlation of genomic and metabolomic data",
+                                "Homology-based prediction", "In vitro expression"]
+    v4_include_inactive:
+      function_evidence_accepted: ["Knock-out", "Heterologous expression"]
+      locus_evidence_accepted: ["Knock-out studies", "Heterologous expression"]
+      require_active_status: false
+
+output_contract:
+  audit_report.json:
+    corpus_entries: Count of BGC records in the archive.
+    entries_with_annotations: Entries carrying at least one gene annotation.
+    total_function_annotations: >
+      Count of (annotation, function) pairs. The unit is the pair, not the gene:
+      a gene carrying two functions contributes two.
+    function_vocabulary: The seven declared function names.
+    backed_by_function / unbacked_by_function: >
+      Per function name, how many pairs do and do not carry a non-empty
+      functions[].evidence list.
+    function_evidence_method_totals: >
+      Per function-evidence method, how many pairs cite it. A pair citing two
+      methods counts once under each.
+    admissible_by_function: >
+      Per function name, how many pairs satisfy ALL THREE baseline conditions.
+    backed_minus_admissible: Per function name, backed minus admissible.
+    focal_admissible_entries: >
+      Accessions contributing at least one admissible annotation in the focal
+      category. A set; order is not graded.
+    policy_variants: >
+      Keyed by variant name, each with admissible_by_function and its total,
+      recomputed under that variant's accepted evidence methods and status rule.
+
+constraints:
+  reference_dir: reference
+  pinned_tables:
+    - reference/evidence_policy.json   # vocabularies, the baseline policy, counting rules
+
+snapshots_required:
+  shipped: [mibig@4.0]
+  fetched: []
+
+budgets:
+  wall_clock_minutes: 25
+  cpu: 2
+  memory_gb: 4
+  network: off
+
+rungs:
+  - {rung_id: r1, ordinal: 1, name: execute,        gold_tier: G1, warm_start_bundle: null}
+  - {rung_id: r2, ordinal: 2, name: correct,        gold_tier: G1, warm_start_bundle: gold/warm/r2}
+  - {rung_id: r3, ordinal: 3, name: commit,         gold_tier: G1, warm_start_bundle: gold/warm/r3}
+  - {rung_id: r4, ordinal: 4, name: counterfactual, gold_tier: G1, warm_start_bundle: gold/warm/r4}
+
+structural_elements: [verification, counterfactual, planted]
+
+harness:
+  gold_command: ["python3", "-m", "npbench_c.templates.mibig_annotation_audit.build", "{campaign}"]
+  solve_command: ["python3", "-m", "npbench_c.templates.mibig_annotation_audit.solve", "{campaign}", "{submission}"]
+  measure_command: ["python3", "-m", "npbench_c.templates.mibig_annotation_audit.measure", "{campaign}", "{submission}", "{measurement}"]
+  stub_module: npbench_c.sweep.stubs.stub_annotation_audit
+  stub_args: []
+  stub_levels:
+    - {name: stub-naive,      level: naive}
+    - {name: stub-census,     level: census}
+    - {name: stub-analyst,    level: analyst, reference: true}
+    - {name: stub-complete,   level: complete}
+    - {name: stub-conflated,  level: conflated}
+    - {name: stub-noncompute, level: noncompute, mode: no_tool}
+
+grading:
+  chance_levels: {r1: 1.0, r2: 0.004, r3: 0.002, r4: 0.001}
+  chance_level_notes:
+    r1: >
+      Nominal rather than measured, as in the other corpus campaign: the entry
+      and annotation counts cannot be guessed, so the no-computation ablation
+      fails R1 outright. Kept at 1.0 because any system that reads the archive
+      clears it, and the capped floor is computed over R2 upward.
+
+excluded_from_grading:
+  - field: the inferred target of each self-resistance gene
+    reason: >
+      Not in MIBiG. Establishing it needs homology search to show the gene is a
+      paralog of an essential enzyme, which needs the Phase 1 container, or
+      reading a free-text product string, which is transcription. See
+      catalog_deviation.
+  - field: per-annotation accession lists outside the focal category
+    reason: >
+      Counts carry the same information and the lists are long, so grading them
+      would multiply components without adding signal.
+
+notes_for_audit:
+  - >
+    The three evidence axes are the campaign's centre. Check that the admissible
+    count is strictly below the backed count for several categories - if it were
+    not, R3 would restate R2 and the build refuses to emit gold in that case.
+  - >
+    Transport is the starkest category in the backed census (23 backed against
+    153 unbacked), which is worth a sanity look: transporters are frequently
+    assigned by sequence similarity alone.
