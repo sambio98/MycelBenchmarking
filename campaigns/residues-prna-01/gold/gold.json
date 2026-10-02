@@ -1,0 +1,1239 @@
+{
+  "accession": "P95480",
+  "annotated_positions": [
+    13,
+    15,
+    16,
+    39,
+    42,
+    45,
+    49,
+    50,
+    79,
+    187,
+    272,
+    274,
+    337,
+    346,
+    347,
+    348,
+    349,
+    350,
+    443,
+    444,
+    450,
+    454
+  ],
+  "binding_positions_by_ligand": {
+    "ChEBI:CHEBI:17996": [
+      348,
+      349
+    ],
+    "ChEBI:CHEBI:57692": [
+      13,
+      15,
+      16,
+      39,
+      42,
+      45,
+      49,
+      50,
+      187,
+      337,
+      350
+    ],
+    "ChEBI:CHEBI:57912": [
+      346,
+      443,
+      444,
+      450,
+      454
+    ],
+    "ChEBI:CHEBI:58713": [
+      79,
+      346,
+      443,
+      444,
+      450,
+      454
+    ]
+  },
+  "confirmation": {
+    "active_site_contacts": [
+      "ChEBI:CHEBI:57912"
+    ],
+    "active_site_position": 79,
+    "active_site_residue": "K",
+    "annotated_by_ligand": {
+      "ChEBI:CHEBI:17996": [
+        348,
+        349
+      ],
+      "ChEBI:CHEBI:57692": [
+        13,
+        16,
+        39,
+        42,
+        45,
+        49,
+        50,
+        187,
+        337,
+        350
+      ],
+      "ChEBI:CHEBI:57912": [
+        346,
+        443,
+        444,
+        450,
+        454
+      ],
+      "ChEBI:CHEBI:58713": []
+    },
+    "chain": "A",
+    "confirmed_count_by_ligand": {
+      "ChEBI:CHEBI:17996": 2,
+      "ChEBI:CHEBI:57692": 10,
+      "ChEBI:CHEBI:57912": 5,
+      "ChEBI:CHEBI:58713": 0
+    },
+    "confirmed_positions": {
+      "ChEBI:CHEBI:17996": [
+        348,
+        349
+      ],
+      "ChEBI:CHEBI:57692": [
+        13,
+        16,
+        39,
+        42,
+        45,
+        49,
+        50,
+        187,
+        337,
+        350
+      ],
+      "ChEBI:CHEBI:57912": [
+        346,
+        443,
+        444,
+        450,
+        454
+      ],
+      "ChEBI:CHEBI:58713": []
+    },
+    "contact_by_ligand": {
+      "ChEBI:CHEBI:17996": [
+        342,
+        344,
+        347,
+        348,
+        349
+      ],
+      "ChEBI:CHEBI:57692": [
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        37,
+        38,
+        39,
+        42,
+        43,
+        44,
+        45,
+        47,
+        49,
+        50,
+        185,
+        186,
+        187,
+        217,
+        218,
+        219,
+        220,
+        221,
+        223,
+        245,
+        274,
+        276,
+        317,
+        335,
+        336,
+        337,
+        341,
+        344,
+        347,
+        349,
+        350,
+        353
+      ],
+      "ChEBI:CHEBI:57912": [
+        52,
+        53,
+        79,
+        82,
+        101,
+        102,
+        103,
+        346,
+        443,
+        444,
+        450,
+        454,
+        455,
+        459
+      ],
+      "ChEBI:CHEBI:58713": []
+    },
+    "contact_not_annotated_by_ligand": {
+      "ChEBI:CHEBI:17996": [
+        342,
+        344,
+        347
+      ],
+      "ChEBI:CHEBI:57692": [
+        11,
+        12,
+        14,
+        15,
+        17,
+        37,
+        38,
+        43,
+        44,
+        47,
+        185,
+        186,
+        217,
+        218,
+        219,
+        220,
+        221,
+        223,
+        245,
+        274,
+        276,
+        317,
+        335,
+        336,
+        341,
+        344,
+        347,
+        349,
+        353
+      ],
+      "ChEBI:CHEBI:57912": [
+        52,
+        53,
+        79,
+        82,
+        101,
+        102,
+        103,
+        455,
+        459
+      ],
+      "ChEBI:CHEBI:58713": []
+    },
+    "numbering": {
+      "auth_to_uniprot": 0,
+      "label_to_uniprot": 0
+    },
+    "per_ligand": {
+      "ChEBI:CHEBI:17996": {
+        "annotated_citing_this_structure": [
+          348,
+          349
+        ],
+        "annotated_not_in_contact": [],
+        "component_id": "CL",
+        "confirmed": 2,
+        "contact_not_annotated": [
+          342,
+          344,
+          347
+        ],
+        "contact_positions": [
+          342,
+          344,
+          347,
+          348,
+          349
+        ],
+        "copies_in_chain": 1
+      },
+      "ChEBI:CHEBI:57692": {
+        "annotated_citing_this_structure": [
+          13,
+          16,
+          39,
+          42,
+          45,
+          49,
+          50,
+          187,
+          337,
+          350
+        ],
+        "annotated_not_in_contact": [],
+        "component_id": "FAD",
+        "confirmed": 10,
+        "contact_not_annotated": [
+          11,
+          12,
+          14,
+          15,
+          17,
+          37,
+          38,
+          43,
+          44,
+          47,
+          185,
+          186,
+          217,
+          218,
+          219,
+          220,
+          221,
+          223,
+          245,
+          274,
+          276,
+          317,
+          335,
+          336,
+          341,
+          344,
+          347,
+          349,
+          353
+        ],
+        "contact_positions": [
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          37,
+          38,
+          39,
+          42,
+          43,
+          44,
+          45,
+          47,
+          49,
+          50,
+          185,
+          186,
+          187,
+          217,
+          218,
+          219,
+          220,
+          221,
+          223,
+          245,
+          274,
+          276,
+          317,
+          335,
+          336,
+          337,
+          341,
+          344,
+          347,
+          349,
+          350,
+          353
+        ],
+        "copies_in_chain": 1
+      },
+      "ChEBI:CHEBI:57912": {
+        "annotated_citing_this_structure": [
+          346,
+          443,
+          444,
+          450,
+          454
+        ],
+        "annotated_not_in_contact": [],
+        "component_id": "TRP",
+        "confirmed": 5,
+        "contact_not_annotated": [
+          52,
+          53,
+          79,
+          82,
+          101,
+          102,
+          103,
+          455,
+          459
+        ],
+        "contact_positions": [
+          52,
+          53,
+          79,
+          82,
+          101,
+          102,
+          103,
+          346,
+          443,
+          444,
+          450,
+          454,
+          455,
+          459
+        ],
+        "copies_in_chain": 1
+      },
+      "ChEBI:CHEBI:58713": {
+        "annotated_citing_this_structure": [],
+        "annotated_not_in_contact": [],
+        "component_id": "CTE",
+        "confirmed": 0,
+        "contact_not_annotated": [],
+        "contact_positions": [],
+        "copies_in_chain": 0
+      }
+    },
+    "structure": "2AQJ",
+    "totals": {
+      "annotated_citing_this_structure": 17,
+      "confirmed": 17,
+      "unconfirmed": 0
+    }
+  },
+  "eco_code_citation_totals": {
+    "ECO:0000269": 46,
+    "ECO:0000305": 2,
+    "ECO:0007744": 60
+  },
+  "focal_structure": {
+    "ligand_copies": [
+      "CL:A:700",
+      "FAD:A:600",
+      "TRP:A:650"
+    ],
+    "pdb_id": "2AQJ",
+    "polymer_atom_records": 4162
+  },
+  "functional_record_counts": {
+    "Active site": 1,
+    "Binding site": 24,
+    "Mutagenesis": 8,
+    "Site": 2
+  },
+  "inferred_only_records": [
+    "Site@346"
+  ],
+  "ligand_vocabulary": {
+    "ChEBI:CHEBI:17996": "chloride",
+    "ChEBI:CHEBI:57692": "FAD",
+    "ChEBI:CHEBI:57912": "L-tryptophan",
+    "ChEBI:CHEBI:58713": "7-chloro-L-tryptophan"
+  },
+  "mutagenesis_check": {
+    "agreements": 8,
+    "disagreements": 0
+  },
+  "mutagenesis_original_residue_agreements": 8,
+  "mutagenesis_original_residue_disagreements": 0,
+  "pdb_cross_references": [
+    "2APG",
+    "2AQJ",
+    "2AR8",
+    "2ARD",
+    "2JKC",
+    "4Z43",
+    "4Z44"
+  ],
+  "pdb_evidence_index": {
+    "2APG": [
+      13,
+      15,
+      16,
+      39,
+      42,
+      45,
+      49,
+      50,
+      187,
+      337,
+      348,
+      349,
+      350
+    ],
+    "2AQJ": [
+      13,
+      16,
+      39,
+      42,
+      45,
+      49,
+      50,
+      187,
+      337,
+      346,
+      348,
+      349,
+      350,
+      443,
+      444,
+      450,
+      454
+    ],
+    "2AR8": [
+      13,
+      15,
+      16,
+      39,
+      42,
+      45,
+      49,
+      50,
+      79,
+      187,
+      337,
+      346,
+      348,
+      349,
+      350,
+      443,
+      444,
+      450,
+      454
+    ],
+    "2JKC": [
+      13,
+      39,
+      42,
+      45,
+      50,
+      187,
+      337,
+      350,
+      443,
+      444,
+      454
+    ]
+  },
+  "policy_admitted_counts": {
+    "v1_experimental_only": {
+      "Active site": 1,
+      "Binding site": 24,
+      "Mutagenesis": 8,
+      "Site": 0
+    },
+    "v2_structural_only": {
+      "Active site": 0,
+      "Binding site": 24,
+      "Mutagenesis": 0,
+      "Site": 0
+    },
+    "v3_include_inferred": {
+      "Active site": 1,
+      "Binding site": 24,
+      "Mutagenesis": 8,
+      "Site": 1
+    },
+    "v4_inferred_only": {
+      "Active site": 0,
+      "Binding site": 0,
+      "Mutagenesis": 0,
+      "Site": 1
+    }
+  },
+  "policy_admitted_ligands": {
+    "v1_experimental_only": {
+      "ChEBI:CHEBI:17996": [
+        348,
+        349
+      ],
+      "ChEBI:CHEBI:57692": [
+        13,
+        15,
+        16,
+        39,
+        42,
+        45,
+        49,
+        50,
+        187,
+        337,
+        350
+      ],
+      "ChEBI:CHEBI:57912": [
+        346,
+        443,
+        444,
+        450,
+        454
+      ],
+      "ChEBI:CHEBI:58713": [
+        79,
+        346,
+        443,
+        444,
+        450,
+        454
+      ]
+    },
+    "v2_structural_only": {
+      "ChEBI:CHEBI:17996": [
+        348,
+        349
+      ],
+      "ChEBI:CHEBI:57692": [
+        13,
+        15,
+        16,
+        39,
+        42,
+        45,
+        49,
+        50,
+        187,
+        337,
+        350
+      ],
+      "ChEBI:CHEBI:57912": [
+        346,
+        443,
+        444,
+        450,
+        454
+      ],
+      "ChEBI:CHEBI:58713": [
+        79,
+        346,
+        443,
+        444,
+        450,
+        454
+      ]
+    },
+    "v3_include_inferred": {
+      "ChEBI:CHEBI:17996": [
+        348,
+        349
+      ],
+      "ChEBI:CHEBI:57692": [
+        13,
+        15,
+        16,
+        39,
+        42,
+        45,
+        49,
+        50,
+        187,
+        337,
+        350
+      ],
+      "ChEBI:CHEBI:57912": [
+        346,
+        443,
+        444,
+        450,
+        454
+      ],
+      "ChEBI:CHEBI:58713": [
+        79,
+        346,
+        443,
+        444,
+        450,
+        454
+      ]
+    },
+    "v4_inferred_only": {}
+  },
+  "policy_admitted_totals": {
+    "v1_experimental_only": 33,
+    "v2_structural_only": 24,
+    "v3_include_inferred": 34,
+    "v4_inferred_only": 1
+  },
+  "policy_variants": {
+    "v1_experimental_only": {
+      "accepted_classes": [
+        "experimental"
+      ],
+      "admitted_binding_positions_by_ligand": {
+        "ChEBI:CHEBI:17996": [
+          348,
+          349
+        ],
+        "ChEBI:CHEBI:57692": [
+          13,
+          15,
+          16,
+          39,
+          42,
+          45,
+          49,
+          50,
+          187,
+          337,
+          350
+        ],
+        "ChEBI:CHEBI:57912": [
+          346,
+          443,
+          444,
+          450,
+          454
+        ],
+        "ChEBI:CHEBI:58713": [
+          79,
+          346,
+          443,
+          444,
+          450,
+          454
+        ]
+      },
+      "admitted_record_counts": {
+        "Active site": 1,
+        "Binding site": 24,
+        "Mutagenesis": 8,
+        "Site": 0
+      },
+      "admitted_total": 33
+    },
+    "v2_structural_only": {
+      "accepted_classes": [
+        "structural"
+      ],
+      "admitted_binding_positions_by_ligand": {
+        "ChEBI:CHEBI:17996": [
+          348,
+          349
+        ],
+        "ChEBI:CHEBI:57692": [
+          13,
+          15,
+          16,
+          39,
+          42,
+          45,
+          49,
+          50,
+          187,
+          337,
+          350
+        ],
+        "ChEBI:CHEBI:57912": [
+          346,
+          443,
+          444,
+          450,
+          454
+        ],
+        "ChEBI:CHEBI:58713": [
+          79,
+          346,
+          443,
+          444,
+          450,
+          454
+        ]
+      },
+      "admitted_record_counts": {
+        "Active site": 0,
+        "Binding site": 24,
+        "Mutagenesis": 0,
+        "Site": 0
+      },
+      "admitted_total": 24
+    },
+    "v3_include_inferred": {
+      "accepted_classes": [
+        "experimental",
+        "inferred",
+        "structural"
+      ],
+      "admitted_binding_positions_by_ligand": {
+        "ChEBI:CHEBI:17996": [
+          348,
+          349
+        ],
+        "ChEBI:CHEBI:57692": [
+          13,
+          15,
+          16,
+          39,
+          42,
+          45,
+          49,
+          50,
+          187,
+          337,
+          350
+        ],
+        "ChEBI:CHEBI:57912": [
+          346,
+          443,
+          444,
+          450,
+          454
+        ],
+        "ChEBI:CHEBI:58713": [
+          79,
+          346,
+          443,
+          444,
+          450,
+          454
+        ]
+      },
+      "admitted_record_counts": {
+        "Active site": 1,
+        "Binding site": 24,
+        "Mutagenesis": 8,
+        "Site": 1
+      },
+      "admitted_total": 34
+    },
+    "v4_inferred_only": {
+      "accepted_classes": [
+        "inferred"
+      ],
+      "admitted_binding_positions_by_ligand": {},
+      "admitted_record_counts": {
+        "Active site": 0,
+        "Binding site": 0,
+        "Mutagenesis": 0,
+        "Site": 1
+      },
+      "admitted_total": 1
+    }
+  },
+  "record_class_counts": {
+    "Active site": {
+      "experimental": 1,
+      "inferred": 0,
+      "none": 0,
+      "structural": 0
+    },
+    "Binding site": {
+      "experimental": 24,
+      "inferred": 0,
+      "none": 0,
+      "structural": 0
+    },
+    "Mutagenesis": {
+      "experimental": 8,
+      "inferred": 0,
+      "none": 0,
+      "structural": 0
+    },
+    "Site": {
+      "experimental": 0,
+      "inferred": 1,
+      "none": 1,
+      "structural": 0
+    }
+  },
+  "secondary_structure_counts": {
+    "Beta strand": 24,
+    "Chain": 1,
+    "Helix": 27,
+    "Turn": 3
+  },
+  "sequence_length": 538,
+  "structure_swap": {
+    "active_site_contacts": [
+      "ChEBI:CHEBI:58713"
+    ],
+    "active_site_position": 79,
+    "active_site_residue": "K",
+    "annotated_by_ligand": {
+      "ChEBI:CHEBI:17996": [
+        348,
+        349
+      ],
+      "ChEBI:CHEBI:57692": [
+        13,
+        15,
+        16,
+        39,
+        42,
+        45,
+        49,
+        50,
+        187,
+        337,
+        350
+      ],
+      "ChEBI:CHEBI:57912": [],
+      "ChEBI:CHEBI:58713": [
+        79,
+        346,
+        443,
+        444,
+        450,
+        454
+      ]
+    },
+    "chain": "A",
+    "confirmed_count_by_ligand": {
+      "ChEBI:CHEBI:17996": 2,
+      "ChEBI:CHEBI:57692": 11,
+      "ChEBI:CHEBI:57912": 0,
+      "ChEBI:CHEBI:58713": 6
+    },
+    "confirmed_delta_by_ligand": {
+      "ChEBI:CHEBI:17996": 0,
+      "ChEBI:CHEBI:57692": 1,
+      "ChEBI:CHEBI:57912": -5,
+      "ChEBI:CHEBI:58713": 6
+    },
+    "confirmed_positions": {
+      "ChEBI:CHEBI:17996": [
+        348,
+        349
+      ],
+      "ChEBI:CHEBI:57692": [
+        13,
+        15,
+        16,
+        39,
+        42,
+        45,
+        49,
+        50,
+        187,
+        337,
+        350
+      ],
+      "ChEBI:CHEBI:57912": [],
+      "ChEBI:CHEBI:58713": [
+        79,
+        346,
+        443,
+        444,
+        450,
+        454
+      ]
+    },
+    "contact_by_ligand": {
+      "ChEBI:CHEBI:17996": [
+        342,
+        344,
+        347,
+        348,
+        349
+      ],
+      "ChEBI:CHEBI:57692": [
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        37,
+        38,
+        39,
+        42,
+        43,
+        44,
+        45,
+        47,
+        49,
+        50,
+        51,
+        164,
+        185,
+        186,
+        187,
+        217,
+        218,
+        219,
+        220,
+        221,
+        223,
+        245,
+        274,
+        276,
+        317,
+        335,
+        336,
+        337,
+        338,
+        341,
+        344,
+        347,
+        349,
+        350,
+        353
+      ],
+      "ChEBI:CHEBI:57912": [],
+      "ChEBI:CHEBI:58713": [
+        52,
+        53,
+        79,
+        82,
+        101,
+        102,
+        103,
+        346,
+        347,
+        443,
+        444,
+        450,
+        454,
+        455,
+        459
+      ]
+    },
+    "contact_not_annotated_by_ligand": {
+      "ChEBI:CHEBI:17996": [
+        342,
+        344,
+        347
+      ],
+      "ChEBI:CHEBI:57692": [
+        11,
+        12,
+        14,
+        17,
+        37,
+        38,
+        43,
+        44,
+        47,
+        51,
+        164,
+        185,
+        186,
+        217,
+        218,
+        219,
+        220,
+        221,
+        223,
+        245,
+        274,
+        276,
+        317,
+        335,
+        336,
+        338,
+        341,
+        344,
+        347,
+        349,
+        353
+      ],
+      "ChEBI:CHEBI:57912": [],
+      "ChEBI:CHEBI:58713": [
+        52,
+        53,
+        82,
+        101,
+        102,
+        103,
+        347,
+        455,
+        459
+      ]
+    },
+    "numbering": {
+      "auth_to_uniprot": 0,
+      "label_to_uniprot": 0
+    },
+    "per_ligand": {
+      "ChEBI:CHEBI:17996": {
+        "annotated_citing_this_structure": [
+          348,
+          349
+        ],
+        "annotated_not_in_contact": [],
+        "component_id": "CL",
+        "confirmed": 2,
+        "contact_not_annotated": [
+          342,
+          344,
+          347
+        ],
+        "contact_positions": [
+          342,
+          344,
+          347,
+          348,
+          349
+        ],
+        "copies_in_chain": 1
+      },
+      "ChEBI:CHEBI:57692": {
+        "annotated_citing_this_structure": [
+          13,
+          15,
+          16,
+          39,
+          42,
+          45,
+          49,
+          50,
+          187,
+          337,
+          350
+        ],
+        "annotated_not_in_contact": [],
+        "component_id": "FAD",
+        "confirmed": 11,
+        "contact_not_annotated": [
+          11,
+          12,
+          14,
+          17,
+          37,
+          38,
+          43,
+          44,
+          47,
+          51,
+          164,
+          185,
+          186,
+          217,
+          218,
+          219,
+          220,
+          221,
+          223,
+          245,
+          274,
+          276,
+          317,
+          335,
+          336,
+          338,
+          341,
+          344,
+          347,
+          349,
+          353
+        ],
+        "contact_positions": [
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          37,
+          38,
+          39,
+          42,
+          43,
+          44,
+          45,
+          47,
+          49,
+          50,
+          51,
+          164,
+          185,
+          186,
+          187,
+          217,
+          218,
+          219,
+          220,
+          221,
+          223,
+          245,
+          274,
+          276,
+          317,
+          335,
+          336,
+          337,
+          338,
+          341,
+          344,
+          347,
+          349,
+          350,
+          353
+        ],
+        "copies_in_chain": 1
+      },
+      "ChEBI:CHEBI:57912": {
+        "annotated_citing_this_structure": [],
+        "annotated_not_in_contact": [],
+        "component_id": "TRP",
+        "confirmed": 0,
+        "contact_not_annotated": [],
+        "contact_positions": [],
+        "copies_in_chain": 0
+      },
+      "ChEBI:CHEBI:58713": {
+        "annotated_citing_this_structure": [
+          79,
+          346,
+          443,
+          444,
+          450,
+          454
+        ],
+        "annotated_not_in_contact": [],
+        "component_id": "CTE",
+        "confirmed": 6,
+        "contact_not_annotated": [
+          52,
+          53,
+          82,
+          101,
+          102,
+          103,
+          347,
+          455,
+          459
+        ],
+        "contact_positions": [
+          52,
+          53,
+          79,
+          82,
+          101,
+          102,
+          103,
+          346,
+          347,
+          443,
+          444,
+          450,
+          454,
+          455,
+          459
+        ],
+        "copies_in_chain": 1
+      }
+    },
+    "structure": "2AR8",
+    "totals": {
+      "annotated_citing_this_structure": 19,
+      "confirmed": 19,
+      "unconfirmed": 0
+    }
+  },
+  "unevidenced_records": [
+    "Site@79"
+  ]
+}

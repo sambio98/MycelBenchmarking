@@ -121,6 +121,14 @@ grading:
       carried by the four residual vectors, which is what this figure reflects.
 
 excluded_from_grading:
+  - field: the enumerated compound list
+    reason: >
+      It is a field of the shipped entry, and every warm bundle hands it over
+      because neither the assembly rung nor the reconciliation rung can be posed
+      without knowing which compounds the entry names. Grading it would measure a
+      parse the sandbox has already answered. Caught mechanically: the readiness
+      gate now refuses a component whose composite gold value sits in the warm
+      bundle of the rung that grades it.
   - field: residual attribution to specific tailoring chemistry
     reason: >
       Attributing a residual to a named biosynthetic step (a fatty-acid starter,

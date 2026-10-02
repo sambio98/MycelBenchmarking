@@ -1,0 +1,228 @@
+campaign_id: pocket-rebh-01
+template_id: structure-features
+track: EX
+family: structural_geometry_and_contacts
+layer: L5_target_and_mechanism
+np_class: mixed
+version: 1.0.0
+horizon_tier: T-short
+license_class: open
+grader_version: "2.0.0+9fc95658"
+grading_spec_version: "1.0.0"
+min_tool_surface: S0
+
+objective: >
+  2E4G is the RebH tryptophan complex: two polymer chains, each with one
+  substrate molecule bound, and an expression tag that moves the entity
+  numbering while leaving the author numbering aligned to UniProt. Compute the
+  contact shell of each bound substrate at the pinned cutoff, describe the
+  pocket geometrically, reconcile the shell against UniProt's own binding-site
+  annotations for this very entry, then predict how the shell responds when the
+  cutoff changes and when one lining side chain is truncated.
+
+method_guidance: partial
+
+scope_note: >
+  Three traps are deliberate and all three are decidable from the file.
+  First, NUMBERING: label_seq_id and auth_seq_id are not the same axis here and
+  neither is assumed equal to the UniProt position -- the alignment record
+  states the offsets and R1 grades them. Second, SELECTION: a contact set
+  changes if hydrogens, alternate locations, waters or a second model are
+  treated differently, so every selection rule is pinned in
+  geometry_rules.json rather than left to the solver. Third, SYMMETRY: the two
+  chains are an internal control, because the two shells must agree once
+  expressed in sequence positions. Crystallographic symmetry mates are NOT
+  generated, so a contact across a symmetry axis is outside the declared rule
+  and is not reported.
+
+template_params:
+  accession: Q8KHZ8
+  annotation_input: inputs/Q8KHZ8.json
+  structures:
+    focal:
+      pdb_id: 2E4G
+      input: inputs/2E4G.cif
+      chain: A
+  ligand_components:
+    "ChEBI:CHEBI:57912": TRP
+  focal_ligand_chebi: "ChEBI:CHEBI:57912"
+  # The in-silico substitution sweeps the focal copy's whole contact shell, one
+  # side chain at a time. The positions are deliberately NOT listed: they are
+  # the shell R3 computes, and listing them here would hand that answer over.
+  truncation_scope: focal_shell
+  cutoff_variants: [3.5, 4.0, 5.0, 6.0]
+
+output_contract:
+  pocket_report.json:
+    pdb_id / accession: From the coordinate file and the annotation input.
+    atom_inventory: >
+      polymer_atom_records, ligand_atom_records (non-water hetero),
+      water_atom_records, excluded_hydrogen_records, excluded_altloc_records.
+      The two exclusion counts are reported so the selection rule is visibly
+      applied rather than assumed.
+    polymer_chains: Author chain identifiers carrying polymer atoms.
+    ligand_copies: >
+      COMPONENT:CHAIN:RESIDUE to heavy-atom count, for every non-water hetero
+      group.
+    numbering: >
+      label_to_uniprot and auth_to_uniprot, read from the alignment record per
+      geometry_rules.json#numbering_rule.
+    resolved_residues_per_chain / resolved_span_per_chain: >
+      Count, and [first, last] author residue number, per polymer chain.
+    sequence_agreement: >
+      Over all resolved residues mapped into UniProt numbering, how many agree
+      with the sequence at that position and how many do not.
+    shells:
+      contact_cutoff_angstrom: The pinned cutoff, echoed.
+      contacts_by_copy: >
+        Per ligand copy, the sorted contact residues as CHAIN:RESIDUE:ONELETTER.
+      contact_counts_by_copy: Per ligand copy, the number of contact residues.
+      nearest_contact_by_copy: >
+        Per ligand copy, the single closest contact residue under the declared
+        tie-break: smallest distance, then smallest label.
+      nearest_contact_distance_by_copy: >
+        The matching distance, to the declared number of decimals.
+      contact_positions_by_copy: >
+        Per ligand copy, the same-chain contacts as UniProt positions.
+      chain_symmetry: >
+        Per chemical component present in more than one copy, the copies
+        compared, whether their position sets are identical, and the symmetric
+        difference.
+    descriptors:
+      focal_copy / focal_ligand / heavy_atoms: The copy the descriptors describe.
+      centroid / radius_of_gyration: Per descriptor_rules.
+      grid_census: >
+        grid_points_near_ligand, grid_points_rejected_clash and
+        grid_points_rejected_bulk, which together account for every lattice
+        point the volume rule visits.
+      pocket_grid_points / pocket_volume_a3: Per pocket_volume_rule.
+      contact_positions_uniprot / annotated_positions_uniprot: >
+        The computed shell, and the binding-site positions UniProt annotates for
+        the focal ligand while citing THIS entry as structural evidence.
+      confirmation_sets: >
+        confirmed, annotated_not_in_contact and contact_not_annotated over those
+        two sets.
+      annotation_precision / annotation_recall: >
+        Of the annotation set against the geometric shell, to six decimals.
+        Reported for audit; see excluded_from_grading.
+    counterfactuals:
+      cutoff_sweep_counts / cutoff_sweep_positions: >
+        Per declared cutoff variant, the focal copy's contact count and its
+        same-chain contacts as UniProt positions.
+      truncation: >
+        scope, shell_size, atoms_removed_by_position (keyed by UniProt position
+        as a string), contact_survives and contact_lost. Every residue in the
+        focal copy's shell is truncated to alanine independently, under the
+        declared rule, and the question is which ones then stop touching the
+        ligand: a residue reaching it only through its side chain is lost, one
+        reaching it through backbone or CB survives.
+
+constraints:
+  reference_dir: reference
+  pinned_tables:
+    - reference/eco_policy.json        # feature vocabulary and ECO classes
+    - reference/geometry_rules.json    # atom selection, contact, volume, numbering
+    - reference/residue_alphabet.json  # three-letter to one-letter mapping
+    - reference/campaign_keys.json     # ChEBI to component join, focal chain, variants
+
+snapshots_required:
+  shipped: [uniprot@Q8KHZ8.1, pdb@2E4G]
+  fetched: []
+
+budgets:
+  wall_clock_minutes: 25
+  cpu: 2
+  memory_gb: 4
+  network: off
+
+rungs:
+  - {rung_id: r1, ordinal: 1, name: execute,        gold_tier: G1, warm_start_bundle: null}
+  - {rung_id: r2, ordinal: 2, name: correct,        gold_tier: G1, warm_start_bundle: gold/warm/r2}
+  - {rung_id: r3, ordinal: 3, name: commit,         gold_tier: G1, warm_start_bundle: gold/warm/r3}
+  - {rung_id: r4, ordinal: 4, name: counterfactual, gold_tier: G1, warm_start_bundle: gold/warm/r4}
+
+structural_elements: [verification, counterfactual, control]
+
+harness:
+  gold_command: ["python3", "-m", "npbench_c.templates.structure_features.pocket.build", "{campaign}"]
+  solve_command: ["python3", "-m", "npbench_c.templates.structure_features.pocket.solve", "{campaign}", "{submission}"]
+  measure_command: ["python3", "-m", "npbench_c.templates.structure_features.pocket.measure", "{campaign}", "{submission}", "{measurement}"]
+  stub_module: npbench_c.sweep.stubs.stub_structure
+  stub_args: ["--ladder", "pocket"]
+  stub_levels:
+    - {name: stub-parser,      level: parser}
+    - {name: stub-shells,      level: shells, reference: true}
+    - {name: stub-descriptors, level: descriptors}
+    - {name: stub-complete,    level: complete}
+    - {name: stub-labelseq,    level: labelseq}
+    - {name: stub-noncompute,  level: noncompute, mode: no_tool}
+
+grading:
+  chance_levels: {r1: 1.0, r2: 0.002, r3: 0.001, r4: 0.001}
+  chance_level_notes:
+    r1: >
+      Nominal rather than measured. Atom counts and numbering offsets cannot be
+      guessed, so the no-computation ablation fails R1 outright; the level is
+      kept at 1.0 because any system that opens the file clears it, and the
+      capped floor is computed over R2 upward.
+    r3: >
+      A lattice count in the hundreds plus two position sets. Treating this as
+      guessable would overstate what a chance baseline can do, so the level is a
+      nominal small number rather than an enumeration.
+
+excluded_from_grading:
+  - field: the full per-contact distance map
+    reason: >
+      A distance is a square root of a sum, so its last reported decimal can
+      depend on reduction order. The contact SET is order-independent, and the
+      one distance that is graded is the nearest contact under a declared
+      tie-break, compared with a tolerance of one unit in the last reported
+      decimal.
+  - field: annotation_precision and annotation_recall
+    reason: >
+      Both are exact functions of the two position sets, which are graded. A
+      component for each would multiply the conjunctive product without adding
+      an independent claim.
+  - field: contact_positions_uniprot in the descriptors block
+    reason: >
+      R2 already grades the same positions as contact_positions_by_copy, so a
+      component here would score one computation twice -- and because the warm
+      R3 bundle hands over R2's shells, it would also be answered by the bundle.
+      What R3 adds is the reconciliation against the annotation set, which is
+      graded.
+  - field: pocket_volume_a3
+    reason: >
+      The lattice spacing is 1.0 angstrom, so the volume is the admitted point
+      count times one. pocket_grid_points is graded instead; grading both would
+      count the same computation twice.
+  - field: solvent-accessible surface area, druggability and any pocket score
+    reason: >
+      Not computable from coordinates alone under a declared rule, and every
+      published definition carries parameter choices that would become part of
+      the answer. The campaign grades a declared lattice count instead, which is
+      reproducible to the point.
+
+notes_for_audit:
+  - >
+    The expression tag is the point of R1. In this entry label_seq_id runs from
+    21 where the UniProt sequence runs from 1, while the author numbering is
+    aligned; so label_to_uniprot is -20 and auth_to_uniprot is 0. A system that
+    assumes either structure axis equals the UniProt position produces a shell
+    that is internally consistent and entirely wrong, which is why the offsets
+    are graded on their own rung before anything depends on them.
+  - >
+    The two chains are an internal control rather than extra data. Check that
+    chain_symmetry reports identical position sets: if it does not, either the
+    structure is genuinely asymmetric at the site or the numbering is being
+    applied per chain, and the two are distinguishable only by looking.
+  - >
+    The truncation sweep splits the shell almost evenly -- seven residues lose
+    the contact and seven keep it through backbone or CB alone -- so neither
+    verdict is the safe guess and the build refuses to emit gold if the split
+    collapses. Check that split survives any change to the cutoff.
+  - >
+    Every annotated position is inside the geometric shell and none is outside
+    it, at this cutoff and at 4.0 and 3.5 angstrom as well. The disagreement is
+    entirely one-directional -- the annotation is a conservative subset of the
+    contacts -- so R3's discriminating content is the contact set and the
+    contact_not_annotated set, not the confirmation verdict.

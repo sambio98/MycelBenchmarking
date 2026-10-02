@@ -117,14 +117,6 @@
       "chance_level": 0.06,
       "components": [
         {
-          "name": "compounds_enumerated",
-          "scorer": "set_exact",
-          "args": {
-            "pred": "pred:compounds",
-            "gold": "gold:compounds"
-          }
-        },
-        {
           "name": "residual_sevadicin",
           "scorer": "exact",
           "args": {

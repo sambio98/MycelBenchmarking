@@ -8,28 +8,31 @@ scoring path.
 
 | Component | Path | State |
 |---|---|---|
-| Scoring primitives | `src/npbench_c/grading/primitives.py` | 11 primitives, stdlib-only |
+| Scoring primitives | `src/npbench_c/grading/primitives.py` | 12 primitives, stdlib-only |
 | Composition policy | `src/npbench_c/grading/compose.py` | product / geometric+floor / min |
 | Rung ladders | `src/npbench_c/grading/ladder.py` | depth, monotonicity, chance floor |
 | Grader | `src/npbench_c/grading/grade.py` | pure declarative comparator |
 | Grader identity | `src/npbench_c/grading/version.py` | semver + content hash |
-| Readiness gate | `src/npbench_c/readiness/gate.py` | 16 mechanical checks, 5 pending-on-agent-runs |
+| Readiness gate | `src/npbench_c/readiness/gate.py` | 18 mechanical checks, 5 pending-on-agent-runs |
 | Template: construct design | `src/npbench_c/templates/construct_design/` | shared engine, 2 ladders |
-| Campaign: construct design | `campaigns/construct-ecoli-rebh-01/` | oracle 1.0, gate 17/0/5 |
-| Campaign: constraint conflict | `campaigns/constraint-conflict-ecoli-rebh-01/` | oracle 1.0, gate 17/0/5 |
-| Campaign: feasible control | `campaigns/constraint-feasible-ecoli-rebh-01/` | oracle 1.0, gate 17/0/5 |
+| Campaign: construct design | `campaigns/construct-ecoli-rebh-01/` | oracle 1.0, gate 18/0/5 |
+| Campaign: constraint conflict | `campaigns/constraint-conflict-ecoli-rebh-01/` | oracle 1.0, gate 18/0/5 |
+| Campaign: feasible control | `campaigns/constraint-feasible-ecoli-rebh-01/` | oracle 1.0, gate 18/0/5 |
 | Template: NRPS mass balance | `src/npbench_c/templates/mass_balance_nrps/` | shared oracle, 2 instantiations |
-| Campaign: malleobactin | `campaigns/massbalance-nrps-malleobactin-01/` | oracle 1.0, gate 17/0/5 |
-| Campaign: sevadicin | `campaigns/massbalance-nrps-sevadicin-01/` | oracle 1.0, gate 17/0/5 |
+| Campaign: malleobactin | `campaigns/massbalance-nrps-malleobactin-01/` | oracle 1.0, gate 18/0/5 |
+| Campaign: sevadicin | `campaigns/massbalance-nrps-sevadicin-01/` | oracle 1.0, gate 18/0/5 |
 | Internal sweep | `src/npbench_c/sweep/` | runner, stats, gates, stub fixtures |
 | Catalog | `docs/catalog.md` | 24 templates / 32 campaigns, grounded |
 | Provisioning | `docs/environment.md` | tools, DBs, sandbox contract |
 | Template: MIBiG release diff | `src/npbench_c/templates/mibig_diff/` | shared oracle |
-| Campaign: MIBiG 3.1→4.0 diff | `campaigns/mibig-diff-3_1-to-4_0-01/` | oracle 1.0, gate 17/0/5 |
+| Campaign: MIBiG 3.1→4.0 diff | `campaigns/mibig-diff-3_1-to-4_0-01/` | oracle 1.0, gate 18/0/5 |
 | Template: annotation audit | `src/npbench_c/templates/mibig_annotation_audit/` | shared oracle |
-| Campaign: PrnA construct | `campaigns/construct-ecoli-prna-01/` | oracle 1.0, gate 17/0/5 |
-| Campaign: gene-function evidence | `campaigns/mibig-gene-function-evidence-01/` | oracle 1.0, gate 17/0/5 |
-| Tests | `tests/unit/` | 153 passing |
+| Campaign: PrnA construct | `campaigns/construct-ecoli-prna-01/` | oracle 1.0, gate 18/0/5 |
+| Campaign: gene-function evidence | `campaigns/mibig-gene-function-evidence-01/` | oracle 1.0, gate 18/0/5 |
+| Template: structure features | `src/npbench_c/templates/structure_features/` | shared engine, 2 ladders |
+| Campaign: PrnA residue evidence | `campaigns/residues-prna-01/` | oracle 1.0, gate 18/0/5 |
+| Campaign: RebH pocket geometry | `campaigns/pocket-rebh-01/` | oracle 1.0, gate 18/0/5 |
+| Tests | `tests/unit/` | 207 passing, 1 skipped |
 
 ```bash
 PYTHONPATH=src python3 -m pytest tests -q
@@ -156,7 +159,7 @@ A campaign is ready when `npbench_c.readiness.gate` returns all-pass — not whe
 someone believes it is. Checks requiring internal agent runs report **PENDING**,
 never PASS: the gate does not launder an unmeasured property into a green tick.
 
-Current state for L1: **16 pass / 0 fail / 5 pending**.
+Current state, every campaign: **18 pass / 0 fail / 5 pending**.
 
 The five pending checks (monotonicity, R1 clear rate, no-tool leakage,
 difficulty gate, discrimination) are satisfied by an `internal_sweep.json` from
@@ -460,6 +463,140 @@ would have been wrong.
 
 The pattern is consistent enough to be a rule: a catalogue entry is a hypothesis
 about data until the fields are inspected.
+
+
+## Campaigns 9 and 10: structure features, two ladders on one engine
+
+`residues-prna-01` and `pocket-rebh-01` are the two ladders of
+`structure_features`, the third factored template. They exist as one template
+because they read the same two sources for the same proteins — UniProt's
+per-residue features with their ECO evidence codes, and the mmCIF coordinates
+those codes cite — and building them apart would have duplicated an mmCIF
+parser, a numbering mapper and an ECO classifier, which would then have drifted.
+
+The proteins are the two already in the benchmark. RebH and PrnA arrived as the
+two construct-design instantiations, so no new provenance is introduced; what is
+new is that both carry evidence-coded residue annotations and seven to ten
+deposited structures each.
+
+### What makes the annotation checkable at all
+
+UniProt does not merely assert that position 348 of PrnA binds chloride. Under
+`ECO:0007744` it names the deposited entry the assertion rests on:
+
+```json
+{"type": "Binding site", "location": {"start": {"value": 348}},
+ "ligand": {"name": "chloride", "id": "ChEBI:CHEBI:17996"},
+ "evidences": [{"evidenceCode": "ECO:0000269", "source": "PubMed", "id": "16195462"},
+               {"evidenceCode": "ECO:0007744", "source": "PDB", "id": "2AQJ"}]}
+```
+
+That field turns "is this annotation supported?" into arithmetic: load 2AQJ,
+find the chloride, compute its contact shell, check whether 348 is in it. No
+curator is consulted and no judgement is exercised, which is the same doctrine
+the MIBiG evidence audit applies — turned on a second database, from the
+structural side.
+
+### What the two ladders found
+
+Both are real results, and both shaped the rungs rather than being discovered
+afterwards.
+
+**The annotation is a strict subset of the geometry, in one direction only.**
+Over 2AQJ, every annotated position is inside its ligand's contact shell — 2 of
+2 for chloride, 10 of 10 for FAD, 5 of 5 for tryptophan — and this holds at
+4.0 Å and 3.5 Å as well, so it is not an artefact of a generous cutoff. The
+disagreement runs entirely the other way: 29 of FAD's 39 contacts, 9 of
+tryptophan's 14 and 3 of chloride's 5 are not annotated. So `unconfirmed` is
+zero on both structures, which means **R3's discriminating content is the contact
+set and the unannotated remainder, not the confirmation verdict** — a system
+could guess "all confirmed" and still fail R3 on the sets. The campaign's audit
+notes say so plainly rather than letting an auditor discover it.
+
+**Truncating a pocket splits it almost evenly.** Deleting each of the 14
+residues lining RebH's substrate site back to alanine, one at a time, removes
+the contact for exactly 7 of them and leaves 7 still touching through backbone
+or CB. Neither verdict is the safe guess, which is what makes the rung worth
+grading; the build refuses to emit gold if the split collapses.
+
+### Three design decisions worth recording
+
+**The pocket volume is a declared lattice count, not a published descriptor.**
+Every published pocket-volume definition carries parameter choices, and a
+benchmark that adopts one grades those choices. So `geometry_rules.json` pins a
+1 Å lattice anchored on integers, a 1.4 Å probe, Bondi radii and three stated
+admission conditions, and the graded quantity is the admitted point count — 57
+for this site. Solvent-accessible surface area and any druggability score are
+excluded for the same reason, with the reason recorded in the campaign.
+
+**No toolkit, on purpose.** Neither ladder uses Biopython, gemmi, RDKit or any
+alignment tool; the parser and the geometry are stdlib, and both campaigns
+declare `min_tool_surface: S0`. The moment pocket geometry runs through a
+toolkit, the toolkit's defaults for hydrogens, alternate locations, symmetry
+expansion and radii become part of the answer.
+
+**R4's perturbation scope is declared by rule, never by list.** The truncation
+sweep covers the focal contact shell, which is R3's answer. Naming those
+positions in `reference/campaign_keys.json` would have handed it over, so the
+sandbox carries `truncation_scope: focal_shell` and a test asserts that no number
+in the declared keys is a shell position. This is the same gold-isolation
+reasoning that replaced whole gold files with pre-rendered warm bundles.
+
+### What the gates caught this time
+
+Three things, all before any agent ran.
+
+1. **An mmCIF category written two ways.** `_struct_ref_seq` appears as a `loop_`
+   in 2E4G and as bare `_category.item value` lines in 2AQJ, because it has two
+   rows in one and one in the other. A parser handling only the loop form returns
+   nothing for the second — and the numbering offset then gets *assumed* rather
+   than read, which produces a shell that is internally consistent and entirely
+   wrong. The parser handles both and a test pins both.
+
+2. **An R2 component that depended on an R3 answer.** The graded nearest-contact
+   distance was being looked up by the copy the *submission* nominated as focal,
+   which lives in its R3 block. The stub that computed the shells correctly and
+   stopped there therefore failed R2, and the difficulty gate failed with it. The
+   measurer now identifies the focal copy from the campaign's own declared keys.
+   Worth stating as a rule: **a rung's components must be answerable from that
+   rung's work alone**, and the sweep is what surfaces a violation.
+
+3. **Two components that restated an earlier rung.** The pocket ladder graded the
+   focal shell in R3 when R2 already graded it per copy, and the residues ladder
+   graded the alternate structure's numbering offsets in R4 when both entries of
+   the protein carry the same offsets as the focal one. Both were caught by a
+   test asserting that no warm bundle contains the answer to the rung it starts
+   — the bundle legitimately carried them, because they were the *previous*
+   rung's deliverable. Both components were dropped and the exclusions recorded
+   in `excluded_from_grading`.
+
+That third check was worth keeping, so it is now the gate's eighteenth
+mechanical check: **if a rung's warm-start bundle contains the answer to one of
+that rung's components, the component belongs to an earlier rung.** It is a
+mechanical test for a design error that is otherwise invisible until a real
+system clears a rung it should not have — the oracle scores 1.0 either way.
+
+Only **composite** gold values are checked. A scalar drawn from a declared
+vocabulary legitimately appears all over an earlier rung's census: the construct
+ladder's R4 asks which constraint binds for the swapped host, gold is
+`"direct_repeat"`, and the R4 bundle contains that string as a key of the first
+host's violation counts. Flagging it would be a false positive there and in every
+other enum-scored component in the benchmark. A test pins the exemption so it is
+not "tightened" later.
+
+Run across the whole benchmark, it caught one more thing: **the mass-balance
+ladders were grading the compound list at R3, and every warm bundle handed it
+over.** They had to — neither the assembly rung nor the reconciliation rung can
+be posed without knowing which compounds the entry names. The list is also just a
+field of the shipped MIBiG entry, so the component was measuring a parse the
+sandbox had already answered. It is gone from both campaigns, with the reason in
+their `excluded_from_grading`.
+
+It is worth being precise about what this check is and is not. It does not detect
+gold leaking into a sandbox — `_audit_sandbox` and `GoldLeak` do that, and they
+catch a file in the wrong place. This catches something subtler and entirely of
+the author's making: a rung graded on work that belongs to the rung below it. The
+three cases it found were all mine, and all of them had passed every other gate.
 
 ## Open items
 

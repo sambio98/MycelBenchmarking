@@ -212,6 +212,74 @@ def _contract_and_provenance(campaign: pathlib.Path) -> list[Check]:
     return checks
 
 
+import yaml  # declared dependency; never in the scoring path
+
+
+def _resolve_gold(gold: object, path: str) -> object:
+    """Walk a grading spec's dotted gold path. Raises on anything unresolvable."""
+    for part in path.split("."):
+        if part.endswith("]"):
+            name, index = part[:-1].split("[", 1)
+            gold = gold[name][int(index)]       # type: ignore[index]
+        else:
+            gold = gold[part]                   # type: ignore[index]
+    return gold
+
+
+def _warm_bundles_withhold_answers(campaign: pathlib.Path) -> Check:
+    """A rung may not be handed the answer to one of its own components.
+
+    A warm start exists to remove the EARLIER rungs' work, so if a rung's bundle
+    already contains what that rung is graded on, the component belongs to an
+    earlier rung. The failure is invisible in an oracle run -- the oracle scores
+    1.0 either way -- and only shows up when a real system clears a rung it
+    should not have, by which point the per-rung difficulty profile is fiction.
+
+    Only COMPOSITE gold values are checked. A scalar drawn from a declared
+    vocabulary ("direct_repeat", "unchanged") legitimately appears throughout an
+    earlier rung's census, so flagging it would be a false positive in every
+    enum-scored component.
+    """
+    import tempfile
+
+    from npbench_c.sweep.runner import build_sandbox
+
+    spec = json.loads((campaign / "grading.json").read_text())
+    gold = json.loads((campaign / "gold" / "gold.json").read_text())
+    task = yaml.safe_load((campaign / "task.yaml").read_text())
+    bundles = {r["rung_id"]: r.get("warm_start_bundle")
+               for r in task.get("rungs", [])}
+
+    hits, checked = [], 0
+    with tempfile.TemporaryDirectory() as tmp:
+        for rung in spec["rungs"]:
+            bundle = bundles.get(rung["rung_id"])
+            if not bundle:
+                continue
+            sandbox = build_sandbox(campaign, pathlib.Path(tmp) / rung["rung_id"],
+                                    bundle)
+            handed = [p for p in sorted(sandbox.iterdir()) if p.suffix == ".json"]
+            blob = json.dumps([json.loads(p.read_text()) for p in handed],
+                              sort_keys=True)
+            for component in rung["components"]:
+                reference = component["args"].get("gold")
+                if not isinstance(reference, str) or not reference.startswith("gold:"):
+                    continue
+                try:
+                    value = _resolve_gold(gold, reference.split(":", 1)[1])
+                except (KeyError, IndexError, TypeError, ValueError):
+                    hits.append(f"{rung['rung_id']}:{component['name']}:unresolvable")
+                    continue
+                if not isinstance(value, (dict, list)):
+                    continue
+                checked += 1
+                if json.dumps(value, sort_keys=True) in blob:
+                    hits.append(f"{rung['rung_id']}:{component['name']}")
+    return _check("warm_bundles_withhold_rung_answers", not hits,
+                  f"{checked} composite components checked against their rung's "
+                  f"bundle" + (f"; handed over: {hits}" if hits else "; none handed over"))
+
+
 def _integrity(campaign: pathlib.Path) -> list[Check]:
     hits = []
     for path in sorted(campaign.rglob("*")):
@@ -260,6 +328,7 @@ def run(campaign_dir: pathlib.Path) -> list[Check]:
     checks += _oracle_and_purity(campaign)
     checks.append(_oracle_determinism(campaign))
     checks += _contract_and_provenance(campaign)
+    checks.append(_warm_bundles_withhold_answers(campaign))
     checks += _integrity(campaign)
     checks += _pending_agent_runs(campaign)
     return checks

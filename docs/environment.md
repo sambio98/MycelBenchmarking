@@ -22,7 +22,7 @@ check before any campaign depends on it.
 | MassBank | 2026.03 | CC BY 4.0 | shipped | ~240 MB | likely |
 | GNPS reference-standard libraries | frozen pull | CC0 (native) | shipped subset | subset | likely |
 | CASMI 2022 | fixed release | public w/ solutions | shipped | probe | probe |
-| PDB | pin weekly snapshot | CC0 | shipped subset | subset | likely |
+| **PDB (mmCIF)** | per-entry snapshot, entry id is the pin | CC0 | shipped subset | 0.5-1 MB per entry | **verified** |
 | antiSMASH DB / ClusterBlast | pin to antiSMASH version | open | shipped subset | large | probe |
 | **ChEMBL** | pin release | **CC BY-SA 3.0** | shipped subset | subset | likely |
 | **BRENDA** | 2026.1 | CC BY 4.0 **+ acceptance gate** | **fetched** | — | probe |
@@ -156,7 +156,7 @@ and the right ones to author first.
 | T-L1-3 annotation transfer | UniProt subset | BLAST+/DIAMOND | S1 |
 | T-L1-4 pseudogene | — | Prodigal | S1 |
 | T-L2-1 EC misannotation | UniProt, Pfam | HMMER | S1 |
-| T-L2-2 catalytic residues | PDB, UniProt | — (geometry) | **S0** |
+| T-L2-2 catalytic residues | PDB, UniProt | — (stdlib only) | **S0** |
 | T-L2-3 remote homology | UniProt subset | MMseqs2/DIAMOND | S1 |
 | T-L2-4 A-domain specificity | MIBiG 4.0 | HMMER | S1 |
 | T-L2-5 kinetics harmonisation | BRENDA (fetched) | — | **S0** |
@@ -171,10 +171,54 @@ and the right ones to author first.
 | T-L4-4 chemical space | MIBiG 4.0 | RDKit | S1 |
 | T-L5-1 selectivity ratios | ChEMBL | — (arithmetic) | **S0** |
 | T-L5-2 resistance → target | ChEMBL/UniProt | — | **S0** |
-| T-L5-3 pocket geometry | PDB | — (geometry) | **S0** |
+| T-L5-3 pocket geometry | PDB, UniProt | — (stdlib only) | **S0** |
 | T-L6-1 construct design | UniProt | — | **S0** |
 | T-L6-2 constraint conflict | UniProt | — | **S0** |
 | T-L6-3 prioritisation | varies | varies | S1 |
+
+### What the two structure-features ladders actually need
+
+Worth stating precisely, because "structural biology task" reads like a request
+for a toolkit and neither ladder needs one.
+
+**Databases.** Two files per campaign and nothing else: a UniProtKB entry as
+JSON (`rest.uniprot.org/uniprotkb/<accession>.json`, CC BY 4.0) and one or two
+mmCIF coordinate files (`files.rcsb.org/download/<id>.cif`, CC0). Both are
+committed into the campaign's `inputs/`, so the sandbox needs no network and the
+pin is the file's own hash, recorded in `inputs/provenance.json`. A PDB entry id
+is itself a version pin — deposited coordinates do not change under an id — so
+no release snapshot is needed, unlike MIBiG.
+
+**Tools.** None. No Biopython, no gemmi, no PyMOL, no RDKit, no alignment. The
+mmCIF parser, the numbering mapper and the geometry are stdlib, which is why
+both campaigns declare `min_tool_surface: S0`. That is a deliberate
+constraint rather than an accident of what was available: the moment pocket
+geometry runs through a toolkit, the toolkit's defaults — hydrogen treatment,
+altloc resolution, symmetry expansion, radii — become part of the answer, and
+the benchmark grades the toolkit's conventions instead of the system's
+reasoning.
+
+**What must be given to the agent.** Four pinned tables, all under
+`reference/` and all audited as reachable by the readiness gate:
+
+| Table | What it fixes |
+|---|---|
+| `eco_policy.json` | the functional feature vocabulary, the ECO code → evidence class map, and the counting rules (record identity, position unit, citation unit, census class vs policy admission) |
+| `geometry_rules.json` | atom selection (model, altloc, hydrogens, waters), the contact cutoff and reported precision, the centroid and radius-of-gyration reductions, the lattice volume rule with its probe and radii, the alanine-truncation rule, and the numbering rule |
+| `residue_alphabet.json` | three-letter → one-letter, including the modified residues deposited coordinates actually contain |
+| `campaign_keys.json` | the campaign's declared join keys: ChEBI ligand id → PDB chemical component id, the focal structure and chain, the policy and cutoff variants |
+
+The ChEBI → component join is the one that is easy to miss. UniProt names a
+ligand by ChEBI; coordinates name it by a three-character component id; nothing
+in either file states the correspondence. It is a convention, not a finding, so
+it is declared — and declaring it gives nothing away, because the positions are
+still to be computed.
+
+**What must NOT be given.** The pocket ladder's R4 truncates every residue in
+the focal contact shell, and the shell is R3's answer. Listing those positions
+in `campaign_keys.json` would hand it over, so the scope is declared by rule
+(`truncation_scope: focal_shell`) and a test asserts that no number in the
+sandbox's declared keys is a shell position.
 
 ## 6. Open provisioning questions
 

@@ -120,8 +120,11 @@ def build_grading(campaign: pathlib.Path, gold: dict) -> dict:
     r2 += [ex(f"formula_{m.replace(' ', '_')}", f"monomer_formulas.{m}",
               f"monomer_formulas.{m}") for m in sorted(gold["monomer_formulas"])]
 
-    r3 = [{"name": "compounds_enumerated", "scorer": "set_exact",
-           "args": {"pred": "pred:compounds", "gold": "gold:compounds"}}]
+    # The compound list is NOT graded. It is a field of the shipped MIBiG entry
+    # and every warm bundle hands it over, because R2 and R3 cannot be posed
+    # without knowing which compounds the entry names. A component for it would
+    # measure a parse the sandbox already answers; see excluded_from_grading.
+    r3: list[dict] = []
     for c in gold["compounds"]:
         key = c.replace(" ", "_")
         r3.append(ex(f"residual_{key}", f"per_compound.{c}.residual_full",

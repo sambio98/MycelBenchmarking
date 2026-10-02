@@ -1,0 +1,22 @@
+{
+  "accession": "Q8KHZ8",
+  "alternate_structure": null,
+  "cutoff_variants": [
+    3.5,
+    4.0,
+    5.0,
+    6.0
+  ],
+  "description": "Declared join keys and focal choices for this campaign. ChEBI identifies a ligand in UniProt; a three-character chemical component id identifies it in deposited coordinates. Nothing in either file states the correspondence, so it is declared here rather than guessed from the ligand's name.",
+  "focal_ligand_chebi": "ChEBI:CHEBI:57912",
+  "focal_structure": {
+    "chain": "A",
+    "pdb_id": "2E4G"
+  },
+  "ligand_components": {
+    "ChEBI:CHEBI:57912": "TRP"
+  },
+  "policy_variants": {},
+  "position_convention": "Every position this campaign grades is a UniProt sequence position, 1-based. Author and entity numbering in the coordinate files are mapped onto it by the rule in geometry_rules.json#numbering_rule.",
+  "truncation_scope": "focal_shell"
+}

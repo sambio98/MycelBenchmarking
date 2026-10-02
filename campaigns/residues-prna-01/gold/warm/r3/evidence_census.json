@@ -1,0 +1,152 @@
+{
+  "binding_positions_by_ligand": {
+    "ChEBI:CHEBI:17996": [
+      348,
+      349
+    ],
+    "ChEBI:CHEBI:57692": [
+      13,
+      15,
+      16,
+      39,
+      42,
+      45,
+      49,
+      50,
+      187,
+      337,
+      350
+    ],
+    "ChEBI:CHEBI:57912": [
+      346,
+      443,
+      444,
+      450,
+      454
+    ],
+    "ChEBI:CHEBI:58713": [
+      79,
+      346,
+      443,
+      444,
+      450,
+      454
+    ]
+  },
+  "eco_code_citation_totals": {
+    "ECO:0000269": 46,
+    "ECO:0000305": 2,
+    "ECO:0007744": 60
+  },
+  "focal_structure": {
+    "ligand_copies": [
+      "CL:A:700",
+      "FAD:A:600",
+      "TRP:A:650"
+    ],
+    "pdb_id": "2AQJ",
+    "polymer_atom_records": 4162
+  },
+  "inferred_only_records": [
+    "Site@346"
+  ],
+  "pdb_evidence_index": {
+    "2APG": [
+      13,
+      15,
+      16,
+      39,
+      42,
+      45,
+      49,
+      50,
+      187,
+      337,
+      348,
+      349,
+      350
+    ],
+    "2AQJ": [
+      13,
+      16,
+      39,
+      42,
+      45,
+      49,
+      50,
+      187,
+      337,
+      346,
+      348,
+      349,
+      350,
+      443,
+      444,
+      450,
+      454
+    ],
+    "2AR8": [
+      13,
+      15,
+      16,
+      39,
+      42,
+      45,
+      49,
+      50,
+      79,
+      187,
+      337,
+      346,
+      348,
+      349,
+      350,
+      443,
+      444,
+      450,
+      454
+    ],
+    "2JKC": [
+      13,
+      39,
+      42,
+      45,
+      50,
+      187,
+      337,
+      350,
+      443,
+      444,
+      454
+    ]
+  },
+  "record_class_counts": {
+    "Active site": {
+      "experimental": 1,
+      "inferred": 0,
+      "none": 0,
+      "structural": 0
+    },
+    "Binding site": {
+      "experimental": 24,
+      "inferred": 0,
+      "none": 0,
+      "structural": 0
+    },
+    "Mutagenesis": {
+      "experimental": 8,
+      "inferred": 0,
+      "none": 0,
+      "structural": 0
+    },
+    "Site": {
+      "experimental": 0,
+      "inferred": 1,
+      "none": 1,
+      "structural": 0
+    }
+  },
+  "unevidenced_records": [
+    "Site@79"
+  ]
+}

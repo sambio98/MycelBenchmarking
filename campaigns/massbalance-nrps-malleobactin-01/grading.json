@@ -125,14 +125,6 @@
       "chance_level": 0.004,
       "components": [
         {
-          "name": "compounds_enumerated",
-          "scorer": "set_exact",
-          "args": {
-            "pred": "pred:compounds",
-            "gold": "gold:compounds"
-          }
-        },
-        {
           "name": "residual_malleobactin_A",
           "scorer": "exact",
           "args": {

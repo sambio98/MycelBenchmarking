@@ -1,0 +1,307 @@
+{
+  "campaign_id": "pocket-rebh-01",
+  "template_id": "structure-features",
+  "grading_spec_version": "1.0.0",
+  "rungs": [
+    {
+      "rung_id": "r1",
+      "ordinal": 1,
+      "name": "execute",
+      "gold_tier": "G1",
+      "composition": "product",
+      "pass_threshold": 1.0,
+      "chance_level": 1.0,
+      "components": [
+        {
+          "name": "report_present",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:present.report",
+            "gold": 1
+          }
+        },
+        {
+          "name": "pdb_id",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:pdb_id",
+            "gold": "gold:pdb_id"
+          }
+        },
+        {
+          "name": "accession",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:accession",
+            "gold": "gold:accession"
+          }
+        },
+        {
+          "name": "atom_inventory",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:atom_inventory",
+            "gold": "gold:atom_inventory"
+          }
+        },
+        {
+          "name": "polymer_chains",
+          "scorer": "set_exact",
+          "args": {
+            "pred": "pred:polymer_chains",
+            "gold": "gold:polymer_chains"
+          }
+        },
+        {
+          "name": "ligand_copies",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:ligand_copies",
+            "gold": "gold:ligand_copies"
+          }
+        },
+        {
+          "name": "numbering",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:numbering",
+            "gold": "gold:numbering"
+          }
+        },
+        {
+          "name": "resolved_residues_per_chain",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:resolved_residues_per_chain",
+            "gold": "gold:resolved_residues_per_chain"
+          }
+        },
+        {
+          "name": "resolved_span_per_chain",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:resolved_span_per_chain",
+            "gold": "gold:resolved_span_per_chain"
+          }
+        },
+        {
+          "name": "sequence_agreement",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:sequence_agreement",
+            "gold": "gold:sequence_agreement"
+          }
+        }
+      ],
+      "chance_level_note": "Nominal rather than measured. Atom counts and numbering offsets cannot be guessed, so the no-computation ablation fails R1 outright; the level is kept at 1.0 because any system that opens the file clears it, and the capped floor is computed over R2 upward.\n"
+    },
+    {
+      "rung_id": "r2",
+      "ordinal": 2,
+      "name": "correct",
+      "gold_tier": "G1",
+      "composition": "product",
+      "pass_threshold": 1.0,
+      "chance_level": 0.002,
+      "components": [
+        {
+          "name": "contact_cutoff",
+          "scorer": "abs_tol_match",
+          "args": {
+            "pred": "pred:contact_cutoff_angstrom",
+            "gold": "gold:shells.contact_cutoff_angstrom",
+            "abs_tol": 0.001
+          }
+        },
+        {
+          "name": "contact_counts_by_copy",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:contact_counts_by_copy",
+            "gold": "gold:shells.contact_counts_by_copy"
+          }
+        },
+        {
+          "name": "contacts_by_copy",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:contacts_by_copy",
+            "gold": "gold:shells.contacts_by_copy"
+          }
+        },
+        {
+          "name": "contact_positions_by_copy",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:contact_positions_by_copy",
+            "gold": "gold:shells.contact_positions_by_copy"
+          }
+        },
+        {
+          "name": "nearest_contact_by_copy",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:nearest_contact_by_copy",
+            "gold": "gold:shells.nearest_contact_by_copy"
+          }
+        },
+        {
+          "name": "nearest_contact_distance",
+          "scorer": "abs_tol_match",
+          "args": {
+            "pred": "pred:nearest_contact_distance_focal",
+            "gold": "gold:nearest_contact_distance_focal",
+            "abs_tol": 0.01
+          }
+        },
+        {
+          "name": "chain_symmetry",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:chain_symmetry",
+            "gold": "gold:shells.chain_symmetry"
+          }
+        }
+      ]
+    },
+    {
+      "rung_id": "r3",
+      "ordinal": 3,
+      "name": "commit",
+      "gold_tier": "G1",
+      "composition": "product",
+      "pass_threshold": 1.0,
+      "chance_level": 0.001,
+      "components": [
+        {
+          "name": "centroid_x",
+          "scorer": "abs_tol_match",
+          "args": {
+            "pred": "pred:centroid_x",
+            "gold": "gold:descriptors.centroid.x",
+            "abs_tol": 0.001
+          }
+        },
+        {
+          "name": "centroid_y",
+          "scorer": "abs_tol_match",
+          "args": {
+            "pred": "pred:centroid_y",
+            "gold": "gold:descriptors.centroid.y",
+            "abs_tol": 0.001
+          }
+        },
+        {
+          "name": "centroid_z",
+          "scorer": "abs_tol_match",
+          "args": {
+            "pred": "pred:centroid_z",
+            "gold": "gold:descriptors.centroid.z",
+            "abs_tol": 0.001
+          }
+        },
+        {
+          "name": "radius_of_gyration",
+          "scorer": "abs_tol_match",
+          "args": {
+            "pred": "pred:radius_of_gyration",
+            "gold": "gold:descriptors.radius_of_gyration",
+            "abs_tol": 0.001
+          }
+        },
+        {
+          "name": "grid_census",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:grid_census",
+            "gold": "gold:descriptors.grid_census"
+          }
+        },
+        {
+          "name": "pocket_grid_points",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:pocket_grid_points",
+            "gold": "gold:descriptors.pocket_grid_points"
+          }
+        },
+        {
+          "name": "annotated_positions_uniprot",
+          "scorer": "set_exact",
+          "args": {
+            "pred": "pred:annotated_positions_uniprot",
+            "gold": "gold:descriptors.annotated_positions_uniprot"
+          }
+        },
+        {
+          "name": "confirmation_sets",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:confirmation_sets",
+            "gold": "gold:descriptors.confirmation_sets"
+          }
+        }
+      ],
+      "chance_level_note": "A lattice count in the hundreds plus two position sets. Treating this as guessable would overstate what a chance baseline can do, so the level is a nominal small number rather than an enumeration.\n"
+    },
+    {
+      "rung_id": "r4",
+      "ordinal": 4,
+      "name": "counterfactual",
+      "gold_tier": "G1",
+      "composition": "product",
+      "pass_threshold": 1.0,
+      "chance_level": 0.001,
+      "components": [
+        {
+          "name": "cutoff_sweep_counts",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:cutoff_sweep_counts",
+            "gold": "gold:counterfactuals.cutoff_sweep_counts"
+          }
+        },
+        {
+          "name": "cutoff_sweep_positions",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:cutoff_sweep_positions",
+            "gold": "gold:counterfactuals.cutoff_sweep_positions"
+          }
+        },
+        {
+          "name": "truncation_shell_size",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:truncation_shell_size",
+            "gold": "gold:counterfactuals.truncation.shell_size"
+          }
+        },
+        {
+          "name": "truncation_atoms_removed",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:truncation_atoms_removed",
+            "gold": "gold:counterfactuals.truncation.atoms_removed_by_position"
+          }
+        },
+        {
+          "name": "truncation_contact_survives",
+          "scorer": "set_exact",
+          "args": {
+            "pred": "pred:truncation_contact_survives",
+            "gold": "gold:counterfactuals.truncation.contact_survives"
+          }
+        },
+        {
+          "name": "truncation_contact_lost",
+          "scorer": "set_exact",
+          "args": {
+            "pred": "pred:truncation_contact_lost",
+            "gold": "gold:counterfactuals.truncation.contact_lost"
+          }
+        }
+      ]
+    }
+  ]
+}

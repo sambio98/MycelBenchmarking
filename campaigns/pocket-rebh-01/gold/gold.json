@@ -1,0 +1,319 @@
+{
+  "accession": "Q8KHZ8",
+  "atom_inventory": {
+    "excluded_altloc_records": 0,
+    "excluded_hydrogen_records": 0,
+    "ligand_atom_records": 30,
+    "polymer_atom_records": 8475,
+    "water_atom_records": 833
+  },
+  "counterfactuals": {
+    "cutoff_sweep_counts": {
+      "3.5": 9,
+      "4.0": 13,
+      "5.0": 19,
+      "6.0": 23
+    },
+    "cutoff_sweep_positions": {
+      "3.5": [
+        53,
+        109,
+        111,
+        357,
+        454,
+        455,
+        461,
+        465,
+        466
+      ],
+      "4.0": [
+        52,
+        53,
+        82,
+        109,
+        110,
+        111,
+        357,
+        454,
+        455,
+        461,
+        465,
+        466,
+        470
+      ],
+      "5.0": [
+        52,
+        53,
+        79,
+        82,
+        109,
+        110,
+        111,
+        112,
+        357,
+        358,
+        359,
+        454,
+        455,
+        461,
+        464,
+        465,
+        466,
+        467,
+        470
+      ],
+      "6.0": [
+        51,
+        52,
+        53,
+        54,
+        79,
+        81,
+        82,
+        109,
+        110,
+        111,
+        112,
+        113,
+        357,
+        358,
+        359,
+        454,
+        455,
+        461,
+        464,
+        465,
+        466,
+        467,
+        470
+      ]
+    },
+    "truncation": {
+      "atoms_removed_by_position": {
+        "109": 5,
+        "110": 1,
+        "111": 6,
+        "357": 4,
+        "454": 7,
+        "455": 7,
+        "461": 4,
+        "465": 6,
+        "466": 9,
+        "470": 3,
+        "52": 3,
+        "53": 2,
+        "79": 4,
+        "82": 3
+      },
+      "contact_lost": [
+        79,
+        82,
+        454,
+        455,
+        461,
+        466,
+        470
+      ],
+      "contact_survives": [
+        52,
+        53,
+        109,
+        110,
+        111,
+        357,
+        465
+      ],
+      "scope": "focal_shell",
+      "shell_size": 14
+    }
+  },
+  "descriptors": {
+    "annotated_positions_uniprot": [
+      357,
+      454,
+      455,
+      461,
+      465
+    ],
+    "annotation_precision": 0.357143,
+    "annotation_recall": 1.0,
+    "centroid": {
+      "x": 4.082,
+      "y": 34.134,
+      "z": -9.043
+    },
+    "confirmation_sets": {
+      "annotated_not_in_contact": [],
+      "confirmed": [
+        357,
+        454,
+        455,
+        461,
+        465
+      ],
+      "contact_not_annotated": [
+        52,
+        53,
+        79,
+        82,
+        109,
+        110,
+        111,
+        466,
+        470
+      ]
+    },
+    "contact_positions_uniprot": [
+      52,
+      53,
+      79,
+      82,
+      109,
+      110,
+      111,
+      357,
+      454,
+      455,
+      461,
+      465,
+      466,
+      470
+    ],
+    "focal_copy": "TRP:A:1001",
+    "focal_ligand": "ChEBI:CHEBI:57912",
+    "grid_census": {
+      "grid_points_near_ligand": 1236,
+      "grid_points_rejected_bulk": 0,
+      "grid_points_rejected_clash": 1179
+    },
+    "heavy_atoms": 15,
+    "pocket_grid_points": 57,
+    "pocket_volume_a3": 57.0,
+    "radius_of_gyration": 2.698
+  },
+  "ligand_copies": {
+    "TRP:A:1001": 15,
+    "TRP:B:1000": 15
+  },
+  "nearest_contact_distance_focal": 2.64,
+  "numbering": {
+    "auth_to_uniprot": 0,
+    "label_to_uniprot": -20
+  },
+  "pdb_id": "2E4G",
+  "polymer_chains": [
+    "A",
+    "B"
+  ],
+  "resolved_residues_per_chain": {
+    "A": 528,
+    "B": 528
+  },
+  "resolved_span_per_chain": {
+    "A": [
+      1,
+      528
+    ],
+    "B": [
+      2,
+      529
+    ]
+  },
+  "sequence_agreement": {
+    "agreements": 1056,
+    "disagreements": 0
+  },
+  "shells": {
+    "chain_symmetry": {
+      "TRP": {
+        "copies_compared": [
+          "TRP:A:1001",
+          "TRP:B:1000"
+        ],
+        "position_sets_identical": true,
+        "symmetric_difference": []
+      }
+    },
+    "contact_counts_by_copy": {
+      "TRP:A:1001": 14,
+      "TRP:B:1000": 14
+    },
+    "contact_cutoff_angstrom": 4.5,
+    "contact_positions_by_copy": {
+      "TRP:A:1001": [
+        52,
+        53,
+        79,
+        82,
+        109,
+        110,
+        111,
+        357,
+        454,
+        455,
+        461,
+        465,
+        466,
+        470
+      ],
+      "TRP:B:1000": [
+        52,
+        53,
+        79,
+        82,
+        109,
+        110,
+        111,
+        357,
+        454,
+        455,
+        461,
+        465,
+        466,
+        470
+      ]
+    },
+    "contacts_by_copy": {
+      "TRP:A:1001": [
+        "A:109:H",
+        "A:110:S",
+        "A:111:F",
+        "A:357:E",
+        "A:454:Y",
+        "A:455:Y",
+        "A:461:E",
+        "A:465:F",
+        "A:466:W",
+        "A:470:N",
+        "A:52:I",
+        "A:53:P",
+        "A:79:K",
+        "A:82:I"
+      ],
+      "TRP:B:1000": [
+        "B:109:H",
+        "B:110:S",
+        "B:111:F",
+        "B:357:E",
+        "B:454:Y",
+        "B:455:Y",
+        "B:461:E",
+        "B:465:F",
+        "B:466:W",
+        "B:470:N",
+        "B:52:I",
+        "B:53:P",
+        "B:79:K",
+        "B:82:I"
+      ]
+    },
+    "nearest_contact_by_copy": {
+      "TRP:A:1001": "A:455:Y",
+      "TRP:B:1000": "B:455:Y"
+    },
+    "nearest_contact_distance_by_copy": {
+      "TRP:A:1001": 2.64,
+      "TRP:B:1000": 2.53
+    }
+  }
+}

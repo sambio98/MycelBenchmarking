@@ -112,7 +112,7 @@ introduced elsewhere — predict the new pseudogene call. Perturbation:
 | # | Template | Data | Build |
 |---|---|---|---|
 | T-L2-1 ×2 | EC misannotation triage (EC 1.1.3.15) | likely | image |
-| T-L2-2 | Catalytic residue identification | **verified** | now |
+| T-L2-2 | Catalytic residue identification | verified | **BUILT** |
 | T-L2-3 | Remote homology twilight zone | probe | image |
 | T-L2-4 ×2 | A-domain substrate specificity | verified | image |
 | T-L2-5 | Kinetics harmonisation | verified | **blocked: credentials** |
@@ -127,11 +127,25 @@ Instantiation axis: EC family. **Gold is the domain presence computed in-contain
 (G1), never the paper's percentage (which would be G3).**
 
 **T-L2-2** Catalytic residues from PDB coordinates + UniProt annotation.
-R1 residue table with numbering convention pinned · R2 matches gold · R3 claim:
-which residue is the catalytic nucleophile and its role, closed enum · R4 the
-residue is mutated — predict the geometric consequence (distance change to the
-substrate analogue, interval-scored). PDB is CC0 and geometry is arithmetic, so
-`build: now`.
+**Built as the `residues` ladder of the `structure_features` template**:
+`campaigns/residues-prna-01`. R1 the annotation census under a declared dedup
+rule · R2 the ECO evidence classes and the PDB citation index · R3 each
+annotation checked against the geometry of the structure it cites · R4 the same
+check on a second entry with a different substrate bound, plus four
+evidence-policy variants. PDB is CC0 and geometry is arithmetic, so `build: now`.
+
+**Deviation from the catalogued design, and why.** The catalogued R3 was "which
+residue is the catalytic nucleophile, closed enum" and the catalogued R4 was a
+predicted distance change on mutation. Both were re-scoped after the data was
+read. The nucleophile is a single structured UniProt field (`Active site`), so
+asking for it is a lookup, not a claim — it survives as one component of R3
+rather than as the rung. And a predicted distance change on mutation is not
+computable from deposited coordinates without rebuilding a side chain, which is
+modelling, not arithmetic; what IS computable is the contact consequence of
+deleting a side chain, which the pocket ladder grades. The claim R3 makes
+instead — *does the structure UniProt cites actually support the annotation* —
+is the same evidence doctrine the MIBiG audit applies, turned on a second
+database, and it is decided entirely by arithmetic.
 
 **T-L2-3** Remote homology in the twilight zone: MMseqs2/DIAMOND over a set
 seeded with true-but-distant homologues and plausible non-homologues.
@@ -350,7 +364,7 @@ breaks if the rule is relaxed.
 |---|---|---|---|
 | T-L5-1 | Selectivity ratios from measured IC50 | **verified** | **blocked: licence** |
 | T-L5-2 | Resistance mutation → target assignment | **verified** | **blocked: licence** |
-| T-L5-3 | Binding-site geometry from coordinates | **verified** | now |
+| T-L5-3 | Binding-site geometry from coordinates | verified | **BUILT** |
 
 **T-L5-1** ChEMBL measured activities (CC BY-SA 3.0 — **share-alike propagates
 to redistributed subsets; confirm licensing before this is load-bearing**).
@@ -365,9 +379,23 @@ evidence class · R4 a mutation is removed from the set — predict whether the
 assignment survives.
 
 **T-L5-3** Binding-site geometry from PDB coordinates (CC0, pure arithmetic).
-R1 residue-contact table, distance cutoff pinned · R2 matches gold ·
-R3 claim: which residues line the pocket and the pocket volume (interval-scored)
-· R4 a side chain is substituted in silico — predict the contact-set change.
+**Built as the `pocket` ladder of the `structure_features` template**:
+`campaigns/pocket-rebh-01`. R1 the structure inventory and the two numbering
+offsets read from the alignment record · R2 the contact shell of every ligand
+copy plus the two-chain symmetry control · R3 the pocket descriptors, a declared
+lattice volume, and the shell reconciled against UniProt's annotations for this
+entry · R4 a cutoff sweep and the whole shell truncated to alanine one residue
+at a time.
+
+**Deviation: the volume is a declared lattice count, not a published
+descriptor.** Every published pocket-volume definition carries parameter choices
+that would become part of the answer, so the rule is pinned in
+`geometry_rules.json` — 1 Å lattice anchored on integers, 1.4 Å probe, Bondi
+radii, three stated admission conditions — and the graded quantity is the
+admitted point count. Reproducible to the point rather than approximately
+comparable. Solvent-accessible surface area and any druggability score are
+excluded for the same reason, recorded in the campaign's
+`excluded_from_grading`.
 
 ## L6 — Translation & design (3 templates, 4 campaigns)
 
@@ -469,6 +497,9 @@ updated. Headline: **the S0 buildable set is 3 templates, not 7.**
   ECO-coded features plus PDB mmCIF) and the proteins already in the
   benchmark, so they should share one `structure_features` template with two
   ladders rather than duplicate an mmCIF parser.
+  **Done**: the shared template is built and both ladders are instantiated
+  (`residues-prna-01`, `pocket-rebh-01`), so of the three only T-L4-4 chemical
+  space is still open.
 - **Blocked on one licensing decision** (ChEMBL CC BY-SA 3.0 share-alike):
   T-L5-1 and T-L5-2. Both are otherwise data-verified, including the structured
   `assay_variant_mutation` field T-L5-2 needs.
