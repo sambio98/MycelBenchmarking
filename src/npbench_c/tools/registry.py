@@ -25,6 +25,8 @@ cannot drift silently into a score.
 from __future__ import annotations
 
 import argparse
+import hashlib
+import pathlib
 import re
 import shutil
 import subprocess
@@ -67,6 +69,44 @@ class Canonicalisation:
 
 
 @dataclass(frozen=True)
+class Projection:
+    """A declared map from a raw artifact to the bytes that are actually results.
+
+    Needed where an artifact is not line-structured and carries run metadata
+    inseparably from its content -- antiSMASH's JSON holds the input path, the
+    tool version, a timestamp and the whole HMM hit table in the same object as
+    the detected regions. A line-drop normalisation cannot reach inside that, so
+    the comparison is made on a declared projection instead.
+
+    Like a canonicalisation and unlike a normalisation, a projection is part of
+    the invocation contract: it states which fields of the output this benchmark
+    treats as the answer, so a campaign built on the tool grades the same fields
+    the suite proved stable. Anything outside the projection is, by this
+    declaration, not a result.
+    """
+
+    mode: str
+    reason: str
+
+
+@dataclass(frozen=True)
+class Fingerprint:
+    """Files whose combined hash identifies behaviour beyond the version string.
+
+    Some tools carry their behaviour in data files that a version number does not
+    pin tightly enough to trust. antiSMASH is the case that forced this: its
+    detection rule set grew from 58 rules at v5 to 88 at v7.1 and 103 at v8.0.4,
+    and a campaign whose gold is "which regions were detected" is a campaign
+    whose gold is a function of that rule set. Recording a hash over the rule
+    files lets a campaign pin what it was built against, so a changed rule set is
+    detectable even when the version string is not the thing that moved.
+    """
+
+    paths: tuple[str, ...]
+    reason: str
+
+
+@dataclass(frozen=True)
 class Invocation:
     """One command the suite runs, plus whatever has to exist first.
 
@@ -90,6 +130,12 @@ class Invocation:
     #: unexpected pass is reported as XPASS, because a tool that quietly became
     #: deterministic is a pin worth revisiting.
     expected_to_fail: str | None = None
+    #: Applied before any comparison, where the artifact is not line-structured.
+    projection: Projection | None = None
+    #: Some tools write their output into a directory rather than to a path.
+    artifact_in_dir: bool = False
+    #: Seconds; antiSMASH on a 65 kb record takes minutes, not seconds.
+    timeout_s: int = 1800
 
 
 @dataclass(frozen=True)
@@ -105,6 +151,7 @@ class Tool:
     invocations: tuple[Invocation, ...]
     normalisations: tuple[Normalisation, ...] = field(default_factory=tuple)
     canonicalisation: Canonicalisation | None = None
+    fingerprint: Fingerprint | None = None
 
     @property
     def thread_counts(self) -> tuple[int, ...]:
@@ -326,25 +373,138 @@ BLAST = Tool(
     ),
 )
 
-TOOLS: tuple[Tool, ...] = (BLAST, DIAMOND, HMMER, MAFFT, MMSEQS2, PRODIGAL)
+ANTISMASH = Tool(
+    name="antismash",
+    binary="antismash",
+    pinned_version="8.0.4",
+    needed_by=("T-L3-1", "T-L3-5"),
+    version_argv=("--version",),
+    version_pattern=r"antiSMASH (\S+)",
+    controls=(
+        "pin the exact version AND the database release; they are one pin, not two",
+        "NEVER compare results across versions: the detection rule set grew from "
+        "58 rules at v5 to 88 at v7.1 and 103 at 8.0.4 (90 strict, 7 relaxed, "
+        "6 loose), so a region set is a function of the rules that produced it",
+        "fixed --cpus",
+        "input must be annotated (GenBank or EMBL), not FASTA: letting antiSMASH "
+        "call genes folds the gene caller's determinism into antiSMASH's verdict "
+        "and the two can no longer be told apart",
+        "the graded artifact is the declared projection of the JSON, never the "
+        "HTML and never the whole JSON",
+    ),
+    thread_flag="--cpus",
+    invocations=(
+        Invocation(
+            name="minimal_detection",
+            argv=("{bin}/antismash", "--minimal", "--cpus", "{threads}",
+                  "--output-dir", "{work}/out", "--output-basename", "fixture",
+                  "--logfile", "{work}/run.log",
+                  "{fixtures}/bgc_triplet.embl"),
+            artifact="out/fixture.json",
+            projection=Projection(
+                mode="antismash_regions",
+                reason="The JSON holds the input path, the tool version, a record "
+                       "timestamp and the full HMM hit table in the same object as "
+                       "the detected regions, and it is not line-structured, so no "
+                       "line-drop rule can reach inside it. The projection keeps "
+                       "what a BGC-detection campaign would grade -- per record, "
+                       "each region's coordinates and its sorted products -- and "
+                       "declares everything else not a result.",
+            ),
+            timeout_s=3600,
+        ),
+        Invocation(
+            name="default_modules_domains",
+            # No --minimal: this runs the analysis modules, so the verdict covers
+            # the domain detection and the per-class predictors rather than the
+            # region call alone.
+            argv=("{bin}/antismash", "--cpus", "{threads}",
+                  "--output-dir", "{work}/out", "--output-basename", "fixture",
+                  "--logfile", "{work}/run.log",
+                  "{fixtures}/bgc_triplet.embl"),
+            artifact="out/fixture.json",
+            projection=Projection(
+                mode="antismash_nrps_pks_domains",
+                reason="The region call is already covered by the minimal "
+                       "invocation, so projecting it again would measure the same "
+                       "thing twice. This projection takes the ordered domain "
+                       "architecture per CDS -- the claim a domain-architecture or "
+                       "substrate-specificity campaign would grade -- and drops "
+                       "the e-values and bitscores, whose last digits are a "
+                       "reduction-order artefact.",
+            ),
+            timeout_s=3600,
+        ),
+    ),
+    fingerprint=Fingerprint(
+        paths=("detection/hmm_detection/cluster_rules/strict.txt",
+               "detection/hmm_detection/cluster_rules/relaxed.txt",
+               "detection/hmm_detection/cluster_rules/loose.txt"),
+        reason="The detection rule set IS the gold for a region-detection "
+               "campaign. A hash over the three rule files lets a campaign pin "
+               "what it was built against, so a rule change is detectable even "
+               "when the version string is not what moved -- which is the "
+               "mechanical form of the standing instruction never to compare "
+               "antiSMASH results across versions.",
+    ),
+)
+
+TOOLS: tuple[Tool, ...] = (ANTISMASH, BLAST, DIAMOND, HMMER, MAFFT,
+                           MMSEQS2, PRODIGAL)
 BY_NAME = {tool.name: tool for tool in TOOLS}
 
 #: Declared absences. Named here so "the image does not have it" is a recorded
 #: decision rather than something an auditor has to infer from a missing row.
 NOT_IN_IMAGE = {
-    "antismash": "Needed by T-L3-1 and T-L3-5. Its pin is a PAIR -- binary plus "
-                 "ClusterBlast and Pfam database releases -- that has to be "
-                 "resolved together, and detection rules went 58 to 88 across "
-                 "v5 to v7.1, so results must never be compared across versions. "
-                 "Next image task.",
     "bigscape": "Needed by T-L3-2. Its pin depends on the antiSMASH and pyhmmer "
-                "versions, so it follows antiSMASH.",
-    "fasttreemp": "Banned outright: thread order affects the neighbour-joining "
-                  "heuristic, so it can never sit on a gold-producing path.",
+                "versions, so it follows antiSMASH, which is now in the image.",
     "iqtree": "Not needed by any catalogued template. If it ever is: always "
               "--seed, always fixed -T N, never AUTO, and a single-gene ML tree "
               "is not admissible as gold.",
+    "matchms": "Needed by T-L4-1 and T-L4-2. Pip-installable, but what those rows "
+               "need first is an MS2 fixture set from MassBank with its own "
+               "grounding pass: for a spectral match the invariance question "
+               "becomes a tolerance question, and that is a different suite.",
 }
+#: FastTreeMP is absent too, but it is a BAN rather than a deferral: see
+#: BANNED_BINARIES, which is checked rather than merely written down.
+
+
+#: Binaries that must NOT exist in the image. A written ban is a ban nobody
+#: enforces; this one is checked, because antiSMASH's dependency tree brings the
+#: banned binary in whether the ban is remembered or not.
+BANNED_BINARIES = {
+    "FastTreeMP": "Thread order affects the neighbour-joining heuristic, so it "
+                  "can never sit on a gold-producing path. It arrives as part of "
+                  "the fasttree package, which antiSMASH depends on, so the image "
+                  "deletes the binary after install and this check fails the "
+                  "build if it reappears. Single-threaded FastTree stays.",
+}
+
+
+def banned_present(prefix: str | None = None) -> list[str]:
+    """Banned binaries found on PATH or in the prefix. Should always be empty."""
+    found = []
+    for name in sorted(BANNED_BINARIES):
+        if prefix:
+            if (pathlib.Path(prefix) / name).exists():
+                found.append(name)
+        elif shutil.which(name) is not None:
+            found.append(name)
+    return found
+
+
+def fingerprint(tool: Tool, package_root: str | None = None) -> str | None:
+    """Hash the files that pin the tool's behaviour beyond its version string."""
+    if tool.fingerprint is None or package_root is None:
+        return None
+    digest = hashlib.sha256()
+    for relative in tool.fingerprint.paths:
+        path = pathlib.Path(package_root) / relative
+        if not path.is_file():
+            return None
+        digest.update(path.read_bytes())
+    return digest.hexdigest()[:16]
 
 
 def verify(prefix: str | None = None) -> list[tuple[str, str, str | None, bool]]:
@@ -373,11 +533,16 @@ def main(argv: list[str] | None = None) -> int:
     bad = [name for name, _, _, ok in rows if not ok]
     print(f"\n{len(rows) - len(bad)}/{len(rows)} tools at their pinned version"
           + (f"; wrong or missing: {bad}" if bad else ""))
+
+    banned = banned_present(args.prefix)
+    print(f"[{' FAIL ' if banned else '  ok  '}] banned binaries   "
+          + (f"present: {banned}" if banned else
+             f"absent: {sorted(BANNED_BINARIES)}"))
     for name, reason in sorted(NOT_IN_IMAGE.items()):
         print(f"[ n/a  ] {name:<{width}}  {reason.split('.')[0]}.")
     if not args.verify:
         return 0
-    return 0 if not bad else 1
+    return 0 if not bad and not banned else 1
 
 
 if __name__ == "__main__":

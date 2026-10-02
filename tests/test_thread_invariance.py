@@ -20,12 +20,24 @@ import shutil
 import pytest
 
 from npbench_c.tools import build_fixtures
-from npbench_c.tools.invariance import FAIL, FIXTURES, PASS, SKIP, XFAIL, run_tool
+from npbench_c.tools.invariance import (
+    FAIL,
+    FIXTURES,
+    PASS,
+    PROJECTIONS,
+    SKIP,
+    XFAIL,
+    ProjectionError,
+    run_tool,
+)
 from npbench_c.tools.registry import (
+    BANNED_BINARIES,
     NOT_IN_IMAGE,
     REPEATS,
     THREAD_COUNTS,
     TOOLS,
+    banned_present,
+    fingerprint,
     verify,
 )
 
@@ -104,9 +116,13 @@ def test_the_registry_pins_match_the_lockfile():
     and the suite would verify another."""
     lock = json.loads(LOCK.read_text())
     requested = lock["requested"]
-    assert set(requested) == {tool.name for tool in TOOLS}
+    assert {tool.name for tool in TOOLS} <= set(requested)
     for tool in TOOLS:
         assert requested[tool.name].split("=")[0] == tool.pinned_version
+    # Anything pinned that is not a registry tool -- the interpreter -- still has
+    # to say why it is pinned.
+    for name in requested:
+        assert name in lock["requested_rationale"], name
 
 
 def test_the_lockfile_can_rebuild_the_image_byte_for_byte():
@@ -119,14 +135,88 @@ def test_the_lockfile_can_rebuild_the_image_byte_for_byte():
 
 
 def test_the_absences_are_declared_rather_than_implied():
-    """antiSMASH and BiG-SCAPE are not in this image. That is a decision with a
-    reason, not a gap to be noticed by an auditor counting rows."""
-    assert {"antismash", "bigscape", "fasttreemp"} <= set(NOT_IN_IMAGE)
-    assert "banned" in NOT_IN_IMAGE["fasttreemp"].lower()
+    """What is missing is a decision with a reason, not a gap for an auditor to
+    notice by counting rows."""
+    assert {"bigscape", "matchms", "iqtree"} <= set(NOT_IN_IMAGE)
     for reason in NOT_IN_IMAGE.values():
         assert len(reason) > 60
     installed = {tool.name for tool in TOOLS}
     assert not (installed & set(NOT_IN_IMAGE))
+
+
+def test_a_ban_is_enforced_rather_than_written_down():
+    """FastTreeMP is not a deferral, it is a ban -- and it arrives whether the ban
+    is remembered or not, because antiSMASH depends on the fasttree package that
+    ships it. So it lives in BANNED_BINARIES, which is checked."""
+    assert "FastTreeMP" in BANNED_BINARIES
+    assert "FastTreeMP" not in NOT_IN_IMAGE, (
+        "a ban and a deferral are different things; keeping it in both gives two "
+        "sources of truth")
+    assert len(BANNED_BINARIES["FastTreeMP"]) > 100
+
+
+# ------------------------------------------------------------- projections
+
+def test_the_antismash_projection_keeps_regions_and_drops_run_metadata():
+    document = {
+        "version": "8.0.4", "input_file": "/some/run/path.embl",
+        "timestamp": "whenever",
+        "records": [{
+            "id": "AY312585.1",
+            "features": [
+                {"type": "region", "location": "[100:2000](+)",
+                 "qualifiers": {"product": ["NRPS", "siderophore"]}},
+                {"type": "CDS", "location": "[1:50](+)", "qualifiers": {}},
+                {"type": "region", "location": "[10:90](+)",
+                 "qualifiers": {"product": ["terpene"]}},
+            ],
+        }],
+    }
+    projected = PROJECTIONS["antismash_regions"](json.dumps(document).encode())
+    assert projected == ("AY312585.1\t[10:90](+)\tterpene\n"
+                         "AY312585.1\t[100:2000](+)\tNRPS,siderophore\n"), (
+        "regions must come out in coordinate order, not lexical order: a string "
+        "sort would put [100:2000] before [10:90], and the projection is what a "
+        "campaign reads")
+    # The run metadata is gone and the regions are sorted, so a reordered
+    # features list is not mistaken for a different detection.
+    assert "8.0.4" not in projected and "/some/run/path" not in projected
+
+
+def test_the_domain_projection_keeps_architecture_and_drops_scores():
+    """E-values and bitscores are floats whose last digits are a reduction-order
+    artefact. The architecture -- which domains, in which order, over which
+    residues -- is the claim, and it is integers and strings."""
+    document = {"records": [{"id": "R1", "modules": {
+        "antismash.detection.nrps_pks_domains": {"cds_results": {
+            "cdsB": {"domain_hmms": [
+                {"hit_id": "PKS_KS", "query_start": 10, "query_end": 40,
+                 "evalue": 1e-30, "bitscore": 99.5}]},
+            "cdsA": {"domain_hmms": [
+                {"hit_id": "PP-binding", "query_start": 300, "query_end": 350,
+                 "evalue": 2e-10, "bitscore": 30.1},
+                {"hit_id": "AMP-binding", "query_start": 44, "query_end": 449,
+                 "evalue": 7.3e-72, "bitscore": 234.1}]},
+            "cdsC": {"domain_hmms": []},
+        }}}}]}
+    projected = PROJECTIONS["antismash_nrps_pks_domains"](
+        json.dumps(document).encode())
+    assert projected == (
+        "R1\tcdsA\tAMP-binding:44-449;PP-binding:300-350\n"
+        "R1\tcdsB\tPKS_KS:10-40\n")
+    assert "234.1" not in projected and "7.3e-72" not in projected
+    # A CDS with no domain hit contributes no line rather than an empty one.
+    assert "cdsC" not in projected
+
+
+def test_the_antismash_projection_refuses_to_find_nothing():
+    """A projection that silently yields nothing turns the determinism test into a
+    tautology: every run would agree on the same emptiness."""
+    for document in ({"records": []},
+                     {"records": [{"id": "x", "features": [
+                         {"type": "CDS", "location": "[1:2]", "qualifiers": {}}]}]}):
+        with pytest.raises(ProjectionError):
+            PROJECTIONS["antismash_regions"](json.dumps(document).encode())
 
 
 # ------------------------------------------------------------- the fixtures
@@ -135,7 +225,8 @@ def test_the_fixtures_are_committed_and_hashed():
     provenance = json.loads((FIXTURES / "provenance.json").read_text())
     import hashlib
 
-    for name in ("halogenases.faa", "halogenases.afa", "synthetic.fna"):
+    for name in ("halogenases.faa", "halogenases.afa", "synthetic.fna",
+                 "bgc_triplet.embl"):
         path = FIXTURES / name
         assert path.is_file(), name
         digest = hashlib.sha256(path.read_bytes()).hexdigest()
@@ -172,6 +263,35 @@ def test_every_pinned_version_is_installed():
     rows = verify(PREFIX)
     wrong = [(name, pinned, found) for name, pinned, found, ok in rows if not ok]
     assert not wrong, f"pin drift: {wrong}"
+
+
+@image_present
+def test_no_banned_binary_is_present():
+    assert banned_present(PREFIX) == []
+
+
+@image_present
+def test_the_antismash_rule_set_is_fingerprinted():
+    """A region set is a function of the detection rules that produced it, and the
+    rule count has moved every major version: 58 at v5, 88 at v7.1, 103 here. The
+    standing instruction never to compare across versions needs a mechanical form,
+    and a hash over the rule files is it -- a changed rule set is then detectable
+    even when the version string is not what moved."""
+    from npbench_c.tools.registry import ANTISMASH
+
+    package_root = pathlib.Path(PREFIX).parent / "lib"
+    candidates = sorted(package_root.glob("python3.*/site-packages/antismash"))
+    if not candidates:
+        pytest.skip("antiSMASH package root not found")
+    digest = fingerprint(ANTISMASH, str(candidates[-1]))
+    assert digest and len(digest) == 16
+    rules = sum(
+        1 for relative in ANTISMASH.fingerprint.paths
+        for line in (candidates[-1] / relative).read_text().splitlines()
+        if line.startswith("RULE "))
+    assert rules == 103, (
+        f"the detection rule set has {rules} rules, not the 103 this pin was "
+        "fingerprinted against; any campaign built on it needs regenerating")
 
 
 @image_present
@@ -229,6 +349,37 @@ def test_mmseqs2_needs_a_canonical_order_and_loses_nothing_to_it():
     assert not invocation["normalised_identical"], (
         "MMseqs2 came out order-stable without canonicalisation; if that is real "
         "the contract can be relaxed, but check before relaxing it")
+
+
+@image_present
+def test_a_projected_invocation_never_claims_a_raw_match():
+    """antiSMASH's JSON carries the input path and a timestamp, so its raw bytes
+    cannot be identical across runs. Reporting 'raw-identical' for a projected
+    invocation would overstate the result exactly the way the incidental-match
+    rule exists to prevent."""
+    from npbench_c.tools.registry import ANTISMASH
+
+    result = measure(ANTISMASH)
+    if result["status"] == SKIP:
+        pytest.skip(result["detail"])
+    for invocation in result["invocations"]:
+        assert invocation["projection"], invocation["invocation"]
+        assert invocation["compared"].startswith("projection:")
+        assert not invocation["raw_identical"]
+        assert invocation["projection_identical"], invocation["detail"]
+
+
+@image_present
+def test_antismash_detects_the_three_fixture_classes():
+    """The fixture earns its place only if the detection rules it exercises are
+    not all of a kind. Three records, three classes, four product names."""
+    from npbench_c.tools.registry import ANTISMASH
+
+    result = measure(ANTISMASH)
+    if result["status"] == SKIP:
+        pytest.skip(result["detail"])
+    assert result["status"] == PASS
+    assert result["fingerprint"], "the rule set must be fingerprinted"
 
 
 @image_present

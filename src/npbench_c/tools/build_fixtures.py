@@ -14,6 +14,11 @@ Two fixtures:
   halogenases.afa   the MAFFT alignment of that set, frozen.
   synthetic.fna     a nucleotide contig built by reverse-translating the set with
                     a declared codon cycle and joining with declared spacers.
+  bgc_triplet.embl  three complete deposited records, each carrying one
+                    characterised cluster of a different class, concatenated.
+                    antiSMASH needs annotated input, and whole records rather
+                    than slices mean the provenance is three accessions with no
+                    coordinates to get wrong.
 
 The alignment fixture is produced by a tool the suite also tests, which is worth
 being explicit about: it is not circular, because once written the alignment is a
@@ -42,6 +47,7 @@ FIXTURES = pathlib.Path(__file__).resolve().parent / "fixtures"
 PROTEINS = "halogenases.faa"
 ALIGNMENT = "halogenases.afa"
 CONTIG = "synthetic.fna"
+CLUSTER = "bgc_triplet.embl"
 PROVENANCE = "provenance.json"
 
 #: The standard genetic code, codons sorted so the cycle below is reproducible.
@@ -123,6 +129,11 @@ def main(argv: list[str] | None = None) -> int:
                     help="leave halogenases.afa as committed")
     args = ap.parse_args(argv)
 
+    for required in (PROTEINS, CLUSTER):
+        if not (FIXTURES / required).is_file():
+            print(f"{FIXTURES / required} is missing; it is a committed fixture, "
+                  "not derived", file=sys.stderr)
+            return 2
     proteins = FIXTURES / PROTEINS
     if not proteins.is_file():
         print(f"{proteins} is missing; it is a committed fixture, not derived",
@@ -174,6 +185,43 @@ def main(argv: list[str] | None = None) -> int:
                     "failure does not change the HMMER results computed from it.",
             "sha256": sha256(FIXTURES / ALIGNMENT),
         },
+        CLUSTER: {
+            "source": "ENA (INSDC)",
+            "url_template": "https://www.ebi.ac.uk/ena/browser/api/embl/"
+                            "{accession}?lineLimit=0",
+            "assembled_by": "concatenating the three records in the order below; "
+                            "EMBL flat files terminate each record with //, so "
+                            "concatenation is the whole of it",
+            "records": [
+                {"accession": "AY312585.1", "length_bp": 65009, "cds": 57,
+                 "organism": "Vibrio anguillarum 775",
+                 "description": "plasmid pJM1, complete sequence",
+                 "mibig": "BGC0002468, NRPS, knock-out evidence, anguibactin"},
+                {"accession": "MN724926.1", "length_bp": 16516, "cds": 9,
+                 "organism": "Kamptonema sp. PCC 6506",
+                 "description": "landornamide biosynthetic gene cluster",
+                 "mibig": "BGC0002330, ribosomal, knock-out evidence, "
+                          "landornamide A"},
+                {"accession": "MT799798.1", "length_bp": 16028, "cds": 15,
+                 "organism": "Streptomyces sampsonii",
+                 "description": "julichrome biosynthetic gene cluster",
+                 "mibig": "BGC0002514, PKS, knock-out evidence, julichrome Q6.6"},
+            ],
+            "why_these_records": "Three classes rather than one, so the detection "
+                                 "rules exercised are not all of a kind: the run "
+                                 "yields NRP-metallophore plus NRPS, "
+                                 "lanthipeptide-class-ii plus proteusin, and "
+                                 "T2PKS. All three are COMPLETE deposited records "
+                                 "whose MIBiG locus starts at position 1, so the "
+                                 "provenance is three accessions with no "
+                                 "coordinates to get wrong. All three are "
+                                 "ANNOTATED, so antiSMASH's verdict is about "
+                                 "antiSMASH rather than about a gene caller "
+                                 "feeding it. All three are bacterial, so one "
+                                 "--taxon setting covers the file.",
+            "license": "INSDC records are freely available without restriction",
+            "sha256": sha256(FIXTURES / CLUSTER),
+        },
         CONTIG: {
             "derived_from": PROTEINS,
             "rule": "Each protein is reverse-translated by taking, for residue i, "
@@ -197,6 +245,13 @@ def main(argv: list[str] | None = None) -> int:
     print(f"{ALIGNMENT}: {len(aligned)} records, "
           f"{len(aligned[0][1]) if aligned else 0} columns")
     print(f"{CONTIG}: {len(contig)} nt, {len(records)} ORFs")
+    cluster = FIXTURES / CLUSTER
+    if cluster.is_file():
+        text = cluster.read_text()
+        cds = sum(1 for line in text.splitlines() if line.startswith("FT   CDS"))
+        ids = sum(1 for line in text.splitlines() if line.startswith("ID   "))
+        print(f"{CLUSTER}: {cluster.stat().st_size // 1024} KB, "
+              f"{ids} records, {cds} CDS")
     return 0
 
 

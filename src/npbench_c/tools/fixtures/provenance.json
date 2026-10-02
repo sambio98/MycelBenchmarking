@@ -1,4 +1,38 @@
 {
+  "bgc_triplet.embl": {
+    "assembled_by": "concatenating the three records in the order below; EMBL flat files terminate each record with //, so concatenation is the whole of it",
+    "license": "INSDC records are freely available without restriction",
+    "records": [
+      {
+        "accession": "AY312585.1",
+        "cds": 57,
+        "description": "plasmid pJM1, complete sequence",
+        "length_bp": 65009,
+        "mibig": "BGC0002468, NRPS, knock-out evidence, anguibactin",
+        "organism": "Vibrio anguillarum 775"
+      },
+      {
+        "accession": "MN724926.1",
+        "cds": 9,
+        "description": "landornamide biosynthetic gene cluster",
+        "length_bp": 16516,
+        "mibig": "BGC0002330, ribosomal, knock-out evidence, landornamide A",
+        "organism": "Kamptonema sp. PCC 6506"
+      },
+      {
+        "accession": "MT799798.1",
+        "cds": 15,
+        "description": "julichrome biosynthetic gene cluster",
+        "length_bp": 16028,
+        "mibig": "BGC0002514, PKS, knock-out evidence, julichrome Q6.6",
+        "organism": "Streptomyces sampsonii"
+      }
+    ],
+    "sha256": "01d06255a76d2b5b675ee2a3aa0b2f7927fc8c092d527f9b311b23c49ada484b",
+    "source": "ENA (INSDC)",
+    "url_template": "https://www.ebi.ac.uk/ena/browser/api/embl/{accession}?lineLimit=0",
+    "why_these_records": "Three classes rather than one, so the detection rules exercised are not all of a kind: the run yields NRP-metallophore plus NRPS, lanthipeptide-class-ii plus proteusin, and T2PKS. All three are COMPLETE deposited records whose MIBiG locus starts at position 1, so the provenance is three accessions with no coordinates to get wrong. All three are ANNOTATED, so antiSMASH's verdict is about antiSMASH rather than about a gene caller feeding it. All three are bacterial, so one --taxon setting covers the file."
+  },
   "built_on": "2026-10-02",
   "description": "Pinned inputs for the thread-invariance suite. A determinism claim is only as good as its fixture, so these are committed files with hashes, not downloads.",
   "halogenases.afa": {

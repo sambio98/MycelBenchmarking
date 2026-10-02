@@ -40,12 +40,15 @@ import tempfile
 from dataclasses import dataclass
 
 from npbench_c.tools.registry import (
+    BANNED_BINARIES,
     BY_NAME,
     NOT_IN_IMAGE,
     REPEATS,
     TOOLS,
     Invocation,
     Tool,
+    banned_present,
+    fingerprint,
 )
 
 FIXTURES = pathlib.Path(__file__).resolve().parent / "fixtures"
@@ -98,6 +101,110 @@ def _normalise(text: str, tool: Tool) -> tuple[str, tuple[str, ...]]:
     return "\n".join(kept) + "\n", tuple(sorted(fired))
 
 
+class ProjectionError(RuntimeError):
+    """A projection found nothing to project.
+
+    This is a hard failure rather than an empty result, because a projection that
+    silently yields nothing turns the determinism test into a tautology: every run
+    would agree on the same emptiness. If the tool's output structure changed, the
+    suite must say so.
+    """
+
+
+def _project_antismash_regions(raw: bytes) -> str:
+    """Per record, each detected region's coordinates and sorted products.
+
+    This is the declared answer surface for a BGC-detection campaign. Everything
+    else antiSMASH writes -- the input path, its own version, the record
+    timestamp, the full HMM hit table, the HTML -- is by this declaration not a
+    result. Region order is sorted, so a reordered features list is not mistaken
+    for a different detection.
+    """
+    document = json.loads(raw)
+    records = document.get("records")
+    if not isinstance(records, list) or not records:
+        raise ProjectionError("antiSMASH JSON carries no records list")
+
+    def sort_key(location: str) -> tuple:
+        """Numeric where the location parses, lexical where it does not.
+
+        A string sort alone is deterministic, which is all this suite needs, but
+        the projection is also what a campaign would grade -- and there
+        "[100:2000]" before "[10:90]" is an order no reader would expect. So the
+        coordinates are parsed when they can be, with the raw string as the
+        tie-break and the fallback.
+        """
+        digits = re.findall(r"-?\d+", location)
+        if len(digits) >= 2:
+            return (0, int(digits[0]), int(digits[1]), location)
+        return (1, 0, 0, location)
+
+    lines: list[str] = []
+    for record in records:
+        name = str(record.get("id", "?"))
+        regions = []
+        for feature in (record.get("features") or []):
+            if feature.get("type") != "region":
+                continue
+            location = str(feature.get("location", ""))
+            products = sorted(
+                str(x) for x in ((feature.get("qualifiers") or {}).get("product") or []))
+            regions.append((location, tuple(products)))
+        for location, products in sorted(regions, key=lambda r: sort_key(r[0])):
+            lines.append(f"{name}\t{location}\t{','.join(products)}")
+    if not lines:
+        raise ProjectionError(
+            "no region features found; either the fixture has no detectable "
+            "cluster or the JSON structure moved, and both must be looked at "
+            "rather than passed as 'identical'")
+    return "\n".join(lines) + "\n"
+
+
+def _project_antismash_domains(raw: bytes) -> str:
+    """Per record and CDS, the ordered NRPS/PKS domain architecture.
+
+    This is the claim a domain-architecture or substrate-specificity campaign
+    would grade: which domains, in which order, over which residues. The e-value
+    and bitscore that accompany each hit are deliberately NOT projected -- a
+    float's last digits are a reduction-order artefact, and nothing downstream
+    needs them to state an architecture.
+    """
+    document = json.loads(raw)
+    records = document.get("records")
+    if not isinstance(records, list) or not records:
+        raise ProjectionError("antiSMASH JSON carries no records list")
+
+    lines: list[str] = []
+    for record in records:
+        name = str(record.get("id", "?"))
+        module = (record.get("modules") or {}).get(
+            "antismash.detection.nrps_pks_domains")
+        if not module:
+            continue
+        for cds, result in sorted((module.get("cds_results") or {}).items()):
+            hits = sorted(
+                (int(h.get("query_start", -1)), int(h.get("query_end", -1)),
+                 str(h.get("hit_id", "?")))
+                for h in (result.get("domain_hmms") or []))
+            if not hits:
+                continue
+            architecture = ";".join(f"{hid}:{start}-{end}"
+                                    for start, end, hid in hits)
+            lines.append(f"{name}\t{cds}\t{architecture}")
+    if not lines:
+        raise ProjectionError(
+            "no NRPS/PKS domain results found; either the run did not include the "
+            "domain detection module or the JSON structure moved, and both must be "
+            "looked at rather than passed as 'identical'")
+    return "\n".join(lines) + "\n"
+
+
+PROJECTIONS = {
+    "antismash_regions": _project_antismash_regions,
+    "antismash_nrps_pks_domains": _project_antismash_domains,
+}
+
+
 def _canonicalise(text: str, tool: Tool) -> str:
     """Apply the tool's declared order-fixing transform, if it has one.
 
@@ -145,16 +252,17 @@ def run_invocation(tool: Tool, invocation: Invocation, prefix: str,
             work.mkdir(parents=True, exist_ok=True)
             argv = _format(invocation.argv, **subs, work=str(work),
                            threads=str(threads))
+            timeout = invocation.timeout_s
             if invocation.stdout_artifact:
                 target = work / invocation.artifact
                 with target.open("wb") as handle:
                     done = subprocess.run(argv, stdout=handle,
                                           stderr=subprocess.PIPE, env=env,
-                                          timeout=TIMEOUT_S)
+                                          timeout=timeout)
                 stderr = (done.stderr or b"").decode(errors="replace")
             else:
                 done = subprocess.run(argv, capture_output=True, text=True,
-                                      env=env, timeout=TIMEOUT_S)
+                                      env=env, timeout=timeout)
                 stderr = done.stderr or ""
                 target = work / invocation.artifact
             if done.returncode != 0 or not target.is_file():
@@ -162,6 +270,13 @@ def run_invocation(tool: Tool, invocation: Invocation, prefix: str,
                                       None, None, (), stderr[-800:]))
                 continue
             raw = target.read_bytes()
+            if invocation.projection is not None:
+                try:
+                    raw = PROJECTIONS[invocation.projection.mode](raw).encode()
+                except (ProjectionError, json.JSONDecodeError, KeyError) as exc:
+                    runs.append(RunResult(threads, repeat, 0, None, None, None, (),
+                                          f"projection failed: {exc}"))
+                    continue
             normalised, fired = _normalise(raw.decode(errors="replace"), tool)
             canonical = _canonicalise(normalised, tool)
             runs.append(RunResult(threads, repeat, 0, _digest(raw),
@@ -199,8 +314,19 @@ def run_invocation(tool: Tool, invocation: Invocation, prefix: str,
     # one that means anything.
     incidental = len(raw_digests) == 1 and bool(fired)
 
+    # What was compared, said plainly. For a projected invocation the raw
+    # artifact is certainly NOT identical -- antiSMASH's JSON carries the input
+    # path and a timestamp -- so reporting "raw-identical" there would overstate
+    # the result in exactly the way the incidental rule below guards against.
+    compared = (f"projection:{invocation.projection.mode}"
+                if invocation.projection else "artifact")
+
     if len(raw_digests) == 1 and not fired:
-        detail = "identical across all runs with no normalisation"
+        detail = ("identical across all runs with no normalisation"
+                  if not invocation.projection else
+                  f"the {invocation.projection.mode} projection is identical "
+                  "across all runs; the raw artifact is not, and by this "
+                  "invocation's declaration is not a result")
     elif incidental:
         detail = (f"identical after {len(fired)} declared normalisation rule(s); "
                   "the raw bytes also agreed, but a declared-unstable field is "
@@ -227,7 +353,11 @@ def run_invocation(tool: Tool, invocation: Invocation, prefix: str,
         "status": status,
         "thread_counts": list(tool.thread_counts),
         "runs": len(runs),
-        "raw_identical": len(raw_digests) == 1 and not fired,
+        "compared": compared,
+        "raw_identical": (len(raw_digests) == 1 and not fired
+                          and not invocation.projection),
+        "projection_identical": (len(raw_digests) == 1 and not fired
+                                 and bool(invocation.projection)),
         "raw_identical_incidental": incidental,
         "normalised_identical": len(norm_digests) == 1,
         "canonical_identical": invariant,
@@ -235,6 +365,8 @@ def run_invocation(tool: Tool, invocation: Invocation, prefix: str,
         "normalisation_rules_fired": fired,
         "canonicalisation": (tool.canonicalisation.mode
                              if tool.canonicalisation else None),
+        "projection": (invocation.projection.mode
+                       if invocation.projection else None),
         "digests": {f"t{r.threads}_r{r.repeat}":
                     {"raw": r.raw_digest, "normalised": r.normalised_digest,
                      "canonical": r.canonical_digest}
@@ -258,6 +390,17 @@ def run_tool(tool: Tool, prefix: str | None = None,
                           "be about the image"}
 
     resolved_prefix = prefix or str(pathlib.Path(shutil.which(binary)).parent)
+    # A tool whose behaviour lives in data files gets that recorded too, so a
+    # campaign can pin what it was built against. antiSMASH's package root is a
+    # sibling of its bin directory inside the environment.
+    package_root = None
+    if tool.fingerprint is not None:
+        import glob
+
+        candidates = sorted(glob.glob(str(
+            pathlib.Path(resolved_prefix).parent / "lib" / "python3.*"
+            / "site-packages" / tool.name)))
+        package_root = candidates[-1] if candidates else None
     own = root is None
     base = pathlib.Path(tempfile.mkdtemp(prefix=f"invariance_{tool.name}_")) \
         if own else root / tool.name
@@ -276,6 +419,9 @@ def run_tool(tool: Tool, prefix: str | None = None,
         "version": found,
         "needed_by": list(tool.needed_by),
         "controls": list(tool.controls),
+        "fingerprint": fingerprint(tool, package_root),
+        "fingerprint_paths": (list(tool.fingerprint.paths)
+                              if tool.fingerprint else None),
         "invocations": results,
         "canonicalisation": (tool.canonicalisation.mode
                              if tool.canonicalisation else None),
@@ -297,6 +443,10 @@ def run_all(prefix: str | None = None) -> dict:
         "repeats": REPEATS,
         "fixtures": sorted(p.name for p in FIXTURES.iterdir() if p.is_file()),
         "not_in_image": NOT_IN_IMAGE,
+        "banned_binaries": {
+            "declared": BANNED_BINARIES,
+            "present": banned_present(prefix),
+        },
         "tools": {},
     }
     for tool in TOOLS:
@@ -346,6 +496,8 @@ def main(argv: list[str] | None = None) -> int:
         for inv in result.get("invocations", []):
             if inv.get("raw_identical"):
                 flag = "raw-identical"
+            elif inv.get("projection_identical"):
+                flag = f"projection-identical ({inv['projection']})"
             elif inv.get("raw_identical_incidental"):
                 flag = (f"normalised ({len(inv['normalisation_rules_fired'])} "
                         "rules; raw match incidental)")

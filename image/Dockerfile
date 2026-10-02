@@ -14,9 +14,10 @@
 #   docker run --rm npbench-c-tools:phase1 \
 #       python -m npbench_c.tools.invariance --all
 #
-# The image deliberately does NOT contain antiSMASH or BiG-SCAPE. Their pins are
-# pairs (binary plus database release) that have to be resolved together, and
-# they are the next image task; see environment.lock.json#not_in_this_image.
+# antiSMASH is here, and its pin is really a PAIR: this binary plus the database
+# release downloaded in its own layer below. Both determine which regions come
+# out, so neither alone identifies a result. BiG-SCAPE and matchms are still
+# absent, each for a recorded reason; see environment.lock.json.
 #
 # STATUS: this file has not been built end to end. The build host available while
 # it was written had the Docker CLI but no daemon. What HAS been run is every step
@@ -31,7 +32,14 @@ FROM ubuntu:24.04
 ENV DEBIAN_FRONTEND=noninteractive \
     MAMBA_ROOT_PREFIX=/opt/mamba \
     TOOL_PREFIX=/opt/npbench-tools \
-    PATH=/opt/npbench-tools/bin:/usr/local/bin:/usr/bin:/bin \
+    # Tool prefix LAST, deliberately. antiSMASH brings its own Python into the
+    # prefix, and its console scripts carry an absolute shebang to it, so the
+    # prefix does not need to precede the system interpreter -- while if it does,
+    # `python3` silently becomes antiSMASH's interpreter and the benchmark's
+    # stdlib-only grading core starts running on an interpreter nobody chose.
+    # Measured the hard way: with the prefix first, `python3 -m pytest` could not
+    # find pytest.
+    PATH=/usr/local/bin:/usr/bin:/bin:/opt/npbench-tools/bin \
     # Determinism: no tool in this image may pick its own thread count from the
     # host, and no BLAS may reorder a reduction behind our back. The per-tool
     # thread flags in npbench_c.tools.registry are still required and explicit;
@@ -68,14 +76,35 @@ RUN micromamba create -y -p "${TOOL_PREFIX}" --no-rc \
       'prodigal=2.6.3=h577a1d6_11' \
       'mafft=7.526=ha3fa977_0' \
       'blast=2.17.0=hb02a186_1' \
- && micromamba clean -a -y
+      'antismash=8.0.4=pyhdfd78af_1' \
+ && micromamba clean -a -y \
+ # FastTreeMP arrives as part of the fasttree package antiSMASH depends on, and
+ # it is banned outright: thread order affects the neighbour-joining heuristic,
+ # so it can never sit on a gold-producing path. Deleting the binary is what
+ # makes the ban enforceable; `registry --verify` below fails if it reappears.
+ # Single-threaded FastTree stays, because antiSMASH needs it.
+ && rm -f "${TOOL_PREFIX}/bin/FastTreeMP"
+
+# The antiSMASH reference databases, in their own layer because they are an order
+# of magnitude larger than everything above and they version independently of the
+# binary. The default location is inside the package, which is where the suite
+# expects them; for distribution this layer can be dropped and the same path
+# mounted instead, since antiSMASH also takes --databases PATH.
+#
+# Size, measured: roughly 10 GB on disk once ClusterBlast 4.0 is extracted. That
+# is the cost of a BGC-detection campaign and it is better stated here than
+# discovered during a build.
+RUN download-antismash-databases \
+ && find "${TOOL_PREFIX}/lib" -name '*.tar' -delete \
+ && find "${TOOL_PREFIX}/lib" -name '*.tar.xz' -delete
 
 # The grading core is stdlib-only by design, so the campaign runtime needs the
 # system Python and nothing from PyPI.
 RUN apt-get update \
  && apt-get install -y --no-install-recommends python3 python3-yaml \
  && rm -rf /var/lib/apt/lists/* \
- && ln -sf /usr/bin/python3 /usr/local/bin/python
+ && ln -sf /usr/bin/python3 /usr/local/bin/python \
+ && ln -sf /usr/bin/python3 /usr/local/bin/python3
 
 WORKDIR /opt/npbench-c
 COPY src/ src/

@@ -545,8 +545,8 @@ updated. Headline: **the S0 buildable set is 3 templates, not 7.**
 
 So nine of the remaining rows need the Phase 1 container, which makes Phase 1
 load-bearing sooner than this catalog implied. **Built since**: the image exists
-for the six sequence-analysis tools and clears 8 of the 12 `build: image` rows;
-antiSMASH, BiG-SCAPE and matchms are the remaining provisioning work.
+for the six sequence-analysis tools plus antiSMASH, and clears 9 of the 12
+`build: image` rows; BiG-SCAPE and matchms are the remaining provisioning work.
 
 ## Authoring order
 
@@ -557,11 +557,18 @@ antiSMASH, BiG-SCAPE and matchms are the remaining provisioning work.
    T-L5-2, T-L5-3. Probe each source first.
 3. **`build: image`** — everything else. **Phase 1 is now partly done**: the
    pinned-tool image in `image/` carries HMMER 3.4, DIAMOND 2.2.8, MMseqs2
-   18.8cc5c, Prodigal 2.6.3, MAFFT 7.526 and BLAST+ 2.17.0, all six verified
-   thread-invariant at 1 and 8 threads, which **unblocks 8 of the 12 rows**:
-   T-L1-1, T-L1-2, T-L1-3, T-L1-4, T-L2-1, T-L2-3, T-L2-4, T-L3-4. The other four
-   wait on antiSMASH (T-L3-1, and the catalogued T-L3-5), BiG-SCAPE (T-L3-2) and
-   matchms (T-L4-1, T-L4-2).
+   18.8cc5c, Prodigal 2.6.3, MAFFT 7.526, BLAST+ 2.17.0 and antiSMASH 8.0.4, all
+   seven verified thread-invariant at 1 and 8 threads, which **unblocks 9 of the
+   12 rows**: T-L1-1, T-L1-2, T-L1-3, T-L1-4, T-L2-1, T-L2-3, T-L2-4, T-L3-4 and
+   T-L3-1, plus the catalogued T-L3-5 target inference. The other three wait on
+   BiG-SCAPE (T-L3-2) and matchms (T-L4-1, T-L4-2).
+
+   **antiSMASH's pin is a pair** and the lock records both halves: the binary at
+   8.0.4 and the 9.4 GB database release it was fetched with. On top of that the
+   lock carries a fingerprint over the three detection-rule files, because the rule
+   count is now **103** (90 strict, 7 relaxed, 6 loose) against the 88 at v7.1 this
+   catalog noted — so "never compare across versions" is enforceable rather than
+   merely written down.
 
    Two determinism controls this catalog and the provisioning notes relied on
    turned out to be wrong, and both were caught by measuring rather than by

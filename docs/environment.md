@@ -53,7 +53,7 @@ ClusterBlast DB ↔ MIBiG version ↔ pyhmmer move together.
 | **DIAMOND** | L1-3, L2-3 | **≥ 2.2.7**, fixed `--threads`, explicit `--max-target-seqs` (it changes which hits survive). **Never `--no-reorder`** — measured, that flag is what breaks determinism, not what provides it (see below) |
 | **MMseqs2** | L2-3 | pin post-fix build, always `createindex`, fixed `--threads`, explicit `--max-seqs` (issue #277: results differ by core count), **plus a declared canonical line order** — no flag fixes its multithreaded output order |
 | **Prodigal** | L1-1, L1-4 | pin version **and mode** (single vs meta changes calls); Prodigal-GV is a different tool |
-| **antiSMASH** | L3-1, L3-5 | pin exact version + ClusterBlast DB. **Never compare across versions** — detection rules went 58 → 88 across v5–v7.1 |
+| **antiSMASH** | L3-1, L3-5 | pin the exact version **and** the database release — they are one pin. Fixed `--cpus`. **Annotated input only** (GenBank/EMBL, never FASTA), or the gene caller's determinism is folded into antiSMASH's. Grade a declared **projection** of the JSON, never the HTML and never the whole JSON. **Never compare across versions** — 58 rules at v5, 88 at v7.1, **103 at 8.0.4** |
 | **BiG-SCAPE** | L3-2 | pin version, `--mibig-version`, antiSMASH version, pyhmmer version; set classification mode explicitly |
 | **MAFFT** | L2-3 | pin major version, prefer deterministic modes |
 | **matchms / pyOpenMS** | L4-1, L4-2 | pin versions, record every filter parameter |
@@ -78,6 +78,7 @@ a 24-sequence halogenase fixture and a synthetic contig:
 | HMMER 3.4 | invariant | one declared normalisation: HMMER stamps its own command line, working directory and the wall-clock date into `--tblout` and into the HMM |
 | **DIAMOND 2.2.8** | invariant **only without `--no-reorder`** | dropping the flag this project had declared as a control |
 | **MMseqs2 18.8cc5c** | invariant **only after a declared canonical line sort** | no flag exists; the contract fixes the order instead |
+| **antiSMASH 8.0.4** | invariant on both invocations | a declared **projection**: the raw JSON cannot be identical, since it holds the input path and a timestamp, so the comparison is on the detected regions and on the NRPS/PKS domain architecture |
 
 **The DIAMOND control was backwards.** This table previously listed
 `--no-reorder` as a required determinism control. Measured: *with* the flag,
@@ -304,6 +305,11 @@ sandbox's declared keys is a shell position.
 | `src/npbench_c/tools/invariance.py` | the suite |
 | `src/npbench_c/tools/fixtures/` | the pinned inputs, with hashes and provenance |
 
+The invariance tests take about 90 seconds, nearly all of it antiSMASH. To run the
+rest of the suite without them, point `NPBENCH_TOOL_PREFIX` at a directory that
+does not exist: every invariance test then reports SKIP with its reason, which is
+the honest form of "not measured here".
+
 **The Dockerfile has not been built end to end.** The host this was written on
 had the Docker CLI but no daemon. Every step it performs was run directly instead
 — the micromamba download, the create with these exact `version=build` specs,
@@ -317,17 +323,77 @@ conda-forge and bioconda: `apt` ships DIAMOND 2.1.9 where the controls require
 have been fine from `apt`; mixing sources for some tools and not others would make
 the lock harder to reason about than it is worth.
 
-**What this image unblocks: 8 of the 12 `build: image` templates** — T-L1-1,
-T-L1-2, T-L1-3, T-L1-4, T-L2-1, T-L2-3, T-L2-4 and T-L3-4, which between them
-need only Prodigal, HMMER, DIAMOND, BLAST+, MMseqs2 and MAFFT.
+**What this image unblocks: 9 of the 12 `build: image` templates** — T-L1-1,
+T-L1-2, T-L1-3, T-L1-4, T-L2-1, T-L2-3, T-L2-4, T-L3-4 and T-L3-1, plus the
+catalogued T-L3-5 target inference that was re-tiered to `image` during the
+S0 build.
 
 **What it does not**, each a recorded decision rather than an omission:
 
 | Missing | Why it is a separate task |
 |---|---|
-| antiSMASH (T-L3-1, T-L3-5) | its pin is a *pair* — binary plus ClusterBlast and Pfam database releases — that has to be resolved together, and detection rules went 58 → 88 across v5–v7.1, so results must never be compared across versions |
-| BiG-SCAPE (T-L3-2) | its pin depends on the antiSMASH and pyhmmer versions, so it follows antiSMASH |
-| matchms / pyOpenMS (T-L4-1, T-L4-2) | the tools are pip-installable, but the invariance suite would need MS² fixtures from MassBank, and a spectral-matching fixture is its own grounding job |
+| BiG-SCAPE (T-L3-2) | its pin depends on the antiSMASH and pyhmmer versions; it follows antiSMASH, which is now here |
+| matchms / pyOpenMS (T-L4-1, T-L4-2) | the tools are pip-installable, but the rows need MS² fixtures from MassBank first, and a spectral-matching fixture is its own grounding job: for a spectral match the invariance question becomes a tolerance question |
+
+### antiSMASH, and the three things adding it forced
+
+**Its pin is a pair, so the lock records both halves.** The binary is 8.0.4; the
+databases are what `download-antismash-databases` fetched — knownclusterblast 4.0,
+Pfam 35.0, MITE 1.3, as-js 0.16, plus clusterblast, clustercompare, comparippson,
+nrps_pks, resfam and tigrfam — **9.4 GB on disk**, recorded in the lock under
+`antismash_databases` with the directory versions. Recording only the binary
+version would leave half the pin unrecorded, and the half left out is the half
+that decides which regions come out.
+
+On top of the version, the lock records a **fingerprint over the detection rule
+files**: `04add3eb0e86a816`, a sha256 over `strict.txt`, `relaxed.txt` and
+`loose.txt`. The rule count is **103** here (90 strict, 7 relaxed, 6 loose),
+against 88 at v7.1 and 58 at v5. "Never compare across versions" is a standing
+instruction, and the fingerprint is its mechanical form: a campaign pins what it
+was built against, so a changed rule set is detectable even when the version
+string is not what moved.
+
+**A banned binary arrives with it.** antiSMASH depends on the `fasttree` package,
+which ships `FastTreeMP` — banned outright, because thread order affects its
+neighbour-joining heuristic. The image deletes the binary after install and
+`registry --verify` fails if it reappears, which is the difference between a ban
+and a note. Single-threaded `FastTree` stays, because antiSMASH needs it.
+
+**It brings its own Python, and that nearly became the benchmark's.** The prefix
+now contains a conda interpreter. With the tool prefix first on `PATH`, `python3`
+silently resolves to it — and the stdlib-only grading core would then be running
+on an interpreter nobody chose. Measured the hard way: `python3 -m pytest` stopped
+finding pytest. antiSMASH's console scripts carry an absolute shebang to their own
+interpreter, so the prefix does not need to come first at all; the image now puts
+it **last** on `PATH`.
+
+### Projections: a third kind of declared transform
+
+antiSMASH forced one more distinction. Its output is a single JSON object holding
+the input path, the tool version, a record timestamp and the full HMM hit table in
+the same structure as the detected regions. No line-drop rule can reach inside
+that, so the comparison is made on a **declared projection** instead:
+
+| Invocation | Projection | What it states is a result |
+|---|---|---|
+| `minimal_detection` | `antismash_regions` | per record, each region's coordinates and sorted products |
+| `default_modules_domains` | `antismash_nrps_pks_domains` | per CDS, the ordered domain architecture — without the e-values and bitscores, whose last digits are a reduction-order artefact |
+
+Like a canonicalisation and unlike a normalisation, a projection is part of the
+invocation contract: it declares which fields this benchmark treats as the answer,
+so a campaign built on the tool grades the fields the suite proved stable, and
+everything outside the projection is by that declaration **not a result**. The
+suite reports a projected invocation as `projection-identical`, never as
+`raw-identical`, because the raw artifact demonstrably is not.
+
+The fixture is three complete deposited records concatenated — *Vibrio
+anguillarum* pJM1 (anguibactin, NRPS), a *Kamptonema* landornamide cluster
+(ribosomal) and a *Streptomyces sampsonii* julichrome cluster (PKS) — so the rules
+exercised are not all of a kind: the run yields `NRP-metallophore`+`NRPS`,
+`lanthipeptide-class-ii`+`proteusin` and `T2PKS`. All three are whole records
+whose MIBiG locus starts at position 1, so the provenance is three accessions with
+no coordinates to get wrong, and all three are annotated, so the verdict is about
+antiSMASH rather than about a gene caller feeding it.
 
 The fixtures are worth one note. They are committed files with hashes, because a
 determinism suite whose input moves measures nothing. `halogenases.faa` is 24

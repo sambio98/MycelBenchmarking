@@ -34,10 +34,10 @@ scoring path.
 | Campaign: RebH pocket geometry | `campaigns/pocket-rebh-01/` | oracle 1.0, gate 18/0/5 |
 | Template: chemical space | `src/npbench_c/templates/chemical_space/` | shared oracle, RDKit pinned at instantiation |
 | Campaign: MIBiG 4.0 chemical space | `campaigns/chemspace-mibig-4_0-01/` | oracle 1.0, gate 18/0/5 |
-| Phase 1 image | `image/Dockerfile`, `image/environment.lock.json` | 6 tools pinned to `version=build`, 79-package closure hashed |
-| Tool registry | `src/npbench_c/tools/registry.py` | pins, controls, invocations, declared normalisations |
-| Thread-invariance suite | `src/npbench_c/tools/invariance.py` | 6/6 tools invariant at 1 and 8 threads |
-| Tests | `tests/` | 271 passing, 1 skipped |
+| Phase 1 image | `image/Dockerfile`, `image/environment.lock.json` | 7 tools pinned to `version=build`, 153-package closure hashed, antiSMASH databases pinned at 9.4 GB |
+| Tool registry | `src/npbench_c/tools/registry.py` | pins, controls, invocations, declared normalisations, canonicalisations, projections, enforced bans |
+| Thread-invariance suite | `src/npbench_c/tools/invariance.py` | 7/7 tools invariant at 1 and 8 threads |
+| Tests | `tests/` | 283 passing, 1 skipped |
 
 ```bash
 PYTHONPATH=src python3 -m pytest tests -q
@@ -735,15 +735,18 @@ the micromamba install of these exact specs, `registry --verify` against the
 resulting prefix, and the full invariance suite — so the pins and the measured
 determinism results are real, and the layer sequence is not yet proven.
 
-Six tools, each pinned to an exact `version=build` string with the resolved
-79-package closure and every artifact's sha256 in `image/environment.lock.json`:
+Seven tools, each pinned to an exact `version=build` string with the resolved
+153-package closure and every artifact's sha256 in `image/environment.lock.json`:
 HMMER 3.4, DIAMOND 2.2.8, MMseqs2 18.8cc5c, Prodigal 2.6.3, MAFFT 7.526, BLAST+
-2.17.0. **Ubuntu's archive cannot satisfy two of the pins** — it ships DIAMOND
-2.1.9 against a ≥ 2.2.7 floor and BLAST+ 2.12.0 against 2.17.0 — which settled the
-question of whether `apt` would do.
+2.17.0 and antiSMASH 8.0.4. **Ubuntu's archive cannot satisfy two of the pins** —
+it ships DIAMOND 2.1.9 against a ≥ 2.2.7 floor and BLAST+ 2.12.0 against 2.17.0 —
+which settled the question of whether `apt` would do. A measured dry-run then
+confirmed that adding antiSMASH moves **none** of the six sequence-tool pins, which
+is why there is one environment rather than two.
 
-**This unblocks 8 of the 12 `build: image` templates**: T-L1-1, T-L1-2, T-L1-3,
-T-L1-4, T-L2-1, T-L2-3, T-L2-4, T-L3-4. The remaining four need antiSMASH,
+**This unblocks 9 of the 12 `build: image` templates**: T-L1-1, T-L1-2, T-L1-3,
+T-L1-4, T-L2-1, T-L2-3, T-L2-4, T-L3-4 and T-L3-1, plus the catalogued T-L3-5
+target inference that the S0 build re-tiered to `image`. The remaining three need
 BiG-SCAPE or matchms, each deferred with a recorded reason rather than left as a
 gap in a table.
 
@@ -768,6 +771,87 @@ shows up as an `XPASS` to re-read rather than as a silently changed assumption.
 byte-identical; at eight the hit *multiset* is identical and only its order moves.
 Nothing in the tool controls that, so the tabular output is sorted by line before
 anything reads it.
+
+### antiSMASH: the pin is a pair, and three things followed from adding it
+
+**Half the pin is the databases.** The binary is 8.0.4; what decides which regions
+come out is that plus the reference data `download-antismash-databases` fetched —
+knownclusterblast 4.0, Pfam 35.0, MITE 1.3, as-js 0.16 and six more directories,
+**9.4 GB on disk**, now recorded in the lock with their versions. A pin that names
+only the binary leaves out the half that moves the answer.
+
+On top of the version the lock records a **fingerprint over the detection rule
+files** — `04add3eb0e86a816`, a sha256 over `strict.txt`, `relaxed.txt` and
+`loose.txt`. The rule count is **103** at 8.0.4 (90 strict, 7 relaxed, 6 loose),
+against the 88 at v7.1 and 58 at v5 this project had already written down. "Never
+compare antiSMASH results across versions" was a standing instruction; the
+fingerprint is its mechanical form, so a campaign pins what it was built against
+and a changed rule set is detectable even when the version string is not what
+moved.
+
+**A banned binary arrives with it.** antiSMASH depends on the `fasttree` package,
+which ships `FastTreeMP` — banned outright, since thread order affects its
+neighbour-joining heuristic. The ban had been written down and nothing enforced it.
+Now the image deletes the binary and `registry --verify` fails if it reappears,
+which also sharpens a distinction worth keeping: `BANNED_BINARIES` is checked,
+`NOT_IN_IMAGE` is a list of deferrals with reasons, and FastTreeMP belongs in
+exactly one of them.
+
+**It brings its own Python, and that nearly became the benchmark's.** With the tool
+prefix first on `PATH`, `python3` silently resolves to antiSMASH's conda
+interpreter, and the stdlib-only grading core would be running on an interpreter
+nobody chose. It surfaced as `python3 -m pytest` failing to find pytest. antiSMASH's
+console scripts carry an absolute shebang to their own interpreter, so the prefix
+never needed to come first; the image now puts it last.
+
+### Projections, and why they are a third kind of licence
+
+antiSMASH's output is one JSON object holding the input path, the tool version, a
+record timestamp and the full HMM hit table in the same structure as the detected
+regions. A line-drop normalisation cannot reach inside that. So the suite gained a
+**projection**: a declared map from the raw artifact to the bytes that are actually
+results.
+
+| | What it says | Where it applies |
+|---|---|---|
+| **Normalisation** | this line is not a result, ignore it when comparing | inside the suite only |
+| **Canonicalisation** | the content is right but its order is not guaranteed — fix the order before anybody reads it | every gold-producing use |
+| **Projection** | these fields are the answer and the rest is not | every gold-producing use |
+
+The two antiSMASH invocations project different things on purpose:
+`minimal_detection` projects the regions, which is what a BGC-detection campaign
+grades; `default_modules_domains` runs the analysis modules and projects the
+ordered NRPS/PKS domain architecture per CDS, which is what a domain-architecture
+or substrate-specificity campaign grades. The second drops the e-values and
+bitscores — a float's last digits are a reduction-order artefact, and nothing
+downstream needs them to state an architecture.
+
+Two safety properties matter here more than they look:
+
+- A projected invocation is reported as **`projection-identical`, never
+  `raw-identical`**, because the raw artifact demonstrably is not identical. This
+  is the same rule as the incidental-match one, one layer up: a claim must say what
+  it is a claim about.
+- A projection that finds nothing **raises**. A projection yielding empty bytes
+  would turn the determinism test into a tautology — every run agreeing on the same
+  emptiness — so an antiSMASH structure change or a fixture with no detectable
+  cluster fails loudly instead of passing quietly. A test asserts the refusal.
+
+### The antiSMASH fixture
+
+Three complete deposited records, concatenated: *Vibrio anguillarum* 775 plasmid
+pJM1 (anguibactin, NRPS, 65 kb), a *Kamptonema* landornamide cluster (ribosomal,
+16.5 kb) and a *Streptomyces sampsonii* julichrome cluster (PKS, 16 kb). The run
+detects three regions across four product names — `NRP-metallophore`+`NRPS`,
+`lanthipeptide-class-ii`+`proteusin`, `T2PKS` — so the rules exercised are not all
+of a kind, which a single-cluster fixture would not have achieved.
+
+Three properties were chosen rather than stumbled into. Each record is **complete**
+and its MIBiG locus starts at position 1, so the provenance is three accessions
+with no coordinates to get wrong. Each is **annotated**, so antiSMASH's verdict is
+about antiSMASH and not about a gene caller feeding it — which is why the
+provisioning controls now forbid FASTA input on a gold-producing path. And all
+three are **bacterial**, so one `--taxon` setting covers the file.
 
 ### Normalisation and canonicalisation are not the same licence
 
@@ -830,12 +914,11 @@ it.
 3. Real systems for the sweep. The harness is built and self-tested; it needs
    `SystemSpec` entries for the actual agents (bash-only, general biomedical,
    tool-equipped) before the five checks can go green.
-5. **antiSMASH and BiG-SCAPE in the image.** The next provisioning task, and the
-   one that unblocks T-L3-1, T-L3-2 and the catalogued T-L3-5. antiSMASH's pin is
-   a pair — binary plus ClusterBlast and Pfam database releases — resolved
-   together, and its detection rules went 58 → 88 across v5–v7.1, so a campaign
-   must never compare results across versions. BiG-SCAPE's pin then depends on
-   the antiSMASH and pyhmmer versions.
+5. **BiG-SCAPE in the image.** antiSMASH is in; BiG-SCAPE's pin depends on the
+   antiSMASH and pyhmmer versions, so it is next, and it unblocks T-L3-2. Its
+   invariance question is harder than the others: a GCF assignment depends on a
+   clustering cutoff, so "identical output" will need a declared cutoff and
+   probably a canonical ordering of cluster families.
 6. **matchms fixtures.** T-L4-1 and T-L4-2 need matchms, which is pip-installable;
    what they actually need first is an MS² fixture set from MassBank with its own
    grounding pass, since a spectral-matching fixture is where the thread-invariance
