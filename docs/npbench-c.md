@@ -32,7 +32,9 @@ scoring path.
 | Template: structure features | `src/npbench_c/templates/structure_features/` | shared engine, 2 ladders |
 | Campaign: PrnA residue evidence | `campaigns/residues-prna-01/` | oracle 1.0, gate 18/0/5 |
 | Campaign: RebH pocket geometry | `campaigns/pocket-rebh-01/` | oracle 1.0, gate 18/0/5 |
-| Tests | `tests/unit/` | 207 passing, 1 skipped |
+| Template: chemical space | `src/npbench_c/templates/chemical_space/` | shared oracle, RDKit pinned at instantiation |
+| Campaign: MIBiG 4.0 chemical space | `campaigns/chemspace-mibig-4_0-01/` | oracle 1.0, gate 18/0/5 |
+| Tests | `tests/unit/` | 236 passing, 1 skipped |
 
 ```bash
 PYTHONPATH=src python3 -m pytest tests -q
@@ -441,7 +443,7 @@ The payoff is measurable: the sevadicin instantiation is 2 JSON files and a
 `task.yaml`. Copying six oracle files per campaign would have made drift between
 instantiations invisible, and the catalog expects eight doubled templates.
 
-## Four catalogued designs corrected by grounding
+## Catalogued designs corrected by grounding
 
 Each was checked against real data before any oracle was written, and each would
 have produced a plausible-looking campaign that could not be built or whose gold
@@ -461,8 +463,24 @@ would have been wrong.
    Re-tiered to `build: image`, with the S0-feasible evidence audit built in its
    place.
 
+5. **Chemical space / scaffold analysis** — Bemis-Murcko reduction is far coarser
+   than the design assumed: the most shared scaffold over the corpus is plain
+   benzene, in 76 entries. The catalogued "distinguishing substitution" rung is
+   therefore both near-vacuous and prose-only, and the catalogued substituent-swap
+   counterfactual needs a chemistry toolkit at solve time. R3 grades the
+   reconciliation between the naive and filtered sharing statistics instead, and
+   R4 varies the declared filter and the evidence gate.
+
 The pattern is consistent enough to be a rule: a catalogue entry is a hypothesis
 about data until the fields are inspected.
+
+The fifth case sharpens it, because the fields *were* inspected and the design
+still needed correcting. Scaffold SMILES parse, scaffolds are computable, and
+every count in the re-grounding probe was real — what the probe did not show was
+that the computed scaffolds are mostly bare rings. So the rule has a second half:
+**a field being present does not make the quantity derived from it informative,
+and only computing the distribution shows which.** The campaign's own
+`notes_for_audit` names the benzene result first for that reason.
 
 
 ## Campaigns 9 and 10: structure features, two ladders on one engine
@@ -597,6 +615,107 @@ gold leaking into a sandbox — `_audit_sandbox` and `GoldLeak` do that, and the
 catch a file in the wrong place. This catches something subtler and entirely of
 the author's making: a rung graded on work that belongs to the rung below it. The
 three cases it found were all mine, and all of them had passed every other gate.
+
+
+## Campaign 11: chemical space, and the question with no single answer
+
+`chemspace-mibig-4_0-01` asks how many distinct natural products MIBiG 4.0
+contains. There is no single answer, and that is the campaign:
+
+```
+compound records                     3,449
+distinct full InChIKeys              3,115     334 records restate a structure
+distinct InChIKey block 1            2,996     119 further distinctions merged
+distinct Bemis-Murcko scaffolds      1,843     plus 182 compounds with no ring
+```
+
+Three declared identity keys over the same records, three different numbers, and
+every statistic downstream — duplicates, per-class spread, scaffold sharing —
+inherits the choice. The connectivity block is not a rounding of the full key: it
+merges 111 groups of stereoisomers, charge states and labelled variants, and
+where stereochemistry is not determinable it is the honest granularity. The rung
+that distinguishes them is the campaign's spine.
+
+Chemistry is perceived once with RDKit at instantiation and pinned into
+`reference/chemistry_table.json`, the same move that put monomer formulas in
+mass balance's reference directory. The table supplies what needs a toolkit —
+formula, InChIKey, scaffold, atom and ring counts, per record — and nothing
+aggregated. Everything the ladder grades is bookkeeping over it, so the campaign
+is **S0** and a toolkit upgrade cannot move a published score.
+
+### Bemis-Murcko is much coarser than the catalogue assumed
+
+This is the fourth catalogued design that grounding corrected, and the first
+where the correction only appeared *after* the oracle ran:
+
+```
+most shared scaffold, unfiltered       benzene            76 entries
+second                                 tetrahydropyran    26 entries
+```
+
+Bemis-Murcko keeps ring systems and the linkers between them and discards
+everything else, so any natural product carrying one aromatic ring reduces to
+benzene. "These 76 compounds share a scaffold" is true and says nothing. The
+catalogued R3 asked for *the distinguishing substitution* between two compounds
+sharing a scaffold — which on this data is almost the whole molecule, and is in
+any case a set difference between molecular graphs that can only be named in
+prose. So R3 grades the reconciliation instead, under a declared filter of ≥2
+rings and ≥50% heavy-atom coverage:
+
+```
+shared scaffolds           279  ->  190 informative
+cross-class scaffolds       36  ->   14 informative
+```
+
+Both sides are graded. A system that reports only the unfiltered number is not
+wrong, it is incomplete, and R3 is where that shows — which is what the
+`stub-unfiltered` competence probe exists to confirm: it does the whole
+bookkeeping, reports the unfiltered statistic in the informative slots, clears R2
+and fails R3.
+
+The catalogued R4 — predict the scaffold after a substituent change — would need
+scaffold perception at solve time and would make the campaign S1 for the sake of
+one rung. R4 varies the declared thresholds instead (four settings, record counts
+3,267 / 2,704 / 2,497 / 1,954) and then gates the corpus on experimental locus
+evidence, which cuts it to 601 entries and the cross-class informative set from 14
+scaffolds to 3.
+
+### One counting rule the data forced
+
+A scaffold "crosses biosynthetic classes" only when **two of its entries have
+disjoint class sets**. The obvious rule — the union of its entries' classes has
+more than one name — gives 115 where the declared rule gives 36, because 456
+active entries carry more than one class and a single hybrid PKS/NRPS cluster
+therefore crosses classes on its own, with nothing to compare against. Both
+numbers are reported, because the naive one is what most analyses compute and the
+gap is the point.
+
+### Two smaller things worth keeping
+
+**The record id is `(accession, ordinal)`, not `(accession, name)`.** Compound
+names are not unique within an entry: BGC0002024 lists "nargenicin A1" twice and
+BGC0002072 lists "linearmycin C" twice. Keying on the name drops two records and
+shifts every count below it, silently.
+
+**`scaffold_smiles` ships but is never a key.** The existing rule from the
+mass-balance build — RDKit for formula, never canonical SMILES, InChIKey as the
+comparison key — applies here too, so scaffold identity is the scaffold's
+InChIKey. The two do not agree exactly: 1,843 InChIKeys against 1,850 canonical
+SMILES, because InChI normalises tautomers and charge states the SMILES writer
+keeps apart. That disagreement is the argument for declaring the key rather than
+leaving it to the solver, and it is why both numbers appear in a test.
+
+### A correction to the re-grounding report
+
+The re-grounding pass recorded 1,655 distinct Murcko scaffolds, and that number
+does not reproduce under any definition — 1,843 by scaffold InChIKey over active
+entries, 1,850 by canonical SMILES, 2,254 including retired entries. It also
+called the 334-record gap "cross-entry duplicates", which it is not: most of
+those records repeat a structure inside one entry, and the cross-entry figure is
+217 at the full key and 259 at the connectivity block. `docs/regrounding-2026-10-02.md`
+carries the correction. The lesson is narrower than the earlier one about
+catalogue entries being hypotheses: **a probe's summary statistic is a hypothesis
+until the oracle recomputes it**, because a probe has no gate behind it.
 
 ## Open items
 

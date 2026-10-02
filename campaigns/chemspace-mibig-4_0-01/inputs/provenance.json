@@ -1,0 +1,16 @@
+{
+  "active_entries": 2437,
+  "derived_table": {
+    "built_by": "npbench_c.templates.chemical_space.build_reference",
+    "contains": "formula, InChIKey, Bemis-Murcko scaffold SMILES and InChIKey, and heavy-atom and ring counts, per compound record",
+    "path": "reference/chemistry_table.json"
+  },
+  "entries": 3013,
+  "license": "CC BY 4.0",
+  "note": "The same archive the release-reconciliation and evidence-audit campaigns ship, byte-identical, so the three campaigns cannot drift apart on corpus content. What this campaign adds is reference/chemistry_table.json, perceived once with RDKit at instantiation and pinned, so the campaign itself needs no chemistry toolkit.",
+  "release": "4.0",
+  "retrieved": "2026-10-02",
+  "sha256_16": "986f1a69fb5eeb84",
+  "source": "MIBiG",
+  "url": "https://dl.secondarymetabolites.org/mibig/mibig_json_4.0.tar.gz"
+}

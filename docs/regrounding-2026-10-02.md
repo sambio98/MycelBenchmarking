@@ -68,17 +68,33 @@ Over MIBiG 4.0 active entries:
 compounds carrying SMILES           3,449
 RDKit-parseable                     3,449  (100.0%)
 of those, strong loci evidence      1,238
-distinct Murcko scaffolds           1,655
 distinct InChIKeys                  3,115
+distinct InChIKey block 1           2,996
+distinct Murcko scaffolds           1,843   (by scaffold InChIKey)
+compounds with no ring system         182
 ```
 
-3,449 compounds against 3,115 InChIKeys means **334 cross-entry duplicates** —
-the same compound annotated under more than one BGC. That is campaign content in
-its own right, not noise.
+**Two numbers in this section were wrong when first written and are corrected
+above.** The scaffold count was recorded as 1,655, and it does not reproduce
+under any definition: 1,843 keyed on the scaffold's InChIKey, 1,850 keyed on its
+canonical SMILES over active entries, 2,254 over all entries including retired
+ones. The build uses the InChIKey, because canonical SMILES is a toolkit output
+and cannot be a key in a benchmark whose scores must stay comparable. And
+3,449 records against 3,115 InChIKeys is **334 duplicate records**, not 334
+cross-entry duplicates: most of those records repeat a structure inside one
+entry. The cross-entry figure — keys appearing under more than one accession — is
+**217** at the full key and **259** at the connectivity block. Both are campaign
+content; they are not the same statistic and conflating them was the error.
+
+What the full build then found, which no count in this table shows: **Bemis-Murcko
+reduction is much coarser than the catalogued design assumed.** The most widely
+shared scaffold in this corpus is plain benzene, in 76 entries. See
+`docs/catalog.md` under T-L4-4 for the two scope corrections that follow.
 
 RDKit is needed here (scaffold perception), so this is **S1** unless scaffolds
 are precomputed into `reference/` the way monomer formulas were for mass
-balance — which would make it S0 and is the recommended route.
+balance — which would make it S0 and is the recommended route. **Taken**: the
+built campaign pins the chemistry once at instantiation and is S0.
 
 ### T-L5-1 and T-L5-2 — the data is fine, the licence is not
 
@@ -132,3 +148,7 @@ wanted, not substituted silently.
 4. **One registration unblocks one**: BRENDA.
 5. Build order for the three that are ready: `structure_features` (two ladders,
    shared engine, reuses RebH/PrnA provenance) then chemical space.
+   **All three are now built** — `residues-prna-01`, `pocket-rebh-01`,
+   `chemspace-mibig-4_0-01` — so the S0 set is exhausted and the three blockers
+   above (Phase 1, ChEMBL share-alike, BRENDA credentials) are now the only
+   things between the benchmark and its remaining 19 templates.

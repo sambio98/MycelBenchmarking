@@ -296,7 +296,7 @@ and every variant moves the total (595 / 749 / 636 / 640 against 620); the build
 | T-L4-1 ×2 | MS² dereplication vs reference standards | likely | image |
 | T-L4-2 | Molecular networking, mis-seeded annotation | likely | image |
 | T-L4-3 ×2 | Mass balance & route validation (NRPS) | verified | **BUILT** |
-| T-L4-4 | Chemical space / scaffold analysis | **verified** | now |
+| T-L4-4 | Chemical space / scaffold analysis | verified | **BUILT** |
 
 **T-L4-1** Dereplication against authentic-standard libraries only — MassBank
 2026.03 (CC BY 4.0, shippable) and the GNPS reference-standard sets (MSMLS 863
@@ -347,11 +347,45 @@ Both campaigns now contain **no code at all**: the oracle is shared at
 catalog's authoring model assumes, and it was factored out at two
 instantiations rather than at eight.
 
-**T-L4-4** Scaffold / chemical-space analysis keyed on InChIKey block 1
-(connectivity), which is the right granularity where stereochemistry is not
-determinable. R1 scaffold table · R2 matches gold · R3 claim: which compounds
-share a scaffold and the distinguishing substitution · R4 a substituent is
-changed — predict the new scaffold assignment.
+**T-L4-4** **Built**: `campaigns/chemspace-mibig-4_0-01`. Scaffold and
+chemical-space analysis over MIBiG 4.0's active entries, with the identity key as
+the subject rather than an implementation detail: 3,449 compound records are
+3,115 full InChIKeys, 2,996 connectivity blocks and 1,843 ring scaffolds, and
+every statistic downstream inherits the choice.
+R1 the corpus and the three distinct-key counts · R2 what each key merges (111
+connectivity blocks cover more than one full key, hiding 119 distinctions) and
+the per-class spread · R3 the scaffold-sharing claim that survives a declared
+informativeness filter, plus which scaffolds genuinely cross biosynthetic classes
+· R4 four filter settings and the experimental-evidence gate.
+
+Chemistry is perceived **once** with RDKit at instantiation and pinned into
+`reference/chemistry_table.json` — formula, InChIKey, Bemis-Murcko scaffold, atom
+and ring counts per record — exactly as monomer formulas were for mass balance.
+The campaign itself is then stdlib set arithmetic, so **S0**.
+
+*Two scope corrections made during the build, both forced by what the scaffolds
+turned out to be.* **Bemis-Murcko reduction is far coarser than the catalogued
+design assumed.** It keeps ring systems and discards substituents, so the most
+widely shared scaffold in this corpus is plain benzene across 76 entries and the
+second is tetrahydropyran across 26. "These 76 compounds share a scaffold" is
+true and says nothing, and the catalogued R3 — the *distinguishing substitution*
+between two compounds sharing a scaffold — is then almost the whole molecule, and
+is in any case a set difference between molecular graphs that can only be named
+in prose. R3 instead grades the reconciliation between the naive sharing
+statistic and the one that survives a declared filter (≥2 rings and ≥50% heavy-atom
+coverage): 279 shared scaffolds become 190, and 36 cross-class scaffolds become
+14. Both sides are graded, so the size of the effect is visible rather than
+hidden inside a choice. **And the catalogued R4** — predict the scaffold after a
+substituent change — needs scaffold perception at solve time, which would make
+the campaign S1 for one rung; R4 varies the declared thresholds and the evidence
+gate instead.
+
+One more counting rule the data forced: a scaffold "crosses classes" only when
+two of its entries have **disjoint** class sets. 456 active entries carry more
+than one biosynthetic class, so the obvious rule — the union of classes has more
+than one name — is inflated more than threefold (115 against 36) by single hybrid
+clusters crossing classes with nothing to compare against. Both numbers are
+reported.
 
 ## L5 — Target & mechanism (3 templates, 3 campaigns)
 
@@ -497,9 +531,11 @@ updated. Headline: **the S0 buildable set is 3 templates, not 7.**
   ECO-coded features plus PDB mmCIF) and the proteins already in the
   benchmark, so they should share one `structure_features` template with two
   ladders rather than duplicate an mmCIF parser.
-  **Done**: the shared template is built and both ladders are instantiated
-  (`residues-prna-01`, `pocket-rebh-01`), so of the three only T-L4-4 chemical
-  space is still open.
+  **Done**: all three are built. The shared `structure_features` template
+  carries both ladders (`residues-prna-01`, `pocket-rebh-01`) and chemical space
+  is `chemspace-mibig-4_0-01`. **The S0 set is exhausted**: every remaining row
+  needs the Phase 1 container, a licensing decision on ChEMBL share-alike, or
+  BRENDA credentials.
 - **Blocked on one licensing decision** (ChEMBL CC BY-SA 3.0 share-alike):
   T-L5-1 and T-L5-2. Both are otherwise data-verified, including the structured
   `assay_variant_mutation` field T-L5-2 needs.

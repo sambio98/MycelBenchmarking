@@ -168,13 +168,37 @@ and the right ones to author first.
 | T-L4-1 MS² dereplication | MassBank, GNPS, CASMI | matchms, RDKit | S1 |
 | T-L4-2 molecular networking | GNPS | matchms | S1 |
 | T-L4-3 mass balance | MIBiG 4.0, ChEBI | RDKit (formula only) | **S0/S1** |
-| T-L4-4 chemical space | MIBiG 4.0 | RDKit | S1 |
+| T-L4-4 chemical space | MIBiG 4.0 | RDKit (instantiation only) | **S0** |
 | T-L5-1 selectivity ratios | ChEMBL | — (arithmetic) | **S0** |
 | T-L5-2 resistance → target | ChEMBL/UniProt | — | **S0** |
 | T-L5-3 pocket geometry | PDB, UniProt | — (stdlib only) | **S0** |
 | T-L6-1 construct design | UniProt | — | **S0** |
 | T-L6-2 constraint conflict | UniProt | — | **S0** |
 | T-L6-3 prioritisation | varies | varies | S1 |
+
+### Chemistry perceived once, then pinned
+
+Two templates need a chemistry toolkit for *perception* and nothing else, and
+both handle it the same way: RDKit runs once at instantiation, its output is
+written into the campaign's `reference/`, and the campaign thereafter needs no
+toolkit at all. That keeps both at **S0**, makes the oracle and the agent read the
+same table, and means a toolkit upgrade cannot move a published score.
+
+| Template | Script | Pinned table | What it carries |
+|---|---|---|---|
+| T-L4-3 mass balance | `mass_balance_nrps.build_reference` | `monomer_formulas.json` | a molecular formula per A-domain substrate |
+| T-L4-4 chemical space | `chemical_space.build_reference` | `chemistry_table.json` | per compound record: formula, InChIKey, Bemis-Murcko scaffold SMILES and InChIKey, heavy-atom and ring counts (3,449 records, ~1.2 MB) |
+
+The rule both follow: **RDKit output is admissible as a pinned input only where
+it is stable across versions.** A molecular formula is atom counting plus
+valence-implied hydrogens, and an InChIKey is a versioned standard. A canonical
+SMILES is neither, so `scaffold_smiles` ships as a human-readable label and
+`scaffold_inchikey` is the identity key — a distinction that is not academic here,
+since the two give 1,843 and 1,850 distinct scaffolds over the same records.
+
+Re-running a `build_reference` script is an instantiation-time act, not part of
+the gold build: `chemical_space.build` refuses outright if the table is absent
+rather than quietly deriving it.
 
 ### What the two structure-features ladders actually need
 
