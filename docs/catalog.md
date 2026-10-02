@@ -78,7 +78,7 @@ key.
 |---|---|---|---|
 | T-L1-1 | Gene calling under assembly fragmentation | probe | image |
 | T-L1-2 ×2 | Domain architecture parsing | likely | image |
-| T-L1-3 | Annotation transfer error detection | likely | now |
+| T-L1-3 | Annotation transfer error detection | verified | **image** (re-tiered) |
 | T-L1-4 | Frameshift / pseudogene detection | probe | image |
 
 **T-L1-1** Prodigal gene calls on a contig, then the same contig fragmented.
@@ -112,10 +112,10 @@ introduced elsewhere — predict the new pseudogene call. Perturbation:
 | # | Template | Data | Build |
 |---|---|---|---|
 | T-L2-1 ×2 | EC misannotation triage (EC 1.1.3.15) | likely | image |
-| T-L2-2 | Catalytic residue identification | likely | now |
+| T-L2-2 | Catalytic residue identification | **verified** | now |
 | T-L2-3 | Remote homology twilight zone | probe | image |
 | T-L2-4 ×2 | A-domain substrate specificity | verified | image |
-| T-L2-5 | Kinetics harmonisation | likely | now |
+| T-L2-5 | Kinetics harmonisation | verified | **blocked: credentials** |
 
 **T-L2-1** Built on Rembeza & Engqvist 2021 (*PLoS Comput Biol* 17(9):e1009446):
 78% of proteins annotated EC 1.1.3.15 in BRENDA 2017.1 lack the canonical FMN-dh
@@ -282,7 +282,7 @@ and every variant moves the total (595 / 749 / 636 / 640 against 620); the build
 | T-L4-1 ×2 | MS² dereplication vs reference standards | likely | image |
 | T-L4-2 | Molecular networking, mis-seeded annotation | likely | image |
 | T-L4-3 ×2 | Mass balance & route validation (NRPS) | verified | **BUILT** |
-| T-L4-4 | Chemical space / scaffold analysis | likely | now |
+| T-L4-4 | Chemical space / scaffold analysis | **verified** | now |
 
 **T-L4-1** Dereplication against authentic-standard libraries only — MassBank
 2026.03 (CC BY 4.0, shippable) and the GNPS reference-standard sets (MSMLS 863
@@ -348,9 +348,9 @@ breaks if the rule is relaxed.
 
 | # | Template | Data | Build |
 |---|---|---|---|
-| T-L5-1 | Selectivity ratios from measured IC50 | likely | now |
-| T-L5-2 | Resistance mutation → target assignment | likely | now |
-| T-L5-3 | Binding-site geometry from coordinates | likely | now |
+| T-L5-1 | Selectivity ratios from measured IC50 | **verified** | **blocked: licence** |
+| T-L5-2 | Resistance mutation → target assignment | **verified** | **blocked: licence** |
+| T-L5-3 | Binding-site geometry from coordinates | **verified** | now |
 
 **T-L5-1** ChEMBL measured activities (CC BY-SA 3.0 — **share-alike propagates
 to redistributed subsets; confirm licensing before this is load-bearing**).
@@ -457,6 +457,27 @@ counterfactual (every R4 by construction) · design (L6-1, L6-2) · abstain
 
 A CI check should compute both matrices from `task.yaml` files and fail the
 build on an empty row or column, so generality is enforced rather than claimed.
+
+## Re-grounding, 2026-10-02
+
+Every remaining `build: now` row has now been probed against its actual data
+source. Full findings in `docs/regrounding-2026-10-02.md`; the flags above are
+updated. Headline: **the S0 buildable set is 3 templates, not 7.**
+
+- **Ready now**: T-L2-2 catalytic residues, T-L5-3 pocket geometry,
+  T-L4-4 chemical space. The first two share their data sources (UniProt
+  ECO-coded features plus PDB mmCIF) and the proteins already in the
+  benchmark, so they should share one `structure_features` template with two
+  ladders rather than duplicate an mmCIF parser.
+- **Blocked on one licensing decision** (ChEMBL CC BY-SA 3.0 share-alike):
+  T-L5-1 and T-L5-2. Both are otherwise data-verified, including the structured
+  `assay_variant_mutation` field T-L5-2 needs.
+- **Blocked on registration**: T-L2-5, since BRENDA's archive 404s without it.
+- **Re-tiered to `image`**: T-L1-3, because finding a closest homolog needs
+  alignment and any S0 route is a lookup.
+
+So nine of the remaining rows need the Phase 1 container, which makes Phase 1
+load-bearing sooner than this catalog implied.
 
 ## Authoring order
 
