@@ -34,10 +34,10 @@ scoring path.
 | Campaign: RebH pocket geometry | `campaigns/pocket-rebh-01/` | oracle 1.0, gate 18/0/5 |
 | Template: chemical space | `src/npbench_c/templates/chemical_space/` | shared oracle, RDKit pinned at instantiation |
 | Campaign: MIBiG 4.0 chemical space | `campaigns/chemspace-mibig-4_0-01/` | oracle 1.0, gate 18/0/5 |
-| Phase 1 image | `image/Dockerfile`, `image/environment.lock.json` | 7 tools pinned to `version=build`, 153-package closure hashed, antiSMASH databases pinned at 9.4 GB |
+| Phase 1 image | `image/Dockerfile`, `image/environment.lock.json` | 8 tools pinned to `version=build`, 185-package closure hashed, antiSMASH databases pinned at 9.4 GB |
 | Tool registry | `src/npbench_c/tools/registry.py` | pins, controls, invocations, declared normalisations, canonicalisations, projections, enforced bans |
-| Thread-invariance suite | `src/npbench_c/tools/invariance.py` | 7/7 tools invariant at 1 and 8 threads |
-| Tests | `tests/` | 283 passing, 1 skipped |
+| Thread-invariance suite | `src/npbench_c/tools/invariance.py` | 8/8 tools invariant at 1 and 8 threads |
+| Tests | `tests/` | 290 passing, 2 skipped |
 
 ```bash
 PYTHONPATH=src python3 -m pytest tests -q
@@ -735,20 +735,21 @@ the micromamba install of these exact specs, `registry --verify` against the
 resulting prefix, and the full invariance suite — so the pins and the measured
 determinism results are real, and the layer sequence is not yet proven.
 
-Seven tools, each pinned to an exact `version=build` string with the resolved
-153-package closure and every artifact's sha256 in `image/environment.lock.json`:
+Eight tools, each pinned to an exact `version=build` string with the resolved
+185-package closure and every artifact's sha256 in `image/environment.lock.json`:
 HMMER 3.4, DIAMOND 2.2.8, MMseqs2 18.8cc5c, Prodigal 2.6.3, MAFFT 7.526, BLAST+
-2.17.0 and antiSMASH 8.0.4. **Ubuntu's archive cannot satisfy two of the pins** —
+2.17.0, antiSMASH 8.0.4 and BiG-SCAPE 2.0.3. **Ubuntu's archive cannot satisfy
+two of the pins** —
 it ships DIAMOND 2.1.9 against a ≥ 2.2.7 floor and BLAST+ 2.12.0 against 2.17.0 —
 which settled the question of whether `apt` would do. A measured dry-run then
 confirmed that adding antiSMASH moves **none** of the six sequence-tool pins, which
 is why there is one environment rather than two.
 
-**This unblocks 9 of the 12 `build: image` templates**: T-L1-1, T-L1-2, T-L1-3,
-T-L1-4, T-L2-1, T-L2-3, T-L2-4, T-L3-4 and T-L3-1, plus the catalogued T-L3-5
-target inference that the S0 build re-tiered to `image`. The remaining three need
-BiG-SCAPE or matchms, each deferred with a recorded reason rather than left as a
-gap in a table.
+**This unblocks 10 of the 12 `build: image` templates**: T-L1-1, T-L1-2, T-L1-3,
+T-L1-4, T-L2-1, T-L2-3, T-L2-4, T-L3-1, T-L3-2 and T-L3-4, plus the catalogued
+T-L3-5 target inference that the S0 build re-tiered to `image`. The remaining two
+need matchms, deferred with a recorded reason rather than left as a gap in a
+table.
 
 ### What measuring found
 
@@ -803,6 +804,61 @@ interpreter, and the stdlib-only grading core would be running on an interpreter
 nobody chose. It surfaced as `python3 -m pytest` failing to find pytest. antiSMASH's
 console scripts carry an absolute shebang to their own interpreter, so the prefix
 never needed to come first; the image now puts it last.
+
+### BiG-SCAPE: it does not run as published
+
+The sharpest result of the whole Phase 1 effort, and the one that justifies
+running tools rather than installing them.
+
+BiG-SCAPE 2.0.3's bioconda recipe asks for `sqlalchemy >= 2.0.2` with no upper
+bound. A fresh solve therefore installs 2.1.x, and BiG-SCAPE raises
+`ObjectNotExecutableError` **before it reads a single input file** — it passes a
+compiled statement object to `Connection.execute`, which 2.0 tolerated and 2.1
+rejects. The image carries `sqlalchemy=2.0.54`, a bound the upstream recipe does
+not. **Installing is not the same as working**, and nothing short of running it
+tells them apart.
+
+Two smaller things the same session surfaced. BiG-SCAPE filters its input
+directory by filename, defaulting to `cluster,region` to match antiSMASH's
+`*.region001.gbk` convention; MIBiG reference files are named `BGC0000852.gbk`, so
+without an explicit `--include-gbk` the run fails with *no valid input GBKs*
+rather than with anything about names. And it needs `Pfam-A.hmm`, which the
+antiSMASH databases already ship pressed — so the image reuses that copy, saving
+1.5 GB and one separately-pinned release.
+
+**The partition is the result; the labels are not.** `FAM_00001` is a name. Two
+runs can agree completely on which clusters belong together and disagree on what
+the groups are called, and a comparison of labels would score that as a
+difference. The projection keeps, per class, the groups as sorted member sets,
+sorted among themselves, and drops the family label and the connected-component
+number. The cutoff stays in the *invocation* rather than the projection, because a
+partition at a different cutoff is a different answer, not a different rendering
+of one — which is exactly the distinction T-L3-2 ("GCF cutoff") is about.
+
+**The fixture was built to have families.** 32 antiSMASH-processed MIBiG clusters,
+selected by a rule computed from tables this repository already carries: the four
+largest groups of 4–10 entries sharing an InChIKey connectivity block — ectoine
+(10), ochratoxin A (7), kanamycin (5), aflatoxin B1 (5) — plus one singleton per
+biosynthetic class as a negative control. BiG-SCAPE recovers those families at a
+0.3 cutoff, which is what makes this a test of clustering rather than a test of
+whether 32 singletons stay 32 singletons.
+
+The one judgement in that selection is named rather than buried: groups whose
+MIBiG compound name is a **class placeholder** — *capsular polysaccharide*,
+*lipopolysaccharide*, *melanin*, *carotenoid*, *exopolysaccharide* — are excluded,
+because MIBiG gives those generic names a representative structure and entries
+sharing one need not be homologous. Two different molecular formulas appear under
+*capsular polysaccharide* alone. Including them would have put apparent family
+structure in the fixture that the biology does not support.
+
+**One coupling to settle before T-L3-2 is authored.** The MIBiG reference set
+ships as `mibig_antismash_4.0_gbk_as8b1.tar.bz2` — processed with antiSMASH **8.0
+beta 1**, while the image pins **8.0.4**. Harmless for a determinism fixture,
+since both arms of every comparison read the same files. Not harmless for a
+campaign: comparing its own 8.0.4 regions against that reference set is precisely
+the cross-version comparison antiSMASH's rules forbid. Either reprocess the
+reference set with the pinned antiSMASH, or state that both sides come from the
+published set.
 
 ### Projections, and why they are a third kind of licence
 
@@ -914,11 +970,15 @@ it.
 3. Real systems for the sweep. The harness is built and self-tested; it needs
    `SystemSpec` entries for the actual agents (bash-only, general biomedical,
    tool-equipped) before the five checks can go green.
-5. **BiG-SCAPE in the image.** antiSMASH is in; BiG-SCAPE's pin depends on the
-   antiSMASH and pyhmmer versions, so it is next, and it unblocks T-L3-2. Its
-   invariance question is harder than the others: a GCF assignment depends on a
-   clustering cutoff, so "identical output" will need a declared cutoff and
-   probably a canonical ordering of cluster families.
+5. **matchms fixtures.** The last provisioning gap, for T-L4-1 and T-L4-2. The
+   tools are pip-installable; what the rows need first is an MS² fixture set from
+   MassBank with its own grounding pass, because for a spectral match the
+   invariance question becomes a tolerance question and that is a different suite
+   from this one.
+7. **Reprocess the MIBiG reference set with the pinned antiSMASH**, or declare
+   that a T-L3-2 campaign takes both sides from the published `as8b1` set. As
+   shipped, the reference clusters were processed with antiSMASH 8.0 beta 1 and
+   the image pins 8.0.4.
 6. **matchms fixtures.** T-L4-1 and T-L4-2 need matchms, which is pip-installable;
    what they actually need first is an MS² fixture set from MassBank with its own
    grounding pass, since a spectral-matching fixture is where the thread-invariance

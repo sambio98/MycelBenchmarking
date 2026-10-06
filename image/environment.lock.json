@@ -43,7 +43,7 @@
   "fetched_on": "2026-10-02",
   "gigabytes_on_disk": 9.4
  },
- "artifact_bytes": 539273452,
+ "artifact_bytes": 574836463,
  "banned_binaries": {
   "FastTreeMP": "Deleted from the prefix after install. Thread order affects the neighbour-joining heuristic, so it can never sit on a gold-producing path. It arrives as part of the fasttree package that antiSMASH depends on, so the ban is enforced by `registry --verify` rather than only written down. Single-threaded FastTree stays."
  },
@@ -53,11 +53,10 @@
  ],
  "description": "The resolved package set of the Phase 1 pinned-tool image, exactly as micromamba installed it. Every entry carries the artifact URL and its sha256, so the image is rebuildable byte-for-byte rather than merely version-matched. A score is comparable only against a run of the same image, and this file is what makes 'the same image' checkable.",
  "not_in_this_image": {
-  "bigscape": "Needed by T-L3-2, and its pin depends on the antiSMASH and pyhmmer versions. It follows antiSMASH, which is now here.",
   "iqtree": "Not needed by any catalogued template. If it ever is: always --seed, always fixed -T N, never AUTO, and single-gene ML trees are not admissible as gold.",
   "matchms": "Needed by T-L4-1 and T-L4-2. Pip-installable, but those rows need an MS2 fixture set from MassBank with its own grounding pass first: for a spectral match the invariance question becomes a tolerance question."
  },
- "package_count": 153,
+ "package_count": 185,
  "packages": [
   {
    "build": "20_gnu",
@@ -66,6 +65,14 @@
    "size": 28948,
    "url": "https://conda.anaconda.org/conda-forge/linux-64/_openmp_mutex-4.5-20_gnu.conda",
    "version": "4.5"
+  },
+  {
+   "build": "hd8ed1ab_3",
+   "name": "_python_abi3_support",
+   "sha256": "2a7204314663eeda5dec482a956f0e2eaf289bd5b9953eaaaad0e81aa64638f2",
+   "size": 8144,
+   "url": "https://conda.anaconda.org/conda-forge/noarch/_python_abi3_support-1.0-hd8ed1ab_3.conda",
+   "version": "1.0"
   },
   {
    "build": "pyhdfd78af_1",
@@ -92,6 +99,14 @@
    "version": "26.1.0"
   },
   {
+   "build": "py311h6f959d0_1",
+   "name": "backports.zstd",
+   "sha256": "b6be9fb502245705469b05807e9a28d3265f7fdef765bd00d5132f40a0fda92b",
+   "size": 248331,
+   "url": "https://conda.anaconda.org/conda-forge/linux-64/backports.zstd-1.7.0-py311h6f959d0_1.conda",
+   "version": "1.7.0"
+  },
+  {
    "build": "pyhdfd78af_3",
    "name": "bcbio-gff",
    "sha256": "e8fa1cd4e3c31047c66e17475c2c5360efaeb61092d3e9a4d85de295bc101aeb",
@@ -100,12 +115,36 @@
    "version": "0.7.1"
   },
   {
+   "build": "pyhdfd78af_0",
+   "name": "bigscape",
+   "sha256": "8a2d051a27017ac7a0fd90f89b101a64f52d31ee1c2be4df4b70e25815fa92cd",
+   "size": 1130265,
+   "url": "https://conda.anaconda.org/bioconda/noarch/bigscape-2.0.3-pyhdfd78af_0.conda",
+   "version": "2.0.3"
+  },
+  {
    "build": "py311h459d7ec_1",
    "name": "biopython",
    "sha256": "eaa8a9c7781f9413bdd873df5392df216b23129511a3c2e189c7c291587e9cd7",
    "size": 3355030,
    "url": "https://conda.anaconda.org/conda-forge/linux-64/biopython-1.81-py311h459d7ec_1.conda",
    "version": "1.81"
+  },
+  {
+   "build": "py311h194be0f_1",
+   "name": "bitarray",
+   "sha256": "026a5b49718a75c55a59dcc405b184b51f5b02bc39cc8fbc027183ce17379930",
+   "size": 341851,
+   "url": "https://conda.anaconda.org/conda-forge/linux-64/bitarray-3.11.0-py311h194be0f_1.conda",
+   "version": "3.11.0"
+  },
+  {
+   "build": "pyhd8ed1ab_0",
+   "name": "bitstring",
+   "sha256": "47f2ff9253d0e0a1bbe77443e088bb41952845f413c09a4ae8fc3dd15f3cb8a1",
+   "size": 63587,
+   "url": "https://conda.anaconda.org/conda-forge/noarch/bitstring-4.4.0-pyhd8ed1ab_0.conda",
+   "version": "4.4.0"
   },
   {
    "build": "hb02a186_1",
@@ -137,6 +176,14 @@
    "sha256": "ce7db81d5fd4b222ee1a27c52ccf7af44faaf88283017103a8e288f9c372b973",
    "size": 21601,
    "url": "https://conda.anaconda.org/conda-forge/linux-64/brotli-bin-1.2.0-h9908984_4.conda",
+   "version": "1.2.0"
+  },
+  {
+   "build": "py311heb3be6f_4",
+   "name": "brotli-python",
+   "sha256": "d641ef23bdfce1b1a889845489fce65e00311d6ed22e6b345074ec07627db7d5",
+   "size": 367207,
+   "url": "https://conda.anaconda.org/conda-forge/linux-64/brotli-python-1.2.0-py311heb3be6f_4.conda",
    "version": "1.2.0"
   },
   {
@@ -172,12 +219,44 @@
    "version": "2026.7.22"
   },
   {
+   "build": "pyhd8ed1ab_0",
+   "name": "cachetools",
+   "sha256": "1823dc939b2c2b5354b6add5921434f9b873209a99569b3a2f24dca6c596c0d6",
+   "size": 15220,
+   "url": "https://conda.anaconda.org/conda-forge/noarch/cachetools-5.5.2-pyhd8ed1ab_0.conda",
+   "version": "5.5.2"
+  },
+  {
+   "build": "py311h904a5e5_3",
+   "name": "cffi",
+   "sha256": "1f9c8856b629d9c546cd6574345e7d3621f59fdde8c2902b88e00f09764d6295",
+   "size": 310350,
+   "url": "https://conda.anaconda.org/conda-forge/linux-64/cffi-2.1.1-py311h904a5e5_3.conda",
+   "version": "2.1.1"
+  },
+  {
+   "build": "pyh5ded981_0",
+   "name": "click",
+   "sha256": "9afb0c2c089330321a219c7ee5a25313bd574d4024be606cbb33e7a5735df662",
+   "size": 112341,
+   "url": "https://conda.anaconda.org/conda-forge/noarch/click-8.5.0-pyh5ded981_0.conda",
+   "version": "8.5.0"
+  },
+  {
    "build": "py311h724c32c_4",
    "name": "contourpy",
    "sha256": "fd7aca059253cff3d8b0aec71f0c1bf2904823b13f1997bf222aea00a76f3cce",
    "size": 320553,
    "url": "https://conda.anaconda.org/conda-forge/linux-64/contourpy-1.3.3-py311h724c32c_4.conda",
    "version": "1.3.3"
+  },
+  {
+   "build": "py311hd8ed1ab_0",
+   "name": "cpython",
+   "sha256": "184d01822038b23b49b8e596ad1de15e269c9d89ca47526c2959add1d40049a4",
+   "size": 49099,
+   "url": "https://conda.anaconda.org/conda-forge/noarch/cpython-3.11.17-py311hd8ed1ab_0.conda",
+   "version": "3.11.17"
   },
   {
    "build": "ha042cf0_0",
@@ -194,6 +273,14 @@
    "size": 14778,
    "url": "https://conda.anaconda.org/conda-forge/noarch/cycler-0.12.1-pyhcf101f3_2.conda",
    "version": "0.12.1"
+  },
+  {
+   "build": "pyh9f0ad1d_0",
+   "name": "deprecation",
+   "sha256": "2695a60ff355b114d0c459458461d941d2209ec9aff152853b6a3ca8700c94ec",
+   "size": 14487,
+   "url": "https://conda.anaconda.org/conda-forge/noarch/deprecation-2.1.0-pyh9f0ad1d_0.tar.bz2",
+   "version": "2.1.0"
   },
   {
    "build": "he361c42_0",
@@ -252,12 +339,28 @@
    "version": "6.3.0"
   },
   {
+   "build": "py311hdfc3925_0",
+   "name": "greenlet",
+   "sha256": "9226ade5e334e8928df681d7c2ced04cd2aba10c3d6ca669a0da8edb7345a5a6",
+   "size": 281345,
+   "url": "https://conda.anaconda.org/conda-forge/linux-64/greenlet-3.5.6-py311hdfc3925_0.conda",
+   "version": "3.5.6"
+  },
+  {
    "build": "he838d99_0",
    "name": "gsl",
    "sha256": "132a918b676dd1f533d7c6f95e567abf7081a6ea3251c3280de35ef600e0da87",
    "size": 3376423,
    "url": "https://conda.anaconda.org/conda-forge/linux-64/gsl-2.7-he838d99_0.tar.bz2",
    "version": "2.7"
+  },
+  {
+   "build": "pyhcf101f3_0",
+   "name": "h2",
+   "sha256": "307dd6ec90140c3cf4171071b0e5e870abec314f4565c1edd5bc433e942cdcc0",
+   "size": 100789,
+   "url": "https://conda.anaconda.org/conda-forge/noarch/h2-4.4.1-pyhcf101f3_0.conda",
+   "version": "4.4.1"
   },
   {
    "build": "py_0",
@@ -282,6 +385,22 @@
    "size": 262050,
    "url": "https://conda.anaconda.org/bioconda/linux-64/hmmer2-2.3.2-h87e0c26_12.conda",
    "version": "2.3.2"
+  },
+  {
+   "build": "pyhd8ed1ab_0",
+   "name": "hpack",
+   "sha256": "fdcea5d7cb314485d3907192ef024c704311548c5b0cbeb390cd1951051e29d2",
+   "size": 32884,
+   "url": "https://conda.anaconda.org/conda-forge/noarch/hpack-4.2.0-pyhd8ed1ab_0.conda",
+   "version": "4.2.0"
+  },
+  {
+   "build": "pyhd8ed1ab_0",
+   "name": "hyperframe",
+   "sha256": "77af6f5fe8b62ca07d09ac60127a30d9069fdc3c68d6b256754d0ffb1f7779f8",
+   "size": 17397,
+   "url": "https://conda.anaconda.org/conda-forge/noarch/hyperframe-6.1.0-pyhd8ed1ab_0.conda",
+   "version": "6.1.0"
   },
   {
    "build": "py310h44b86e0_2",
@@ -588,6 +707,14 @@
    "version": "5.8.3"
   },
   {
+   "build": "hb03c661_1",
+   "name": "liblzma-devel",
+   "sha256": "adef6e8b60afb684110b06b5310977c6836e1c923ce3ec199f45c0f000b42f20",
+   "size": 491970,
+   "url": "https://conda.anaconda.org/conda-forge/linux-64/liblzma-devel-5.8.3-hb03c661_1.conda",
+   "version": "5.8.3"
+  },
+  {
    "build": "h74cf4be_1",
    "name": "libnghttp2",
    "sha256": "11a2f54a6f391e25738bce0023e6ef499600147bbcf21c1fa69d2e251b03cc6a",
@@ -884,6 +1011,14 @@
    "version": "26.3"
   },
   {
+   "build": "np2py311h1e9b377_0",
+   "name": "pandas",
+   "sha256": "85459025d8f749316df29ab837729155d8c54c48af2953ff6226107a7e4c1c9f",
+   "size": 15318970,
+   "url": "https://conda.anaconda.org/conda-forge/linux-64/pandas-3.0.6-np2py311h1e9b377_0.conda",
+   "version": "3.0.6"
+  },
+  {
    "build": "h8b3dc9c_1",
    "name": "pcre2",
    "sha256": "9ebb10a4eb3be51ae67d85c679f5a7a50cb040ed25c783e6331a225ea09991d4",
@@ -1092,12 +1227,36 @@
    "version": "2.6.3"
   },
   {
+   "build": "py311h194be0f_3",
+   "name": "psutil",
+   "sha256": "5733fbcaf4f5575051342b872de15e8589bb922c6b037d2d9425e86638ed2f1f",
+   "size": 231845,
+   "url": "https://conda.anaconda.org/conda-forge/linux-64/psutil-7.2.2-py311h194be0f_3.conda",
+   "version": "7.2.2"
+  },
+  {
    "build": "h7cc23a3_1004",
    "name": "pthread-stubs",
    "sha256": "4a44fd00ea73b79ca2c89b0727b9ccf61c506ead71e67a9abfa4c590042b5a4a",
    "size": 9630,
    "url": "https://conda.anaconda.org/conda-forge/linux-64/pthread-stubs-0.4-h7cc23a3_1004.conda",
    "version": "0.4"
+  },
+  {
+   "build": "pyhcf101f3_0",
+   "name": "pycparser",
+   "sha256": "e27e0473fc6723311a0bd48b89b616fa1b996a2f7a2b555338cbbcfb9c640568",
+   "size": 55886,
+   "url": "https://conda.anaconda.org/conda-forge/noarch/pycparser-3.0-pyhcf101f3_0.conda",
+   "version": "3.0"
+  },
+  {
+   "build": "py311hc303176_0",
+   "name": "pyhmmer",
+   "sha256": "010f26e52ee21364497f392f0af0f2c9eecd1ba9ee2a6e40e1a3a5bc702b17d4",
+   "size": 3380356,
+   "url": "https://conda.anaconda.org/bioconda/linux-64/pyhmmer-0.12.3-py311hc303176_0.conda",
+   "version": "0.12.3"
   },
   {
    "build": "pyh5ded981_0",
@@ -1116,6 +1275,14 @@
    "version": "0.20.0"
   },
   {
+   "build": "pyha55dd90_7",
+   "name": "pysocks",
+   "sha256": "ba3b032fa52709ce0d9fd388f63d330a026754587a2f461117cac9ab73d8d0d8",
+   "size": 21085,
+   "url": "https://conda.anaconda.org/conda-forge/noarch/pysocks-1.7.1-pyha55dd90_7.conda",
+   "version": "1.7.1"
+  },
+  {
    "build": "h5f976f7_2_cpython",
    "name": "python",
    "sha256": "35375a255970809e8b0a1c744d56533f4da5339769ef5f5a24fe165ca321fcf3",
@@ -1132,12 +1299,28 @@
    "version": "2.9.0.post0"
   },
   {
+   "build": "hd8ed1ab_0",
+   "name": "python-gil",
+   "sha256": "3c26e1182672236b05d885ef99fa5fbb1dcea73441cf72d012e83611f47918bf",
+   "size": 49061,
+   "url": "https://conda.anaconda.org/conda-forge/noarch/python-gil-3.11.17-hd8ed1ab_0.conda",
+   "version": "3.11.17"
+  },
+  {
    "build": "9_cp311",
    "name": "python_abi",
    "sha256": "bcfbad269758f4617035314fe379ee655bc2d9db5282e7a00d61450b7cefa3cf",
    "size": 6770,
    "url": "https://conda.anaconda.org/conda-forge/noarch/python_abi-3.11-9_cp311.conda",
    "version": "3.11"
+  },
+  {
+   "build": "py311h3778330_1",
+   "name": "pyyaml",
+   "sha256": "c9a6cd2c290d7c3d2b30ea34a0ccda30f770e8ddb2937871f2c404faf60d0050",
+   "size": 206190,
+   "url": "https://conda.anaconda.org/conda-forge/linux-64/pyyaml-6.0.3-py311h3778330_1.conda",
+   "version": "6.0.3"
   },
   {
    "build": "h434a139_5",
@@ -1172,6 +1355,14 @@
    "version": "1.15.2"
   },
   {
+   "build": "pyhd8ed1ab_0",
+   "name": "screed",
+   "sha256": "930a63e5b2c892b0002c3bc8aace799dc7713fc3d75444dd2bc8b689f3e79c4d",
+   "size": 86130,
+   "url": "https://conda.anaconda.org/conda-forge/noarch/screed-1.2.0-pyhd8ed1ab_0.conda",
+   "version": "1.2.0"
+  },
+  {
    "build": "pyh332efcf_0",
    "name": "setuptools",
    "sha256": "9e200ee5f9ff19a4d94e4b51c4856d53dec849f91032f345cf0c6bc3d51a7183",
@@ -1188,6 +1379,38 @@
    "version": "1.17.0"
   },
   {
+   "build": "pyhd8ed1ab_1",
+   "name": "sortedcontainers",
+   "sha256": "d1e3e06b5cf26093047e63c8cc77b70d970411c5cbc0cb1fad461a8a8df599f7",
+   "size": 28657,
+   "url": "https://conda.anaconda.org/conda-forge/noarch/sortedcontainers-2.4.0-pyhd8ed1ab_1.conda",
+   "version": "2.4.0"
+  },
+  {
+   "build": "h0b5653c_2",
+   "name": "sourmash-minimal",
+   "sha256": "19a71facfd2c7b4287f0397066e233356d6d86ab644252d1d865dbdf77eba8b1",
+   "size": 3816494,
+   "url": "https://conda.anaconda.org/conda-forge/linux-64/sourmash-minimal-4.9.4-h0b5653c_2.conda",
+   "version": "4.9.4"
+  },
+  {
+   "build": "py311hac06934_0",
+   "name": "sourmash_plugin_branchwater",
+   "sha256": "1b9e09ce2756c61690ef2c97ec5518dfac40ec34eeaf342040450d5feeed596c",
+   "size": 4335173,
+   "url": "https://conda.anaconda.org/conda-forge/linux-64/sourmash_plugin_branchwater-0.9.15-py311hac06934_0.conda",
+   "version": "0.9.15"
+  },
+  {
+   "build": "py311h194be0f_1",
+   "name": "sqlalchemy",
+   "sha256": "307ce8017bc357ea724d28c62703f8da7799edb46376211086b9b4d1b45931e4",
+   "size": 3802871,
+   "url": "https://conda.anaconda.org/conda-forge/linux-64/sqlalchemy-2.0.54-py311h194be0f_1.conda",
+   "version": "2.0.54"
+  },
+  {
    "build": "pyhc455866_0",
    "name": "threadpoolctl",
    "sha256": "a32d17fe979e59fe1295875b5d4f0431a76dfbbfcee5b01e657a8aa3c4a1b5d1",
@@ -1196,12 +1419,36 @@
    "version": "3.7.0"
   },
   {
+   "build": "py311hf6208d2_1",
+   "name": "tibs",
+   "sha256": "b8b4d19f9c30c36a47109d1d4b9776be0492e65d26e2be81dc21600dc82300d2",
+   "size": 411482,
+   "url": "https://conda.anaconda.org/conda-forge/linux-64/tibs-0.5.7-py311hf6208d2_1.conda",
+   "version": "0.5.7"
+  },
+  {
    "build": "noxft_h1df4ec4_4",
    "name": "tk",
    "sha256": "a1a241d172c1ccab067ba245206dd048bc3c2d1b84504b53c9468e99adfc16a1",
    "size": 3566806,
    "url": "https://conda.anaconda.org/conda-forge/linux-64/tk-8.6.13-noxft_h1df4ec4_4.conda",
    "version": "8.6.13"
+  },
+  {
+   "build": "pyhfa0c392_0",
+   "name": "tqdm",
+   "sha256": "7c40c84de3de3624c2a753496122dbb880903c796d183e9d4be6c15c310c4bab",
+   "size": 95977,
+   "url": "https://conda.anaconda.org/conda-forge/noarch/tqdm-4.70.1-pyhfa0c392_0.conda",
+   "version": "4.70.1"
+  },
+  {
+   "build": "pyhcf101f3_0",
+   "name": "typing_extensions",
+   "sha256": "2d888f90af0686044882c74193ec80a90ec1943145d94a7b1b048958acda1848",
+   "size": 52631,
+   "url": "https://conda.anaconda.org/conda-forge/noarch/typing_extensions-4.16.0-pyhcf101f3_0.conda",
+   "version": "4.16.0"
   },
   {
    "build": "h151e31d_0",
@@ -1252,6 +1499,14 @@
    "version": "1.1.5"
   },
   {
+   "build": "hebe6cf0_3",
+   "name": "yaml",
+   "sha256": "d164dfa75ecd538f6fd68765defcc06aa875bc697b9b215362d79a2a73125dd0",
+   "size": 84936,
+   "url": "https://conda.anaconda.org/conda-forge/linux-64/yaml-0.2.5-hebe6cf0_3.conda",
+   "version": "0.2.5"
+  },
+  {
    "build": "pyhcf101f3_0",
    "name": "zipp",
    "sha256": "210bd31c22bb88f5e2a167df24c95bb5f152b2ada7502f9b8c49d1f5366db423",
@@ -1288,24 +1543,28 @@
  "prefix": "/opt/npbench-tools",
  "requested": {
   "antismash": "8.0.4=pyhdfd78af_1",
+  "bigscape": "2.0.3=pyhdfd78af_0",
   "blast": "2.17.0=hb02a186_1",
   "diamond": "2.2.8=he361c42_0",
   "hmmer": "3.4=h7d74f8d_5",
   "mafft": "7.526=ha3fa977_0",
   "mmseqs2": "18.8cc5c=hd6d6fdc_0",
   "prodigal": "2.6.3=h577a1d6_11",
-  "python": "3.11.16=h5f976f7_2_cpython"
+  "python": "3.11.16=h5f976f7_2_cpython",
+  "sqlalchemy": "2.0.54=py311h194be0f_1"
  },
  "requested_rationale": {
   "antismash": "8.0.4 is the current release. Its pin is really a PAIR -- this binary plus the database release that `download-antismash-databases` fetched -- because the detection rule set and the reference databases together determine which regions come out. A measured dry-run confirmed that adding antiSMASH to this environment moves NONE of the six sequence-tool pins, which is why there is one environment rather than two; antiSMASH's own constraint on DIAMOND (>= 2.1.21) is satisfied by the 2.2.8 pin.",
+  "bigscape": "2.0.3 is the current release. A measured dry-run confirmed it moves none of the existing pins -- 36 packages added, none replaced. It reuses the Pfam library already shipped with the antiSMASH databases rather than fetching a second copy, which saves 1.5 GB and one separately-pinned release.",
   "blast": "2.17.0; Ubuntu ships 2.12.0, five years older, so bioconda is used for this pin too.",
   "diamond": "2.2.8 clears the >= 2.2.7 floor the determinism controls require. Ubuntu's archive ships 2.1.9, which does NOT, so apt cannot satisfy this pin and bioconda is used instead.",
   "hmmer": "3.4 is the current release (Aug 2023); needed by L1-2, L2-1, L3-4",
   "mafft": "7.526; the controls require only a pinned major version plus deterministic modes.",
   "mmseqs2": "18.8cc5c is the current release. MMseqs2 is the tool most likely to fail thread invariance (upstream issue #277: results differ by core count), so the suite decides whether this pin is usable rather than the version number.",
   "prodigal": "2.6.3 is the final Prodigal release. Prodigal-GV is a DIFFERENT tool and is not in the image.",
-  "python": "antiSMASH is a Python application, so the environment now carries its own interpreter and it is pinned rather than left to the solver. The grading core is stdlib-only, so nothing in the scoring path depends on which 3.11 this is, but a benchmark that does not record its interpreter has an unrecorded dependency."
+  "python": "antiSMASH is a Python application, so the environment now carries its own interpreter and it is pinned rather than left to the solver. The grading core is stdlib-only, so nothing in the scoring path depends on which 3.11 this is, but a benchmark that does not record its interpreter has an unrecorded dependency.",
+  "sqlalchemy": "Pinned to the 2.0 series because BiG-SCAPE 2.0.3 does NOT work with 2.1. Its bioconda recipe asks only for sqlalchemy >= 2.0.2, so a fresh solve installs 2.1.3, and BiG-SCAPE then raises ObjectNotExecutableError before it reads a single input file: it passes a compiled statement object to Connection.execute, which 2.0 tolerated and 2.1 rejects. The image has to carry an upper bound the upstream recipe does not. Installing is not the same as working, and only running the tool found the difference."
  },
- "resolved_on": "2026-10-02",
+ "resolved_on": "2026-10-06",
  "solver": "micromamba 2.9.0"
 }

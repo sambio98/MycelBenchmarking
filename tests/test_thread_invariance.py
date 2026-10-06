@@ -50,11 +50,26 @@ import os
 
 PREFIX = os.environ.get("NPBENCH_TOOL_PREFIX", "/opt/npbench-tools/bin")
 
-ALLOWED_PLACEHOLDERS = {"bin", "fixtures", "setup", "work", "threads"}
+#: {pfam} resolves to the Pfam library inside the antiSMASH databases, which
+#: BiG-SCAPE reuses rather than fetching a second 1.5 GB copy.
+ALLOWED_PLACEHOLDERS = {"bin", "fixtures", "setup", "work", "threads", "pfam"}
 
 image_present = pytest.mark.skipif(
     not pathlib.Path(PREFIX).is_dir(),
     reason=f"pinned-tool image not present at {PREFIX}; nothing measured")
+
+#: A tool marked slow takes minutes per pass -- BiG-SCAPE runs hmmscan over Pfam
+#: for every cluster in the fixture. The suite still measures it and the verdict
+#: is committed in image/thread_invariance.json; what this controls is whether the
+#: default test run re-measures it. A skip with a reason is not a green tick.
+RUN_SLOW = os.environ.get("NPBENCH_SLOW_TOOLS") == "1"
+
+
+def skip_if_slow(tool) -> None:
+    if tool.slow and not RUN_SLOW:
+        pytest.skip(
+            f"{tool.name} takes minutes per pass; its measured verdict is in "
+            "image/thread_invariance.json. Set NPBENCH_SLOW_TOOLS=1 to re-measure")
 
 #: Each tool is measured once per session. Several tests read the same result and
 #: re-running the suite per test would multiply the wall clock for nothing -- the
@@ -137,7 +152,7 @@ def test_the_lockfile_can_rebuild_the_image_byte_for_byte():
 def test_the_absences_are_declared_rather_than_implied():
     """What is missing is a decision with a reason, not a gap for an auditor to
     notice by counting rows."""
-    assert {"bigscape", "matchms", "iqtree"} <= set(NOT_IN_IMAGE)
+    assert {"matchms", "iqtree"} <= set(NOT_IN_IMAGE)
     for reason in NOT_IN_IMAGE.values():
         assert len(reason) > 60
     installed = {tool.name for tool in TOOLS}
@@ -209,6 +224,50 @@ def test_the_domain_projection_keeps_architecture_and_drops_scores():
     assert "cdsC" not in projected
 
 
+def test_the_bigscape_projection_keeps_the_partition_and_drops_the_labels():
+    """FAM_00001 is a name, not a result. Two runs can agree completely on which
+    clusters belong together and disagree on what the groups are called."""
+    table = (
+        "# other_clustering_c0.3.tsv\n"
+        "Record\tGBK\tRecord_Type\tRecord_Number\tCC\tFamily\n"
+        "B.gbk_region_1\tB\tregion\t1\t26\tFAM_00002\n"
+        "A.gbk_region_1\tA\tregion\t1\t26\tFAM_00002\n"
+        "C.gbk_region_1\tC\tregion\t1\t31\tFAM_00009\n"
+        "# PKS_clustering_c0.3.tsv\n"
+        "Record\tGBK\tRecord_Type\tRecord_Number\tCC\tFamily\n"
+        "D.gbk_region_1\tD\tregion\t1\t30\tFAM_00005\n")
+    projected = PROJECTIONS["bigscape_gcf_partition"](table.encode())
+    assert projected == ("PKS\tD.gbk_region_1\n"
+                         "other\tA.gbk_region_1,B.gbk_region_1\n"
+                         "other\tC.gbk_region_1\n")
+
+    # The same partition under different labels and a different row order must
+    # project identically -- that is the whole point of the projection.
+    relabelled = (table.replace("FAM_00002", "FAM_01111")
+                       .replace("FAM_00009", "FAM_02222")
+                       .replace("\t26\t", "\t99\t"))
+    assert PROJECTIONS["bigscape_gcf_partition"](relabelled.encode()) == projected
+
+
+def test_the_bigscape_projection_refuses_to_find_nothing():
+    for table in ("", "# other_clustering_c0.3.tsv\nRecord\tGBK\n"):
+        with pytest.raises(ProjectionError):
+            PROJECTIONS["bigscape_gcf_partition"](table.encode())
+
+
+def test_the_sqlalchemy_bound_is_recorded_where_it_will_be_read():
+    """BiG-SCAPE 2.0.3 crashes on sqlalchemy 2.1 before reading an input file, and
+    its own recipe does not say so. If that fact lives only in a commit message it
+    will be lost the next time someone re-solves the environment."""
+    from npbench_c.tools.registry import BIGSCAPE
+
+    controls = " ".join(BIGSCAPE.controls).lower()
+    assert "sqlalchemy" in controls and "2.1" in controls
+    lock = json.loads(LOCK.read_text())
+    assert lock["requested"]["sqlalchemy"].startswith("2.0.")
+    assert "sqlalchemy" in lock["requested_rationale"]
+
+
 def test_the_antismash_projection_refuses_to_find_nothing():
     """A projection that silently yields nothing turns the determinism test into a
     tautology: every run would agree on the same emptiness."""
@@ -242,6 +301,22 @@ def test_the_nucleotide_fixture_regenerates_byte_identically():
         line.strip() for line in (FIXTURES / "synthetic.fna").read_text().splitlines()
         if not line.startswith(">"))
     assert rebuilt == committed
+
+
+def test_the_bigscape_fixture_has_designed_family_structure():
+    """32 clusters chosen so the set has real families rather than 32 singletons:
+    a clustering fixture made of unrelated BGCs tests almost nothing."""
+    provenance = json.loads((FIXTURES / "provenance.json").read_text())
+    block = provenance["bigscape_input"]
+    files = sorted(p.stem for p in (FIXTURES / "bigscape_input").glob("*.gbk"))
+    listed = sorted({a for accs in block["families"].values() for a in accs}
+                    | set(block["controls"]))
+    assert files == listed
+    assert len(block["families"]) == 4 and len(files) == 32
+    # The placeholder exclusion is the one judgement in the selection, so it is
+    # named rather than left implicit.
+    assert "capsular polysaccharide" in block["excluded_placeholder_names"]
+    assert "as8b1" in block["url"]
 
 
 def test_the_protein_fixture_is_a_real_homolog_set():
@@ -297,6 +372,7 @@ def test_the_antismash_rule_set_is_fingerprinted():
 @image_present
 @pytest.mark.parametrize("tool", TOOLS, ids=lambda t: t.name)
 def test_tool_is_thread_invariant(tool):
+    skip_if_slow(tool)
     result = measure(tool)
     if result["status"] == SKIP:
         pytest.skip(result["detail"])
@@ -391,6 +467,8 @@ def test_the_committed_report_is_not_stale():
     committed = json.loads(REPORT.read_text())
     assert set(committed["tools"]) == {tool.name for tool in TOOLS}
     for tool in TOOLS:
+        if tool.slow and not RUN_SLOW:
+            continue
         recorded = committed["tools"][tool.name]
         fresh = measure(tool)
         if fresh["status"] == SKIP:

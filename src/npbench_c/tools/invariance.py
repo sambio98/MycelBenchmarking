@@ -199,10 +199,62 @@ def _project_antismash_domains(raw: bytes) -> str:
     return "\n".join(lines) + "\n"
 
 
+def _project_bigscape_partition(raw: bytes) -> str:
+    """The gene-cluster-family PARTITION, with the family labels thrown away.
+
+    `FAM_00001` is a name, not a result. Two runs can agree completely on which
+    clusters belong together and disagree on what the groups are called, and
+    comparing labels would score that as a difference. So each group becomes its
+    sorted member set, the groups are sorted among themselves, and the connected
+    component number goes the same way as the label.
+
+    The concatenated input is the per-class clustering tables, each preceded by a
+    `# <basename>` line; the basename carries the class, which IS a result.
+    """
+    text = raw.decode(errors="replace")
+    groups: dict[tuple[str, str], set[str]] = {}
+    current = "?"
+    for line in text.splitlines():
+        if line.startswith("# "):
+            basename = line[2:].strip()
+            current = basename.split("_clustering_")[0]
+            continue
+        if not line.strip() or line.startswith("Record\t"):
+            continue
+        fields = line.split("\t")
+        if len(fields) < 6:
+            continue
+        groups.setdefault((current, fields[5]), set()).add(fields[0])
+    if not groups:
+        raise ProjectionError(
+            "no clustering rows found; either the run produced no families or the "
+            "table layout moved, and both must be looked at rather than passed as "
+            "'identical'")
+    rendered = sorted((cls, ",".join(sorted(members)))
+                      for (cls, _label), members in groups.items())
+    return "\n".join(f"{cls}\t{members}" for cls, members in rendered) + "\n"
+
+
 PROJECTIONS = {
     "antismash_regions": _project_antismash_regions,
     "antismash_nrps_pks_domains": _project_antismash_domains,
+    "bigscape_gcf_partition": _project_bigscape_partition,
 }
+
+
+def _pfam_path(prefix: str) -> str | None:
+    """The Pfam HMM library, reused from the antiSMASH databases.
+
+    BiG-SCAPE needs Pfam-A.hmm and antiSMASH already ships one with its pressed
+    indexes, so the image carries one copy rather than two -- 1.5 GB saved, and
+    one fewer thing whose release has to be pinned separately.
+    """
+    import glob
+
+    matches = sorted(glob.glob(str(
+        pathlib.Path(prefix).parent / "lib" / "python3.*" / "site-packages"
+        / "antismash" / "databases" / "pfam" / "*" / "Pfam-A.hmm")))
+    return matches[-1] if matches else None
 
 
 def _canonicalise(text: str, tool: Tool) -> str:
@@ -234,7 +286,13 @@ def run_invocation(tool: Tool, invocation: Invocation, prefix: str,
     setup_dir = root / "setup"
     setup_dir.mkdir(parents=True, exist_ok=True)
     env = {**os.environ, **FIXED_ENV}
-    subs = {"bin": prefix, "fixtures": str(FIXTURES), "setup": str(setup_dir)}
+    subs = {"bin": prefix, "fixtures": str(FIXTURES), "setup": str(setup_dir),
+            "pfam": _pfam_path(prefix) or ""}
+    if "{pfam}" in " ".join(invocation.argv) and not subs["pfam"]:
+        return {"invocation": invocation.name, "status": FAIL,
+                "detail": "Pfam-A.hmm not found in the antiSMASH databases; this "
+                          "invocation reuses it rather than downloading a second "
+                          "copy, so the databases must be present"}
 
     for command in invocation.setup:
         argv = _format(command, **subs, work=str(setup_dir), threads="1")
@@ -265,11 +323,28 @@ def run_invocation(tool: Tool, invocation: Invocation, prefix: str,
                                       env=env, timeout=timeout)
                 stderr = done.stderr or ""
                 target = work / invocation.artifact
-            if done.returncode != 0 or not target.is_file():
-                runs.append(RunResult(threads, repeat, done.returncode, None,
-                                      None, None, (), stderr[-800:]))
-                continue
-            raw = target.read_bytes()
+            if "*" in invocation.artifact:
+                # A glob: the output directory is timestamped, so the artifact is
+                # every matching table, concatenated in basename order with a
+                # header line naming each. The basename is stable; the directory
+                # above it is not.
+                import glob as _glob
+
+                matches = sorted(_glob.glob(str(work / invocation.artifact)),
+                                 key=lambda m: pathlib.Path(m).name)
+                if done.returncode != 0 or not matches:
+                    runs.append(RunResult(threads, repeat, done.returncode, None,
+                                          None, None, (), stderr[-800:]))
+                    continue
+                raw = b"".join(
+                    f"# {pathlib.Path(m).name}\n".encode()
+                    + pathlib.Path(m).read_bytes() for m in matches)
+            else:
+                if done.returncode != 0 or not target.is_file():
+                    runs.append(RunResult(threads, repeat, done.returncode, None,
+                                          None, None, (), stderr[-800:]))
+                    continue
+                raw = target.read_bytes()
             if invocation.projection is not None:
                 try:
                     raw = PROJECTIONS[invocation.projection.mode](raw).encode()
@@ -419,6 +494,7 @@ def run_tool(tool: Tool, prefix: str | None = None,
         "version": found,
         "needed_by": list(tool.needed_by),
         "controls": list(tool.controls),
+        "slow": tool.slow,
         "fingerprint": fingerprint(tool, package_root),
         "fingerprint_paths": (list(tool.fingerprint.paths)
                               if tool.fingerprint else None),

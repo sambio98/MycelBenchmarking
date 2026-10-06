@@ -152,6 +152,10 @@ class Tool:
     normalisations: tuple[Normalisation, ...] = field(default_factory=tuple)
     canonicalisation: Canonicalisation | None = None
     fingerprint: Fingerprint | None = None
+    #: Minutes, roughly, for one full pass of this tool's invocations. Tools over
+    #: the threshold are measured by the suite but skipped by the default test
+    #: run, with the reason named rather than the measurement quietly dropped.
+    slow: bool = False
 
     @property
     def thread_counts(self) -> tuple[int, ...]:
@@ -449,15 +453,72 @@ ANTISMASH = Tool(
     ),
 )
 
-TOOLS: tuple[Tool, ...] = (ANTISMASH, BLAST, DIAMOND, HMMER, MAFFT,
-                           MMSEQS2, PRODIGAL)
+BIGSCAPE = Tool(
+    name="bigscape",
+    binary="bigscape",
+    pinned_version="2.0.3",
+    needed_by=("T-L3-2",),
+    version_argv=("--version",),
+    version_pattern=r"BiG-SCAPE (\S+)",
+    controls=(
+        "pin the version AND sqlalchemy < 2.1: the bioconda recipe asks only for "
+        "sqlalchemy >= 2.0.2, and on a fresh solve that resolves to 2.1.x, where "
+        "2.0.3 CRASHES before it reads an input file. Installing is not the same "
+        "as working, and only running it finds the difference",
+        "pin the antiSMASH version that produced the inputs: BiG-SCAPE consumes "
+        "antiSMASH region files, so a run mixing two antiSMASH versions is the "
+        "comparison that tool's own rules forbid",
+        "fixed --cores",
+        "explicit --gcf-cutoffs: the cutoff IS the answer's parameter, and a "
+        "default would make the partition depend on a number nobody declared",
+        "explicit --include-gbk when the inputs are not named *.region*.gbk, "
+        "or they are silently filtered out and the run fails with 'no valid "
+        "input GBKs' rather than with anything about names",
+        "never --mibig-version on a gold-producing path: it downloads a reference "
+        "set at run time, which makes the run network-dependent and the reference "
+        "set unpinned",
+    ),
+    thread_flag="--cores",
+    slow=True,
+    invocations=(
+        Invocation(
+            name="cluster_partition",
+            argv=("{bin}/bigscape", "cluster",
+                  "-i", "{fixtures}/bigscape_input",
+                  "-o", "{work}/out",
+                  "-p", "{pfam}",
+                  "--cores", "{threads}",
+                  "--gcf-cutoffs", "0.3",
+                  "--include-gbk", "BGC",
+                  "--label", "fixture"),
+            # The output directory carries a timestamp, so the artifact is a glob
+            # over the per-class clustering tables rather than one fixed path.
+            artifact="out/output_files/*/*/*_clustering_c*.tsv",
+            projection=Projection(
+                mode="bigscape_gcf_partition",
+                reason="A family label like FAM_00001 is a NAME, not a result: "
+                       "two runs can agree completely on which clusters belong "
+                       "together and disagree on what the groups are called, and "
+                       "comparing the labels would call that a difference. The "
+                       "projection keeps the PARTITION -- per class, the groups as "
+                       "sorted member sets, sorted among themselves -- and drops "
+                       "the family label and the connected-component number. The "
+                       "cutoff is in the invocation, not the projection, because a "
+                       "partition at a different cutoff is a different answer "
+                       "rather than a different rendering of one.",
+            ),
+            timeout_s=5400,
+        ),
+    ),
+)
+
+TOOLS: tuple[Tool, ...] = (ANTISMASH, BIGSCAPE, BLAST, DIAMOND, HMMER,
+                           MAFFT, MMSEQS2, PRODIGAL)
 BY_NAME = {tool.name: tool for tool in TOOLS}
 
 #: Declared absences. Named here so "the image does not have it" is a recorded
 #: decision rather than something an auditor has to infer from a missing row.
 NOT_IN_IMAGE = {
-    "bigscape": "Needed by T-L3-2. Its pin depends on the antiSMASH and pyhmmer "
-                "versions, so it follows antiSMASH, which is now in the image.",
     "iqtree": "Not needed by any catalogued template. If it ever is: always "
               "--seed, always fixed -T N, never AUTO, and a single-gene ML tree "
               "is not admissible as gold.",

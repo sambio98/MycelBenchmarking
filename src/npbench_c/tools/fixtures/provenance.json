@@ -33,6 +33,67 @@
     "url_template": "https://www.ebi.ac.uk/ena/browser/api/embl/{accession}?lineLimit=0",
     "why_these_records": "Three classes rather than one, so the detection rules exercised are not all of a kind: the run yields NRP-metallophore plus NRPS, lanthipeptide-class-ii plus proteusin, and T2PKS. All three are COMPLETE deposited records whose MIBiG locus starts at position 1, so the provenance is three accessions with no coordinates to get wrong. All three are ANNOTATED, so antiSMASH's verdict is about antiSMASH rather than about a gene caller feeding it. All three are bacterial, so one --taxon setting covers the file."
   },
+  "bigscape_input": {
+    "antismash_version_that_processed_them": "8.0 beta 1, as the archive name as8b1 states. Worth noticing rather than passing over: the image pins antiSMASH 8.0.4, so a campaign that compares its own antiSMASH 8.0.4 regions against this reference set is mixing two antiSMASH versions -- the comparison antiSMASH's own rules forbid. For a determinism fixture that is harmless, because both arms of every comparison use the same files; for a T-L3-2 campaign it is a constraint that has to be stated.",
+    "archive_sha256": "cf7e27514197983c814fbe2b6ade68e723311d10e2f12b2583447192ad6d3310",
+    "controls": [
+      "BGC0000026",
+      "BGC0000605",
+      "BGC0001082",
+      "BGC0001483",
+      "BGC0002197"
+    ],
+    "excluded_placeholder_names": [
+      "capsular polysaccharide",
+      "lipopolysaccharide",
+      "melanin",
+      "carotenoid",
+      "exopolysaccharide"
+    ],
+    "excluded_placeholder_reason": "MIBiG gives these generic names a representative structure, so entries sharing one are not necessarily homologous clusters. Two different formulas appear under 'capsular polysaccharide' alone. Including them would have put apparent family structure in the fixture that the biology does not support.",
+    "families": {
+      "Aflatoxin B1": [
+        "BGC0000006",
+        "BGC0000007",
+        "BGC0000008",
+        "BGC0000009",
+        "BGC0000011"
+      ],
+      "ectoine": [
+        "BGC0000852",
+        "BGC0000853",
+        "BGC0000854",
+        "BGC0000855",
+        "BGC0000856",
+        "BGC0000857",
+        "BGC0000858",
+        "BGC0000859",
+        "BGC0000860",
+        "BGC0002052"
+      ],
+      "kanamycin": [
+        "BGC0000702",
+        "BGC0000703",
+        "BGC0000704",
+        "BGC0000705",
+        "BGC0000706"
+      ],
+      "ochratoxin A": [
+        "BGC0001030",
+        "BGC0002598",
+        "BGC0002605",
+        "BGC0002606",
+        "BGC0002607",
+        "BGC0002608",
+        "BGC0002609"
+      ]
+    },
+    "license": "CC BY 4.0",
+    "note": "32 clusters over four classes. BiG-SCAPE recovers the designed families at a 0.3 cutoff, which is what makes the fixture a test of clustering rather than a test of whether 32 singletons stay 32 singletons.",
+    "selection_rule": "From the chemical-space campaign's connectivity groups: the four largest groups of 4 to 10 entries sharing an InChIKey connectivity block, after excluding groups whose MIBiG compound name is a class placeholder rather than a specific compound, plus one singleton entry per biosynthetic class as a negative control. Deterministic, and reproducible from tables already in this repository.",
+    "source": "MIBiG, antiSMASH-processed reference set",
+    "url": "https://dl.secondarymetabolites.org/mibig/mibig_antismash_4.0_gbk_as8b1.tar.bz2"
+  },
   "built_on": "2026-10-02",
   "description": "Pinned inputs for the thread-invariance suite. A determinism claim is only as good as its fixture, so these are committed files with hashes, not downloads.",
   "halogenases.afa": {

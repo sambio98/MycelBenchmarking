@@ -16,8 +16,9 @@
 #
 # antiSMASH is here, and its pin is really a PAIR: this binary plus the database
 # release downloaded in its own layer below. Both determine which regions come
-# out, so neither alone identifies a result. BiG-SCAPE and matchms are still
-# absent, each for a recorded reason; see environment.lock.json.
+# out, so neither alone identifies a result. BiG-SCAPE is here too and reuses
+# antiSMASH's Pfam library rather than fetching its own. matchms is still absent,
+# for a recorded reason; see environment.lock.json.
 #
 # STATUS: this file has not been built end to end. The build host available while
 # it was written had the Docker CLI but no daemon. What HAS been run is every step
@@ -29,21 +30,23 @@
 
 FROM ubuntu:24.04
 
+# Two things in the block below are deliberate rather than conventional.
+#
+# PATH puts the tool prefix LAST. antiSMASH and BiG-SCAPE bring their own Python
+# into the prefix, and their console scripts carry an absolute shebang to it, so
+# the prefix does not need to precede the system interpreter -- while if it does,
+# `python3` silently becomes their interpreter and the benchmark's stdlib-only
+# grading core starts running on an interpreter nobody chose. Measured the hard
+# way: with the prefix first, `python3 -m pytest` could not find pytest.
+#
+# The thread environment is a backstop. No tool here may pick its own thread
+# count from the host, and no BLAS may reorder a reduction behind our back. The
+# per-tool thread flags in npbench_c.tools.registry are still required and
+# explicit; these catch anything that reads the environment instead.
 ENV DEBIAN_FRONTEND=noninteractive \
     MAMBA_ROOT_PREFIX=/opt/mamba \
     TOOL_PREFIX=/opt/npbench-tools \
-    # Tool prefix LAST, deliberately. antiSMASH brings its own Python into the
-    # prefix, and its console scripts carry an absolute shebang to it, so the
-    # prefix does not need to precede the system interpreter -- while if it does,
-    # `python3` silently becomes antiSMASH's interpreter and the benchmark's
-    # stdlib-only grading core starts running on an interpreter nobody chose.
-    # Measured the hard way: with the prefix first, `python3 -m pytest` could not
-    # find pytest.
     PATH=/usr/local/bin:/usr/bin:/bin:/opt/npbench-tools/bin \
-    # Determinism: no tool in this image may pick its own thread count from the
-    # host, and no BLAS may reorder a reduction behind our back. The per-tool
-    # thread flags in npbench_c.tools.registry are still required and explicit;
-    # these are the backstop for anything that reads the environment instead.
     OMP_NUM_THREADS=1 \
     OPENBLAS_NUM_THREADS=1 \
     MKL_NUM_THREADS=1 \
@@ -66,8 +69,20 @@ RUN curl -sSL \
  && rm /tmp/micromamba.tar.bz2 \
  && micromamba --version
 
-# Exact version AND build string for every pin. Resolved 2026-10-02; the full
-# 79-package closure with artifact hashes is in image/environment.lock.json.
+# Exact version AND build string for every pin. Resolved 2026-10-06; the full
+# 185-package closure with artifact hashes is in image/environment.lock.json.
+#
+# The sqlalchemy pin is an upper bound the upstream recipe does NOT carry.
+# BiG-SCAPE 2.0.3 asks for sqlalchemy >= 2.0.2, a fresh solve gives 2.1.x, and it
+# then raises ObjectNotExecutableError before reading a single input file.
+# Measured by running it, not read off a changelog.
+#
+# FastTreeMP is deleted immediately after: it arrives inside the fasttree package
+# that antiSMASH and BiG-SCAPE both depend on, and it is banned outright because
+# thread order affects the neighbour-joining heuristic, so it can never sit on a
+# gold-producing path. Deleting the binary is what makes the ban enforceable --
+# `registry --verify` below fails if it comes back. Single-threaded FastTree
+# stays, because both tools need it.
 RUN micromamba create -y -p "${TOOL_PREFIX}" --no-rc \
       -c conda-forge -c bioconda \
       'hmmer=3.4=h7d74f8d_5' \
@@ -77,12 +92,9 @@ RUN micromamba create -y -p "${TOOL_PREFIX}" --no-rc \
       'mafft=7.526=ha3fa977_0' \
       'blast=2.17.0=hb02a186_1' \
       'antismash=8.0.4=pyhdfd78af_1' \
+      'bigscape=2.0.3=pyhdfd78af_0' \
+      'sqlalchemy=2.0.54=py311h194be0f_1' \
  && micromamba clean -a -y \
- # FastTreeMP arrives as part of the fasttree package antiSMASH depends on, and
- # it is banned outright: thread order affects the neighbour-joining heuristic,
- # so it can never sit on a gold-producing path. Deleting the binary is what
- # makes the ban enforceable; `registry --verify` below fails if it reappears.
- # Single-threaded FastTree stays, because antiSMASH needs it.
  && rm -f "${TOOL_PREFIX}/bin/FastTreeMP"
 
 # The antiSMASH reference databases, in their own layer because they are an order

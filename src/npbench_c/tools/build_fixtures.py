@@ -14,6 +14,9 @@ Two fixtures:
   halogenases.afa   the MAFFT alignment of that set, frozen.
   synthetic.fna     a nucleotide contig built by reverse-translating the set with
                     a declared codon cycle and joining with declared spacers.
+  bigscape_input/   32 antiSMASH-processed MIBiG reference clusters, selected by
+                    a declared rule so the set has real family structure rather
+                    than 32 unrelated singletons.
   bgc_triplet.embl  three complete deposited records, each carrying one
                     characterised cluster of a different class, concatenated.
                     antiSMASH needs annotated input, and whole records rather
@@ -48,6 +51,7 @@ PROTEINS = "halogenases.faa"
 ALIGNMENT = "halogenases.afa"
 CONTIG = "synthetic.fna"
 CLUSTER = "bgc_triplet.embl"
+BGC_SET = "bigscape_input"
 PROVENANCE = "provenance.json"
 
 #: The standard genetic code, codons sorted so the cycle below is reproducible.
@@ -129,6 +133,10 @@ def main(argv: list[str] | None = None) -> int:
                     help="leave halogenases.afa as committed")
     args = ap.parse_args(argv)
 
+    if not (FIXTURES / BGC_SET).is_dir():
+        print(f"{FIXTURES / BGC_SET} is missing; it is a committed fixture, "
+              "not derived", file=sys.stderr)
+        return 2
     for required in (PROTEINS, CLUSTER):
         if not (FIXTURES / required).is_file():
             print(f"{FIXTURES / required} is missing; it is a committed fixture, "
@@ -222,6 +230,57 @@ def main(argv: list[str] | None = None) -> int:
             "license": "INSDC records are freely available without restriction",
             "sha256": sha256(FIXTURES / CLUSTER),
         },
+        BGC_SET: {
+            "source": "MIBiG, antiSMASH-processed reference set",
+            "url": "https://dl.secondarymetabolites.org/mibig/"
+                   "mibig_antismash_4.0_gbk_as8b1.tar.bz2",
+            "archive_sha256": "cf7e27514197983c814fbe2b6ade68e7"
+                              "23311d10e2f12b2583447192ad6d3310",
+            "license": "CC BY 4.0",
+            "antismash_version_that_processed_them": "8.0 beta 1, as the archive "
+                "name as8b1 states. Worth noticing rather than passing over: the "
+                "image pins antiSMASH 8.0.4, so a campaign that compares its own "
+                "antiSMASH 8.0.4 regions against this reference set is mixing two "
+                "antiSMASH versions -- the comparison antiSMASH's own rules "
+                "forbid. For a determinism fixture that is harmless, because both "
+                "arms of every comparison use the same files; for a T-L3-2 "
+                "campaign it is a constraint that has to be stated.",
+            "selection_rule": "From the chemical-space campaign's connectivity "
+                "groups: the four largest groups of 4 to 10 entries sharing an "
+                "InChIKey connectivity block, after excluding groups whose MIBiG "
+                "compound name is a class placeholder rather than a specific "
+                "compound, plus one singleton entry per biosynthetic class as a "
+                "negative control. Deterministic, and reproducible from tables "
+                "already in this repository.",
+            "excluded_placeholder_names": ["capsular polysaccharide",
+                                           "lipopolysaccharide", "melanin",
+                                           "carotenoid", "exopolysaccharide"],
+            "excluded_placeholder_reason": "MIBiG gives these generic names a "
+                "representative structure, so entries sharing one are not "
+                "necessarily homologous clusters. Two different formulas appear "
+                "under 'capsular polysaccharide' alone. Including them would have "
+                "put apparent family structure in the fixture that the biology "
+                "does not support.",
+            "families": {
+                "ectoine": ["BGC0000852", "BGC0000853", "BGC0000854",
+                            "BGC0000855", "BGC0000856", "BGC0000857",
+                            "BGC0000858", "BGC0000859", "BGC0000860",
+                            "BGC0002052"],
+                "ochratoxin A": ["BGC0001030", "BGC0002598", "BGC0002605",
+                                 "BGC0002606", "BGC0002607", "BGC0002608",
+                                 "BGC0002609"],
+                "kanamycin": ["BGC0000702", "BGC0000703", "BGC0000704",
+                              "BGC0000705", "BGC0000706"],
+                "Aflatoxin B1": ["BGC0000006", "BGC0000007", "BGC0000008",
+                                 "BGC0000009", "BGC0000011"],
+            },
+            "controls": ["BGC0000026", "BGC0000605", "BGC0001082", "BGC0001483",
+                         "BGC0002197"],
+            "note": "32 clusters over four classes. BiG-SCAPE recovers the "
+                    "designed families at a 0.3 cutoff, which is what makes the "
+                    "fixture a test of clustering rather than a test of whether "
+                    "32 singletons stay 32 singletons.",
+        },
         CONTIG: {
             "derived_from": PROTEINS,
             "rule": "Each protein is reverse-translated by taking, for residue i, "
@@ -252,6 +311,11 @@ def main(argv: list[str] | None = None) -> int:
         ids = sum(1 for line in text.splitlines() if line.startswith("ID   "))
         print(f"{CLUSTER}: {cluster.stat().st_size // 1024} KB, "
               f"{ids} records, {cds} CDS")
+    bgcs = FIXTURES / BGC_SET
+    if bgcs.is_dir():
+        files = sorted(bgcs.glob("*.gbk"))
+        size = sum(f.stat().st_size for f in files)
+        print(f"{BGC_SET}/: {len(files)} clusters, {size // 1024} KB")
     return 0
 
 

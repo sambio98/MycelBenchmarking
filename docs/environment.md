@@ -54,7 +54,7 @@ ClusterBlast DB ↔ MIBiG version ↔ pyhmmer move together.
 | **MMseqs2** | L2-3 | pin post-fix build, always `createindex`, fixed `--threads`, explicit `--max-seqs` (issue #277: results differ by core count), **plus a declared canonical line order** — no flag fixes its multithreaded output order |
 | **Prodigal** | L1-1, L1-4 | pin version **and mode** (single vs meta changes calls); Prodigal-GV is a different tool |
 | **antiSMASH** | L3-1, L3-5 | pin the exact version **and** the database release — they are one pin. Fixed `--cpus`. **Annotated input only** (GenBank/EMBL, never FASTA), or the gene caller's determinism is folded into antiSMASH's. Grade a declared **projection** of the JSON, never the HTML and never the whole JSON. **Never compare across versions** — 58 rules at v5, 88 at v7.1, **103 at 8.0.4** |
-| **BiG-SCAPE** | L3-2 | pin version, `--mibig-version`, antiSMASH version, pyhmmer version; set classification mode explicitly |
+| **BiG-SCAPE** | L3-2 | pin the version **and `sqlalchemy < 2.1`** — the recipe's own bound is wrong and 2.0.3 crashes on 2.1 before reading an input. Pin the antiSMASH version that produced the inputs. Fixed `--cores`, explicit `--gcf-cutoffs`, explicit `--include-gbk` when inputs are not named `*.region*.gbk`. **Never `--mibig-version`** on a gold path: it downloads a reference set at run time |
 | **MAFFT** | L2-3 | pin major version, prefer deterministic modes |
 | **matchms / pyOpenMS** | L4-1, L4-2 | pin versions, record every filter parameter |
 | **FastTree** | — | **FastTreeMP is banned from the image** (thread order affects the NJ heuristic) |
@@ -79,6 +79,7 @@ a 24-sequence halogenase fixture and a synthetic contig:
 | **DIAMOND 2.2.8** | invariant **only without `--no-reorder`** | dropping the flag this project had declared as a control |
 | **MMseqs2 18.8cc5c** | invariant **only after a declared canonical line sort** | no flag exists; the contract fixes the order instead |
 | **antiSMASH 8.0.4** | invariant on both invocations | a declared **projection**: the raw JSON cannot be identical, since it holds the input path and a timestamp, so the comparison is on the detected regions and on the NRPS/PKS domain architecture |
+| **BiG-SCAPE 2.0.3** | invariant | a declared **projection** to the GCF *partition*, plus an `sqlalchemy < 2.1` pin without which it does not run at all |
 
 **The DIAMOND control was backwards.** This table previously listed
 `--no-reorder` as a required determinism control. Measured: *with* the flag,
@@ -305,10 +306,13 @@ sandbox's declared keys is a shell position.
 | `src/npbench_c/tools/invariance.py` | the suite |
 | `src/npbench_c/tools/fixtures/` | the pinned inputs, with hashes and provenance |
 
-The invariance tests take about 90 seconds, nearly all of it antiSMASH. To run the
-rest of the suite without them, point `NPBENCH_TOOL_PREFIX` at a directory that
-does not exist: every invariance test then reports SKIP with its reason, which is
-the honest form of "not measured here".
+The full suite takes about four minutes, most of it antiSMASH and BiG-SCAPE.
+BiG-SCAPE is marked **slow**: `invariance --all` always measures it and its
+verdict is committed, but the default test run skips it with a reason naming the
+runtime, and `NPBENCH_SLOW_TOOLS=1` re-measures. To skip every invariance test,
+point `NPBENCH_TOOL_PREFIX` at a directory that does not exist. In both cases the
+test reports SKIP with its reason, which is the honest form of "not measured
+here" — and distinct from a green tick.
 
 **The Dockerfile has not been built end to end.** The host this was written on
 had the Docker CLI but no daemon. Every step it performs was run directly instead
@@ -323,17 +327,70 @@ conda-forge and bioconda: `apt` ships DIAMOND 2.1.9 where the controls require
 have been fine from `apt`; mixing sources for some tools and not others would make
 the lock harder to reason about than it is worth.
 
-**What this image unblocks: 9 of the 12 `build: image` templates** — T-L1-1,
-T-L1-2, T-L1-3, T-L1-4, T-L2-1, T-L2-3, T-L2-4, T-L3-4 and T-L3-1, plus the
-catalogued T-L3-5 target inference that was re-tiered to `image` during the
+**What this image unblocks: 10 of the 12 `build: image` templates** — T-L1-1,
+T-L1-2, T-L1-3, T-L1-4, T-L2-1, T-L2-3, T-L2-4, T-L3-1, T-L3-2 and T-L3-4, plus
+the catalogued T-L3-5 target inference that was re-tiered to `image` during the
 S0 build.
 
-**What it does not**, each a recorded decision rather than an omission:
+**What it does not**, a recorded decision rather than an omission:
 
 | Missing | Why it is a separate task |
 |---|---|
-| BiG-SCAPE (T-L3-2) | its pin depends on the antiSMASH and pyhmmer versions; it follows antiSMASH, which is now here |
 | matchms / pyOpenMS (T-L4-1, T-L4-2) | the tools are pip-installable, but the rows need MS² fixtures from MassBank first, and a spectral-matching fixture is its own grounding job: for a spectral match the invariance question becomes a tolerance question |
+
+### BiG-SCAPE, and a dependency bound the upstream recipe gets wrong
+
+**It does not run as published.** The bioconda recipe for 2.0.3 asks for
+`sqlalchemy >= 2.0.2` with no upper bound, so a fresh solve installs 2.1.x, and
+BiG-SCAPE then raises `ObjectNotExecutableError` **before it reads a single input
+file**: it passes a compiled statement object to `Connection.execute`, which 2.0
+tolerated and 2.1 rejects. The image carries `sqlalchemy=2.0.54`, a bound the
+upstream recipe does not. The general lesson is cheap to state and was not cheap
+to find: **installing is not the same as working**, and only running the tool
+tells them apart — which is the whole argument for this suite existing before any
+campaign is authored on these tools.
+
+Two smaller things the same run surfaced. BiG-SCAPE filters its input directory by
+filename, defaulting to `cluster,region` to match antiSMASH's `*.region001.gbk`
+convention; MIBiG reference files are named `BGC0000852.gbk`, so without an
+explicit `--include-gbk` the run fails with *no valid input GBKs* rather than with
+anything about names. And BiG-SCAPE needs `Pfam-A.hmm`, which the antiSMASH
+databases already ship with its pressed indexes — so the image reuses that copy,
+saving 1.5 GB and one separately-pinned release.
+
+**The GCF partition is the result; the family labels are not.** `FAM_00001` is a
+name. Two runs can agree completely on which clusters belong together and disagree
+on what the groups are called, and comparing labels would score that as a
+difference. So the projection keeps, per class, the groups as sorted member sets,
+sorted among themselves, and drops the family label and the connected-component
+number. The cutoff stays in the *invocation*, not the projection, because a
+partition at a different cutoff is a different answer rather than a different
+rendering of one.
+
+**The fixture has designed family structure.** 32 antiSMASH-processed MIBiG
+reference clusters, selected by a rule computed from tables already in this
+repository: the four largest groups of 4–10 entries sharing an InChIKey
+connectivity block — ectoine (10), ochratoxin A (7), kanamycin (5), aflatoxin B1
+(5) — plus one singleton per biosynthetic class as a negative control. BiG-SCAPE
+recovers those families at a 0.3 cutoff, which is what makes the fixture a test of
+clustering rather than a test of whether 32 singletons stay 32 singletons.
+
+One judgement in that selection is named rather than left implicit: groups whose
+MIBiG compound name is a **class placeholder** — *capsular polysaccharide*,
+*lipopolysaccharide*, *melanin*, *carotenoid*, *exopolysaccharide* — are excluded,
+because MIBiG gives those generic names a representative structure, so entries
+sharing one are not necessarily homologous clusters. Two different molecular
+formulas appear under *capsular polysaccharide* alone. Including them would have
+put apparent family structure in the fixture that the biology does not support.
+
+**A version coupling worth stating before a campaign is built on it.** The MIBiG
+reference set is published as `mibig_antismash_4.0_gbk_as8b1.tar.bz2` — processed
+with antiSMASH **8.0 beta 1**, while this image pins **8.0.4**. For a determinism
+fixture that is harmless, since both arms of every comparison read the same files.
+For a T-L3-2 campaign it is not: comparing its own 8.0.4 regions against that
+reference set is exactly the cross-version comparison antiSMASH's own rules
+forbid. Either the reference set is reprocessed with the pinned antiSMASH, or the
+campaign states that both sides come from the published set.
 
 ### antiSMASH, and the three things adding it forced
 
