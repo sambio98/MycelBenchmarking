@@ -36,10 +36,12 @@ scoring path.
 | Campaign: MIBiG 4.0 chemical space | `campaigns/chemspace-mibig-4_0-01/` | oracle 1.0, gate 19/0/5 |
 | Template: kinetics consistency | `src/npbench_c/templates/kinetics_consistency/` | shared oracle, BRENDA 2026.1 |
 | Campaign: BRENDA EC 1.1 kinetics | `campaigns/kinetics-brenda-ec1_1-01/` | oracle 1.0, gate 19/0/5 |
+| Template: ChEMBL selectivity | `src/npbench_c/templates/chembl_selectivity/` | shared oracle, ChEMBL_37, first `share_alike` |
+| Campaign: S. aureus topoisomerases | `campaigns/selectivity-saureus-topoisomerase-01/` | oracle 1.0, gate 19/0/5 |
 | Phase 1 image | `image/Dockerfile`, `image/environment.lock.json` | 8 tools pinned to `version=build`, 185-package closure hashed, antiSMASH databases pinned at 9.4 GB |
 | Tool registry | `src/npbench_c/tools/registry.py` | pins, controls, invocations, declared normalisations, canonicalisations, projections, enforced bans |
 | Thread-invariance suite | `src/npbench_c/tools/invariance.py` | 8/8 tools invariant at 1 and 8 threads |
-| Tests | `tests/` | 332 passing, 2 skipped |
+| Tests | `tests/` | 353 passing, 2 skipped |
 
 ```bash
 PYTHONPATH=src python3 -m pytest tests -q
@@ -476,6 +478,16 @@ would have been wrong.
    reconciliation between the naive and filtered sharing statistics instead, and
    R4 varies the declared filter and the evidence gate.
 
+6. **Selectivity counterfactual (T-L5-1)** — the catalogued R4 excluded a
+   low-confidence assay. Every one of the 105 assays behind this target pair's IC50
+   values scores 7, so the exclusion rejects nothing. The rule stays in the
+   contract; R4 varies the axes that move instead.
+7. **Resistance mutation → target (T-L5-2)** — the structured
+   `assay_variant_mutation` field is populated across 34,921 IC50 activities and
+   carries almost nothing on theme: 45 variant records on the *S. aureus* gyrase
+   complex, 0 on topoisomerase IV, and all 244 *P. falciparum* DHFR records reading
+   "UNDEFINED MUTATION". Re-tiered rather than built on an anecdote.
+
 The pattern is consistent enough to be a rule: a catalogue entry is a hypothesis
 about data until the fields are inspected.
 
@@ -486,6 +498,12 @@ that the computed scaffolds are mostly bare rings. So the rule has a second half
 **a field being present does not make the quantity derived from it informative,
 and only computing the distribution shows which.** The campaign's own
 `notes_for_audit` names the benzene result first for that reason.
+
+Cases 6 and 7 are that second half twice more, and the pair separates its two
+outcomes. For T-L5-1 the uninformative field cost a counterfactual, which was
+redesigned around axes that move; for T-L5-2 it cost the campaign. **The rung that
+survives a vacuous field is the one whose claim can be re-pointed at something
+else; the row that does not is the one whose claim *was* the field.**
 
 
 ## Campaigns 9 and 10: structure features, two ladders on one engine
@@ -1057,9 +1075,131 @@ only in a design document is a condition the person redistributing the files wil
 never see.
 
 **What is left for the owner**: whether an evaluator's legal position rules out
-shipping ShareAlike content at all. If so, T-L5-1 and T-L5-2 come out and nothing
-else changes — which is the property the per-campaign class was chosen to give.
-The decision unblocks authoring those two rows; it does not author them.
+shipping ShareAlike content at all. If so, T-L5-1 comes out and nothing else
+changes — which is the property the per-campaign class was chosen to give.
+**Exercised since**: `selectivity-saureus-topoisomerase-01` is the first
+`share_alike` campaign and the gate's `share_alike_notice_present` check passes on
+it, so the nineteenth check is confirmed against a real campaign rather than a
+fixture. T-L5-2, the other row this decision was taken for, turned out not to be
+blocked on licensing at all — see below.
+
+## Campaign 13: ChEMBL selectivity, where the licence travels with the files
+
+`selectivity-saureus-topoisomerase-01` is T-L5-1 and the first campaign in the
+benchmark whose data carries an onward obligation. *S. aureus* DNA gyrase
+(CHEMBL3038482) against topoisomerase IV (CHEMBL3038508), ChEMBL_37: the two type
+II topoisomerases an antibacterial of this class can hit, so whether a compound
+hits one or both is the real selectivity question rather than an arbitrary pair.
+
+The admission rules **are** the task. Every one reads a structured ChEMBL field,
+and two of them are where a potency table goes wrong in practice:
+
+- **`confidence_score` lives on the assay, not the activity.** Admission needs an
+  activity-to-assay join. A system that looks for the field on the activity record
+  finds nothing and admits everything, and nothing in the data says it went wrong.
+- **A `standard_relation` of `>` or `<` is a bound, not a measurement.** 235 of the
+  1,117 IC50 records on this pair are exactly that. Admitting one as a value is the
+  commonest way a potency table acquires numbers nobody measured.
+
+Measured, with the rejections partitioning exactly — 739 of 1,117 admitted; 235
+censored, 81 in mass-per-volume units that cannot be converted without a molecular
+weight the campaign refuses to import, 33 flagged by ChEMBL, 29 potential
+duplicates. 668 (molecule, target) pairs carry an aggregated value and **173
+molecules are measured against both targets**. At twofold, 122 molecules favour
+gyrase and 21 favour topoisomerase IV, so neither direction is a foregone
+conclusion; the build refuses to emit gold if either side is empty. The most
+selective compound is CHEMBL4555272 at 16,666.7×.
+
+**The rejection breakdown is first in `notes_for_audit` for a mechanical reason**:
+the reasons are tested in a declared order, each activity takes the first that
+applies, so admitted plus rejections must equal the IC50 total per target. If that
+sum fails, two rules are double-counting and every number below it is suspect. That
+is a check an auditor can run in one line, which is the point.
+
+### R4 had to be redesigned, and the reason generalises
+
+The catalogued R4 was "a low-confidence assay is excluded — predict the new ratio".
+It is a **no-op on this pair**: all 105 assays behind these IC50 values score 7,
+"Direct protein complex subunits assigned". So the rule stays declared and graded —
+a rule that happens to be a no-op on one instantiation is not a rule that can be
+dropped from the contract — but a counterfactual has to vary an axis that moves.
+R4 relaxes the censored-relation rule, the ChEMBL flag and the duplicate rule, and
+swaps the aggregator. All five variants move something: admitting censored
+relations takes eligibility 173 → 193, and **minimum instead of median leaves the
+admitted count identical at 739 while moving the focal counts 122/74/18 →
+139/90/25** — a reduction choice, not an admission choice, and it changes the
+answer. That variant is the one worth keeping in mind: an agent can get every
+admission decision right and still report a different selectivity profile.
+
+This is the second half of the grounding rule again, in its sharpest form yet:
+`confidence_score` is present on every assay, and computing its distribution is the
+only thing that shows it carries no information here.
+
+## T-L5-2: a field that is populated and says nothing
+
+T-L5-2 (resistance mutation → target assignment) was the obvious companion build —
+same source, same licence decision, and the re-grounding probe had confirmed the
+structured `assay_variant_mutation` field it needs. **It does not survive counting.**
+ChEMBL_37 has 34,921 IC50 activities carrying that field, and per on-theme target:
+
+| Target | Variant records | Usable |
+|---|---|---|
+| *S. aureus* gyrase complex | 45 (D83N 41) | 1 clean WT/mutant pair |
+| *S. aureus* GyrA | 39 (S84L 32, D83N 6) | mutant values mostly `None` |
+| *S. aureus* ParE / topoisomerase IV complex | 0 | — |
+| *P. falciparum* DHFR | 244 | 0 — all "UNDEFINED MUTATION" |
+| HIV-1 RT | 5,423 (Y181C, P236L, K103N) | off-theme |
+
+44 wild-type/mutant key pairs exist across the bacterial targets, but most mutant
+`standard_value`s are `None`, so they cannot be turned into a ratio. The one clean
+pair in the set is ciprofloxacin against gyrase: WT 5.0 nM versus D83N 580,000 nM.
+A campaign on that is an anecdote, and a campaign on HIV-1 RT grades resistance
+reasoning on an antiviral target whose chemistry is nothing like this benchmark's.
+
+So the row is **re-tiered, and not for the reason it was previously blocked**:
+ChEMBL is accepted, the data is thin. The alternatives are named in
+`docs/catalog.md` and left to the owner — instantiate on HIV-1 RT and accept the
+theme drift, re-scope the ladder to the census itself (how much resistance data
+exists per target class is a real and gradeable question), or wait for a release
+that fills the bacterial values. **The counts are recorded so the next person does
+not re-probe.** This is also a correction to the re-grounding note, which called
+T-L5-2 "data-verified": the probe verified the field, not the data behind it.
+
+## The measurement environment was reading the ambient shell
+
+Refreshing `image/thread_invariance.json` for this commit turned antiSMASH from
+PASS to FAIL — both invocations, 4/4 runs, `RuntimeError: Modules failing
+prerequisites`. The databases were present and the pin was right. The cause:
+**the invariance runner invoked `{bin}/tool` by absolute path but never put the
+tool prefix on the subprocess `PATH`.** antiSMASH shells out to nine helpers —
+hmmscan, hmmsearch, hmmpress, hmmpfam2, blastp, makeblastdb, diamond, prodigal and
+FastTree — and resolves every one of them on `PATH`, so the measurement was reading
+whatever the measuring shell happened to export. On the shell that produced the
+original 8/8 it was exported; on a clean one it was not, and
+`antismash --check-prereqs` reports **44 prerequisite failures** across those nine,
+every one of which is sitting in the prefix.
+
+The verdicts were right and the way they were obtained was not, which is the worse
+of the two failures: a determinism measurement that depends on the ambient
+environment is not a measurement of the image. `_image_path()` now builds the
+subprocess `PATH` as the ambient one with the prefix **appended** — last, matching
+the image's own `PATH`, so the tool environment still cannot shadow the system
+interpreter this suite runs under, which is the other half of a lesson this project
+has already paid for once. A test pins both properties.
+
+### And a witness assertion that was a 3% coin flip
+
+The same pass caught `test_diamond_no_reorder_is_still_the_witness_it_is_declared_to_be`
+failing on `assert not witness["repeatable_at_fixed_threads"]`. The witness
+documents a per-run reordering, so every claim about it is a claim about a sample:
+over 30 measurements the two single-thread repeats agreed **30/30** and the two
+eight-thread repeats agreed **0/30** — but one four-run draw can still land on two
+matching eight-thread runs, and that is what happened. The property under test is
+that the eight-thread order is unspecified, which needs two distinct outputs
+*somewhere* in the sample, not in one particular pair. The test now draws again
+rather than let a coin decide a verdict. **A test that fails 3% of the time is not
+a strict test; it is a test whose result is partly noise**, and on a suite whose
+whole purpose is to certify determinism that is the one defect that cannot stand.
 
 ## Open items
 
@@ -1077,23 +1217,21 @@ The decision unblocks authoring those two rows; it does not author them.
 3. Real systems for the sweep. The harness is built and self-tested; it needs
    `SystemSpec` entries for the actual agents (bash-only, general biomedical,
    tool-equipped) before the five checks can go green.
-5. **matchms fixtures.** The last provisioning gap, for T-L4-1 and T-L4-2. The
+4. **matchms fixtures.** The last provisioning gap, for T-L4-1 and T-L4-2. The
    tools are pip-installable; what the rows need first is an MS² fixture set from
    MassBank with its own grounding pass, because for a spectral match the
    invariance question becomes a tolerance question and that is a different suite
-   from this one.
-7. **Reprocess the MIBiG reference set with the pinned antiSMASH**, or declare
+   from this one. (This item appeared twice in earlier revisions, as 5 and 6; the
+   duplicate is merged here.)
+5. **Reprocess the MIBiG reference set with the pinned antiSMASH**, or declare
    that a T-L3-2 campaign takes both sides from the published `as8b1` set. As
    shipped, the reference clusters were processed with antiSMASH 8.0 beta 1 and
    the image pins 8.0.4.
-6. **matchms fixtures.** T-L4-1 and T-L4-2 need matchms, which is pip-installable;
-   what they actually need first is an MS² fixture set from MassBank with its own
-   grounding pass, since a spectral-matching fixture is where the thread-invariance
-   question becomes a tolerance question.
-4. **T-L5-1 and T-L5-2 themselves.** The licensing decision unblocks them and
-   the data is verified, including the structured `assay_variant_mutation` field.
-   Authoring is the next S0-shaped build.
-8. Construct-validity study: inter-rater agreement first, then expert-grader
+6. **T-L5-2 is a decision, not a build task.** T-L5-1 is built. T-L5-2 has no
+   on-theme data (counts above); the owner picks between HIV-1 RT with the theme
+   drift, a re-scoped census ladder, and waiting for a release that fills the
+   bacterial variant values. Nothing is blocked on licensing.
+7. Construct-validity study: inter-rater agreement first, then expert-grader
    agreement with Gwet's AC1 / Krippendorff's alpha alongside kappa, gate on
    Spearman against the continuous rating. This is the one place humans are
    involved, and it sits outside the grading pipeline by design.

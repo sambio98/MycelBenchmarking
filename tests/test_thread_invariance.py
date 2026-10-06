@@ -331,6 +331,31 @@ def test_the_protein_fixture_is_a_real_homolog_set():
     assert lengths[0] < lengths[-1] / 2
 
 
+# ------------------------------------------------------------ the run env
+
+
+def test_a_measured_run_puts_the_tool_prefix_on_path():
+    """Calling `{bin}/tool` by absolute path is not enough.
+
+    antiSMASH shells out to nine helpers -- hmmscan, hmmsearch, hmmpress, hmmpfam2,
+    blastp, makeblastdb, diamond, prodigal and FastTree -- and resolves every one
+    of them on PATH. A measurement that left the prefix off PATH therefore measured
+    whatever the ambient shell exported: here it failed outright with 'Modules
+    failing prerequisites' (44 prerequisite failures across those nine), and on a
+    shell that happened to export the prefix it passed. Either way the verdict was not about
+    the image. The prefix goes last, so the tool environment cannot shadow the
+    system interpreter this suite runs under.
+    """
+    from npbench_c.tools.invariance import _image_path
+
+    path = _image_path(PREFIX).split(os.pathsep)
+    assert path[-1] == PREFIX
+    assert path.count(PREFIX) == 1
+    for entry in os.environ.get("PATH", "").split(os.pathsep):
+        if entry and entry != PREFIX:
+            assert path.index(entry) < path.index(PREFIX)
+
+
 # --------------------------------------------------------- measured results
 
 @image_present
@@ -405,7 +430,31 @@ def test_diamond_no_reorder_is_still_the_witness_it_is_declared_to_be():
     assert witness["status"] == XFAIL, (
         "the --no-reorder witness passed; re-read the pin before trusting it: "
         + witness["detail"])
-    assert not witness["repeatable_at_fixed_threads"]
+
+    # What the witness documents is a per-run reordering, so every claim about it
+    # is a claim about a sample. Over 30 measurements the two single-thread
+    # repeats agreed every time and the two eight-thread repeats agreed none; but
+    # a single four-run draw CAN land on two matching eight-thread runs, and
+    # asserting repeatable_at_fixed_threads on one draw failed roughly once in
+    # thirty. Draw again rather than let a 3% coin decide a verdict: the property
+    # under test is that the eight-thread order is unspecified, which needs two
+    # distinct outputs somewhere in the sample, not in one particular pair.
+    eight = {v["canonical"] for k, v in witness["digests"].items()
+             if k.startswith("t8_")}
+    one = {v["canonical"] for k, v in witness["digests"].items()
+           if k.startswith("t1_")}
+    assert len(one) == 1, "single-threaded DIAMOND moved; that is a different bug"
+    for _ in range(3):
+        if len(eight) > 1:
+            break
+        redraw = run_tool(DIAMOND, PREFIX)
+        again = {i["invocation"]: i
+                 for i in redraw["invocations"]}["blastp_tabular_no_reorder"]
+        eight |= {v["canonical"] for k, v in again["digests"].items()
+                  if k.startswith("t8_")}
+    assert len(eight) > 1, (
+        "--no-reorder came out order-stable at eight threads across four draws; "
+        "if that is real the pin can be revisited, but check before trusting it")
 
 
 @image_present

@@ -47,6 +47,15 @@ merits rather than re-derived:
   both carry CC BY-SA 3.0. A benchmark made of separable campaigns is a
   collection, not an adaptation of any one of them — so the code, the grader and
   every other campaign are unaffected.
+**In use, and the machinery is exercised end to end**:
+`campaigns/selectivity-saureus-topoisomerase-01` (T-L5-1) is the first
+`share_alike` campaign. Its `license_notice` names the source (ChEMBL_37 activity
+and assay records for two targets), the licence, the attribution string and what a
+redistributor must do, and the gate's `share_alike_notice_present` check passes on
+it — so the nineteenth check is confirmed against a real campaign rather than a
+fixture. **T-L5-2, the other row this decision was taken for, is not built**: the
+licence is fine and the data is thin. See `docs/catalog.md`.
+
 - The obligation is therefore satisfiable and **local**: attribution, the same
   licence on those files, and a notice. A share-alike campaign can be dropped
   without touching anything else, which is exactly why the class is per-campaign
@@ -469,6 +478,26 @@ on an interpreter nobody chose. Measured the hard way: `python3 -m pytest` stopp
 finding pytest. antiSMASH's console scripts carry an absolute shebang to their own
 interpreter, so the prefix does not need to come first at all; the image now puts
 it **last** on `PATH`.
+
+### The other half of the PATH lesson: a measured run needs the prefix on it
+
+Putting the prefix last was right and not sufficient. The invariance runner invoked
+`{bin}/tool` by absolute path and left the prefix off the subprocess `PATH`
+entirely — and antiSMASH resolves nine helpers on `PATH`: hmmscan, hmmsearch,
+hmmpress, hmmpfam2, blastp, makeblastdb, diamond, prodigal and FastTree. So the
+measurement read whatever the measuring shell happened to export. On the shell that
+produced the original 8/8 verdict the prefix was exported; on a clean one
+`antismash --check-prereqs` reports **44 prerequisite failures** across those nine
+executables, every one of them in the prefix, and both antiSMASH invocations fail
+4/4 runs with `RuntimeError: Modules failing prerequisites`.
+
+The verdicts were right and the way they were obtained was not, which is the worse
+failure of the two: **a determinism measurement that depends on the ambient
+environment is not a measurement of the image.** `_image_path()` now builds the
+subprocess `PATH` as the ambient one with the prefix appended, de-duplicated — last,
+so the earlier lesson still holds — and a test pins both the position and the
+uniqueness. `image/thread_invariance.json` is regenerated under it: 8/8, 10
+invocations, 1 declared xfail, unchanged verdicts honestly obtained.
 
 ### Projections: a third kind of declared transform
 

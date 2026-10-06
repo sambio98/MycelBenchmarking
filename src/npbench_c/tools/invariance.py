@@ -280,12 +280,31 @@ def _format(argv, **subs) -> list[str]:
     return [token.format(**subs) for token in argv]
 
 
+def _image_path(prefix: str) -> str:
+    """PATH for a measured run: the ambient PATH with the tool prefix appended.
+
+    Invoking `{bin}/tool` by absolute path is not enough. A tool that shells out
+    to its own helpers -- antiSMASH calls hmmscan, hmmsearch, hmmpress,
+    hmmpfam2, blastp, makeblastdb, diamond, prodigal and FastTree -- resolves
+    them on PATH, so a measurement that leaves
+    the prefix off PATH measures whatever the ambient shell happens to export,
+    and fails outright where the helpers are only in the image. The prefix goes
+    LAST, matching the image's own PATH, so the tool environment cannot shadow
+    the system interpreter this suite runs under.
+    """
+    ambient = os.environ.get("PATH", "")
+    parts = [p for p in ambient.split(os.pathsep) if p]
+    if prefix in parts:
+        parts.remove(prefix)
+    return os.pathsep.join([*parts, prefix])
+
+
 def run_invocation(tool: Tool, invocation: Invocation, prefix: str,
                    root: pathlib.Path) -> dict:
     """Run one invocation at every declared thread count and compare."""
     setup_dir = root / "setup"
     setup_dir.mkdir(parents=True, exist_ok=True)
-    env = {**os.environ, **FIXED_ENV}
+    env = {**os.environ, **FIXED_ENV, "PATH": _image_path(prefix)}
     subs = {"bin": prefix, "fixtures": str(FIXTURES), "setup": str(setup_dir),
             "pfam": _pfam_path(prefix) or ""}
     if "{pfam}" in " ".join(invocation.argv) and not subs["pfam"]:

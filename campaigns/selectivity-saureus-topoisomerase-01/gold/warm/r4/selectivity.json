@@ -1,0 +1,34 @@
+{
+  "focal_selective_at_highest_threshold": [
+    "CHEMBL2165064",
+    "CHEMBL2424874",
+    "CHEMBL2424876",
+    "CHEMBL2424877",
+    "CHEMBL2424886",
+    "CHEMBL2424889",
+    "CHEMBL303984",
+    "CHEMBL36506",
+    "CHEMBL4448131",
+    "CHEMBL4555272",
+    "CHEMBL4853297",
+    "CHEMBL4854247",
+    "CHEMBL4861334",
+    "CHEMBL4864841",
+    "CHEMBL4872821",
+    "CHEMBL4876514",
+    "CHEMBL5590170",
+    "CHEMBL6152473"
+  ],
+  "focal_selective_counts": {
+    "10": 74,
+    "100": 18,
+    "2": 122
+  },
+  "most_selective_molecule": "CHEMBL4555272",
+  "most_selective_ratio": 16666.666667,
+  "reference_selective_counts": {
+    "10": 3,
+    "100": 1,
+    "2": 21
+  }
+}

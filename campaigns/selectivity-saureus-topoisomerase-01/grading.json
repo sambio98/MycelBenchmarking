@@ -1,0 +1,229 @@
+{
+  "campaign_id": "selectivity-saureus-topoisomerase-01",
+  "template_id": "chembl-selectivity",
+  "grading_spec_version": "1.0.0",
+  "rungs": [
+    {
+      "rung_id": "r1",
+      "ordinal": 1,
+      "name": "execute",
+      "gold_tier": "G1",
+      "composition": "product",
+      "pass_threshold": 1.0,
+      "chance_level": 1.0,
+      "components": [
+        {
+          "name": "report_present",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:present.report",
+            "gold": 1
+          }
+        },
+        {
+          "name": "release",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:release",
+            "gold": "gold:release"
+          }
+        },
+        {
+          "name": "focal_target",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:focal_target",
+            "gold": "gold:focal_target"
+          }
+        },
+        {
+          "name": "reference_target",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:reference_target",
+            "gold": "gold:reference_target"
+          }
+        },
+        {
+          "name": "activities_total",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:activities_total",
+            "gold": "gold:activities_total"
+          }
+        },
+        {
+          "name": "activities_of_declared_type",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:activities_of_declared_type",
+            "gold": "gold:activities_of_declared_type"
+          }
+        },
+        {
+          "name": "distinct_assays",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:distinct_assays",
+            "gold": "gold:distinct_assays"
+          }
+        },
+        {
+          "name": "assay_confidence_scores",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:assay_confidence_scores",
+            "gold": "gold:assay_confidence_scores"
+          }
+        }
+      ],
+      "chance_level_note": "Nominal rather than measured. Activity and assay counts cannot be guessed, so the no-computation ablation fails R1 outright; the level is kept at 1.0 because any system that opens the file clears it, and the capped floor is computed over R2 upward.\n"
+    },
+    {
+      "rung_id": "r2",
+      "ordinal": 2,
+      "name": "correct",
+      "gold_tier": "G1",
+      "composition": "product",
+      "pass_threshold": 1.0,
+      "chance_level": 0.003,
+      "components": [
+        {
+          "name": "admitted_by_target",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:admitted_by_target",
+            "gold": "gold:admitted_by_target"
+          }
+        },
+        {
+          "name": "rejected_by_target",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:rejected_by_target",
+            "gold": "gold:rejected_by_target"
+          }
+        },
+        {
+          "name": "aggregated_pairs",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:aggregated_pairs",
+            "gold": "gold:aggregated_pairs"
+          }
+        },
+        {
+          "name": "aggregated_by_target",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:aggregated_by_target",
+            "gold": "gold:aggregated_by_target"
+          }
+        },
+        {
+          "name": "eligible_molecules",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:eligible_molecules",
+            "gold": "gold:eligible_molecules"
+          }
+        }
+      ]
+    },
+    {
+      "rung_id": "r3",
+      "ordinal": 3,
+      "name": "commit",
+      "gold_tier": "G1",
+      "composition": "product",
+      "pass_threshold": 1.0,
+      "chance_level": 0.001,
+      "components": [
+        {
+          "name": "focal_selective_counts",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:focal_selective_counts",
+            "gold": "gold:focal_selective_counts"
+          }
+        },
+        {
+          "name": "reference_selective_counts",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:reference_selective_counts",
+            "gold": "gold:reference_selective_counts"
+          }
+        },
+        {
+          "name": "focal_selective_at_highest_threshold",
+          "scorer": "set_exact",
+          "args": {
+            "pred": "pred:focal_selective_at_highest_threshold",
+            "gold": "gold:focal_selective_at_highest_threshold"
+          }
+        },
+        {
+          "name": "most_selective_molecule",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:most_selective_molecule",
+            "gold": "gold:most_selective_molecule"
+          }
+        },
+        {
+          "name": "most_selective_ratio",
+          "scorer": "abs_tol_match",
+          "args": {
+            "pred": "pred:most_selective_ratio",
+            "gold": "gold:most_selective_ratio",
+            "abs_tol": 1e-06
+          }
+        }
+      ]
+    },
+    {
+      "rung_id": "r4",
+      "ordinal": 4,
+      "name": "counterfactual",
+      "gold_tier": "G1",
+      "composition": "product",
+      "pass_threshold": 1.0,
+      "chance_level": 0.001,
+      "components": [
+        {
+          "name": "variant_admitted",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:variant_admitted",
+            "gold": "gold:variant_admitted"
+          }
+        },
+        {
+          "name": "variant_eligible",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:variant_eligible",
+            "gold": "gold:variant_eligible"
+          }
+        },
+        {
+          "name": "variant_focal_counts",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:variant_focal_counts",
+            "gold": "gold:variant_focal_counts"
+          }
+        },
+        {
+          "name": "variant_reference_counts",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:variant_reference_counts",
+            "gold": "gold:variant_reference_counts"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,192 @@
+campaign_id: selectivity-saureus-topoisomerase-01
+template_id: chembl-selectivity
+track: EX
+family: measurement_reconciliation
+layer: L5_target_and_mechanism
+np_class: mixed
+version: 1.0.0
+horizon_tier: T-short
+license_class: share_alike
+grader_version: "2.0.0+9fc95658"
+grading_spec_version: "1.0.0"
+min_tool_surface: S0
+
+license_notice:
+  source: ChEMBL 37 (EMBL-EBI), activities and assay records for two targets
+  license: CC BY-SA 3.0
+  attribution: >
+    Data from ChEMBL (https://www.ebi.ac.uk/chembl/), EMBL-EBI, release
+    ChEMBL_37 of 2026-05-01, licensed CC BY-SA 3.0.
+  redistribution: >
+    inputs/ and gold/ of this campaign are an adaptation of a ShareAlike work, so
+    anyone redistributing them must do so under CC BY-SA 3.0 with the attribution
+    above. The obligation is local to this campaign: the benchmark is a collection
+    of separable campaigns rather than an adaptation of any one of them, so the
+    code, the grader and every other campaign are unaffected and this campaign can
+    be removed without touching them.
+
+objective: >
+  Staphylococcus aureus DNA gyrase and topoisomerase IV are the two type II
+  topoisomerases an antibacterial of this class can hit, and whether a compound
+  hits one or both is the selectivity question. Decide which of ChEMBL's measured
+  IC50 values are admissible, reduce replicates to one value per compound and
+  target, form the ratio for every compound measured against both, and report
+  which compounds are selective at each declared threshold. Then relax the
+  admission rules one at a time and say what moves.
+
+method_guidance: partial
+
+scope_note: >
+  Gold at this layer is measured-or-computed only: a value from a database with a
+  structured confidence field, or exact arithmetic over such values. Never a model
+  prediction, never a curated expert call. So every admission test here reads a
+  structured ChEMBL field and the only arithmetic is a median and a quotient.
+
+  Two things are load-bearing. ChEMBL's confidence_score lives on the ASSAY and not
+  on the activity, so admission needs an activity-to-assay join -- a system that
+  looks for the field on the activity will not find it and will admit everything.
+  And a standard_relation of '>' or '<' is a BOUND, not a measurement: treating one
+  as a value is the commonest way a potency table acquires numbers nobody measured,
+  and 235 of this campaign's 1,117 IC50 records are exactly that.
+
+catalog_deviation: >
+  The catalogued R4 was "a low-confidence assay is excluded -- predict the new
+  ratio". It is not available on this target pair: every one of the 105 assays
+  behind these IC50 values scores 7, "Direct protein complex subunits assigned",
+  so excluding on confidence rejects nothing. The rule is still declared and still
+  graded, because a rule that is a no-op on one instantiation is not a rule that
+  can be left out of the contract -- but the counterfactual has to vary an axis
+  that moves. R4 relaxes the admission rules that do: the censored-relation rule,
+  the ChEMBL-flag rule, the duplicate rule, and the choice of aggregator.
+
+template_params:
+  focal_target: CHEMBL3038482          # S. aureus DNA gyrase (protein complex)
+  reference_target: CHEMBL3038508      # S. aureus topoisomerase IV (protein complex)
+  activities_input: inputs/chembl_saureus_topoisomerases.json.gz
+  # Each variant relaxes exactly one declared admission rule, or swaps the
+  # aggregator. v0 is the control and must reproduce R3 exactly.
+  admission_variants:
+    v0_baseline: {}
+    v1_admit_censored:
+      require_exact_relation: false
+    v2_admit_flagged:
+      reject_flagged: false
+    v3_admit_duplicates:
+      reject_duplicates: false
+    v4_minimum_not_median:
+      aggregator: minimum
+
+output_contract:
+  selectivity_report.json:
+    release / focal_target / reference_target: From the shipped input.
+    activities_total / activities_of_declared_type: >
+      All shipped activity records, and those whose standard_type is IC50.
+    distinct_assays / assay_confidence_scores: >
+      Assays behind the IC50 records, and the distribution of their
+      confidence_score -- which lives on the assay, not the activity.
+    admitted_by_target: Per target, IC50 records passing every admission rule.
+    rejected_by_target: >
+      Per target, rejections broken down by the FIRST declared reason that
+      applies, so the counts partition the rejected set exactly.
+    aggregated_pairs / aggregated_by_target: >
+      (molecule, target) pairs carrying an aggregated value, and the count per
+      target.
+    eligible_molecules: Molecules with an aggregated value on BOTH targets.
+    focal_selective_counts / reference_selective_counts: >
+      Per declared threshold, how many molecules have a ratio above it, and how
+      many below its reciprocal.
+    focal_selective_at_highest_threshold: >
+      The committed set: the molecule identifiers selective for the focal target
+      at the highest declared threshold.
+    most_selective_molecule / most_selective_ratio: >
+      Under the declared tie-break: highest ratio, then smallest identifier.
+    admission_variants: >
+      Per declared variant, the admitted count, the eligible-molecule count and
+      the selective counts, recomputed.
+
+constraints:
+  reference_dir: reference
+  pinned_tables:
+    - reference/selectivity_rules.json   # admission, aggregation, ratio, thresholds
+
+snapshots_required:
+  shipped: [chembl@37]
+  fetched: []
+
+budgets:
+  wall_clock_minutes: 25
+  cpu: 2
+  memory_gb: 4
+  network: off
+
+rungs:
+  - {rung_id: r1, ordinal: 1, name: execute,        gold_tier: G1, warm_start_bundle: null}
+  - {rung_id: r2, ordinal: 2, name: correct,        gold_tier: G1, warm_start_bundle: gold/warm/r2}
+  - {rung_id: r3, ordinal: 3, name: commit,         gold_tier: G1, warm_start_bundle: gold/warm/r3}
+  - {rung_id: r4, ordinal: 4, name: counterfactual, gold_tier: G1, warm_start_bundle: gold/warm/r4}
+
+structural_elements: [verification, counterfactual, control, planted]
+
+harness:
+  gold_command: ["python3", "-m", "npbench_c.templates.chembl_selectivity.build", "{campaign}"]
+  solve_command: ["python3", "-m", "npbench_c.templates.chembl_selectivity.solve", "{campaign}", "{submission}"]
+  measure_command: ["python3", "-m", "npbench_c.templates.chembl_selectivity.measure", "{campaign}", "{submission}", "{measurement}"]
+  stub_module: npbench_c.sweep.stubs.stub_selectivity
+  stub_args: []
+  stub_levels:
+    - {name: stub-reader,     level: reader}
+    - {name: stub-admitted,   level: admitted, reference: true}
+    - {name: stub-ratios,     level: ratios}
+    - {name: stub-complete,   level: complete}
+    - {name: stub-inverted,   level: inverted}
+    - {name: stub-noncompute, level: noncompute, mode: no_tool}
+
+grading:
+  chance_levels: {r1: 1.0, r2: 0.003, r3: 0.001, r4: 0.001}
+  chance_level_notes:
+    r1: >
+      Nominal rather than measured. Activity and assay counts cannot be guessed,
+      so the no-computation ablation fails R1 outright; the level is kept at 1.0
+      because any system that opens the file clears it, and the capped floor is
+      computed over R2 upward.
+
+excluded_from_grading:
+  - field: the per-molecule ratios themselves
+    reason: >
+      A dictionary of 173 floats would dominate the conjunctive product while
+      testing one computation repeatedly. The committed SET at the highest
+      threshold, the counts at all three, and the extreme molecule under a
+      declared tie-break carry the claim; a system that gets a ratio wrong shows
+      up in one of those.
+  - field: which target a compound "really" acts on in a cell or an animal
+    reason: >
+      Not decidable from an enzyme IC50 and not what the campaign asks. The ratio
+      is a statement about two measurements; reading it as a mechanism of action
+      would need permeability, efflux and target engagement data that is not here.
+  - field: any activity whose standard_relation is a bound
+    reason: >
+      A '>' or '<' is not a measurement. The rejection is counted, so the
+      information is not lost, but admitting one as a value would put numbers
+      nobody measured into gold. The v1 variant admits them deliberately so the
+      size of that error is visible.
+  - field: potency values in mass-per-volume units
+    reason: >
+      ug.mL-1 cannot be converted to molar without the compound's molecular
+      weight, and bringing a molecular weight in would make gold depend on a
+      second source. 81 records are rejected on this rule and counted.
+
+notes_for_audit:
+  - >
+    Check the rejection breakdown first and check that it sums: the reasons are
+    tested in a declared order and each activity takes the first that applies, so
+    admitted plus the rejection counts must equal the IC50 total per target. If it
+    does not, two rules are double-counting and every number below it is suspect.
+  - >
+    The confidence_score rule rejects nothing here, which is recorded rather than
+    hidden: every assay on this pair scores 7. That is why R4 varies other axes,
+    and it is the one place this campaign departs from the catalogued design.
+  - >
+    Both selectivity directions are populated -- 122 molecules favour gyrase at
+    twofold and 21 favour topoisomerase IV -- so the verdict is not a foregone
+    conclusion in either direction. The build refuses to emit gold if either side
+    is empty.

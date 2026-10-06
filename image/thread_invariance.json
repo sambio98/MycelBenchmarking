@@ -344,14 +344,14 @@
               "raw": "47918f1aa4148c9e"
             },
             "t8_r0": {
-              "canonical": "ebef5ff4ad85b5d7",
-              "normalised": "ebef5ff4ad85b5d7",
-              "raw": "ebef5ff4ad85b5d7"
+              "canonical": "dad3165def6be47d",
+              "normalised": "dad3165def6be47d",
+              "raw": "dad3165def6be47d"
             },
             "t8_r1": {
-              "canonical": "661a7c138a00b466",
-              "normalised": "661a7c138a00b466",
-              "raw": "661a7c138a00b466"
+              "canonical": "f7f06a13e9a3e63f",
+              "normalised": "f7f06a13e9a3e63f",
+              "raw": "f7f06a13e9a3e63f"
             }
           },
           "invocation": "blastp_tabular_no_reorder",
@@ -398,22 +398,22 @@
             "t1_r0": {
               "canonical": "7ae34b5010d56a59",
               "normalised": "7ae34b5010d56a59",
-              "raw": "029e43fe37966d2c"
+              "raw": "47da0e1c9fdf140e"
             },
             "t1_r1": {
               "canonical": "7ae34b5010d56a59",
               "normalised": "7ae34b5010d56a59",
-              "raw": "c3a65058c0001f04"
+              "raw": "83eaa29b743b1086"
             },
             "t8_r0": {
               "canonical": "7ae34b5010d56a59",
               "normalised": "7ae34b5010d56a59",
-              "raw": "2ec6b6ea93384058"
+              "raw": "51182f9cee599871"
             },
             "t8_r1": {
               "canonical": "7ae34b5010d56a59",
               "normalised": "7ae34b5010d56a59",
-              "raw": "9d2e9da7b674feb7"
+              "raw": "853ecc2bc97031ad"
             }
           },
           "invocation": "hmmsearch_tblout",
@@ -437,27 +437,27 @@
           "canonical_identical": true,
           "canonicalisation": null,
           "compared": "artifact",
-          "detail": "identical after 1 declared normalisation rule(s)",
+          "detail": "identical after 1 declared normalisation rule(s); the raw bytes also agreed, but a declared-unstable field is present and only happened to match",
           "digests": {
             "t1_r0": {
               "canonical": "318074301e70c24b",
               "normalised": "318074301e70c24b",
-              "raw": "3707844c414ec52b"
+              "raw": "446c2358004952bd"
             },
             "t1_r1": {
               "canonical": "318074301e70c24b",
               "normalised": "318074301e70c24b",
-              "raw": "3707844c414ec52b"
+              "raw": "446c2358004952bd"
             },
             "t8_r0": {
               "canonical": "318074301e70c24b",
               "normalised": "318074301e70c24b",
-              "raw": "3707844c414ec52b"
+              "raw": "446c2358004952bd"
             },
             "t8_r1": {
               "canonical": "318074301e70c24b",
               "normalised": "318074301e70c24b",
-              "raw": "8b2012bf59ff1ae0"
+              "raw": "446c2358004952bd"
             }
           },
           "invocation": "hmmbuild",
@@ -468,7 +468,7 @@
           "projection": null,
           "projection_identical": false,
           "raw_identical": false,
-          "raw_identical_incidental": false,
+          "raw_identical_incidental": true,
           "repeatable_at_fixed_threads": true,
           "runs": 4,
           "status": "PASS",
@@ -580,13 +580,13 @@
             },
             "t8_r0": {
               "canonical": "bc8281ff54bf6376",
-              "normalised": "30306a6e0c8b65eb",
-              "raw": "30306a6e0c8b65eb"
+              "normalised": "e6e759b6263a95b3",
+              "raw": "e6e759b6263a95b3"
             },
             "t8_r1": {
               "canonical": "bc8281ff54bf6376",
-              "normalised": "419664ad5219d38b",
-              "raw": "419664ad5219d38b"
+              "normalised": "6222624464902871",
+              "raw": "6222624464902871"
             }
           },
           "invocation": "search_convertalis",

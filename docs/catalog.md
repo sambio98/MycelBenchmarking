@@ -415,8 +415,8 @@ breaks if the rule is relaxed.
 
 | # | Template | Data | Build |
 |---|---|---|---|
-| T-L5-1 | Selectivity ratios from measured IC50 | verified | now (`share_alike`) |
-| T-L5-2 | Resistance mutation → target assignment | verified | now (`share_alike`) |
+| T-L5-1 | Selectivity ratios from measured IC50 | verified | **BUILT** (`share_alike`) |
+| T-L5-2 | Resistance mutation → target assignment | **thin on theme** | re-tiered, see below |
 | T-L5-3 | Binding-site geometry from coordinates | verified | **BUILT** |
 
 **T-L5-1** ChEMBL measured activities. **Licensing decided**: CC BY-SA 3.0 is
@@ -425,16 +425,74 @@ adaptation — the derived subset and the gold computed from it — and not to a
 collection of separable campaigns, so the obligation is local to these two rows
 and they can be dropped without touching the rest. The gate requires such a
 campaign to carry a `license_notice`. See `docs/environment.md` for the full
-reasoning. **Not yet built**: the decision unblocks authoring, it does not do it.
-R1 activity table, assay-confidence field retained · R2 matches gold ·
-R3 claim: the selectivity ratio between two targets (exact arithmetic over
-measured values) and whether it exceeds the declared threshold · R4 a
-low-confidence assay is excluded — predict the new ratio.
+reasoning.
+
+**Built**: `campaigns/selectivity-saureus-topoisomerase-01`, the benchmark's first
+`share_alike` campaign. *S. aureus* DNA gyrase (CHEMBL3038482) against
+topoisomerase IV (CHEMBL3038508), ChEMBL_37, 1,749 shipped activities of which
+1,117 are IC50. R1 the activity and assay inventory, including the
+confidence-score distribution · R2 matches gold · R3 the admission census, the
+aggregated values, the per-threshold selective counts, the committed selective set
+at the highest threshold and the extreme molecule under a declared tie-break ·
+R4 four admission variants plus an aggregator swap.
+
+Measured: 739 of the 1,117 IC50 records are admitted, and the rejections
+partition exactly — 235 censored relations, 81 unconvertible units, 33 flagged by
+ChEMBL, 29 potential duplicates. 668 (molecule, target) pairs carry an aggregated
+value and **173 molecules are measured against both targets**. Both directions are
+populated at twofold (122 favour gyrase, 21 favour topoisomerase IV), so the
+verdict is not foregone either way and the build refuses to emit gold if either
+side is empty. The most selective compound is CHEMBL4555272 at 16,666.7×. Every
+one of the five R4 variants moves something: admitting censored relations takes
+eligibility from 173 to 193, and swapping median for minimum leaves the admitted
+count identical while moving the focal counts from 122/74/18 to 139/90/25 — a
+reduction choice, not an admission choice, and it changes the answer.
+
+**Deviation: the catalogued R4 is a no-op on this pair.** It was "a low-confidence
+assay is excluded — predict the new ratio". All 105 assays behind these IC50
+values score 7 ("Direct protein complex subunits assigned"), so excluding on
+confidence rejects nothing. The rule stays declared and graded — a rule that
+happens to be a no-op on one instantiation is not a rule that can be dropped from
+the contract — but the counterfactual has to vary an axis that moves, so R4
+relaxes the censored-relation rule, the ChEMBL flag, the duplicate rule and the
+aggregator instead. **This is the second half of a rule worth stating in general:
+a field being present does not make the quantity derived from it informative, and
+only computing the distribution shows which.**
+
+The campaign also carries the join that makes the task non-trivial:
+`confidence_score` lives on the **assay**, not the activity, so admission needs an
+activity-to-assay join and a system that looks for the field on the activity finds
+nothing and admits everything.
 
 **T-L5-2** Resistance mutation to target assignment from structured fields.
 R1 mutation table · R2 matches gold · R3 claim: the implicated target and the
 evidence class · R4 a mutation is removed from the set — predict whether the
 assignment survives.
+
+**Re-tiered: the structured field is there and the data behind it is not, for any
+on-theme target.** ChEMBL_37 has 34,921 IC50 activities carrying
+`assay_variant_mutation`, which is what the earlier probe confirmed and why this
+row read `data: verified`. Counting them per target is what the probe did not do:
+
+- *S. aureus* gyrase complex: **45** variant records (D83N 41). GyrA alone: 39
+  (S84L 32, D83N 6). ParE and the topoisomerase IV complex: **0**.
+- 44 wild-type/mutant key pairs exist, but most mutant `standard_value`s are
+  `None`, so the pair cannot be turned into a ratio. The one clean pair in the
+  whole set is ciprofloxacin against gyrase: WT 5.0 nM versus D83N 580,000 nM.
+- *P. falciparum* DHFR: 244 variant records, **every one** of them
+  "UNDEFINED MUTATION" — the field is populated and says nothing.
+- The only well-populated variant target is **HIV-1 RT**: 5,423 records with real
+  mutations (Y181C, P236L, K103N).
+
+A campaign built on one ciprofloxacin pair is an anecdote, and a campaign built on
+HIV-1 RT is off-theme for a natural-product benchmark — it would grade resistance
+reasoning on an antiviral target whose chemistry is nothing like this benchmark's.
+So this row is **not built and not blocked on licensing**: ChEMBL is accepted, the
+data is thin. Named alternatives, left to the owner rather than chosen here:
+instantiate on HIV-1 RT and accept the theme drift, re-scope the ladder to the
+census itself (how much resistance data exists per target class, which is a real
+and gradeable question), or wait for a release that fills the bacterial variant
+values. **The numbers are recorded so the next person does not re-probe.**
 
 **T-L5-3** Binding-site geometry from PDB coordinates (CC0, pure arithmetic).
 **Built as the `pocket` ladder of the `structure_features` template**:
@@ -563,8 +621,14 @@ updated. Headline: **the S0 buildable set is 3 templates, not 7.**
 - **Blocked on one licensing decision** (ChEMBL CC BY-SA 3.0 share-alike):
   T-L5-1 and T-L5-2. Both are otherwise data-verified, including the structured
   `assay_variant_mutation` field T-L5-2 needs.
-  **Decided**: accepted under `license_class: share_alike`; both rows are now
-  `build: now` and unbuilt.
+  **Decided**: accepted under `license_class: share_alike`. **T-L5-1 is built**
+  (`selectivity-saureus-topoisomerase-01`). **T-L5-2 is re-tiered**: the field is
+  populated, the values behind it are not for any on-theme target — 45 variant
+  records on the *S. aureus* gyrase complex, 0 on topoisomerase IV, and all 244
+  *P. falciparum* DHFR records reading "UNDEFINED MUTATION". Counts and the named
+  alternatives are in the T-L5-2 entry above. **Correction to this bullet as
+  written**: "otherwise data-verified" was wrong for T-L5-2 — the probe verified
+  the field, not the data.
 - **Blocked on registration**: T-L2-5, since BRENDA's archive 404s without it.
   **Wrong**: a licence-acceptance checkbox, not a registration, and the row is
   built.
@@ -582,7 +646,9 @@ of the 12 `build: image` rows; matchms is the remaining provisioning work.
    diff), T-L6-1 second instantiation, T-L6-2, T-L3-5. Five campaigns needing no
    container.
 2. **`build: now` + `data: likely`** — T-L1-3, T-L2-2, T-L2-5, T-L4-4, T-L5-1,
-   T-L5-2, T-L5-3. Probe each source first.
+   T-L5-2, T-L5-3. Probe each source first. **Done**: T-L2-2, T-L2-5, T-L4-4,
+   T-L5-1 and T-L5-3 are built; T-L1-3 was re-tiered to `image`; T-L5-2 was
+   re-tiered on thin data. This tier is now exhausted.
 3. **`build: image`** — everything else. **Phase 1 is now partly done**: the
    pinned-tool image in `image/` carries HMMER 3.4, DIAMOND 2.2.8, MMseqs2
    18.8cc5c, Prodigal 2.6.3, MAFFT 7.526, BLAST+ 2.17.0, antiSMASH 8.0.4 and

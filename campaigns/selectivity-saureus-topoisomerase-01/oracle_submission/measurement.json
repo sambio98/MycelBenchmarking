@@ -1,0 +1,144 @@
+{
+  "activities_of_declared_type": 1117,
+  "activities_total": 1749,
+  "admitted_by_target": {
+    "CHEMBL3038482": 527,
+    "CHEMBL3038508": 212
+  },
+  "aggregated_by_target": {
+    "CHEMBL3038482": 469,
+    "CHEMBL3038508": 199
+  },
+  "aggregated_pairs": 668,
+  "assay_confidence_scores": {
+    "7": 105
+  },
+  "distinct_assays": 105,
+  "eligible_molecules": 173,
+  "focal_selective_at_highest_threshold": [
+    "CHEMBL2165064",
+    "CHEMBL2424874",
+    "CHEMBL2424876",
+    "CHEMBL2424877",
+    "CHEMBL2424886",
+    "CHEMBL2424889",
+    "CHEMBL303984",
+    "CHEMBL36506",
+    "CHEMBL4448131",
+    "CHEMBL4555272",
+    "CHEMBL4853297",
+    "CHEMBL4854247",
+    "CHEMBL4861334",
+    "CHEMBL4864841",
+    "CHEMBL4872821",
+    "CHEMBL4876514",
+    "CHEMBL5590170",
+    "CHEMBL6152473"
+  ],
+  "focal_selective_counts": {
+    "10": 74,
+    "100": 18,
+    "2": 122
+  },
+  "focal_target": "CHEMBL3038482",
+  "most_selective_molecule": "CHEMBL4555272",
+  "most_selective_ratio": 16666.666667,
+  "present": {
+    "report": 1
+  },
+  "reference_selective_counts": {
+    "10": 3,
+    "100": 1,
+    "2": 21
+  },
+  "reference_target": "CHEMBL3038508",
+  "rejected_by_target": {
+    "CHEMBL3038482": {
+      "censored_or_missing_relation": 178,
+      "flagged_by_chembl": 27,
+      "low_confidence_assay": 0,
+      "no_value": 0,
+      "non_positive": 0,
+      "potential_duplicate": 23,
+      "unconvertible_units": 73
+    },
+    "CHEMBL3038508": {
+      "censored_or_missing_relation": 57,
+      "flagged_by_chembl": 6,
+      "low_confidence_assay": 0,
+      "no_value": 0,
+      "non_positive": 0,
+      "potential_duplicate": 6,
+      "unconvertible_units": 8
+    }
+  },
+  "release": "ChEMBL_37",
+  "variant_admitted": {
+    "v0_baseline": 739,
+    "v1_admit_censored": 799,
+    "v2_admit_flagged": 771,
+    "v3_admit_duplicates": 768,
+    "v4_minimum_not_median": 739
+  },
+  "variant_eligible": {
+    "v0_baseline": 173,
+    "v1_admit_censored": 193,
+    "v2_admit_flagged": 179,
+    "v3_admit_duplicates": 173,
+    "v4_minimum_not_median": 173
+  },
+  "variant_focal_counts": {
+    "v0_baseline": {
+      "10": 74,
+      "100": 18,
+      "2": 122
+    },
+    "v1_admit_censored": {
+      "10": 87,
+      "100": 21,
+      "2": 136
+    },
+    "v2_admit_flagged": {
+      "10": 75,
+      "100": 18,
+      "2": 124
+    },
+    "v3_admit_duplicates": {
+      "10": 75,
+      "100": 18,
+      "2": 123
+    },
+    "v4_minimum_not_median": {
+      "10": 90,
+      "100": 25,
+      "2": 138
+    }
+  },
+  "variant_reference_counts": {
+    "v0_baseline": {
+      "10": 3,
+      "100": 1,
+      "2": 21
+    },
+    "v1_admit_censored": {
+      "10": 3,
+      "100": 1,
+      "2": 23
+    },
+    "v2_admit_flagged": {
+      "10": 3,
+      "100": 1,
+      "2": 23
+    },
+    "v3_admit_duplicates": {
+      "10": 3,
+      "100": 1,
+      "2": 22
+    },
+    "v4_minimum_not_median": {
+      "10": 0,
+      "100": 0,
+      "2": 10
+    }
+  }
+}
