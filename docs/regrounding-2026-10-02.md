@@ -11,7 +11,7 @@ rather than assumed.
 |---|---|---|---|
 | T-L1-3 annotation transfer | `now` / likely | **`image`** | finding the closest hit needs alignment |
 | T-L2-2 catalytic residues | `now` / likely | **`now` / verified** | UniProt features + PDB coordinates both parse |
-| T-L2-5 kinetics harmonisation | `now` / likely | **blocked — credentials** | BRENDA data file 404s |
+| T-L2-5 kinetics harmonisation | `now` / likely | **wrong on both counts** | see the correction below |
 | T-L4-4 chemical space | `now` / likely | **`now` / verified** | 3,449 SMILES, 100% parseable |
 | T-L5-1 selectivity ratios | `now` / likely | **verified, licence-blocked** | ChEMBL fine; share-alike unresolved |
 | T-L5-2 mutation → target | `now` / likely | **verified, licence-blocked** | structured variant fields exist |
@@ -115,13 +115,27 @@ ChEMBL's REST API works and has the structure both templates need:
 subsets.** Both templates are otherwise ready. This is a decision for whoever
 owns licensing, not a data problem, and it gates two of the seven rows.
 
-### T-L2-5 kinetics harmonisation — blocked on credentials
+### T-L2-5 kinetics harmonisation — this verdict was wrong twice over
 
-`brenda-enzymes.org/download.php` returns 200, but that is the HTML page; the
-actual archive (`/download/brenda_download.tar.gz`) **404s**. The data is behind
-registration and an acceptance gate, as §4 anticipated. So this is Tier F *with
-credentials*, not `build: now`, and it cannot be authored until someone
-registers and the licence acceptance is recorded.
+What this section said: the archive 404s, the data is behind registration, the row
+cannot be authored until someone registers. **Both halves were wrong**, and the
+error was guessing a URL instead of reading the page.
+
+`/download/brenda_download.tar.gz` does 404 — because it is not the download
+path. `download.php` serves a form: a licence-acceptance checkbox enables three
+buttons, and a POST with `dlfile=dl-json&accept-license=1` returns
+`brenda_2026_1.json.tar.gz`, 83 MB, no account and no API key. The gate is a
+**licence acceptance**, not a registration wall, and the licence is plain CC BY
+4.0 — the page says so in as many words.
+
+The second error was in the task, not the access. "Harmonisation across unit
+conventions" is not what the data supports: BRENDA has already normalised units
+per field and records **no unit on any value**, so there are no competing
+conventions in the file to harmonise. What it does support is the consequence of
+the convention being implicit — Km, kcat and kcat/Km are stored independently and
+arithmetically linked, so the corpus can be checked against itself, and the
+disagreements cluster at exactly the factors a unit mistake would produce. Built
+as `campaigns/kinetics-brenda-ec1_1-01`; see `docs/catalog.md` under T-L2-5.
 
 ### T-L1-3 annotation transfer — re-tiered to `image`
 
@@ -145,7 +159,8 @@ wanted, not substituted silently.
 2. **Phase 1 matters sooner than the catalog implies.** Nine of the remaining
    rows need pinned tools, and T-L1-3 now joins them.
 3. **One decision unblocks two templates**: ChEMBL share-alike.
-4. **One registration unblocks one**: BRENDA.
+4. **One registration unblocks one**: BRENDA. *(Not a registration at all — see
+the correction above.)*
 5. Build order for the three that are ready: `structure_features` (two ladders,
    shared engine, reuses RebH/PrnA provenance) then chemical space.
    **All three are now built** — `residues-prna-01`, `pocket-rebh-01`,

@@ -17,7 +17,9 @@ import shutil
 import pytest
 
 from npbench_c.readiness.gate import (
+    LICENSE_CLASSES,
     PASS,
+    _contract_and_provenance,
     _resolve_gold,
     _warm_bundles_withhold_answers,
 )
@@ -125,3 +127,51 @@ def test_the_compound_list_is_no_longer_graded():
         task = yaml.safe_load((campaign / "task.yaml").read_text())
         reasons = {e["field"]: e["reason"] for e in task["excluded_from_grading"]}
         assert any("compound list" in f for f in reasons)
+
+
+# ------------------------------------------------------------- licence classes
+
+def test_share_alike_is_a_declarable_class():
+    """ChEMBL is CC BY-SA 3.0. The decision taken was to allow it, because the
+    ShareAlike obligation attaches to an ADAPTATION -- a derived subset and the
+    gold computed from it -- and not to a COLLECTION of separable campaigns. So
+    the benchmark's code, grader and other campaigns are unaffected, and a
+    share-alike campaign can be dropped without touching anything else."""
+    assert set(LICENSE_CLASSES) == {"open", "nc", "share_alike"}
+
+
+@pytest.mark.parametrize("campaign", CAMPAIGNS, ids=lambda p: p.name)
+def test_every_campaign_declares_an_allowed_licence_class(campaign):
+    import yaml
+
+    task = yaml.safe_load((campaign / "task.yaml").read_text())
+    assert task["license_class"] in LICENSE_CLASSES
+
+
+def test_a_share_alike_campaign_must_carry_its_notice(tmp_path):
+    """A licence condition recorded only in a design document is a condition the
+    person redistributing the files will never see, so the notice travels with the
+    campaign and the gate checks it."""
+    import shutil
+
+    import yaml
+
+    source = next(c for c in CAMPAIGNS if (c / "task.yaml").is_file())
+    copy = tmp_path / source.name
+    shutil.copytree(source, copy)
+    task = yaml.safe_load((copy / "task.yaml").read_text())
+    task["license_class"] = "share_alike"
+    (copy / "task.yaml").write_text(yaml.safe_dump(task, sort_keys=False))
+
+    by_name = {c.name: c for c in _contract_and_provenance(copy)}
+    assert by_name["license_class_declared"].status == PASS
+    assert by_name["share_alike_notice_present"].status != PASS
+
+    task["license_notice"] = {
+        "source": "ChEMBL", "license": "CC BY-SA 3.0",
+        "attribution": "ChEMBL, EMBL-EBI",
+        "redistribution": "redistribute these files under CC BY-SA 3.0",
+    }
+    (copy / "task.yaml").write_text(yaml.safe_dump(task, sort_keys=False))
+    by_name = {c.name: c for c in _contract_and_provenance(copy)}
+    assert by_name["share_alike_notice_present"].status == PASS

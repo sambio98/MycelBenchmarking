@@ -28,6 +28,19 @@ VENDOR_TOKENS = ("mycel",)
 
 PASS, FAIL, PENDING = "PASS", "FAIL", "PENDING"
 
+#: What a campaign may declare about the licence of the data it ships.
+#:
+#:   open         no downstream condition beyond attribution (CC BY, CC0, public
+#:                domain). Most of the benchmark.
+#:   nc           non-commercial source, so unavailable to commercial evaluators.
+#:   share_alike  the shipped data is an ADAPTATION of a ShareAlike source, so it
+#:                carries that licence onward. The obligation attaches to the
+#:                campaign's own data files, not to the benchmark: a collection of
+#:                separable campaigns is not an adaptation of any one of them, so
+#:                the code, the grader and the other campaigns are unaffected and
+#:                such a campaign can be dropped without touching the rest.
+LICENSE_CLASSES = ("open", "nc", "share_alike")
+
 AGENT_RUN_CHECKS = (
     "monotonicity_measured",
     "r1_clear_rate",
@@ -161,9 +174,26 @@ def _contract_and_provenance(campaign: pathlib.Path) -> list[Check]:
     checks.append(_check("no_g3_outside_repro_audit",
                          "G3" not in tiers or task.get("family") == "reproducibility_audit",
                          f"tiers={tiers} family={task.get('family')}"))
+    license_class = task.get("license_class")
     checks.append(_check("license_class_declared",
-                         task.get("license_class") in ("open", "nc"),
-                         f"license_class={task.get('license_class')}"))
+                         license_class in LICENSE_CLASSES,
+                         f"license_class={license_class} "
+                         f"(allowed: {sorted(LICENSE_CLASSES)})"))
+
+    # A share-alike campaign carries an obligation that travels with its data, so
+    # the obligation has to travel with the campaign. A notice naming the source,
+    # the licence and what a redistributor must do is the whole of it -- and it is
+    # checked, because a licence condition recorded only in a design document is a
+    # condition the person redistributing the files will never see.
+    notice = task.get("license_notice") or {}
+    required = ("source", "license", "attribution", "redistribution")
+    missing = [k for k in required if not notice.get(k)]
+    checks.append(_check(
+        "share_alike_notice_present",
+        license_class != "share_alike" or not missing,
+        "not a share-alike campaign" if license_class != "share_alike"
+        else (f"license_notice missing: {missing}" if missing
+              else f"notice names {', '.join(required)}")))
 
     blob = json.dumps(task).lower()
     bad = [s for s in FORBIDDEN_SOURCES if s in blob]

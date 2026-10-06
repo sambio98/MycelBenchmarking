@@ -115,7 +115,7 @@ introduced elsewhere — predict the new pseudogene call. Perturbation:
 | T-L2-2 | Catalytic residue identification | verified | **BUILT** |
 | T-L2-3 | Remote homology twilight zone | probe | image |
 | T-L2-4 ×2 | A-domain substrate specificity | verified | image |
-| T-L2-5 | Kinetics harmonisation | verified | **blocked: credentials** |
+| T-L2-5 | Kinetics consistency (re-scoped) | verified | **BUILT** |
 
 **T-L2-1** Built on Rembeza & Engqvist 2021 (*PLoS Comput Biol* 17(9):e1009446):
 78% of proteins annotated EC 1.1.3.15 in BRENDA 2017.1 lack the canonical FMN-dh
@@ -162,12 +162,31 @@ swapped to another annotated A-domain's — predict the new monomer. Instantiati
 axis: monomer class (proteinogenic vs non-proteinogenic — the data has
 4-hydroxyphenylglycine 80, 2,4-diaminobutyric acid 53, and similar).
 
-**T-L2-5** Kinetics harmonisation across unit conventions. BRENDA is CC BY 4.0
-but behind an acceptance gate, so it is Tier F (fetch-on-first-use, fail-closed
-hash). R1 normalised kinetics table, units pinned · R2 matches gold · R3 claim:
-which reported value is unit-inconsistent, plus the corrected value
-(interval-scored) · R4 a value is rescaled by a factor — predict the corrected
-table. Perturbation: `rescale_units`. Tag `license_class: open` but Tier F.
+**T-L2-5** **Built**: `campaigns/kinetics-brenda-ec1_1-01`. BRENDA 2026.1,
+EC subclass 1.1.- , 437 EC numbers and 35,188 kinetic records.
+R1 the per-field parse census, with BRENDA's -999 missing-value sentinel counted
+and excluded rather than averaged · R2 the triple inventory under the declared
+(EC, proteins, substrate, references) key · R3 the consistency verdict: compute
+kcat/Km from kcat and Km and band the ratio against the stored value · R4 the same
+check under three declared unit mistakes, with an identity control.
+
+*Two scope corrections.* **The access was not blocked.** This catalog recorded
+T-L2-5 as blocked on BRENDA credentials; the download is a licence-acceptance
+checkbox, not a registration wall, and the licence is plain CC BY 4.0. The earlier
+verdict came from guessing a URL instead of reading the page.
+
+**And "harmonisation across unit conventions" is not what the data supports.**
+BRENDA has already normalised units per field and records no unit on any value, so
+there are no competing conventions in the file to harmonise. What it does support
+is the consequence of the convention being implicit: the three constants are
+arithmetically linked, so the corpus checks itself, and a system that does not
+know Km is in mM and kcat in s⁻¹ cannot do the check at all. Measured over 2,528
+complete triples: **63.2% agree within 5%**, and the disagreements include **31 at
+a factor of ~1000** (millimolar read as micromolar) and **25 at ~60** (per-second
+read as per-minute). Those are the catalogued unit conventions, found in the data
+rather than postulated. The R4 counterfactual makes the dependence explicit —
+applying the micromolar mistake deliberately drops the agreement rate from 63.2%
+to 0.36%.
 
 ## L3 — Cluster & pathway (5 templates, 7 campaigns)
 
@@ -396,12 +415,17 @@ breaks if the rule is relaxed.
 
 | # | Template | Data | Build |
 |---|---|---|---|
-| T-L5-1 | Selectivity ratios from measured IC50 | **verified** | **blocked: licence** |
-| T-L5-2 | Resistance mutation → target assignment | **verified** | **blocked: licence** |
+| T-L5-1 | Selectivity ratios from measured IC50 | verified | now (`share_alike`) |
+| T-L5-2 | Resistance mutation → target assignment | verified | now (`share_alike`) |
 | T-L5-3 | Binding-site geometry from coordinates | verified | **BUILT** |
 
-**T-L5-1** ChEMBL measured activities (CC BY-SA 3.0 — **share-alike propagates
-to redistributed subsets; confirm licensing before this is load-bearing**).
+**T-L5-1** ChEMBL measured activities. **Licensing decided**: CC BY-SA 3.0 is
+accepted under `license_class: share_alike`, because ShareAlike attaches to an
+adaptation — the derived subset and the gold computed from it — and not to a
+collection of separable campaigns, so the obligation is local to these two rows
+and they can be dropped without touching the rest. The gate requires such a
+campaign to carry a `license_notice`. See `docs/environment.md` for the full
+reasoning. **Not yet built**: the decision unblocks authoring, it does not do it.
 R1 activity table, assay-confidence field retained · R2 matches gold ·
 R3 claim: the selectivity ratio between two targets (exact arithmetic over
 measured values) and whether it exceeds the declared threshold · R4 a
@@ -539,7 +563,11 @@ updated. Headline: **the S0 buildable set is 3 templates, not 7.**
 - **Blocked on one licensing decision** (ChEMBL CC BY-SA 3.0 share-alike):
   T-L5-1 and T-L5-2. Both are otherwise data-verified, including the structured
   `assay_variant_mutation` field T-L5-2 needs.
+  **Decided**: accepted under `license_class: share_alike`; both rows are now
+  `build: now` and unbuilt.
 - **Blocked on registration**: T-L2-5, since BRENDA's archive 404s without it.
+  **Wrong**: a licence-acceptance checkbox, not a registration, and the row is
+  built.
 - **Re-tiered to `image`**: T-L1-3, because finding a closest homolog needs
   alignment and any S0 route is a lookup.
 

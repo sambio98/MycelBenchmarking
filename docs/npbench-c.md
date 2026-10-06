@@ -13,31 +13,33 @@ scoring path.
 | Rung ladders | `src/npbench_c/grading/ladder.py` | depth, monotonicity, chance floor |
 | Grader | `src/npbench_c/grading/grade.py` | pure declarative comparator |
 | Grader identity | `src/npbench_c/grading/version.py` | semver + content hash |
-| Readiness gate | `src/npbench_c/readiness/gate.py` | 18 mechanical checks, 5 pending-on-agent-runs |
+| Readiness gate | `src/npbench_c/readiness/gate.py` | 19 mechanical checks, 5 pending-on-agent-runs |
 | Template: construct design | `src/npbench_c/templates/construct_design/` | shared engine, 2 ladders |
-| Campaign: construct design | `campaigns/construct-ecoli-rebh-01/` | oracle 1.0, gate 18/0/5 |
-| Campaign: constraint conflict | `campaigns/constraint-conflict-ecoli-rebh-01/` | oracle 1.0, gate 18/0/5 |
-| Campaign: feasible control | `campaigns/constraint-feasible-ecoli-rebh-01/` | oracle 1.0, gate 18/0/5 |
+| Campaign: construct design | `campaigns/construct-ecoli-rebh-01/` | oracle 1.0, gate 19/0/5 |
+| Campaign: constraint conflict | `campaigns/constraint-conflict-ecoli-rebh-01/` | oracle 1.0, gate 19/0/5 |
+| Campaign: feasible control | `campaigns/constraint-feasible-ecoli-rebh-01/` | oracle 1.0, gate 19/0/5 |
 | Template: NRPS mass balance | `src/npbench_c/templates/mass_balance_nrps/` | shared oracle, 2 instantiations |
-| Campaign: malleobactin | `campaigns/massbalance-nrps-malleobactin-01/` | oracle 1.0, gate 18/0/5 |
-| Campaign: sevadicin | `campaigns/massbalance-nrps-sevadicin-01/` | oracle 1.0, gate 18/0/5 |
+| Campaign: malleobactin | `campaigns/massbalance-nrps-malleobactin-01/` | oracle 1.0, gate 19/0/5 |
+| Campaign: sevadicin | `campaigns/massbalance-nrps-sevadicin-01/` | oracle 1.0, gate 19/0/5 |
 | Internal sweep | `src/npbench_c/sweep/` | runner, stats, gates, stub fixtures |
 | Catalog | `docs/catalog.md` | 24 templates / 32 campaigns, grounded |
 | Provisioning | `docs/environment.md` | tools, DBs, sandbox contract |
 | Template: MIBiG release diff | `src/npbench_c/templates/mibig_diff/` | shared oracle |
-| Campaign: MIBiG 3.1→4.0 diff | `campaigns/mibig-diff-3_1-to-4_0-01/` | oracle 1.0, gate 18/0/5 |
+| Campaign: MIBiG 3.1→4.0 diff | `campaigns/mibig-diff-3_1-to-4_0-01/` | oracle 1.0, gate 19/0/5 |
 | Template: annotation audit | `src/npbench_c/templates/mibig_annotation_audit/` | shared oracle |
-| Campaign: PrnA construct | `campaigns/construct-ecoli-prna-01/` | oracle 1.0, gate 18/0/5 |
-| Campaign: gene-function evidence | `campaigns/mibig-gene-function-evidence-01/` | oracle 1.0, gate 18/0/5 |
+| Campaign: PrnA construct | `campaigns/construct-ecoli-prna-01/` | oracle 1.0, gate 19/0/5 |
+| Campaign: gene-function evidence | `campaigns/mibig-gene-function-evidence-01/` | oracle 1.0, gate 19/0/5 |
 | Template: structure features | `src/npbench_c/templates/structure_features/` | shared engine, 2 ladders |
-| Campaign: PrnA residue evidence | `campaigns/residues-prna-01/` | oracle 1.0, gate 18/0/5 |
-| Campaign: RebH pocket geometry | `campaigns/pocket-rebh-01/` | oracle 1.0, gate 18/0/5 |
+| Campaign: PrnA residue evidence | `campaigns/residues-prna-01/` | oracle 1.0, gate 19/0/5 |
+| Campaign: RebH pocket geometry | `campaigns/pocket-rebh-01/` | oracle 1.0, gate 19/0/5 |
 | Template: chemical space | `src/npbench_c/templates/chemical_space/` | shared oracle, RDKit pinned at instantiation |
-| Campaign: MIBiG 4.0 chemical space | `campaigns/chemspace-mibig-4_0-01/` | oracle 1.0, gate 18/0/5 |
+| Campaign: MIBiG 4.0 chemical space | `campaigns/chemspace-mibig-4_0-01/` | oracle 1.0, gate 19/0/5 |
+| Template: kinetics consistency | `src/npbench_c/templates/kinetics_consistency/` | shared oracle, BRENDA 2026.1 |
+| Campaign: BRENDA EC 1.1 kinetics | `campaigns/kinetics-brenda-ec1_1-01/` | oracle 1.0, gate 19/0/5 |
 | Phase 1 image | `image/Dockerfile`, `image/environment.lock.json` | 8 tools pinned to `version=build`, 185-package closure hashed, antiSMASH databases pinned at 9.4 GB |
 | Tool registry | `src/npbench_c/tools/registry.py` | pins, controls, invocations, declared normalisations, canonicalisations, projections, enforced bans |
 | Thread-invariance suite | `src/npbench_c/tools/invariance.py` | 8/8 tools invariant at 1 and 8 threads |
-| Tests | `tests/` | 290 passing, 2 skipped |
+| Tests | `tests/` | 332 passing, 2 skipped |
 
 ```bash
 PYTHONPATH=src python3 -m pytest tests -q
@@ -164,7 +166,7 @@ A campaign is ready when `npbench_c.readiness.gate` returns all-pass — not whe
 someone believes it is. Checks requiring internal agent runs report **PENDING**,
 never PASS: the gate does not launder an unmeasured property into a green tick.
 
-Current state, every campaign: **18 pass / 0 fail / 5 pending**.
+Current state, every campaign: **19 pass / 0 fail / 5 pending**.
 
 The five pending checks (monotonicity, R1 clear rate, no-tool leakage,
 difficulty gate, discrimination) are satisfied by an `internal_sweep.json` from
@@ -954,6 +956,111 @@ it came from a tool the suite also tests is not circular: once written it is a
 file, so a later MAFFT regression cannot change the HMMER results computed from
 it.
 
+
+## Campaign 12: BRENDA kinetics, a corpus that checks itself
+
+`kinetics-brenda-ec1_1-01` reconciles three numbers BRENDA stores separately and
+arithmetic links: the Michaelis constant, the catalytic constant, and the
+catalytic efficiency that is their quotient. No external standard, no curator —
+the corpus is its own gold, and the shape of the disagreement is the finding.
+
+Over EC subclass 1.1.- (437 EC numbers, 35,188 kinetic records, 2,528 complete
+triples):
+
+```
+agree, within 5%                1598   63.2%
+other                            708   28.0%
+near, 5-25%                      166    6.6%
+factor ~1000  (mM read as uM)     31    1.2%
+factor ~60    (per-s as per-min)  25    1.0%
+```
+
+### The units are the task, and BRENDA records none of them
+
+A value is a string — `0.05 {benzyl alcohol}` — a number and the substrate in
+braces. The unit belongs to the **field**: Km in mM, kcat in s⁻¹, kcat/Km in
+mM⁻¹s⁻¹. A system that does not know that cannot relate the three at all, and one
+that assumes micromolar is wrong by exactly a factor of a thousand. R4 makes the
+dependence explicit by applying the mistakes deliberately:
+
+```
+identity (control)      63.2%
+Km read in micromolar    0.36%
+kcat read per minute     0.32%
+both                     0.04%
+```
+
+A 177-fold collapse from a unit assumption is as direct a demonstration as the
+benchmark has that an implicit convention is load-bearing.
+
+### Two traps that are in the data rather than in the task
+
+**BRENDA writes -999 for a missing measurement** — large, negative, and present
+in 545 records of this subclass alone. A pass that treats it as a number reports a
+negative mean kinetic constant and silently loses every triple it belongs to. The
+counting rules exclude it by numeric comparison, not string prefix, so `-999.0`
+and `-9.99e2` are the sentinel and `-9990` is a measurement.
+
+**Some values are ranges**, like `0.05 - 0.1`. They are counted as unparsed, never
+averaged into a number nobody wrote down. 269 records in this subclass.
+
+### The key has to be tight, and a test proves it
+
+A triple is keyed on `(EC, proteins, substrate, references)`. Dropping the
+reference pairs values from different papers; dropping the protein pairs different
+enzymes. Either way the disagreement rate stops meaning anything — so a test
+builds the loose key as well and asserts the two give different answers. A
+counting rule nobody can tell the difference from its alternative is not doing
+work.
+
+### What this row cost the catalogue: two corrections at once
+
+**The access was not blocked.** The catalogue recorded T-L2-5 as blocked on BRENDA
+credentials. It is not: `download.php` serves a form, a licence-acceptance
+checkbox enables the download buttons, and a POST with
+`dlfile=dl-json&accept-license=1` returns 83 MB of JSON with no account and no API
+key. The licence is plain CC BY 4.0 and the page says so. The earlier verdict came
+from guessing an archive URL and reading its 404 as a wall.
+
+**And the catalogued task was not buildable as written.** "Kinetics harmonisation
+across unit conventions" presumes competing conventions in the source; BRENDA has
+already normalised units per field and records none. The catalogued *intent*
+survives — the unit conventions really are what the campaign turns on — but the
+mechanism is the corpus checking itself rather than two sources being brought into
+line. That is now five catalogued designs corrected by grounding, and the first
+where the correction and the access correction arrived together.
+
+## The ChEMBL decision
+
+ChEMBL is CC BY-SA 3.0, and the project had been carrying it as an open licensing
+question. **Decided: use it, under a new `license_class: share_alike`.** The
+reasoning, recorded so it can be overturned on its merits rather than re-derived:
+
+- ShareAlike attaches to an **Adaptation**, not to a **Collection**. A filtered
+  ChEMBL subset is an adaptation, and so is gold computed from ChEMBL values, so
+  both carry CC BY-SA 3.0 onward. A benchmark made of separable campaigns is a
+  collection, not an adaptation of any one of them — so the code, the grader and
+  every other campaign are untouched.
+- The obligation is therefore satisfiable and **local**: attribution, the same
+  licence on those data files, and a notice. A share-alike campaign can be dropped
+  without touching anything else, which is exactly why the class is per-campaign.
+- The alternatives do not help. IUPHAR/Guide to Pharmacology is CC BY-SA 4.0 — the
+  same condition. PubChem BioAssay largely mirrors ChEMBL, so routing through it
+  would be laundering rather than compliance. And ChEMBL is the source a reviewer
+  expects for measured IC50s.
+
+Made enforceable rather than asserted: `license_class` now admits
+`open | nc | share_alike`, and the gate's nineteenth check requires a
+`share_alike` campaign to carry a `license_notice` naming the source, the licence,
+the attribution and what a redistributor must do. A licence condition recorded
+only in a design document is a condition the person redistributing the files will
+never see.
+
+**What is left for the owner**: whether an evaluator's legal position rules out
+shipping ShareAlike content at all. If so, T-L5-1 and T-L5-2 come out and nothing
+else changes — which is the property the per-campaign class was chosen to give.
+The decision unblocks authoring those two rows; it does not author them.
+
 ## Open items
 
 1. **CAI table provenance.** The relative-adaptiveness values now live in
@@ -983,7 +1090,10 @@ it.
    what they actually need first is an MS² fixture set from MassBank with its own
    grounding pass, since a spectral-matching fixture is where the thread-invariance
    question becomes a tolerance question.
-4. Construct-validity study: inter-rater agreement first, then expert-grader
+4. **T-L5-1 and T-L5-2 themselves.** The licensing decision unblocks them and
+   the data is verified, including the structured `assay_variant_mutation` field.
+   Authoring is the next S0-shaped build.
+8. Construct-validity study: inter-rater agreement first, then expert-grader
    agreement with Gwet's AC1 / Krippendorff's alpha alongside kappa, gate on
    Spearman against the continuous rating. This is the one place humans are
    involved, and it sits outside the grading pipeline by design.

@@ -24,14 +24,60 @@ check before any campaign depends on it.
 | CASMI 2022 | fixed release | public w/ solutions | shipped | probe | probe |
 | **PDB (mmCIF)** | per-entry snapshot, entry id is the pin | CC0 | shipped subset | 0.5-1 MB per entry | **verified** |
 | antiSMASH DB / ClusterBlast | pin to antiSMASH version | open | shipped subset | large | probe |
-| **ChEMBL** | pin release | **CC BY-SA 3.0** | shipped subset | subset | likely |
-| **BRENDA** | 2026.1 | CC BY 4.0 **+ acceptance gate** | **fetched** | — | probe |
+| **ChEMBL** | pin release | **CC BY-SA 3.0** → `license_class: share_alike` | shipped subset | subset | **verified, decided** |
+| **BRENDA** | 2026.1 (March 2026) | CC BY 4.0 | **shipped subset** | 335 KB (EC 1.1.-) | **verified** |
 | **NPAtlas** | 2024_09 | **CC BY-NC 4.0** | **fetched** | — | probe |
 
-**Two licensing cautions.** ChEMBL's **share-alike propagates to redistributed
-subsets** — confirm with whoever owns licensing before it becomes load-bearing
-for L5. NPAtlas is non-commercial from 2024_09, so any campaign touching it is
-tagged `license_class: nc` and is unavailable to commercial evaluators.
+### Licence classes, and the ChEMBL decision
+
+A campaign declares one of three classes, and the readiness gate checks it:
+
+| Class | Meaning | Effect |
+|---|---|---|
+| `open` | attribution at most — CC BY, CC0, public domain | none |
+| `nc` | non-commercial source | unavailable to commercial evaluators |
+| `share_alike` | the shipped data is an **adaptation** of a ShareAlike source | those data files carry that licence onward |
+
+**ChEMBL is CC BY-SA 3.0, and the decision is to use it** under
+`license_class: share_alike`. The reasoning, so it can be overturned on its
+merits rather than re-derived:
+
+- ShareAlike attaches to an **Adaptation**, not to a **Collection**. A filtered
+  ChEMBL subset is an adaptation, and so is gold computed from ChEMBL values, so
+  both carry CC BY-SA 3.0. A benchmark made of separable campaigns is a
+  collection, not an adaptation of any one of them — so the code, the grader and
+  every other campaign are unaffected.
+- The obligation is therefore satisfiable and **local**: attribution, the same
+  licence on those files, and a notice. A share-alike campaign can be dropped
+  without touching anything else, which is exactly why the class is per-campaign
+  rather than per-benchmark.
+- The alternatives do not help. IUPHAR/Guide to Pharmacology is CC BY-SA 4.0 —
+  the same condition. PubChem BioAssay is largely a mirror of ChEMBL, so routing
+  through it would be laundering rather than compliance. ChEMBL is also the source
+  a reviewer expects for measured IC50s.
+- **What is left for the owner to decide**: whether any evaluator's legal position
+  rules out shipping ShareAlike content at all. If so, T-L5-1 and T-L5-2 come out
+  and nothing else changes.
+
+A `share_alike` campaign must carry a `license_notice` naming the source, the
+licence, the attribution and what a redistributor must do; the gate fails the
+campaign without it, because a licence condition recorded only in a design
+document is a condition the person redistributing the files will never see.
+
+**NPAtlas** is non-commercial from 2024_09, so any campaign touching it is tagged
+`license_class: nc` and is unavailable to commercial evaluators.
+
+**BRENDA is not behind credentials.** The download is a licence-acceptance
+checkbox on `download.php` — no account, no API key — and the licence is plain
+**CC BY 4.0**: *"All copyrightable parts of BRENDA are licensed under Creative
+Commons Attribution License 4.0."* The project previously recorded this row as
+blocked on credentials; that was wrong. One caveat worth carrying: BRENDA's terms
+note benefit-sharing obligations for Digital Sequence Information under the UN
+Convention on Biological Diversity, including contributions to the Cali Fund from
+**commercial** users. That is not a copyright restriction and does not touch the
+CC BY 4.0 grant, but a commercial evaluator should know it exists, so it is
+recorded in the campaign's provenance for the same reason NPAtlas carries its
+non-commercial flag.
 
 **Excluded outright — do not build on these:** KEGG (bulk download is paid),
 MetaCyc / BioCyc (subscription), DrugBank (restrictive terms). Pathway and
@@ -208,7 +254,7 @@ and the right ones to author first.
 | T-L2-2 catalytic residues | PDB, UniProt | — (stdlib only) | **S0** |
 | T-L2-3 remote homology | UniProt subset | MMseqs2/DIAMOND | S1 |
 | T-L2-4 A-domain specificity | MIBiG 4.0 | HMMER | S1 |
-| T-L2-5 kinetics harmonisation | BRENDA (fetched) | — | **S0** |
+| T-L2-5 kinetics consistency | BRENDA 2026.1 (shipped subset) | — (stdlib only) | **S0** |
 | T-L3-1 BGC detection | antiSMASH DB | antiSMASH | S2 |
 | T-L3-2 GCF cutoff | MIBiG, antiSMASH DB | BiG-SCAPE | S2 |
 | T-L3-3 MIBiG diff | MIBiG 3.0 + 4.0 | — | **S0** |
