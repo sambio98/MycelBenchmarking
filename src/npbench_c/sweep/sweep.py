@@ -71,15 +71,30 @@ def _rung_ids(task: dict) -> list[str]:
     return [r["rung_id"] for r in sorted(task["rungs"], key=lambda r: r["ordinal"])]
 
 
+def _tool_cache_for(system: SystemSpec, sandbox_root: pathlib.Path):
+    """Where this system's tool memo lives, or None if it must not have one.
+
+    Only a stub in tooled mode gets one. The directory sits beside the sandboxes
+    rather than inside any of them, so the gold-isolation audit still sees a clean
+    sandbox and the memo cannot be mistaken for campaign material. See
+    npbench_c.tools.cache for why the restriction is the point of the mechanism.
+    """
+    if not (system.is_stub and system.mode == "tooled"):
+        return None
+    return sandbox_root / ".toolcache"
+
+
 def _run_all(campaign: pathlib.Path, systems: Sequence[SystemSpec],
              sandbox_root: pathlib.Path, repeats: int) -> list[RunResult]:
     task = _load_task(campaign)
     measure_command = task["harness"]["measure_command"]
     results: list[RunResult] = []
     for system in systems:
+        memo = _tool_cache_for(system, sandbox_root)
         for i in range(repeats):
             results.append(run_once(campaign, system, i, sandbox_root,
-                                    measure_command, "cold", None))
+                                    measure_command, "cold", None,
+                                    tool_cache=memo))
         # Warm runs give the per-rung difficulty profile. Cold runs cannot: a
         # failure at R2 censors every rung above it, so cold clear rates for
         # R3/R4 conflate "could not do it" with "never got there".
@@ -90,7 +105,7 @@ def _run_all(campaign: pathlib.Path, systems: Sequence[SystemSpec],
             for i in range(repeats):
                 results.append(run_once(campaign, system, i, sandbox_root,
                                         measure_command, f"warm:{rung['rung_id']}",
-                                        bundle))
+                                        bundle, tool_cache=memo))
     return results
 
 
@@ -237,6 +252,17 @@ def sweep_campaign(
             "systems": [s.name for s in systems],
             "stub_systems": [s.name for s in systems if s.is_stub],
             "stub_based": any(s.is_stub for s in systems),
+            "tool_cache_systems": sorted(
+                s.name for s in systems if s.is_stub and s.mode == "tooled"),
+            "tool_cache_note": "Stub systems in tooled mode share a memo of tool "
+                               "output keyed on the input digest, the library "
+                               "fingerprint, the tool version and the flags, so a "
+                               "tool-running campaign's stub sweep does not "
+                               "recompute the same call once per rung-repeat. The "
+                               "wall clock of such a sweep is therefore NOT a "
+                               "timing measurement of the campaign. No real system "
+                               "and no no-tool ablation is given a memo; the "
+                               "runner refuses.",
             "run_status_counts": dict(sorted(status_counts.items())),
             "infra_failures": len(infra),
             "note": "Scores exclude infra failures (timeout/crash); run_status_counts "

@@ -21,6 +21,7 @@ from dataclasses import dataclass, field
 from typing import Mapping, Sequence
 
 from npbench_c.grading.grade import grade
+from npbench_c.tools import cache
 
 # Only these campaign paths are ever visible to a system. "reference" carries
 # the pinned tables the task requires an agent to use: without them this
@@ -39,6 +40,10 @@ INFRA_STATUSES = (TIMEOUT, CRASHED)
 
 class GoldLeak(RuntimeError):
     """Gold or oracle material reached a system sandbox. Invalidates the sweep."""
+
+
+class ToolCacheMisuse(RuntimeError):
+    """A tool memo was offered to a run that must not have one. See tools.cache."""
 
 
 @dataclass(frozen=True)
@@ -161,6 +166,7 @@ def run_once(
     measure_command: Sequence[str],
     rung_mode: str = "cold",
     warm_start_bundle: str | None = None,
+    tool_cache: pathlib.Path | None = None,
 ) -> RunResult:
     """One system, one repeat. Builds the sandbox, runs, measures, grades."""
     import os
@@ -173,6 +179,19 @@ def run_once(
 
     env = _absolute_pythonpath({**os.environ, **system.env,
                                 "NPBENCH_MODE": system.mode})
+    env.pop(cache.ENV_VAR, None)
+    if tool_cache is not None:
+        if not system.is_stub:
+            raise ToolCacheMisuse(
+                f"{system.name} is not a stub, so its tool output must not be "
+                "memoised: a sweep over real systems is partly a measurement of "
+                "whether they can drive the tool at all")
+        if system.mode != "tooled":
+            raise ToolCacheMisuse(
+                f"{system.name} runs in mode {system.mode!r}; a no-tool ablation's "
+                "whole claim is that it did not compute, and handing it a memo "
+                "would make the leakage check meaningless")
+        env[cache.ENV_VAR] = str(tool_cache)
     try:
         proc = subprocess.run(
             _format(system.command, campaign=str(campaign),

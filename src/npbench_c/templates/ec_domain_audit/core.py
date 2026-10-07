@@ -43,6 +43,8 @@ import tempfile
 from dataclasses import dataclass
 from typing import Mapping, Sequence
 
+from npbench_c.tools import cache
+
 TEMPLATE_ID = "ec-domain-audit"
 CONSTANTS = pathlib.Path(__file__).resolve().parent / "constants"
 RULES = "audit_rules.json"
@@ -300,7 +302,32 @@ class Audit:
         One hmmsearch of the declared panel over the whole set. The models are
         fetched from the pinned library rather than shipped, so what the campaign
         records is the fingerprint and not the bytes.
+
+        Memoised when and only when a tool cache is enabled, which the sweep does
+        for stub systems alone. The key carries everything the answer depends on:
+        the input file, the library, the tool version, the panel and the flags.
         """
+        chosen = threshold or self.rules.threshold
+        library = self.rules.resources["pfam_a_hmm"]
+
+        def compute() -> dict[str, list[str]]:
+            return {a: sorted(m) for a, m in self._domains(chosen).items()}
+
+        if not cache.enabled():
+            return self._domains(chosen)
+        memo = cache.memoize_json(
+            ["ec_domain_audit.domains",
+             cache.file_digest(self.input_path),
+             library.sha256,
+             self.hmmer_version(),
+             ",".join(self.rules.panel),
+             chosen],
+            compute)
+        return {a: frozenset(m) for a, m in memo.items()}
+
+    def _domains(self, threshold: str | None = None) -> dict[str, frozenset[str]]:
+        """The tool call itself. Never memoised, so a caller that wants the real
+        thing can always have it."""
         flags = (threshold or self.rules.threshold).split()
         if not flags:
             raise AuditError("an empty threshold is not a declared threshold")

@@ -31,6 +31,14 @@
       "stub-complete",
       "stub-inverted",
       "stub-noncompute"
+    ],
+    "tool_cache_note": "Stub systems in tooled mode share a memo of tool output keyed on the input digest, the library fingerprint, the tool version and the flags, so a tool-running campaign's stub sweep does not recompute the same call once per rung-repeat. The wall clock of such a sweep is therefore NOT a timing measurement of the campaign. No real system and no no-tool ablation is given a memo; the runner refuses.",
+    "tool_cache_systems": [
+      "stub-architecture",
+      "stub-complete",
+      "stub-inverted",
+      "stub-presence",
+      "stub-reader"
     ]
   },
   "_per_rung_clear_rates": {

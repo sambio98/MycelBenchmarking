@@ -1315,11 +1315,45 @@ landing at depth 1 is the result worth reading: it runs the tool correctly with
 the right panel and reads the hit table backwards, so it clears the inventory rung
 and fails at presence — the rung whose claim the column swap actually corrupts.
 
-**It took 29m32s of wall clock and 47m of CPU**, against seconds for a stdlib
-campaign. That is the whole sweep cost of one S1 campaign with a 13-model panel;
-a full-Pfam panel would have been roughly fourteen times worse, and an S2 campaign
-running antiSMASH per rung-repeat will be worse again. The open items carry this
-as a decision to take before the first S2 build, not after.
+The first run took **29m32s of wall clock and 47m of CPU**, against seconds for a
+stdlib campaign, because every stub level re-ran the same HMMER call for every
+rung and every repeat over an input that never changes — roughly a hundred
+identical tool runs. Fixed below, and now **3m44s** with every gate result and
+every depth bit-identical.
+
+### A memo for tool output, and where it is not allowed
+
+`npbench_c.tools.cache` memoises an expensive tool call to a JSON file. The
+mechanism is three lines of hashing; the design is entirely about where it may
+apply, because a memo in the wrong place turns a measurement into a tautology.
+
+- **Off unless `NPBENCH_TOOL_CACHE` names a directory.** A build, a test, a human
+  invocation and a real agent run all compute from scratch.
+- **Only a stub, and only in tooled mode.** The sweep runner sets the variable for
+  stub systems alone and **raises `ToolCacheMisuse`** if handed a memo for anything
+  else. A sweep over real systems is partly a measurement of whether they can
+  drive the tool at all, and a `no_tool` ablation's entire claim is that it did not
+  compute — handing either one a memo would quietly void the leakage check.
+- **The key is the whole identity of the computation**: the input file's digest,
+  the library's fingerprint, the tool version, the panel and the flags. A key
+  missing any of those would survive a change it must not survive and return an
+  answer from the wrong world. Key parts are validated *before* the
+  caching-disabled early return, so a malformed key fails everywhere rather than
+  only on the one run where caching is on — a key defect that surfaces only inside
+  a sweep is a key defect nobody sees.
+- **The memo lives beside the sandboxes, never inside one**, so the gold-isolation
+  audit still sees a clean sandbox, and it only ever holds tool output derived
+  from shipped inputs.
+
+Measured on this campaign: **29m32s → 3m44s**, CPU **47m → 3m12s**, six memo
+entries (one per declared cutoff) in place of about a hundred identical runs, and
+the gate block of `internal_sweep.json` byte-identical to the uncached run.
+
+The cost of the mechanism is that a cached sweep's wall clock is no longer a cost
+measurement of the campaign, so `_meta.tool_cache_note` says exactly that in the
+report and a test asserts the sentence is there. That is the honest trade: the
+sweep exists to check the grader and the ladder, and it now does that in minutes;
+anyone who wants the campaign's real tool cost runs it without the variable.
 
 ### The parsing mistake that does not fail
 
@@ -1482,16 +1516,14 @@ whole purpose is to certify determinism that is the one defect that cannot stand
    been restated downward, because the replacement question is the owner's call:
    re-scope those rows, or accept a smaller benchmark. Fourteen campaigns are
    built. This should be settled before the audit packet quotes a number.
-8. **The S1 sweep is slow enough to need a decision — measured: 29m32s.** Every
-   stub level of a tool-running campaign re-runs the tool, so
-   `ecaudit-fmn-dh-1_1_3_15-01` swept in **29m32s** (47m of CPU) where a stdlib
-   campaign takes seconds, and its `complete` level alone runs seven HMMER passes
-   per rung-repeat. The declared panel keeps
-   that affordable, but the real-systems sweep over several S1 and S2 campaigns
-   will not fit the current serial runner. Either the runner caches tool output per
-   (input, threshold) across stub levels, which is honest for stubs but must not
-   leak into real runs, or the sweep gets parallelised. Worth settling before the
-   first S2 campaign, not after.
+8. **The S1 sweep cost is fixed for stubs and still open for real systems.**
+   `npbench_c.tools.cache` memoises tool output for stub systems in tooled mode
+   only, which took this campaign's sweep from 29m32s to **3m44s** with identical
+   results. What that does *not* address is the real-systems sweep, which by design
+   gets no memo: every one of those runs will drive the tool itself, as it must.
+   Whether that needs parallelism depends on how long real agents take per run —
+   measurable only once item 3 supplies the `SystemSpec` entries, so it waits on
+   that rather than being guessed now.
 9. **`structural_elements` is decorative and nothing validates it.** Nine of the
    fourteen built campaigns declare `planted` and several of them plant nothing —
    `mibig-diff-3_1-to-4_0-01`'s own notes say its sharpest case is "supplied by the

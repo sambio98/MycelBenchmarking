@@ -452,3 +452,86 @@ def test_the_warm_bundles_withhold_their_own_rung(tmp_path):
         blob = json.dumps({p.name: json.loads(p.read_text())
                            for p in bundle.iterdir()})
         assert json.dumps(gold[forbidden]) not in blob
+
+
+# --------------------------------------------------------- the tool memo
+
+
+def test_the_tool_memo_is_off_unless_asked_for(audit, monkeypatch):
+    """No environment variable, no caching. A build, a test, a real agent run and
+    a human invocation all compute from scratch."""
+    from npbench_c.tools import cache
+
+    monkeypatch.delenv(cache.ENV_VAR, raising=False)
+    assert cache.enabled() is False
+    assert cache.memoize_json(["x"], lambda: 1) == 1
+
+
+@image_present
+def test_the_memo_returns_what_the_tool_returned(audit, domains, tmp_path,
+                                                 monkeypatch):
+    """A memo that changes the answer is worse than no memo."""
+    from npbench_c.tools import cache
+
+    monkeypatch.setenv(cache.ENV_VAR, str(tmp_path / "memo"))
+    first = audit.domains()
+    assert first == domains
+    assert list((tmp_path / "memo").glob("*.json"))
+    # Second call must not re-run the tool, and must agree.
+    second = audit.domains()
+    assert second == domains
+
+
+@image_present
+def test_the_memo_key_separates_thresholds(audit, tmp_path, monkeypatch):
+    """A key that dropped the flags would hand back an answer from another run.
+    The two cutoffs here differ by 25 sequences, so a collision would show."""
+    from npbench_c.tools import cache
+
+    monkeypatch.setenv(cache.ENV_VAR, str(tmp_path / "memo"))
+    strict = audit.domains("-E 1e-10")
+    loose = audit.domains("--cut_ga")
+    assert len(audit.absent(strict)) != len(audit.absent(loose))
+    assert len(list((tmp_path / "memo").glob("*.json"))) == 2
+
+
+def test_a_memo_with_a_hole_in_its_key_is_refused():
+    """Every key part must be a non-empty string: an unresolved tool version or a
+    missing fingerprint would silently widen what the memo matches."""
+    from npbench_c.tools.cache import CacheError, memoize_json
+
+    for bad in ([], [""], ["ok", None], ["ok", 3]):
+        with pytest.raises(CacheError, match="key part"):
+            memoize_json(bad, lambda: 1)
+
+
+def test_the_runner_refuses_a_memo_for_a_real_system_or_an_ablation(tmp_path):
+    """The restriction is the whole point of the mechanism: a sweep over real
+    systems is partly a measurement of whether they can drive the tool, and a
+    no-tool ablation's claim is that it did not compute."""
+    from npbench_c.sweep.runner import SystemSpec, ToolCacheMisuse, run_once
+    from npbench_c.sweep.sweep import _tool_cache_for
+
+    real = SystemSpec(name="agent", command=["true"], is_stub=False)
+    ablation = SystemSpec(name="stub-noncompute", command=["true"],
+                          mode="no_tool", is_stub=True)
+    stub = SystemSpec(name="stub-reader", command=["true"], is_stub=True)
+
+    assert _tool_cache_for(real, tmp_path) is None
+    assert _tool_cache_for(ablation, tmp_path) is None
+    assert _tool_cache_for(stub, tmp_path) == tmp_path / ".toolcache"
+
+    for system in (real, ablation):
+        with pytest.raises(ToolCacheMisuse):
+            run_once(CAMPAIGN, system, 0, tmp_path / "sb", ["true"],
+                     tool_cache=tmp_path / ".toolcache")
+
+
+def test_the_sweep_report_says_the_wall_clock_is_not_a_timing():
+    """A cached sweep's wall clock would otherwise read as a cost measurement of
+    the campaign, which it is not."""
+    report = json.loads((CAMPAIGN / "internal_sweep.json").read_text())
+    meta = report["_meta"]
+    assert meta["tool_cache_systems"]
+    assert "stub-noncompute" not in meta["tool_cache_systems"]
+    assert "NOT a timing measurement" in meta["tool_cache_note"]

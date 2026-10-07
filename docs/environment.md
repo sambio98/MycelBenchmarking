@@ -518,11 +518,19 @@ told apart by anyone reading the campaign later.
 **The declared panel, so a tool campaign stays affordable.** A full Pfam-A pass
 over the campaign's 1,346-sequence subset takes **2m36s**; the 13-model panel the
 campaign publishes takes **11 seconds** over all 7,675. The panel was fixed once at
-build time by the full scan and then published in `reference/`, which is what keeps
-the sweep — six stub levels times four rungs times three repeats — from costing
-hours per campaign. Any future S1 or S2 campaign wants the same shape: do the
-open-ended scan once at instantiation, publish what it found as a declared
-vocabulary, and have the agent run the bounded version.
+build time by the full scan and then published in `reference/`. Any future S1 or S2
+campaign wants the same shape: do the open-ended scan once at instantiation,
+publish what it found as a declared vocabulary, and have the agent run the bounded
+version.
+
+That alone was not enough for the sweep, which re-ran the same call for every stub
+level, rung and repeat: **29m32s** for one campaign. `npbench_c.tools.cache`
+memoises tool output for **stub systems in tooled mode only** — never a real
+system, never a `no_tool` ablation, with the runner raising rather than allowing
+it — keyed on the input digest, the library fingerprint, the tool version and the
+flags. That brought the sweep to **3m44s** with identical gate results. A cached
+sweep's wall clock is consequently not a cost measurement of the campaign, which
+the report states in `_meta.tool_cache_note`.
 
 ### The other half of the PATH lesson: a measured run needs the prefix on it
 
