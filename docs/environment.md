@@ -277,7 +277,7 @@ and the right ones to author first.
 | T-L1-2 domain architecture | Pfam | HMMER | S1 |
 | T-L1-3 annotation transfer | UniProt subset | BLAST+/DIAMOND | S1 |
 | T-L1-4 pseudogene | — | Prodigal | S1 |
-| T-L2-1 EC misannotation | UniProt, Pfam | HMMER | S1 |
+| T-L2-1 EC misannotation | UniProt 2026_03 (shipped), Pfam 35.0 (image) | HMMER 3.4 | **S1, BUILT** |
 | T-L2-2 catalytic residues | PDB, UniProt | — (stdlib only) | **S0** |
 | T-L2-3 remote homology | UniProt subset | MMseqs2/DIAMOND | S1 |
 | T-L2-4 A-domain specificity | *retired on grounding — see `docs/catalog.md`* | — | — |
@@ -496,6 +496,33 @@ on an interpreter nobody chose. Measured the hard way: `python3 -m pytest` stopp
 finding pytest. antiSMASH's console scripts carry an absolute shebang to their own
 interpreter, so the prefix does not need to come first at all; the image now puts
 it **last** on `PATH`.
+
+### The first campaign that runs a tool, and what it needed from the image
+
+`ecaudit-fmn-dh-1_1_3_15-01` (T-L2-1) is the first campaign whose gold is a tool's
+output rather than arithmetic over shipped data, so it is the first real test of
+whether the image is usable from a campaign rather than only from the invariance
+suite. Two things it needed, both now mechanisms rather than one-offs:
+
+**A resource read from the image, not shipped.** The audit scans against Pfam
+35.0, which is 1.5 GB. The campaign declares the path, the provider (the antiSMASH
+8.0.4 database layer), the version and the file's sha256 in
+`reference/audit_rules.json`, and the build refuses to emit gold if what it finds
+does not match — a domain verdict against a different Pfam release is not that
+campaign's gold. The readiness gate's twentieth check verifies the declaration.
+Here the reason for not shipping is **size**, and Pfam is CC0; the note says so
+explicitly, because the T-L2-4 grounding established that the next campaign to use
+this mechanism will be withholding for **licence**, and the two cases need to be
+told apart by anyone reading the campaign later.
+
+**The declared panel, so a tool campaign stays affordable.** A full Pfam-A pass
+over the campaign's 1,346-sequence subset takes **2m36s**; the 13-model panel the
+campaign publishes takes **11 seconds** over all 7,675. The panel was fixed once at
+build time by the full scan and then published in `reference/`, which is what keeps
+the sweep — six stub levels times four rungs times three repeats — from costing
+hours per campaign. Any future S1 or S2 campaign wants the same shape: do the
+open-ended scan once at instantiation, publish what it found as a declared
+vocabulary, and have the agent run the bounded version.
 
 ### The other half of the PATH lesson: a measured run needs the prefix on it
 

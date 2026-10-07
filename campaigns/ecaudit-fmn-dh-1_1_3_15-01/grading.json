@@ -1,0 +1,212 @@
+{
+  "campaign_id": "ecaudit-fmn-dh-1_1_3_15-01",
+  "template_id": "ec-domain-audit",
+  "grading_spec_version": "1.0.0",
+  "rungs": [
+    {
+      "rung_id": "r1",
+      "ordinal": 1,
+      "name": "execute",
+      "gold_tier": "G1",
+      "composition": "product",
+      "pass_threshold": 1.0,
+      "chance_level": 1.0,
+      "components": [
+        {
+          "name": "report_present",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:present.report",
+            "gold": 1
+          }
+        },
+        {
+          "name": "release",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:release",
+            "gold": "gold:release"
+          }
+        },
+        {
+          "name": "ec_number",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:ec_number",
+            "gold": "gold:ec_number"
+          }
+        },
+        {
+          "name": "canonical_model",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:canonical_model",
+            "gold": "gold:canonical_model"
+          }
+        },
+        {
+          "name": "threshold",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:threshold",
+            "gold": "gold:threshold"
+          }
+        },
+        {
+          "name": "sequences_total",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:sequences_total",
+            "gold": "gold:sequences_total"
+          }
+        },
+        {
+          "name": "sequences_by_section",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:sequences_by_section",
+            "gold": "gold:sequences_by_section"
+          }
+        },
+        {
+          "name": "model_panel_size",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:model_panel_size",
+            "gold": "gold:model_panel_size"
+          }
+        },
+        {
+          "name": "environment",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:environment",
+            "gold": "gold:environment"
+          }
+        }
+      ],
+      "chance_level_note": "Nominal rather than measured. The sequence counts and the panel size cannot be guessed, so the no-tool ablation fails R1 outright; the level stays at 1.0 because any system that opens the FASTA clears it, and the capped floor is computed over R2 upward.\n"
+    },
+    {
+      "rung_id": "r2",
+      "ordinal": 2,
+      "name": "correct",
+      "gold_tier": "G1",
+      "composition": "product",
+      "pass_threshold": 1.0,
+      "chance_level": 0.002,
+      "components": [
+        {
+          "name": "canonical_present_by_section",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:canonical_present_by_section",
+            "gold": "gold:canonical_present_by_section"
+          }
+        },
+        {
+          "name": "canonical_absent_by_section",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:canonical_absent_by_section",
+            "gold": "gold:canonical_absent_by_section"
+          }
+        },
+        {
+          "name": "canonical_absent_total",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:canonical_absent_total",
+            "gold": "gold:canonical_absent_total"
+          }
+        },
+        {
+          "name": "length_profile",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:length_profile",
+            "gold": "gold:length_profile"
+          }
+        }
+      ]
+    },
+    {
+      "rung_id": "r3",
+      "ordinal": 3,
+      "name": "commit",
+      "gold_tier": "G1",
+      "composition": "product",
+      "pass_threshold": 1.0,
+      "chance_level": 0.001,
+      "components": [
+        {
+          "name": "family_census",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:family_census",
+            "gold": "gold:family_census"
+          }
+        },
+        {
+          "name": "architecture_census",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:architecture_census",
+            "gold": "gold:architecture_census"
+          }
+        },
+        {
+          "name": "absent_family_census",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:absent_family_census",
+            "gold": "gold:absent_family_census"
+          }
+        },
+        {
+          "name": "absent_architecture_census",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:absent_architecture_census",
+            "gold": "gold:absent_architecture_census"
+          }
+        },
+        {
+          "name": "dominant_absent_architecture",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:dominant_absent_architecture",
+            "gold": "gold:dominant_absent_architecture"
+          }
+        }
+      ]
+    },
+    {
+      "rung_id": "r4",
+      "ordinal": 4,
+      "name": "counterfactual",
+      "gold_tier": "G1",
+      "composition": "product",
+      "pass_threshold": 1.0,
+      "chance_level": 0.001,
+      "components": [
+        {
+          "name": "misannotated_by_policy",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:misannotated_by_policy",
+            "gold": "gold:misannotated_by_policy"
+          }
+        },
+        {
+          "name": "threshold_absent",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:threshold_absent",
+            "gold": "gold:threshold_absent"
+          }
+        }
+      ]
+    }
+  ]
+}

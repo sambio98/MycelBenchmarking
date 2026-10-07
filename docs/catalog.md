@@ -107,11 +107,15 @@ R3 claim: which locus is a pseudogene and why, closed enum · R4 an indel is
 introduced elsewhere — predict the new pseudogene call. Perturbation:
 `shift_coordinates`.
 
-## L2 — Enzyme & function (5 templates, 7 campaigns)
+## L2 — Enzyme & function (5 templates, 7 catalogued campaigns, **4 reachable**)
+
+T-L2-4 is retired on grounding and T-L2-1's second instantiation is unresolved,
+so this layer now offers 4 campaigns rather than the catalogued 7. Both
+reductions are measured below.
 
 | # | Template | Data | Build |
 |---|---|---|---|
-| T-L2-1 ×2 | EC misannotation triage (EC 1.1.3.15) | likely | image |
+| T-L2-1 | EC misannotation triage (EC 1.1.3.15) | verified | **BUILT** (first S1) |
 | T-L2-2 | Catalytic residue identification | verified | **BUILT** |
 | T-L2-3 | Remote homology twilight zone | probe | image |
 | T-L2-4 ×2 | A-domain substrate specificity | **thin / vocabulary-bound** | re-tiered, see below |
@@ -125,6 +129,84 @@ R4 a sequence is mutated to disrupt the FMN-dh domain — predict the
 reclassification. Discrimination ECs: 1.13.12.4, 1.1.2.3, 1.1.99.31.
 Instantiation axis: EC family. **Gold is the domain presence computed in-container
 (G1), never the paper's percentage (which would be G3).**
+
+**Built**: `campaigns/ecaudit-fmn-dh-1_1_3_15-01`, the benchmark's **first S1
+campaign** — the first that executes a tool, and the first that reads a pinned
+resource it is not allowed to ship. UniProt 2026_03, every entry annotated EC
+1.1.3.15: **7,675 sequences, 29 reviewed and 7,646 unreviewed**, both sections in
+full because the split is the control and sampling it would put a selection
+decision inside the input. HMMER 3.4 against Pfam 35.0 at `--cut_ga`, over a
+declared 13-model panel.
+
+Measured:
+
+| | FMN_dh present | absent | rate |
+|---|---|---|---|
+| reviewed | 29 / 29 | **0** | 0.0000 |
+| unreviewed | 6,300 / 7,646 | **1,346** | **0.1760** |
+
+**The paper's 78% does not reproduce on UniProt 2026_03, and that is the point of
+the G1 rule.** Rembeza & Engqvist measured BRENDA 2017.1; this campaign measures
+what the pinned tool says about the current release and gets 17.6%. Quoting the
+published figure as gold would have been a literature-recall test *and* wrong.
+
+Two findings make the ladder more than a tool invocation.
+
+**The canonical-absent sequences are not fragments.** That was the explanation
+that would have made the whole audit an artefact of sequencing completeness: a
+sequence can miss a 348-column model by being short. Measured, the absent side is
+**longer** — median 466 residues against 367 — and only 2.4% of it is under 300
+residues against 12.6% of the present side. The length profile is a graded
+component so an auditor sees the refutation rather than taking it on trust.
+
+**They are a coherent enzyme family, not noise.** 967 of the 1,346 (71.8%) carry
+exactly `FAD-oxidase_C + FAD_binding_4` — the FAD-linked glycolate oxidase subunit
+architecture, which oxidises the same substrate through a different cofactor. So
+absence of the canonical domain is **not** the same as misannotation, and the
+campaign refuses to assert a misannotation rate. It grades the count under three
+published policies instead: **1,346** accepting only the canonical FMN domain,
+**319** admitting the FAD-oxidase architecture, **22** admitting any flavin
+architecture in the panel. The p0/p1 gap is the honest statement of where the
+uncertainty lives, and it is R4's load-bearing axis.
+
+**Deviation: the catalogued R4 cannot be built, and the discrimination ECs are not
+used.** Mutating a sequence to disrupt an HMM match means choosing which residues
+to break, and any choice big enough to drop a curated gathering threshold is a
+choice about the answer — with gold then describing a sequence nobody deposited.
+R4 varies the declared cutoff and the declared policy instead. The cutoff turns
+out to be nearly inert (1,342 to 1,371 absent over six cutoffs, with `--cut_ga`,
+`--cut_nc` and `--cut_tc` identical), which is a robustness result rather than a
+defect, and is admissible only because the policy axis in the same rung moves by a
+factor of sixty. As for the catalogued discrimination ECs: 1.13.12.4 has 204
+entries and 1.1.99.31 has 234, and **EC 1.1.2.3 is itself an FMN_dh family
+member** — all three reviewed L-lactate dehydrogenase (cytochrome) entries hit the
+model at the gathering threshold — so the canonical domain does not discriminate
+it from EC 1.1.3.15 at all. Measured, not assumed.
+
+**The ×2 instantiation is now an open question, not a plan.** The catalogued axis
+was "EC family", and this build used one. A second instantiation needs an EC with
+the same shape — a canonical domain the annotation implies, a reviewed set big
+enough to be a control, and an unreviewed set large enough for a rate — and the
+catalogued discrimination ECs do not supply it: 1.1.2.3 shares the canonical
+domain, and 1.13.12.4 and 1.1.99.31 have 204 and 234 entries. Finding one is a
+grounding pass of its own, so this row counts as **one** campaign until somebody
+does it.
+
+**The panel is declared, not discovered.** It was fixed once at build time by
+scanning the canonical-absent set against the whole of Pfam 35.0 and listing every
+family that fired; the campaign then publishes it, and an agent scans with exactly
+those 13 models in about 11 seconds instead of the 2.5 minutes a full Pfam-A pass
+costs per run. It also **partitions this set perfectly**: all 6,329
+canonical-present sequences carry FMN_dh and nothing else from the panel, so the
+architecture census is a genuine partition rather than a ranking of overlapping
+families.
+
+**And the library is read, not shipped.** Pfam-A.hmm is 1.5 GB, so it stays in the
+image and the campaign declares the path, the provider, the version and its
+sha256; the build refuses to emit gold if the file it finds does not match. Here
+the reason is size and Pfam is CC0 — recorded explicitly, because for the next S2
+campaign the reason will be licence. This is what the gate's new twentieth check,
+`external_resources_pinned_and_present`, verifies.
 
 **T-L2-2** Catalytic residues from PDB coordinates + UniProt annotation.
 **Built as the `residues` ladder of the `structure_features` template**:

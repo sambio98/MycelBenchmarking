@@ -13,31 +13,33 @@ scoring path.
 | Rung ladders | `src/npbench_c/grading/ladder.py` | depth, monotonicity, chance floor |
 | Grader | `src/npbench_c/grading/grade.py` | pure declarative comparator |
 | Grader identity | `src/npbench_c/grading/version.py` | semver + content hash |
-| Readiness gate | `src/npbench_c/readiness/gate.py` | 19 mechanical checks, 5 pending-on-agent-runs |
+| Readiness gate | `src/npbench_c/readiness/gate.py` | 20 mechanical checks, 5 pending-on-agent-runs |
 | Template: construct design | `src/npbench_c/templates/construct_design/` | shared engine, 2 ladders |
-| Campaign: construct design | `campaigns/construct-ecoli-rebh-01/` | oracle 1.0, gate 19/0/5 |
-| Campaign: constraint conflict | `campaigns/constraint-conflict-ecoli-rebh-01/` | oracle 1.0, gate 19/0/5 |
-| Campaign: feasible control | `campaigns/constraint-feasible-ecoli-rebh-01/` | oracle 1.0, gate 19/0/5 |
+| Campaign: construct design | `campaigns/construct-ecoli-rebh-01/` | oracle 1.0, gate 20/0/5 |
+| Campaign: constraint conflict | `campaigns/constraint-conflict-ecoli-rebh-01/` | oracle 1.0, gate 20/0/5 |
+| Campaign: feasible control | `campaigns/constraint-feasible-ecoli-rebh-01/` | oracle 1.0, gate 20/0/5 |
 | Template: NRPS mass balance | `src/npbench_c/templates/mass_balance_nrps/` | shared oracle, 2 instantiations |
-| Campaign: malleobactin | `campaigns/massbalance-nrps-malleobactin-01/` | oracle 1.0, gate 19/0/5 |
-| Campaign: sevadicin | `campaigns/massbalance-nrps-sevadicin-01/` | oracle 1.0, gate 19/0/5 |
+| Campaign: malleobactin | `campaigns/massbalance-nrps-malleobactin-01/` | oracle 1.0, gate 20/0/5 |
+| Campaign: sevadicin | `campaigns/massbalance-nrps-sevadicin-01/` | oracle 1.0, gate 20/0/5 |
 | Internal sweep | `src/npbench_c/sweep/` | runner, stats, gates, stub fixtures |
 | Catalog | `docs/catalog.md` | 24 templates / 32 campaigns, grounded |
 | Provisioning | `docs/environment.md` | tools, DBs, sandbox contract |
 | Template: MIBiG release diff | `src/npbench_c/templates/mibig_diff/` | shared oracle |
-| Campaign: MIBiG 3.1→4.0 diff | `campaigns/mibig-diff-3_1-to-4_0-01/` | oracle 1.0, gate 19/0/5 |
+| Campaign: MIBiG 3.1→4.0 diff | `campaigns/mibig-diff-3_1-to-4_0-01/` | oracle 1.0, gate 20/0/5 |
 | Template: annotation audit | `src/npbench_c/templates/mibig_annotation_audit/` | shared oracle |
-| Campaign: PrnA construct | `campaigns/construct-ecoli-prna-01/` | oracle 1.0, gate 19/0/5 |
-| Campaign: gene-function evidence | `campaigns/mibig-gene-function-evidence-01/` | oracle 1.0, gate 19/0/5 |
+| Campaign: PrnA construct | `campaigns/construct-ecoli-prna-01/` | oracle 1.0, gate 20/0/5 |
+| Campaign: gene-function evidence | `campaigns/mibig-gene-function-evidence-01/` | oracle 1.0, gate 20/0/5 |
 | Template: structure features | `src/npbench_c/templates/structure_features/` | shared engine, 2 ladders |
-| Campaign: PrnA residue evidence | `campaigns/residues-prna-01/` | oracle 1.0, gate 19/0/5 |
-| Campaign: RebH pocket geometry | `campaigns/pocket-rebh-01/` | oracle 1.0, gate 19/0/5 |
+| Campaign: PrnA residue evidence | `campaigns/residues-prna-01/` | oracle 1.0, gate 20/0/5 |
+| Campaign: RebH pocket geometry | `campaigns/pocket-rebh-01/` | oracle 1.0, gate 20/0/5 |
 | Template: chemical space | `src/npbench_c/templates/chemical_space/` | shared oracle, RDKit pinned at instantiation |
-| Campaign: MIBiG 4.0 chemical space | `campaigns/chemspace-mibig-4_0-01/` | oracle 1.0, gate 19/0/5 |
+| Campaign: MIBiG 4.0 chemical space | `campaigns/chemspace-mibig-4_0-01/` | oracle 1.0, gate 20/0/5 |
 | Template: kinetics consistency | `src/npbench_c/templates/kinetics_consistency/` | shared oracle, BRENDA 2026.1 |
-| Campaign: BRENDA EC 1.1 kinetics | `campaigns/kinetics-brenda-ec1_1-01/` | oracle 1.0, gate 19/0/5 |
+| Campaign: BRENDA EC 1.1 kinetics | `campaigns/kinetics-brenda-ec1_1-01/` | oracle 1.0, gate 20/0/5 |
 | Template: ChEMBL selectivity | `src/npbench_c/templates/chembl_selectivity/` | shared oracle, ChEMBL_37, first `share_alike` |
-| Campaign: S. aureus topoisomerases | `campaigns/selectivity-saureus-topoisomerase-01/` | oracle 1.0, gate 19/0/5 |
+| Campaign: S. aureus topoisomerases | `campaigns/selectivity-saureus-topoisomerase-01/` | oracle 1.0, gate 20/0/5 |
+| Template: EC domain audit | `src/npbench_c/templates/ec_domain_audit/` | HMMER 3.4 + Pfam 35.0, first tool-running template |
+| Campaign: EC 1.1.3.15 FMN_dh audit | `campaigns/ecaudit-fmn-dh-1_1_3_15-01/` | oracle 1.0, gate 20/0/5, **first S1** |
 | Phase 1 image | `image/Dockerfile`, `image/environment.lock.json` | 8 tools pinned to `version=build`, 185-package closure hashed, antiSMASH databases pinned at 9.4 GB |
 | Tool registry | `src/npbench_c/tools/registry.py` | pins, controls, invocations, declared normalisations, canonicalisations, projections, enforced bans |
 | Thread-invariance suite | `src/npbench_c/tools/invariance.py` | 8/8 tools invariant at 1 and 8 threads |
@@ -168,11 +170,19 @@ A campaign is ready when `npbench_c.readiness.gate` returns all-pass — not whe
 someone believes it is. Checks requiring internal agent runs report **PENDING**,
 never PASS: the gate does not launder an unmeasured property into a green tick.
 
-Current state, every campaign: **19 pass / 0 fail / 5 pending**.
+Current state, every campaign: **20 pass / 0 fail / 5 pending**.
 
 The five pending checks (monotonicity, R1 clear rate, no-tool leakage,
 difficulty gate, discrimination) are satisfied by an `internal_sweep.json` from
 a sweep over **real** systems. A stub-based sweep leaves them pending by design.
+
+The twentieth check, `external_resources_pinned_and_present`, arrived with the
+first S1 campaign. A campaign may need reference data it cannot ship — too large,
+or under a licence the benchmark cannot pass on — and such a resource is declared
+instead of copied: path, provider, version, sha256. The check resolves each one
+and verifies the fingerprint, because an unverifiable external resource is the
+solvability defect one step out: the sandbox looks complete and the answer depends
+on bytes nobody pinned.
 
 **Never audit before calibrating.** A campaign dropped for non-discrimination
 after a domain expert spent three hours on it has burned the scarcest resource
@@ -1170,6 +1180,134 @@ that fills the bacterial values. **The counts are recorded so the next person do
 not re-probe.** This is also a correction to the re-grounding note, which called
 T-L5-2 "data-verified": the probe verified the field, not the data behind it.
 
+## Campaign 14: the first one that runs a tool
+
+`ecaudit-fmn-dh-1_1_3_15-01` is T-L2-1 and the benchmark's first **S1** campaign.
+Everything before it was pure computation over shipped data; this one needs HMMER
+on the path and the pinned Pfam release in the image, and no S0 system can answer
+any rung of it. That is declared in `task.yaml` rather than left for the results
+matrix to discover, so the empty S0 column reads as tooling and not as capability.
+
+UniProt 2026_03, every entry annotated EC 1.1.3.15 — an FMN-dependent
+(S)-2-hydroxy-acid oxidase, so the annotation implies the FMN_dh domain.
+**7,675 sequences: 29 reviewed and 7,646 unreviewed, both sections in full.** No
+sampling, because the reviewed/unreviewed split is the campaign's control and a
+sampled control is not one.
+
+| | FMN_dh present | absent | rate |
+|---|---|---|---|
+| reviewed | 29 / 29 | **0** | 0.0000 |
+| unreviewed | 6,300 / 7,646 | **1,346** | **0.1760** |
+
+**The published figure does not reproduce, which is exactly why the G1 rule
+exists.** Rembeza & Engqvist found 78% of EC 1.1.3.15 proteins in BRENDA 2017.1
+lacked the FMN-dh domain, and that paper is why this row is in the catalog. On
+UniProt 2026_03 the measured figure is 17.6%. Had the campaign graded the paper's
+number it would have been a literature-recall test, and it would have been wrong.
+Gold here is what the pinned tool says about the shipped sequences, and nothing
+else; the literature figure is in `excluded_from_grading` with that reason.
+
+### The two findings that make it a ladder rather than a tool invocation
+
+**The absent sequences are not fragments.** This was the explanation that would
+have made the whole audit an artefact: a sequence can miss a 348-column model
+simply by being short, in which case "lacks the domain" is a statement about
+sequencing completeness. Measured, the canonical-absent side is **longer** than
+the present side — median 466 residues against 367 — and 2.4% of it falls under
+300 residues against 12.6% of the present side. The length profile is a graded R2
+component and the first item in `notes_for_audit`, because a refutation nobody can
+check is just an assertion.
+
+**They are a coherent enzyme family.** 967 of the 1,346 (71.8%) carry exactly
+`FAD-oxidase_C + FAD_binding_4`: the FAD-linked glycolate oxidase subunit
+architecture, which oxidises the same substrate through a different cofactor. The
+rest are mostly `DAO` combinations, and 11 carry nothing from the panel. So the
+absent set is not junk, and **absence of the canonical domain is not
+misannotation**. The campaign therefore refuses to report a misannotation rate and
+grades the count under three published policies instead:
+
+| policy | accepts | misannotated |
+|---|---|---|
+| `p0_canonical_only` | FMN_dh | **1,346** |
+| `p1_accept_fad_oxidase` | + the FAD-oxidase architecture | **319** |
+| `p2_accept_any_flavin` | + any panel flavin family | **22** |
+
+The campaign does not rule between p0 and p1. The gap between them *is* the
+finding, and publishing the policy rather than asserting a rate is what keeps a
+human judgement out of gold.
+
+### R4 had to be rebuilt, and one of its axes is deliberately inert
+
+The catalogued R4 was "a sequence is mutated to disrupt the FMN-dh domain —
+predict the reclassification". It cannot be built honestly: mutating a sequence to
+destroy an HMM match means choosing which residues to break, any choice large
+enough to drop a curated gathering threshold is a choice about the answer, and
+gold would then describe a sequence nobody deposited. R4 varies the two axes
+already in the data — the declared cutoff and the declared policy.
+
+The cutoff axis **barely moves**: 1,342 to 1,371 absent across six cutoffs, with
+`--cut_ga`, `--cut_nc` and `--cut_tc` giving an identical answer. The baseline
+cutoff is among the six, which makes it that axis's **identity control** — it
+re-runs the audit under the flag that produced the headline and has to land on the
+same number, the way the kinetics ladder's `v0_identity` variant does, and the
+build refuses to emit gold if it drifts. Normally a
+counterfactual that does not move is the defect that re-scoped the selectivity
+campaign. Here it is a robustness measurement — the headline rate does not depend
+on where the threshold sits — and it is admissible **only because the policy axis
+in the same rung moves by a factor of sixty**. The build asserts exactly that: it
+refuses to emit gold if both axes go flat, and refuses if the strict policy stops
+reproducing the absence count.
+
+The catalogued discrimination ECs are not used either, and measurement is why:
+1.13.12.4 has 204 entries, 1.1.99.31 has 234, and **EC 1.1.2.3 is itself an FMN_dh
+family member** — all three reviewed L-lactate dehydrogenase (cytochrome) entries
+hit the model at the gathering threshold — so the canonical domain does not
+discriminate it from EC 1.1.3.15 at all. Three more sequence sets, no signal.
+
+### Declared, not discovered: how the tool stays affordable
+
+The model panel is **published in `reference/`**, 13 Pfam models. It was fixed
+once at build time by scanning the canonical-absent set against the whole of Pfam
+35.0 and listing every family that fired above the gathering threshold. An agent
+then scans with exactly those models: **11 seconds**, against the **2m36s** a full
+Pfam-A pass costs. Making the discovery part of the task would have hidden the
+answer behind an open-ended search whose cost is multiplied by every rung, every
+repeat and every stub level in the sweep.
+
+It also **partitions the set**: all 6,329 canonical-present sequences carry FMN_dh
+and nothing else from the panel, so the architecture census is a real partition
+rather than a ranking of overlapping families. That is a test, because a panel
+that overlapped the canonical model would make the dominant-architecture claim
+depend on which family happened to score higher.
+
+### A resource the campaign may read but not ship
+
+Pfam-A.hmm is 1.5 GB, so it is not redistributed. What replaces the bytes is a
+declaration: the path, the provider (the antiSMASH 8.0.4 database layer), the
+version and a **sha256**, recorded in `reference/audit_rules.json`. The build
+refuses to emit gold if the file it finds does not hash to what it recorded,
+because a domain verdict against a different Pfam release is not this campaign's
+gold.
+
+This is the mechanism the T-L2-4 grounding said every S2 campaign would need, and
+the gate now has a **twentieth check**, `external_resources_pinned_and_present`,
+which resolves each declared resource and verifies its fingerprint. Here the
+reason for not shipping is **size** and Pfam is CC0 — recorded explicitly, because
+the next campaign to use this mechanism will be withholding for licence instead,
+and "we did not ship it" means different things in the two cases.
+
+### The parsing mistake that does not fail
+
+`hmmsearch --domtblout` puts the **target** (a sequence) in column 1 and the
+**query** (a model) in column 4. Reading them the other way round reports model
+names as sequence accessions and accessions as models: no error, a
+plausible-looking table, every number wrong. I made exactly that mistake while
+grounding this row and it produced a convincing census of families named
+`tr|Q7NQA5|Q7NQA5_CHRVO`. There is now a test that the returned mapping is keyed
+by the shipped accessions and valued by the declared panel, and the `inverted`
+stub level is the graded form of the same error — it runs the tool correctly, with
+the right panel, and reads the result backwards.
+
 ## T-L2-4: four comparison keys, four different answers
 
 T-L2-4 (NRPS A-domain substrate specificity) was the next build after T-L5-1 — the
@@ -1317,9 +1455,26 @@ whole purpose is to certify determinism that is the one defect that cannot stand
    target is now 30 at most.** T-L5-2 and T-L2-4 both ground out. The count in this
    file's header and in `docs/catalog.md` is the *catalogued* target and has not
    been restated downward, because the replacement question is the owner's call:
-   re-scope those rows, or accept a smaller benchmark. Thirteen campaigns are
+   re-scope those rows, or accept a smaller benchmark. Fourteen campaigns are
    built. This should be settled before the audit packet quotes a number.
-8. Construct-validity study: inter-rater agreement first, then expert-grader
+8. **The S1 sweep is slow enough to need a decision.** Every stub level of a
+   tool-running campaign re-runs the tool, so `ecaudit-fmn-dh-1_1_3_15-01` sweeps
+   in tens of minutes where a stdlib campaign takes seconds — and its `complete`
+   level alone runs seven HMMER passes per rung-repeat. The declared panel keeps
+   that affordable, but the real-systems sweep over several S1 and S2 campaigns
+   will not fit the current serial runner. Either the runner caches tool output per
+   (input, threshold) across stub levels, which is honest for stubs but must not
+   leak into real runs, or the sweep gets parallelised. Worth settling before the
+   first S2 campaign, not after.
+9. **`structural_elements` is decorative and nothing validates it.** Nine of the
+   fourteen built campaigns declare `planted` and several of them plant nothing —
+   `mibig-diff-3_1-to-4_0-01`'s own notes say its sharpest case is "supplied by the
+   corpus rather than planted". The new campaign declares only what it has
+   (`verification, counterfactual, control`), but the field needs either a
+   definition and a gate check or removal, and fixing the other nine is the owner's
+   taxonomy call rather than a silent edit. A declaration no check reads is the
+   thing this project keeps finding in other people's data.
+10. Construct-validity study: inter-rater agreement first, then expert-grader
    agreement with Gwet's AC1 / Krippendorff's alpha alongside kappa, gate on
    Spearman against the continuous rating. This is the one place humans are
    involved, and it sits outside the grading pipeline by design.

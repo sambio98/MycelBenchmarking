@@ -10,6 +10,7 @@ are green and the agent-run checks have real numbers.
 
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import pathlib
@@ -218,6 +219,56 @@ def _contract_and_provenance(campaign: pathlib.Path) -> list[Check]:
                          bool(pinned) and len(reachable) == len(pinned),
                          f"{len(reachable)}/{len(pinned)} pinned tables are under a "
                          f"public sandbox path and present on disk"))
+
+    # A campaign may need reference data it cannot ship -- too large, or under a
+    # licence the benchmark is not in a position to pass on. Such a resource is
+    # declared rather than copied, and the declaration has to be checkable: the
+    # file must be where the campaign says, and must hash to what it recorded.
+    # An unverifiable external resource is the solvability defect one step out:
+    # the sandbox looks complete and the answer depends on bytes nobody pinned.
+    external = task.get("constraints", {}).get("external_resources") or []
+    external = [external] if isinstance(external, dict) else list(external)
+    resource_detail, resources_ok = "no external resources declared", True
+    if external:
+        named = [e for e in external if e.get("name") and e.get("declared_in")]
+        found, mismatched, absent_files = [], [], []
+        for entry in named:
+            declared_in = campaign / entry["declared_in"]
+            if not declared_in.is_file():
+                absent_files.append(entry["name"])
+                continue
+            spec = json.loads(declared_in.read_text())
+            block = (spec.get("external_resources") or {}).get(entry["name"])
+            if not block or not block.get("sha256") or not block.get("relative_path"):
+                absent_files.append(entry["name"])
+                continue
+            prefix = pathlib.Path(
+                os.environ.get("NPBENCH_TOOL_PREFIX", "/opt/npbench-tools/bin"))
+            path = prefix.parent / block["relative_path"]
+            if not path.is_file():
+                absent_files.append(entry["name"])
+                continue
+            digest = hashlib.sha256()
+            with open(path, "rb") as handle:
+                for chunk in iter(lambda: handle.read(1 << 20), b""):
+                    digest.update(chunk)
+            if digest.hexdigest() == block["sha256"]:
+                found.append(entry["name"])
+            else:
+                mismatched.append(entry["name"])
+        resources_ok = (len(named) == len(external)
+                        and len(found) == len(external))
+        parts = [f"{len(found)}/{len(external)} declared external resources "
+                 "present and matching their recorded sha256"]
+        if mismatched:
+            parts.append(f"fingerprint mismatch: {mismatched}")
+        if absent_files:
+            parts.append(f"not found or not fully declared: {absent_files}")
+        if len(named) != len(external):
+            parts.append("an entry is missing name or declared_in")
+        resource_detail = "; ".join(parts)
+    checks.append(_check("external_resources_pinned_and_present", resources_ok,
+                         resource_detail))
 
     # Every rung must carry the key so the declaration is explicit; R1 has no
     # earlier rung to start from, so null is the correct value there. Bundles
