@@ -1461,6 +1461,23 @@ protoclusters, so the region is replaced rather than removed. The build now
 requires three distinct outcome signatures, one of them a no-op and one of them an
 outright loss.
 
+### The sweep, and the cost the memo does not cover
+
+All five sweep gates pass, with cold depths 1/2/3/4/1/0. `stub-offbyone` landing
+at depth 1 is the result worth reading: it runs antiSMASH over the whole
+chromosome correctly, projects all 29 regions correctly, and reports the 1-based
+inclusive start without the conversion. It clears the inventory and fails at the
+boundaries — the rung whose claim one arithmetic operation corrupts.
+
+**It took 15m35s**, against 55 seconds for the S1 transfer campaign. The tool memo
+is working — 7 antiSMASH runs serve all 72 rung-repeats — so what remains is not
+the tool: it is reading and re-parsing a 26 MB GenBank record once per run, plus
+copying a 6.8 MB input into each sandbox. **The memo caches the tool call, not the
+work around it**, which is a limitation worth stating now rather than discovering
+at the third S2 campaign. If S2 sweeps become routine, the next move is to cache
+the parsed record alongside the tool output, or to let a stub level reuse one
+sandbox across repeats.
+
 ### What else the gate caught here
 
 `product_census` was graded at R2 **and** handed over by R2's warm bundle, because I
@@ -1779,14 +1796,18 @@ whole purpose is to certify determinism that is the one defect that cannot stand
    been restated downward, because the replacement question is the owner's call:
    re-scope those rows, or accept a smaller benchmark. Sixteen campaigns are
    built. This should be settled before the audit packet quotes a number.
-8. **The S1 sweep cost is fixed for stubs and still open for real systems.**
+8. **Sweep cost: the tool memo covers the tool, not the work around it.**
    `npbench_c.tools.cache` memoises tool output for stub systems in tooled mode
-   only, which took this campaign's sweep from 29m32s to **3m44s** with identical
-   results. What that does *not* address is the real-systems sweep, which by design
-   gets no memo: every one of those runs will drive the tool itself, as it must.
-   Whether that needs parallelism depends on how long real agents take per run —
-   measurable only once item 3 supplies the `SystemSpec` entries, so it waits on
-   that rather than being guessed now.
+   only, which took the EC-audit sweep from 29m32s to **3m44s** with identical
+   results. Measured since on the first S2 campaign, a stub sweep still takes
+   **15m35s** with the memo fully effective, because each of the 72 rung-repeats
+   re-reads and re-parses a 26 MB GenBank record and copies a 6.8 MB input into a
+   fresh sandbox. Two candidate fixes, neither taken yet: cache the parsed record
+   beside the tool output, or let a stub level reuse one sandbox across repeats.
+   And the real-systems sweep gets no memo at all by design — every such run must
+   drive the tool itself — so whether that needs parallelism depends on how long
+   real agents take per run, measurable only once item 3 supplies the `SystemSpec`
+   entries.
 9. **`structural_elements` is decorative and nothing validates it.** Nine of the
    fourteen built campaigns declare `planted` and several of them plant nothing —
    `mibig-diff-3_1-to-4_0-01`'s own notes say its sharpest case is "supplied by the
