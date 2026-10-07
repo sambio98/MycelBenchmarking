@@ -47,7 +47,7 @@ scope_note: >
   looks for the field on the activity will not find it and will admit everything.
   And a standard_relation of '>' or '<' is a BOUND, not a measurement: treating one
   as a value is the commonest way a potency table acquires numbers nobody measured,
-  and 235 of this campaign's 1,117 IC50 records are exactly that.
+  and a substantial minority of this campaign's IC50 records are exactly that.
 
 catalog_deviation: >
   The catalogued R4 was "a low-confidence assay is excluded -- predict the new

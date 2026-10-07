@@ -170,8 +170,8 @@ grading:
 excluded_from_grading:
   - field: the per-sequence accession lists
     reason: >
-      7,675 accessions would dominate the conjunctive product while testing one
-      tool call repeatedly. The per-section counts, the architecture distribution,
+      The per-sequence accession list would dominate the conjunctive product while
+      testing one tool call repeatedly. The per-section counts, the architecture distribution,
       the dominant architecture and the per-policy counts carry the claim, and a
       system that misassigns a sequence shows up in one of them.
   - field: whether a canonical-absent sequence is "really" misannotated

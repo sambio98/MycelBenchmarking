@@ -45,13 +45,13 @@ scope_note: >
 
   Four things are load-bearing. The reference set is CLOSED and shipped, because
   transfer against a live database would make gold a function of the day it ran.
-  The top hit needs a declared TIE-BREAK: 602 of the 4,552 queries with a hit share
-  their top bitscore, so "the closest hit" is not a function of the data until the
-  rule is published, and resting on the binary's emission order would make gold
-  hostage to a tool upgrade. An EC number that stops early makes NO CLAIM: 1,850 of
-  this set's EC mentions end in a dash, so a comparison is decidable only where both
-  sides specify the level, and the undecidable cases are counted rather than scored
-  either way. And agreement is a FUNCTION OF IDENTITY rather than a constant, which
+  The top hit needs a declared TIE-BREAK, because a substantial share of the queries
+  carry two or more hits at the same top bitscore: "the closest hit" is not a
+  function of the data until the rule is published, and resting on the binary's
+  emission order would make gold hostage to a tool upgrade. An EC number that stops
+  early makes NO CLAIM, and a large minority of this set's EC mentions end in a
+  dash, so a comparison is decidable only where both sides specify the level and the
+  undecidable cases are counted rather than scored either way. And agreement is a FUNCTION OF IDENTITY rather than a constant, which
   is the finding the identity bands exist to expose.
 
 catalog_deviation: >
@@ -167,8 +167,8 @@ excluded_from_grading:
       adding information.
   - field: the per-query top hit identity
     reason: >
-      4,552 accession-to-accession pairs would dominate the product while testing
-      one search repeatedly. The identity census, the per-band agreement, the
+      One accession-to-accession pair per query would dominate the product while
+      testing one search repeatedly. The identity census, the per-band agreement, the
       verdict census and the committed error set carry the claim; a system that
       picks the wrong hit for a query shows up in one of them.
   - field: the full verdict transition matrix under removal
@@ -185,20 +185,18 @@ excluded_from_grading:
 
 notes_for_audit:
   - >
-    Check the identity-band curve first, because it is the campaign's central
-    claim and it is the thing a broken search would destroy. Measured, agreement at
-    EC level 4 runs from 0.44 in the 30-40% identity band to 1.00 above 90%, which
-    is the twilight-zone effect in one column. The build refuses to emit gold if
-    agreement does not rise with identity.
+    Check the identity-band curve first, because it is the campaign's central claim
+    and the thing a broken search would destroy: agreement at the deepest EC level
+    should rise with the identity of the closest hit, which is the twilight-zone
+    effect in one column. The build refuses to emit gold if it does not.
   - >
     Then check that the verdict census sums to the queries with a hit. The verdicts
     are tested in a declared order and each query takes the first that applies, so
     if the parts do not sum, two cells are double-counting and every rate below is
     suspect.
   - >
-    The tie-break is not a formality. 602 of 4,552 queries share their top
-    bitscore, so roughly one query in eight has its closest hit decided by the
-    declared rule rather than by the score. DIAMOND's own output order is stable
+    The tie-break is not a formality: roughly one query in eight has its closest
+    hit decided by the declared rule rather than by the score. DIAMOND's own output order is stable
     for this version -- the exact invocation was checked byte-identical across 1, 2
     and 8 threads, twice each -- but a campaign that leaned on that would break
     silently on a tool upgrade.

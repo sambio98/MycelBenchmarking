@@ -194,14 +194,6 @@
             "pred": "pred:classified_verdict_counts.organism",
             "gold": "gold:classified_verdict_counts.organism"
           }
-        },
-        {
-          "name": "retired_class_terms",
-          "scorer": "set_exact",
-          "args": {
-            "pred": "pred:retired_class_terms",
-            "gold": "gold:retired_class_terms"
-          }
         }
       ]
     },

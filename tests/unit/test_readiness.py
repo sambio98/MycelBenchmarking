@@ -161,6 +161,10 @@ def test_a_share_alike_campaign_must_carry_its_notice(tmp_path):
     shutil.copytree(source, copy)
     task = yaml.safe_load((copy / "task.yaml").read_text())
     task["license_class"] = "share_alike"
+    # The notice is removed explicitly rather than assumed absent: whichever
+    # campaign sorts first is incidental, and one of them now carries a notice for
+    # its own reasons, which quietly turned this into a test of nothing.
+    task.pop("license_notice", None)
     (copy / "task.yaml").write_text(yaml.safe_dump(task, sort_keys=False))
 
     by_name = {c.name: c for c in _contract_and_provenance(copy)}

@@ -50,8 +50,9 @@ gold_construction: >
   campaign cannot silently become the opposite of what it was authored to be:
     expect: feasible    requires gc_global_min <= the restricted maximum
     expect: infeasible  requires gc_global_min >  the restricted maximum
-  Here 0.55 <= 0.584432, and the witness design reaches GC 0.569994 with zero
-  violations.
+  The requirement here is below the restricted maximum, and the witness design
+  reaches a GC inside the window with zero violations. The maximum and the
+  achieved GC are both graded, so neither is printed here.
 
 template_params:
   protein_input: inputs/rebh.faa

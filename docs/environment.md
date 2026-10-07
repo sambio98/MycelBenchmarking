@@ -282,7 +282,7 @@ and the right ones to author first.
 | T-L2-3 remote homology | UniProt subset | MMseqs2/DIAMOND | S1 |
 | T-L2-4 A-domain specificity | *retired on grounding — see `docs/catalog.md`* | — | — |
 | T-L2-5 kinetics consistency | BRENDA 2026.1 (shipped subset) | — (stdlib only) | **S0** |
-| T-L3-1 BGC detection | antiSMASH DB | antiSMASH | S2 |
+| T-L3-1 BGC detection | antiSMASH DB + rule files (image), GenBank + MIBiG (shipped) | antiSMASH 8.0.4 | **S2, BUILT** |
 | T-L3-2 GCF cutoff | MIBiG, antiSMASH DB | BiG-SCAPE | S2 |
 | T-L3-3 MIBiG diff | MIBiG 3.0 + 4.0 | — | **S0** |
 | T-L3-4 RiPP precursor | MIBiG, Pfam | HMMER | S1 |
@@ -531,6 +531,31 @@ it — keyed on the input digest, the library fingerprint, the tool version and 
 flags. That brought the sweep to **3m44s** with identical gate results. A cached
 sweep's wall clock is consequently not a cost measurement of the campaign, which
 the report states in `_meta.tool_cache_note`.
+
+### The first S2 campaign, and what an unsliced genome costs
+
+`bgcdetect-scoelicolor-01` (T-L3-1) runs antiSMASH over a complete 8.67 Mb
+chromosome. Three provisioning facts came out of building it:
+
+**A minimal detection pass over a whole bacterial chromosome is about 75
+seconds**, not the tens of minutes the input size suggests. `--minimal` skips the
+analysis modules, and the region call is the whole of what a detection campaign
+grades, so the full-genome run is affordable and the slicing that looked necessary
+is not.
+
+**Slicing a genome is not a cheaper equivalent, it is a different experiment.**
+NCBI's `efetch` with `seq_start`/`seq_stop` returns features truncated at the slice
+edges, carrying GenBank's `<`/`>` partiality markers, and antiSMASH rejects such a
+record outright with "feature translation extends out of record". Dropping those
+features makes the record acceptable — and then a called region can still run to
+the record end with `contig_edge=True`, which means the window set the boundary.
+Any future campaign that wants a genomic window has to budget for both.
+
+**The input is 6.8 MB gzipped, and that is the floor.** It is the largest file the
+benchmark ships by an order of magnitude, and it cannot be reduced without
+reintroducing the slice artefact. The 26 MB uncompressed record is also read and
+re-parsed once per declared deletion variant, which is why this campaign's budget
+is 60 minutes rather than the usual 25.
 
 ### Two shapes of S1 campaign, and the difference matters
 

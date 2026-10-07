@@ -13,40 +13,42 @@ scoring path.
 | Rung ladders | `src/npbench_c/grading/ladder.py` | depth, monotonicity, chance floor |
 | Grader | `src/npbench_c/grading/grade.py` | pure declarative comparator |
 | Grader identity | `src/npbench_c/grading/version.py` | semver + content hash |
-| Readiness gate | `src/npbench_c/readiness/gate.py` | 20 mechanical checks, 5 pending-on-agent-runs |
+| Readiness gate | `src/npbench_c/readiness/gate.py` | 21 mechanical checks, 5 pending-on-agent-runs |
 | Template: construct design | `src/npbench_c/templates/construct_design/` | shared engine, 2 ladders |
-| Campaign: construct design | `campaigns/construct-ecoli-rebh-01/` | oracle 1.0, gate 20/0/5 |
-| Campaign: constraint conflict | `campaigns/constraint-conflict-ecoli-rebh-01/` | oracle 1.0, gate 20/0/5 |
-| Campaign: feasible control | `campaigns/constraint-feasible-ecoli-rebh-01/` | oracle 1.0, gate 20/0/5 |
+| Campaign: construct design | `campaigns/construct-ecoli-rebh-01/` | oracle 1.0, gate 21/0/5 |
+| Campaign: constraint conflict | `campaigns/constraint-conflict-ecoli-rebh-01/` | oracle 1.0, gate 21/0/5 |
+| Campaign: feasible control | `campaigns/constraint-feasible-ecoli-rebh-01/` | oracle 1.0, gate 21/0/5 |
 | Template: NRPS mass balance | `src/npbench_c/templates/mass_balance_nrps/` | shared oracle, 2 instantiations |
-| Campaign: malleobactin | `campaigns/massbalance-nrps-malleobactin-01/` | oracle 1.0, gate 20/0/5 |
-| Campaign: sevadicin | `campaigns/massbalance-nrps-sevadicin-01/` | oracle 1.0, gate 20/0/5 |
+| Campaign: malleobactin | `campaigns/massbalance-nrps-malleobactin-01/` | oracle 1.0, gate 21/0/5 |
+| Campaign: sevadicin | `campaigns/massbalance-nrps-sevadicin-01/` | oracle 1.0, gate 21/0/5 |
 | Internal sweep | `src/npbench_c/sweep/` | runner, stats, gates, stub fixtures |
 | Catalog | `docs/catalog.md` | 24 templates / 32 campaigns, grounded |
 | Provisioning | `docs/environment.md` | tools, DBs, sandbox contract |
 | Template: MIBiG release diff | `src/npbench_c/templates/mibig_diff/` | shared oracle |
-| Campaign: MIBiG 3.1→4.0 diff | `campaigns/mibig-diff-3_1-to-4_0-01/` | oracle 1.0, gate 20/0/5 |
+| Campaign: MIBiG 3.1→4.0 diff | `campaigns/mibig-diff-3_1-to-4_0-01/` | oracle 1.0, gate 21/0/5 |
 | Template: annotation audit | `src/npbench_c/templates/mibig_annotation_audit/` | shared oracle |
-| Campaign: PrnA construct | `campaigns/construct-ecoli-prna-01/` | oracle 1.0, gate 20/0/5 |
-| Campaign: gene-function evidence | `campaigns/mibig-gene-function-evidence-01/` | oracle 1.0, gate 20/0/5 |
+| Campaign: PrnA construct | `campaigns/construct-ecoli-prna-01/` | oracle 1.0, gate 21/0/5 |
+| Campaign: gene-function evidence | `campaigns/mibig-gene-function-evidence-01/` | oracle 1.0, gate 21/0/5 |
 | Template: structure features | `src/npbench_c/templates/structure_features/` | shared engine, 2 ladders |
-| Campaign: PrnA residue evidence | `campaigns/residues-prna-01/` | oracle 1.0, gate 20/0/5 |
-| Campaign: RebH pocket geometry | `campaigns/pocket-rebh-01/` | oracle 1.0, gate 20/0/5 |
+| Campaign: PrnA residue evidence | `campaigns/residues-prna-01/` | oracle 1.0, gate 21/0/5 |
+| Campaign: RebH pocket geometry | `campaigns/pocket-rebh-01/` | oracle 1.0, gate 21/0/5 |
 | Template: chemical space | `src/npbench_c/templates/chemical_space/` | shared oracle, RDKit pinned at instantiation |
-| Campaign: MIBiG 4.0 chemical space | `campaigns/chemspace-mibig-4_0-01/` | oracle 1.0, gate 20/0/5 |
+| Campaign: MIBiG 4.0 chemical space | `campaigns/chemspace-mibig-4_0-01/` | oracle 1.0, gate 21/0/5 |
 | Template: kinetics consistency | `src/npbench_c/templates/kinetics_consistency/` | shared oracle, BRENDA 2026.1 |
-| Campaign: BRENDA EC 1.1 kinetics | `campaigns/kinetics-brenda-ec1_1-01/` | oracle 1.0, gate 20/0/5 |
+| Campaign: BRENDA EC 1.1 kinetics | `campaigns/kinetics-brenda-ec1_1-01/` | oracle 1.0, gate 21/0/5 |
 | Template: ChEMBL selectivity | `src/npbench_c/templates/chembl_selectivity/` | shared oracle, ChEMBL_37, first `share_alike` |
-| Campaign: S. aureus topoisomerases | `campaigns/selectivity-saureus-topoisomerase-01/` | oracle 1.0, gate 20/0/5 |
+| Campaign: S. aureus topoisomerases | `campaigns/selectivity-saureus-topoisomerase-01/` | oracle 1.0, gate 21/0/5 |
 | Template: EC domain audit | `src/npbench_c/templates/ec_domain_audit/` | HMMER 3.4 + Pfam 35.0, first tool-running template |
-| Campaign: EC 1.1.3.15 FMN_dh audit | `campaigns/ecaudit-fmn-dh-1_1_3_15-01/` | oracle 1.0, gate 20/0/5, **first S1** |
+| Campaign: EC 1.1.3.15 FMN_dh audit | `campaigns/ecaudit-fmn-dh-1_1_3_15-01/` | oracle 1.0, gate 21/0/5, **first S1** |
 | Template: annotation transfer | `src/npbench_c/templates/annotation_transfer/` | DIAMOND 2.2.8, closed reference set |
-| Campaign: EC 1.14 transfer | `campaigns/transfer-ec1_14-uniprot-01/` | oracle 1.0, gate 20/0/5 |
+| Campaign: EC 1.14 transfer | `campaigns/transfer-ec1_14-uniprot-01/` | oracle 1.0, gate 21/0/5 |
+| Template: BGC detection | `src/npbench_c/templates/bgc_detection/` | antiSMASH 8.0.4, whole chromosome, **first S2** |
+| Campaign: S. coelicolor regions | `campaigns/bgcdetect-scoelicolor-01/` | oracle 1.0, gate 21/0/5 |
 | Tool memo | `src/npbench_c/tools/cache.py` | stub sweeps only; 29m32s to 3m44s |
 | Phase 1 image | `image/Dockerfile`, `image/environment.lock.json` | 8 tools pinned to `version=build`, 185-package closure hashed, antiSMASH databases pinned at 9.4 GB |
 | Tool registry | `src/npbench_c/tools/registry.py` | pins, controls, invocations, declared normalisations, canonicalisations, projections, enforced bans |
 | Thread-invariance suite | `src/npbench_c/tools/invariance.py` | 8/8 tools invariant at 1 and 8 threads |
-| Tests | `tests/` | 407 passing, 3 skipped |
+| Tests | `tests/` | 432 passing, 4 skipped |
 
 ```bash
 PYTHONPATH=src python3 -m pytest tests -q
@@ -173,7 +175,7 @@ A campaign is ready when `npbench_c.readiness.gate` returns all-pass — not whe
 someone believes it is. Checks requiring internal agent runs report **PENDING**,
 never PASS: the gate does not launder an unmeasured property into a green tick.
 
-Current state, every campaign: **20 pass / 0 fail / 5 pending**.
+Current state, every campaign: **21 pass / 0 fail / 5 pending**.
 
 The five pending checks (monotonicity, R1 clear rate, no-tool leakage,
 difficulty gate, discrimination) are satisfied by an `internal_sweep.json` from
@@ -1370,6 +1372,180 @@ by the shipped accessions and valued by the declared panel, and the `inverted`
 stub level is the graded form of the same error — it runs the tool correctly, with
 the right panel, and reads the result backwards.
 
+## Campaign 16: the first S2, and two artefacts it had to refuse
+
+`bgcdetect-scoelicolor-01` is T-L3-1 and the benchmark's **first S2 campaign**: it
+needs antiSMASH 8.0.4 with its database layer, and it reads the three detection
+rule files from the image. The complete *Streptomyces coelicolor* A3(2)
+chromosome (AL645882.2, 8,667,507 bp) goes in; 29 regions over 22 distinct products
+come out, covering **13.0% of the chromosome**, median span 29.8 kb, and **every
+region `contig_edge=False`**.
+
+### The slice that looked obvious and was wrong twice
+
+A whole chromosome is a 6.8 MB input and the obvious move is to slice windows
+around the clusters of interest. That fails on two counts, and both were measured
+rather than reasoned about:
+
+1. **A slice truncates CDS features at its edges**, which arrive carrying
+   GenBank's `<`/`>` partiality markers, and antiSMASH rejects the record outright:
+   `feature translation extends out of record`. Dropping those features makes it
+   acceptable, which is how the second problem stays hidden.
+2. **A region that reaches the slice edge has its boundary set by the window.** On
+   an 81 kb window around the actinorhodin cluster — a 30 kb flank on each side —
+   antiSMASH returned a single T2PKS region running to the record end with
+   `contig_edge=True`. The boundary is what R2 and R3 grade, so that campaign would
+   have graded my flank choice.
+
+On the whole chromosome neither happens, and a `--minimal` pass takes **75
+seconds**. The slice bought nothing at all. The build refuses to emit gold if any
+region touches an edge, so the artefact cannot creep back in through a
+re-instantiation.
+
+### The reconciliation, which is the actual campaign
+
+Running a tool and reporting its output is an R1. What makes this a ladder is the
+comparison with the 15 cluster boundaries MIBiG 4.0 maps to the same accession:
+
+| | |
+|---|---|
+| curated loci detected | **15 of 15** |
+| fully inside a called region | 14 |
+| partially covered | 1 (CDA, 95.3%) |
+| median Jaccard | **0.295** |
+| Jaccard range | 0.023 – 0.934 |
+| called regions with no curated locus | **15 of 29** |
+
+So detection is not the question — extent is. antiSMASH extends a region from the
+protocluster core by a class-dependent distance, and this campaign measures by how
+much rather than calling it an error. The extremes are instructive on their own: a
+1.7 kb signalling cluster sits inside a 75.6 kb region (Jaccard 0.023) while CDA
+agrees to 0.934. And **half of what the tool finds has no curated counterpart**,
+which is a statement about the coverage of the curated record rather than a false
+positive — MIBiG records what has been characterised.
+
+One region holds two curated loci, because the SCB1 butyrolactone genes lie inside
+the coelimycin cluster. A one-to-one join would have silently dropped one of them,
+so the reconciliation reports which regions hold several.
+
+**The two coordinate conventions differ, and the difference is verified rather than
+assumed.** antiSMASH writes 0-based half-open; MIBiG's `from`/`to` are 1-based
+inclusive. That is established against the source annotation: BGC0000194's `to` is
+5,535,091, and SCO5092 ends at 5,535,091 in AL645882.2. A MIBiG locus therefore
+spans `to - from + 1` bases, one more than its own numbers suggest at a glance. I
+had assumed half-open before checking, which would have shifted every interval by
+one base.
+
+### R4 is the catalogued counterfactual, plus the control it needed
+
+Delete the core biosynthetic genes of a declared region from the annotation — the
+sequence untouched, so every other coordinate stays put — and run again:
+
+| variant | outcome |
+|---|---|
+| `v0_identity` | nothing deleted; reproduces the baseline exactly |
+| `v1_t2pks_core_both` | actinorhodin region **abolished** |
+| `v2_t2pks_core_one` | **also abolished** — the rule is conjunctive |
+| `v3_nrps_core` | CDA region abolished |
+| `v4_lanthipeptide_core` | lanthipeptide region abolished |
+| `v5_additional_not_core` | **nothing changes** |
+| `v6_multiproduct_one_product` | region survives with one product fewer |
+
+My first attempt had only v0–v4, and **the build refused it**: every variant lost
+exactly one region, so the signature was constant and the rung was testing one
+dependency four times. v5 and v6 are what the refusal bought. v5 deletes the
+actinorhodin acyl carrier protein, which antiSMASH marks
+`biosynthetic-additional` rather than core — the negative control, without which
+"a deletion costs a region" is a free answer. v6 deletes a gene core to two nested
+protoclusters, so the region is replaced rather than removed. The build now
+requires three distinct outcome signatures, one of them a no-op and one of them an
+outright loss.
+
+### What else the gate caught here
+
+`product_census` was graded at R2 **and** handed over by R2's warm bundle, because I
+had put it in the inventory that R2's bundle publishes. Two scalars beside it,
+`region_bases` and `fraction_of_record`, had the same defect and escaped only
+because the warm-bundle check examines composites. The fix was to settle what each
+rung is *about*: R1 is the inventory — run the tool and summarise — and R2 is the
+per-region boundaries. The rung split now follows that, and the bundle contains
+exactly R1's answers.
+
+## The leak the sandbox was handing over in prose
+
+Writing the first S2 campaign's rules file, I explained the decision to ship a
+whole chromosome by saying "on the whole chromosome all 29 regions come back
+contig_edge=False". **29 is R1's graded answer**, and `reference/` is a file the
+agent reads before it has done anything. My own gold-isolation test caught it.
+
+Checking the rest of the project found the same leak in **seven of sixteen
+campaigns**, four of them written in earlier sessions:
+
+| campaign | stated in the cold sandbox |
+|---|---|
+| `bgcdetect-scoelicolor-01` | the record length, and the region count in prose |
+| `ecaudit-fmn-dh-1_1_3_15-01` | `sequences_total`, in an exclusion's reason |
+| `selectivity-saureus-topoisomerase-01` | `activities_of_declared_type`, in the scope note |
+| `transfer-ec1_14-uniprot-01` | `partial_ec_mentions` and `queries_with_a_hit`, twice each |
+| `constraint-conflict-ecoli-rebh-01` | `unrestricted_gc_max`, `restricted_gc_max`, and most of R4 |
+| `constraint-feasible-ecoli-rebh-01` | `restricted_gc_max`, and most of R4 |
+| `mibig-diff-3_1-to-4_0-01` | `shared_entries` and both raw difference counts |
+
+The constraint pair is the worst of them: the task description contains a worked
+feasibility table quoting both GC maxima, which are R2's answers and also the
+value most of R4's `relax_*_gc_max` components take. A real agent could clear R2
+and most of R4 by reading the task description.
+
+**Every one of these is invisible in everything the project already checks.** The
+oracle still scores 1.0, because the oracle reads gold. The no-tool ablation still
+scores zero, because a stub does not read prose. The warm-bundle check guards each
+rung against its own bundle and says nothing about `task.yaml`. Only a real system
+benefits — and then the per-rung difficulty profile is fiction in exactly the
+direction that flatters the benchmark.
+
+### Why it happens, and the rule
+
+The mechanism is specific and worth naming: **a note explaining a design decision
+drifts into quoting the measurement that motivated the decision.** Every leaked
+number above sits in a sentence that was true, useful and well-intentioned — "the
+reason we ship the whole chromosome is that all 29 regions then come back clean".
+The explanation needs the phenomenon. It does not need the number.
+
+So: `task.yaml` and `reference/` publish the objective, the contract, the
+conventions and the vocabularies. **The measurements that motivated them belong in
+`docs/`, which the sandbox never sees.** Where an audit note genuinely wants a
+number, it says where to recompute it from rather than printing it: an auditor has
+gold, and a system does not.
+
+### Made mechanical, because a rule applied by hand drifts
+
+The readiness gate's **twenty-first check**,
+`cold_sandbox_withholds_answers`, builds the cold sandbox, strips `inputs/`, and
+searches `task.yaml` and `reference/` for the string form of every graded value.
+All sixteen campaigns pass it now.
+
+Three design points in it, each one a false positive it had to stop producing:
+
+- **Only distinctive scalars.** A graded count of 2 or a rate of 0.5 occurs in any
+  prose by coincidence, so an integer needs four or more digits and a float four or
+  more decimals. That leaves small graded values unchecked, which the docstring
+  says plainly rather than implying coverage it does not have.
+- **Word boundaries on integers.** `informative_records` is 2359 and the shipped
+  chemistry table contains `BGC0002359`. Two campaigns failed on that substring
+  before the match was anchored.
+- **`inputs/` is excluded, and empty composites are skipped.** A number in `inputs/`
+  is the data the agent was asked to read; a value readable straight out of it
+  without doing the work is a *free component*, which is a different defect. And
+  `[]` serialises to a string that occurs in any YAML file.
+
+That last distinction found the only two remaining failures, and both were free
+components rather than disclosures. `mibig-diff`'s `retired_class_terms` is
+published in the class mapping — which the campaign *must* publish to be solvable
+— so it is now dropped from grading with the exclusion recorded. That makes **five**
+free components caught across the project, and the rule from campaign 15 holds
+again: before grading a component, ask what would have to change in the world for
+its value to change.
+
 ## Campaign 15: the closest hit is often the wrong donor
 
 `transfer-ec1_14-uniprot-01` is T-L1-3, and it is the first catalogued design this
@@ -1601,7 +1777,7 @@ whole purpose is to certify determinism that is the one defect that cannot stand
    target is now 30 at most.** T-L5-2 and T-L2-4 both ground out. The count in this
    file's header and in `docs/catalog.md` is the *catalogued* target and has not
    been restated downward, because the replacement question is the owner's call:
-   re-scope those rows, or accept a smaller benchmark. Fifteen campaigns are
+   re-scope those rows, or accept a smaller benchmark. Sixteen campaigns are
    built. This should be settled before the audit packet quotes a number.
 8. **The S1 sweep cost is fixed for stubs and still open for real systems.**
    `npbench_c.tools.cache` memoises tool output for stub systems in tooled mode

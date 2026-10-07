@@ -30,10 +30,11 @@ scope_note: >
   rules and a published precedence over the verdict classes.
 
   The sharpest case is in the corpus rather than planted by us: 3.1 stores the
-  NCBI taxon id as a JSON string and 4.0 as a JSON integer. Compared raw, all
-  2442 shared entries look re-annotated. Compared as strings, 8 genuine
+  NCBI taxon id as a JSON string and 4.0 as a JSON integer. Compared raw, EVERY
+  shared entry looks re-annotated; compared as strings, a handful of genuine
   corrections remain. R2 asks for the raw counts and R3 for the classified ones,
-  so a system that never normalises can clear R2 and will fail R3.
+  so a system that never normalises can clear R2 and will fail R3. The counts
+  themselves are what the two rungs grade, so they are not printed here.
 
 template_params:
   source_release: "3.1"
@@ -138,6 +139,16 @@ grading:
       correlated rather than independent. This figure reflects that.
 
 excluded_from_grading:
+  - field: retired_class_terms
+    reason: >
+      Not graded, though still reported. The declared class mapping in
+      reference/class_mapping.json must publish which source terms have no
+      counterpart in the target -- that is what makes the campaign solvable at all
+      -- so reporting them back is reading the shipped table rather than
+      classifying anything. The verdict counts per field carry the R3 claim. This
+      is the free-component defect the readiness gate's cold-sandbox check now
+      catches mechanically.
+
   - field: per-entry accession lists for each verdict class
     reason: >
       The lists are long and the counts carry the same information, so grading
@@ -151,9 +162,10 @@ excluded_from_grading:
 
 notes_for_audit:
   - >
-    The taxon-id case is the campaign's centre and is worth checking first -
-    3.1 ncbi_tax_id is a JSON string, 4.0 ncbiTaxId a JSON integer, raw
-    difference count 2442, genuine corrections 8.
+    The taxon-id case is the campaign's centre and is worth checking first: 3.1
+    stores ncbi_tax_id as a JSON string and 4.0 stores ncbiTaxId as a JSON
+    integer, so the raw difference count equals the shared-entry count and the
+    classified count is tiny. Both numbers are graded and live in gold.
   - >
     The 8 taxon-id corrections and the 8 organism-name corrections are nearly
     disjoint sets, overlapping only in BGC0002347, so they are independent

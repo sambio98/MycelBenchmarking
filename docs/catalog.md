@@ -399,11 +399,11 @@ rather than postulated. The R4 counterfactual makes the dependence explicit —
 applying the micromolar mistake deliberately drops the agreement rate from 63.2%
 to 0.36%.
 
-## L3 — Cluster & pathway (5 templates, 7 campaigns)
+## L3 — Cluster & pathway (5 templates, 7 catalogued campaigns, 3 built)
 
 | # | Template | Data | Build |
 |---|---|---|---|
-| T-L3-1 ×2 | BGC detection & boundary calling | likely | image |
+| T-L3-1 | BGC detection & boundary calling | verified | **BUILT** (first S2) |
 | T-L3-2 | GCF clustering cutoff sensitivity | likely | image |
 | T-L3-3 ×2 | MIBiG version diff reconciliation | verified | **BUILT** |
 | T-L3-4 | RiPP precursor annotation | likely | image |
@@ -417,6 +417,68 @@ R4 a core biosynthetic gene is deleted — predict the new boundary and whether
 detection survives. **Pin antiSMASH version and ClusterBlast DB; never compare
 across versions** (rule count went 58 → 88 across v5–v7.1). Instantiation axis:
 BGC class (PKS, NRPS).
+
+**Built**: `campaigns/bgcdetect-scoelicolor-01`, the benchmark's **first S2
+campaign**. The complete *Streptomyces coelicolor* A3(2) chromosome (AL645882.2,
+8,667,507 bp, 6.8 MB gzipped), run through pinned antiSMASH 8.0.4 with
+`--minimal`, and the called regions reconciled against the 15 cluster boundaries
+MIBiG 4.0 maps to that accession. **29 regions, 22 distinct products, 13.0% of the
+chromosome inside a region, median span 29.8 kb, and every region
+`contig_edge=False`.** Oracle 1.0 at depth 4, gate 21/0/5.
+
+**The reconciliation is the campaign.** Every curated locus is detected, so
+detection is not the question; extent is. 14 of 15 curated loci sit entirely inside
+a called region and one is 95.3% covered, with the Jaccard index running from 0.023
+(a 1.7 kb signalling cluster inside a 75.6 kb region) to 0.934 (CDA). Median
+Jaccard **0.295**. And **15 of the 29 regions overlap no curated locus at all** —
+a statement about the coverage of the curated record rather than an error in either
+resource. One region holds two curated loci (the SCB1 butyrolactone genes inside the
+coelimycin cluster), so a one-to-one join would silently drop one.
+
+**Two artefacts had to be refused, and the second cost the design a rewrite.**
+Slicing the genome to keep runs cheap fails twice: the slice truncates CDS features
+at its edges and antiSMASH rejects the record outright ("feature translation extends
+out of record"), and — measured on an 81 kb window around actinorhodin — the called
+region ran to the record end with `contig_edge=True`, so the *window* was setting
+the boundary that R2 and R3 grade. The whole chromosome removes both, and a minimal
+run takes **75 seconds**, so the slice bought nothing. The build refuses gold if any
+region touches an edge.
+
+**The coordinate conventions differ, and the difference is verified rather than
+assumed.** antiSMASH writes 0-based half-open; MIBiG's `from`/`to` are 1-based
+inclusive, established by BGC0000194's `to` of 5,535,091 being exactly where
+SCO5092 ends in AL645882.2. A MIBiG locus therefore spans `to - from + 1` bases —
+one more than its own numbers suggest at a glance.
+
+**R4 is the catalogued counterfactual, with a negative control added.** The core
+biosynthetic genes of a declared region are deleted from the annotation (the
+sequence untouched, so every other coordinate stays put) and the search repeated.
+Deleting both core type II PKS genes abolishes the actinorhodin region; deleting
+**one of the two** does the same, so the rule is conjunctive — measured, not
+assumed. Deleting the acyl carrier protein, which antiSMASH marks
+`biosynthetic-additional` rather than core, changes **nothing**: without that
+control, "a deletion costs a region" would be a free answer. And deleting a gene
+core to two nested protoclusters leaves the region standing with a smaller product
+set. The build refuses gold unless the variants produce at least three distinct
+outcomes, at least one of them a no-op.
+
+**Deviations.** The catalogued R2 wanted overlap-F1 "within measured tolerance";
+there is no tolerance to measure, because the tool is pinned and deterministic, so
+coordinates are graded exactly — the tolerance belonged to a cross-version
+comparison this benchmark forbids. The catalogued R3 wanted "the boundary-defining
+gene"; under antiSMASH 8 a boundary is set by a class-dependent extension from the
+protocluster core rather than by a gene at the edge, so the honest answer would be
+a rule and an offset. The reconciliation replaces it. The ×2 instantiation axis is
+unresolved: this campaign covers PKS, NRPS, ribosomal and terpene products in one
+record, so a second instantiation would need a different organism rather than a
+different class.
+
+**The detection rule set is pinned, not shipped.** The three rule files are
+AGPL-3.0-or-later antiSMASH package data, so the campaign records their paths, the
+provider, the version and a sha256 over them — fingerprint `04add3eb0e86a816`, 103
+rules — and the build refuses gold if it does not match. That is the licensing rule
+from T-L2-4's grounding, now used for the second time and for the reason it was
+written.
 
 **T-L3-2** BiG-SCAPE GCF membership as a function of cutoff. R1 distance matrix ·
 R2 matches gold · R3 claim: family membership at the declared cutoff · R4 the

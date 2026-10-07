@@ -40,10 +40,13 @@ gold_construction: >
 
   Verified at build time, and the build refuses to produce gold otherwise:
     forbidden_codons alone  satisfiable (every residue retains a codon)
-    gc_global_min alone     satisfiable (0.62 <= 0.677338 unrestricted maximum)
-    the two together        impossible  (0.62 >  0.584432 restricted maximum)
-  Margins of 0.0356 and 0.0573 rather than a knife-edge, so the proof survives
-  an auditor recomputing it.
+    gc_global_min alone     satisfiable (the requirement is below the
+                            unrestricted maximum)
+    the two together        impossible  (the requirement exceeds the restricted
+                            maximum)
+  Both margins are comfortable rather than a knife-edge, so the proof survives an
+  auditor recomputing it. The two maxima are what R2 grades, so they are not
+  printed here: they are recomputable by hand from reference/codon_tables.json.
 
 template_params:
   protein_input: inputs/rebh.faa
@@ -178,9 +181,9 @@ excluded_from_grading:
 notes_for_audit:
   - >
     The proof is four numbers an auditor can recompute by hand from
-    reference/codon_tables.json - unrestricted GC max 0.677338, restricted GC
-    max 0.584432, required minimum 0.62, and the per-residue admissible codon
-    counts.
+    reference/codon_tables.json: the unrestricted GC maximum, the restricted GC
+    maximum, the required minimum and the per-residue admissible codon counts.
+    The first two are graded, so they are in gold rather than here.
   - >
     Only forbidden_codons and gc_global_min can move the achievable GC bound;
     the five composition constraints restrict which sequences are admissible

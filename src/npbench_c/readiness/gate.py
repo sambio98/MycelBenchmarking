@@ -239,20 +239,50 @@ def _contract_and_provenance(campaign: pathlib.Path) -> list[Check]:
                 continue
             spec = json.loads(declared_in.read_text())
             block = (spec.get("external_resources") or {}).get(entry["name"])
-            if not block or not block.get("sha256") or not block.get("relative_path"):
+            if not block:
                 absent_files.append(entry["name"])
                 continue
             prefix = pathlib.Path(
                 os.environ.get("NPBENCH_TOOL_PREFIX", "/opt/npbench-tools/bin"))
-            path = prefix.parent / block["relative_path"]
-            if not path.is_file():
+
+            # Two declared shapes, because a resource is not always one file. A
+            # single file carries `relative_path` plus a full `sha256`; a set of
+            # files carries `relative_paths` plus a `fingerprint` hashed over them
+            # in the declared order. Either way the declaration has to be
+            # checkable, or it is a comment rather than a pin.
+            paths, expected = None, None
+            if block.get("relative_path") and block.get("sha256"):
+                paths, expected = [block["relative_path"]], block["sha256"]
+            elif block.get("relative_paths") and block.get("fingerprint"):
+                paths, expected = list(block["relative_paths"]), block["fingerprint"]
+            if not paths:
                 absent_files.append(entry["name"])
                 continue
-            digest = hashlib.sha256()
-            with open(path, "rb") as handle:
-                for chunk in iter(lambda: handle.read(1 << 20), b""):
-                    digest.update(chunk)
-            if digest.hexdigest() == block["sha256"]:
+
+            digest, resolved = hashlib.sha256(), True
+            for relative in paths:
+                # A path may name the interpreter version with a glob, since the
+                # image's site-packages directory carries it.
+                matches = (sorted((prefix.parent).glob(relative))
+                           if any(c in relative for c in "*?[")
+                           else [prefix.parent / relative])
+                matches = [m for m in matches if m.is_file()]
+                if not matches:
+                    matches = sorted(
+                        (prefix.parent / "lib").glob(
+                            f"python3.*/site-packages/antismash/{relative}"))
+                    matches = [m for m in matches if m.is_file()]
+                if not matches:
+                    resolved = False
+                    break
+                with open(matches[-1], "rb") as handle:
+                    for chunk in iter(lambda: handle.read(1 << 20), b""):
+                        digest.update(chunk)
+            if not resolved:
+                absent_files.append(entry["name"])
+                continue
+            got = digest.hexdigest()
+            if got == expected or got[:len(expected)] == expected:
                 found.append(entry["name"])
             else:
                 mismatched.append(entry["name"])
@@ -361,6 +391,104 @@ def _warm_bundles_withhold_answers(campaign: pathlib.Path) -> Check:
                   f"bundle" + (f"; handed over: {hits}" if hits else "; none handed over"))
 
 
+def _cold_sandbox_withholds_answers(campaign: pathlib.Path) -> Check:
+    """The cold sandbox may not state a graded number in prose.
+
+    The warm-bundle check guards one rung against its own bundle. This guards
+    every rung against the files the agent gets before it has done anything:
+    `task.yaml` and `reference/`. Those exist to publish the objective, the
+    contract and the conventions -- and a note explaining a design decision drifts
+    into quoting the measurement that motivated it, at which point R1 can be
+    cleared by reading the task description.
+
+    It is easy to do and invisible afterwards: the oracle still scores 1.0, and the
+    no-tool ablation still fails because a stub does not read prose. Only a real
+    system benefits, and then the per-rung profile is fiction.
+
+    Only DISTINCTIVE scalars are checked. A graded count of 2 or a rate of 0.5
+    appears in any prose by coincidence, so the threshold is four or more digits
+    for an integer and four or more decimals for a float -- enough that a match is
+    the number rather than a collision. Composites are checked whole, as in the
+    warm-bundle case.
+    """
+    import re as _re
+    import tempfile
+
+    from npbench_c.sweep.runner import build_sandbox
+
+    spec = json.loads((campaign / "grading.json").read_text())
+    gold = json.loads((campaign / "gold" / "gold.json").read_text())
+
+    def distinctive(value) -> list[str]:
+        """The string forms of a value worth searching for, or none."""
+        if isinstance(value, bool) or value is None:
+            return []
+        if isinstance(value, int):
+            return [str(value), f"{value:,}"] if abs(value) >= 1000 else []
+        if isinstance(value, float):
+            text = repr(value)
+            _, _, decimals = text.partition(".")
+            return [text] if len(decimals) >= 4 else []
+        if isinstance(value, str):
+            return []
+        if isinstance(value, (dict, list)):
+            # An empty composite serialises to "[]" or "{}", which occurs in any
+            # YAML or JSON file by coincidence. It also carries no answer to
+            # disclose, so there is nothing to search for.
+            return [json.dumps(value, sort_keys=True)] if value else []
+        return []
+
+    hits, checked = [], 0
+    with tempfile.TemporaryDirectory() as tmp:
+        sandbox = build_sandbox(campaign, pathlib.Path(tmp) / "cold", None)
+        # task.yaml and reference/ only. inputs/ is the data the campaign asks the
+        # agent to read, so a number appearing there is not a leak -- a shipped
+        # record's length or a curated coordinate table is the input, and a
+        # component whose value can be read straight out of inputs/ without doing
+        # the work is a free component rather than a disclosure.
+        parts = []
+        for path in sorted(sandbox.rglob("*")):
+            if not path.is_file() or path.suffix not in (
+                    ".yaml", ".yml", ".json", ".md", ".txt"):
+                continue
+            if path.relative_to(sandbox).parts[0] == "inputs":
+                continue
+            parts.append(path.read_text(errors="replace"))
+        blob = "\n".join(parts)
+        # Digit grouping varies, so the haystack is also searched with separators
+        # stripped: "4,552" and "4552" are the same leak.
+        plain = _re.sub(r"(?<=\d)[,_](?=\d)", "", blob)
+        for rung in spec["rungs"]:
+            for component in rung["components"]:
+                reference = component["args"].get("gold")
+                if not isinstance(reference, str) or not reference.startswith("gold:"):
+                    continue
+                try:
+                    value = _resolve_gold(gold, reference.split(":", 1)[1])
+                except (KeyError, IndexError, TypeError, ValueError):
+                    continue
+                for needle in distinctive(value):
+                    checked += 1
+                    # A bare integer needs word boundaries: 2359 occurs inside
+                    # "BGC0002359" in a shipped accession table, which is a
+                    # coincidence rather than a disclosure. A JSON composite is
+                    # distinctive enough to match as a substring.
+                    if needle.startswith(("[", "{")):
+                        found = needle in blob or needle in plain
+                    else:
+                        pattern = r"(?<![0-9.])" + _re.escape(needle) + r"(?![0-9])"
+                        found = bool(_re.search(pattern, blob)
+                                     or _re.search(pattern, plain))
+                    if found:
+                        hits.append(f"{rung['rung_id']}:{component['name']}")
+                        break
+    return _check(
+        "cold_sandbox_withholds_answers", not hits,
+        f"{checked} distinctive graded values searched in task.yaml and "
+        f"reference/" + (f"; stated there: {sorted(set(hits))}" if hits
+                         else "; none stated"))
+
+
 def _integrity(campaign: pathlib.Path) -> list[Check]:
     hits = []
     for path in sorted(campaign.rglob("*")):
@@ -410,6 +538,7 @@ def run(campaign_dir: pathlib.Path) -> list[Check]:
     checks.append(_oracle_determinism(campaign))
     checks += _contract_and_provenance(campaign)
     checks.append(_warm_bundles_withhold_answers(campaign))
+    checks.append(_cold_sandbox_withholds_answers(campaign))
     checks += _integrity(campaign)
     checks += _pending_agent_runs(campaign)
     return checks

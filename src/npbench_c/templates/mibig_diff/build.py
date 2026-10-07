@@ -166,9 +166,11 @@ def build_grading(campaign: pathlib.Path, gold: dict) -> dict:
 
     r3 = [ex(f"verdicts_{f}", f"classified_verdict_counts.{f}",
              f"classified_verdict_counts.{f}") for f in gold["fields"]]
-    r3.append({"name": "retired_class_terms", "scorer": "set_exact",
-               "args": {"pred": "pred:retired_class_terms",
-                        "gold": "gold:retired_class_terms"}})
+    # retired_class_terms is NOT graded. The declared class mapping has to publish
+    # which source terms have no counterpart in the target -- that is what makes
+    # the campaign solvable -- so reporting them back is reading the shipped table,
+    # not classifying anything. It stays in the report as audit material and is
+    # recorded in excluded_from_grading.
 
     r4 = []
     for name in sorted(gold["perturbations"]):
