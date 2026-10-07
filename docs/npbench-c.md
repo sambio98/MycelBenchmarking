@@ -1296,6 +1296,31 @@ reason for not shipping is **size** and Pfam is CC0 — recorded explicitly, bec
 the next campaign to use this mechanism will be withholding for licence instead,
 and "we did not ship it" means different things in the two cases.
 
+### The sweep, and what it cost
+
+All five sweep gates pass, with cold depths exactly where the stub ladder predicts:
+
+| stub | mode | cold depths |
+|---|---|---|
+| `stub-reader` | tooled | 1, 1, 1 |
+| `stub-presence` | tooled | 2, 2, 2 |
+| `stub-architecture` | tooled | 3, 3, 3 |
+| `stub-complete` | tooled | 4, 4, 4 |
+| `stub-inverted` | tooled | **1, 1, 1** |
+| `stub-noncompute` | no_tool | 0, 0, 0 |
+
+Per-rung clear rates 1.000 / 0.600 / 0.400 / 0.200, mean cold score 0.55, and the
+no-tool ablation scores 0.0000 against a 0.2505 chance floor. `stub-inverted`
+landing at depth 1 is the result worth reading: it runs the tool correctly with
+the right panel and reads the hit table backwards, so it clears the inventory rung
+and fails at presence — the rung whose claim the column swap actually corrupts.
+
+**It took 29m32s of wall clock and 47m of CPU**, against seconds for a stdlib
+campaign. That is the whole sweep cost of one S1 campaign with a 13-model panel;
+a full-Pfam panel would have been roughly fourteen times worse, and an S2 campaign
+running antiSMASH per rung-repeat will be worse again. The open items carry this
+as a decision to take before the first S2 build, not after.
+
 ### The parsing mistake that does not fail
 
 `hmmsearch --domtblout` puts the **target** (a sequence) in column 1 and the
@@ -1457,10 +1482,11 @@ whole purpose is to certify determinism that is the one defect that cannot stand
    been restated downward, because the replacement question is the owner's call:
    re-scope those rows, or accept a smaller benchmark. Fourteen campaigns are
    built. This should be settled before the audit packet quotes a number.
-8. **The S1 sweep is slow enough to need a decision.** Every stub level of a
-   tool-running campaign re-runs the tool, so `ecaudit-fmn-dh-1_1_3_15-01` sweeps
-   in tens of minutes where a stdlib campaign takes seconds — and its `complete`
-   level alone runs seven HMMER passes per rung-repeat. The declared panel keeps
+8. **The S1 sweep is slow enough to need a decision — measured: 29m32s.** Every
+   stub level of a tool-running campaign re-runs the tool, so
+   `ecaudit-fmn-dh-1_1_3_15-01` swept in **29m32s** (47m of CPU) where a stdlib
+   campaign takes seconds, and its `complete` level alone runs seven HMMER passes
+   per rung-repeat. The declared panel keeps
    that affordable, but the real-systems sweep over several S1 and S2 campaigns
    will not fit the current serial runner. Either the runner caches tool output per
    (input, threshold) across stub levels, which is honest for stubs but must not
