@@ -488,6 +488,11 @@ would have been wrong.
    complex, 0 on topoisomerase IV, and all 244 *P. falciparum* DHFR records reading
    "UNDEFINED MUTATION". Re-tiered rather than built on an anecdote.
 
+8. **A-domain substrate specificity (T-L2-4)** — the position of the A-domain in
+   its protein is `-1/-1` for 2,852 of 2,901 domains, the substrate labels are
+   71.6% inference, and the cross-resource comparison gives 0.000, 0.151 or 0.995
+   agreement depending on which key is used. Retired, not built.
+
 The pattern is consistent enough to be a rule: a catalogue entry is a hypothesis
 about data until the fields are inspected.
 
@@ -1165,6 +1170,83 @@ that fills the bacterial values. **The counts are recorded so the next person do
 not re-probe.** This is also a correction to the re-grounding note, which called
 T-L5-2 "data-verified": the probe verified the field, not the data behind it.
 
+## T-L2-4: four comparison keys, four different answers
+
+T-L2-4 (NRPS A-domain substrate specificity) was the next build after T-L5-1 — the
+only `build: image` row with verified data, so the one that would have opened the
+image tier. Grounded against MIBiG 4.0 and the Stachelhaus signature table
+antiSMASH 8.0.4 ships, **it does not carry a ladder**, and the way it fails is
+worth more than the campaign would have been.
+
+The resources join on protein accession: MIBiG has 2,901 A-domains over 1,228 gene
+accessions, the table has 2,319 rows over 1,637, and 714 accessions are shared. Of
+those, **304 genes carry exactly one A-domain on both sides** — the only pairs that
+can be matched without assuming MIBiG's module order equals the table's `.A1/.A2`
+index, which nothing in either resource confirms (180 genes with equal counts above
+one, holding 473 A-domains, hang entirely on that assumption).
+
+On those 304 pairs, each comparison key tells a different story:
+
+| key | decidable | agreement |
+|---|---|---|
+| raw substrate names | 304 | **0.000** |
+| `aaSMILES` comment field read as a name table | 193 | 0.912 |
+| stereo-aware InChIKey | 219 | **0.151** |
+| connectivity InChIKey (block 1) | 219 | **0.995** |
+
+Read top to bottom that is one resource compared with itself four times. Raw names
+score zero because the vocabularies differ (`Ile` against `isoleucine`).
+Stereo-aware structures score 0.151 because `aaSMILES` writes serine flat and
+MIBiG writes the L-enantiomer — an annotation convention, not a disagreement about
+chemistry. At connectivity level, the key this project already pinned for the
+chemical-space campaign, the two resources agree on **218 of 219** comparable
+A-domains; the single substantive disagreement in the whole set is ABA59548.1,
+`Val` against pyruvic acid.
+
+**The second row is the one to remember.** `aaSMILES.txt` ends each line with a `#`
+comment that usually holds a substrate name, and using it as a name table yields 18
+disagreements of which exactly one is real. The others are a hyphen
+(`4-hydroxy-phenylglycine` against `4-hydroxyphenylglycine`) or a note the
+maintainer left themselves: `salicylic acid (not in norine yet)`, `actually aile,
+allo-isoleucine`. A field that usually parses is the most dangerous kind, because
+nothing fails — it just quietly reports 17 findings that are not there. My own
+first pass through this row did exactly that, and reported a stratified agreement
+difference (0.875 experimental against 0.930 sequence-predicted) that **does not
+survive controlling for substrate class**: the experimental stratum simply holds
+more non-proteinogenic substrates, which are the ones the bridge cannot resolve.
+That reading is withdrawn, not recorded as a finding.
+
+Everything else about the row fails for an adjacent reason. The A-domain's position
+in its protein — which the catalogued R3 needs to extract specificity residues — is
+`-1/-1` for **2,852 of 2,901** domains, and MIBiG ships no sequences. The substrate
+labels themselves are **71.6% inference-only and 10.2% unsupported**, with 1,049
+naming "Sequence-based prediction", so grading an agent against them grades
+agreement with a predictor. The catalogued proteinogenic/non-proteinogenic
+instantiation axis gives **1.000 agreement with zero disagreements** on one side and
+**83 of 112 unmappable** on the other. And the bridge-free route — group A-domains
+by identical signature, then ask whether MIBiG's own labels agree — collapses as
+well: the 34-residue extended signature is **unique for all 304**, grouping
+nothing, while the 10-residue signature gives 33 groups of two or more whose 10
+"inconsistencies" are mostly granularity (`threonine` against `allo-threonine`,
+`glutamic acid` against `d-glutamic acid branched`).
+
+So every rung available here is near-constant or decided by a naming artefact.
+That is a vocabulary quiz with a hidden key, and the standing rule — no human
+judgement anywhere, and a question-answer pair that depends on one comes out —
+retires the row rather than dressing it up. Counts recorded in `docs/catalog.md`.
+
+### The rule this adds, which binds every S2 campaign
+
+`aaSMILES.txt` is antiSMASH package data under **AGPL-3.0-or-later**.
+`stachelhaus/1.1/signatures.tsv` arrives from the antiSMASH database download with
+**no stated licence at all**. So neither can be shipped in a campaign:
+**you cannot redistribute data whose licence you cannot name**, and pulling AGPL
+material into `inputs/` is not a thing to do by accident. An S2 campaign reads such
+a resource from the pinned image at a declared path with a recorded sha256, and
+redistributes nothing — which also means the tool surfaces need reading as
+*installation* requirements, not tool-execution requirements. A campaign can need
+S2 for a pinned table and never invoke a tool.
+
 ## The measurement environment was reading the ambient shell
 
 Refreshing `image/thread_invariance.json` for this commit turned antiSMASH from
@@ -1231,7 +1313,13 @@ whole purpose is to certify determinism that is the one defect that cannot stand
    on-theme data (counts above); the owner picks between HIV-1 RT with the theme
    drift, a re-scoped census ladder, and waiting for a release that fills the
    bacterial variant values. Nothing is blocked on licensing.
-7. Construct-validity study: inter-rater agreement first, then expert-grader
+7. **Two L2/L5 rows are retired on measurement, so the catalogue's 32-campaign
+   target is now 30 at most.** T-L5-2 and T-L2-4 both ground out. The count in this
+   file's header and in `docs/catalog.md` is the *catalogued* target and has not
+   been restated downward, because the replacement question is the owner's call:
+   re-scope those rows, or accept a smaller benchmark. Thirteen campaigns are
+   built. This should be settled before the audit packet quotes a number.
+8. Construct-validity study: inter-rater agreement first, then expert-grader
    agreement with Gwet's AC1 / Krippendorff's alpha alongside kappa, gate on
    Spearman against the continuous rating. This is the one place humans are
    involved, and it sits outside the grading pipeline by design.

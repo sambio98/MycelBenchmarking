@@ -114,7 +114,7 @@ introduced elsewhere — predict the new pseudogene call. Perturbation:
 | T-L2-1 ×2 | EC misannotation triage (EC 1.1.3.15) | likely | image |
 | T-L2-2 | Catalytic residue identification | verified | **BUILT** |
 | T-L2-3 | Remote homology twilight zone | probe | image |
-| T-L2-4 ×2 | A-domain substrate specificity | verified | image |
+| T-L2-4 ×2 | A-domain substrate specificity | **thin / vocabulary-bound** | re-tiered, see below |
 | T-L2-5 | Kinetics consistency (re-scoped) | verified | **BUILT** |
 
 **T-L2-1** Built on Rembeza & Engqvist 2021 (*PLoS Comput Biol* 17(9):e1009446):
@@ -161,6 +161,78 @@ code residues and the predicted monomer class · R4 specificity residues are
 swapped to another annotated A-domain's — predict the new monomer. Instantiation
 axis: monomer class (proteinogenic vs non-proteinogenic — the data has
 4-hydroxyphenylglycine 80, 2,4-diaminobutyric acid 53, and similar).
+
+**Re-tiered. Every rung this row can actually carry is either near-constant or
+decided by a naming artefact, and the measurements say so.** Grounded against
+MIBiG 4.0 and the Stachelhaus signature table antiSMASH 8.0.4 ships
+(`databases/nrps_pks/stachelhaus/1.1/signatures.tsv`, 2,319 rows).
+
+What is there: 2,901 A-domains in 583 entries, 1,228 distinct gene accessions,
+2,879 with a substrate. What is not:
+
+- **The A-domain's position in its protein is absent.** `location` is `-1/-1` for
+  **2,852 of 2,901** (98.3%). The catalogued R3 wants "the specificity code
+  residues", which needs the domain located in a sequence; MIBiG does not carry it
+  and MIBiG carries no sequences either (no `translation` anywhere in the JSON).
+- **The substrate labels are mostly not experimental.** 530 A-domains have
+  experimental support (18.3%), 2,076 are inference-only (71.6%) and 295 carry no
+  evidence at all (10.2%); 1,049 name "Sequence-based prediction". So "R2 matches
+  gold by exact monomer identity" would grade an agent against labels that are
+  three-quarters inference.
+
+The signature table joins to MIBiG on protein accession — 714 shared accessions —
+but only **304 genes carry exactly one A-domain on both sides**. 180 genes have
+equal counts above one (473 A-domains) and are mappable only under the assumption
+that MIBiG's module order equals the table's `.A1/.A2` index, which nothing in
+either resource confirms; 230 have mismatched counts; 514 are MIBiG-only and 923
+signature-table-only. On the 304 unambiguous pairs, four comparison keys give four
+different answers:
+
+| comparison key | decidable | agreement | why |
+|---|---|---|---|
+| raw substrate names | 304 | **0.000** | `Ile` vs `isoleucine`: different vocabularies |
+| the `aaSMILES` comment field as a name table | 193 | 0.912 | 17 of its 18 disagreements are artefacts |
+| stereo-aware InChIKey | 219 | **0.151** | the resources differ on annotating stereochemistry |
+| connectivity InChIKey (block 1) | 219 | **0.995** | 198 agree, 20 within-multi, **1 real disagreement** |
+
+The middle row is the sharpest warning. antiSMASH's `aaSMILES.txt` has a trailing
+`#` comment that usually holds a substrate name, and used as a name table it
+produces 18 disagreements of which **one** is substantive: the rest are a hyphen
+(`4-hydroxy-phenylglycine` against MIBiG's `4-hydroxyphenylglycine`) or a note to
+the maintainer (`salicylic acid (not in norine yet)`, `actually aile,
+allo-isoleucine`). The comment field is a comment, not a vocabulary.
+
+Compared properly — connectivity-level InChIKey, the key this benchmark already
+pinned for the chemical-space campaign — the two resources agree on **218 of 219**
+comparable A-domains. The single disagreement in the entire set is ABA59548.1,
+where the table says `Val` and MIBiG says pyruvic acid. **84 of the 304 cannot be
+compared at all**, because `aaSMILES` names 94 substrates and the signature table
+names 280.
+
+The catalogued ×2 axis also fails: on the proteinogenic side agreement is
+**1.000** with zero disagreements, and on the non-proteinogenic side **83 of 112**
+are unmappable. And the within-MIBiG route — group A-domains by identical
+signature and ask whether MIBiG's own labels agree, which needs no bridge at all —
+collapses too: the 34-residue extended signature is **unique for all 304**, so it
+groups nothing, and the 10-residue signature yields 33 groups of two or more, 10
+of them inconsistent, where the inconsistencies are again granularity
+(`threonine` against `allo-threonine`, `glutamic acid` against `d-glutamic acid
+branched`).
+
+So there is no rung here whose answer varies for a reason an agent can reason
+about: either everything agrees, or everything disagrees for a lexical reason.
+**A campaign built on it would be a vocabulary quiz with a hidden key**, which is
+the thing the no-human-judgement rule exists to keep out. The numbers are recorded
+so the next person does not re-probe.
+
+**A licensing rule falls out of this, and it binds every future S2 campaign.**
+`aaSMILES.txt` is antiSMASH package data under **AGPL-3.0-or-later**, and
+`stachelhaus/1.1/signatures.tsv` comes from the antiSMASH database download with
+**no stated licence at all**. Neither can be shipped inside a campaign: you cannot
+redistribute data whose licence you cannot name, and pulling AGPL material into
+`inputs/` is not a decision to make by accident. An S2 campaign reads such a
+resource **from the pinned image at a declared path with a recorded sha256**, and
+redistributes nothing.
 
 **T-L2-5** **Built**: `campaigns/kinetics-brenda-ec1_1-01`. BRENDA 2026.1,
 EC subclass 1.1.- , 437 EC numbers and 35,188 kinetic records.

@@ -239,6 +239,24 @@ would mark wrong?") and the single most valuable thing a collaborator can find.
 | **S2 NP-specialised** | S1 + antiSMASH, BiG-SCAPE, pyOpenMS |
 | **S3 agent frameworks** | Biomni, Mycel — each with its own tool set |
 
+**A surface is an installation, not a set of commands.** T-L2-4's grounding
+produced the first campaign design that needed **S2 while invoking no tool at
+all**: the thing it wanted from antiSMASH was two pinned tables, not a run.
+The scale still reads correctly — a campaign that needs antiSMASH's database
+layer needs S2 whether or not it ever calls `antismash` — but the declaration
+should say which it is, so the model × surface matrix does not read a table lookup
+as a tool-execution result.
+
+**And data that cannot be named cannot be shipped.** Of the two tables that design
+wanted, `modules/nrps_pks/data/aaSMILES.txt` is antiSMASH package data under
+**AGPL-3.0-or-later** and `databases/nrps_pks/stachelhaus/1.1/signatures.tsv`
+arrives from the database download with **no stated licence**. So neither goes into
+a campaign's `inputs/` or `reference/`: an S2 campaign reads such a resource from
+the pinned image at a declared path with a recorded sha256 and redistributes
+nothing. Pulling AGPL material into a campaign directory is a licensing decision
+about the whole repository, and it is not one to make by accident while writing an
+oracle.
+
 **The integrity rule:** a campaign must declare which surfaces can possibly
 solve it. If a campaign needs HMMER and S0 lacks HMMER, S0's failure measures
 tooling, not capability — which is a legitimate and interesting measurement, but
@@ -262,7 +280,7 @@ and the right ones to author first.
 | T-L2-1 EC misannotation | UniProt, Pfam | HMMER | S1 |
 | T-L2-2 catalytic residues | PDB, UniProt | — (stdlib only) | **S0** |
 | T-L2-3 remote homology | UniProt subset | MMseqs2/DIAMOND | S1 |
-| T-L2-4 A-domain specificity | MIBiG 4.0 | HMMER | S1 |
+| T-L2-4 A-domain specificity | *retired on grounding — see `docs/catalog.md`* | — | — |
 | T-L2-5 kinetics consistency | BRENDA 2026.1 (shipped subset) | — (stdlib only) | **S0** |
 | T-L3-1 BGC detection | antiSMASH DB | antiSMASH | S2 |
 | T-L3-2 GCF cutoff | MIBiG, antiSMASH DB | BiG-SCAPE | S2 |
