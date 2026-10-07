@@ -275,7 +275,7 @@ and the right ones to author first.
 |---|---|---|---|
 | T-L1-1 gene calling | — | Prodigal | S1 |
 | T-L1-2 domain architecture | Pfam | HMMER | S1 |
-| T-L1-3 annotation transfer | UniProt subset | BLAST+/DIAMOND | S1 |
+| T-L1-3 annotation transfer | UniProt 2026_03 EC 1.14 (shipped, closed) | DIAMOND 2.2.8 | **S1, BUILT** |
 | T-L1-4 pseudogene | — | Prodigal | S1 |
 | T-L2-1 EC misannotation | UniProt 2026_03 (shipped), Pfam 35.0 (image) | HMMER 3.4 | **S1, BUILT** |
 | T-L2-2 catalytic residues | PDB, UniProt | — (stdlib only) | **S0** |
@@ -531,6 +531,25 @@ it — keyed on the input digest, the library fingerprint, the tool version and 
 flags. That brought the sweep to **3m44s** with identical gate results. A cached
 sweep's wall clock is consequently not a cost measurement of the campaign, which
 the report states in `_meta.tool_cache_note`.
+
+### Two shapes of S1 campaign, and the difference matters
+
+The two built S1 campaigns need the image for different reasons, and the
+declaration should say which:
+
+- `ecaudit-fmn-dh-1_1_3_15-01` needs **the binary and a pinned data resource**:
+  HMMER plus the 1.5 GB Pfam library it scans against, declared as an external
+  resource with a fingerprint and read from the image.
+- `transfer-ec1_14-uniprot-01` needs **only the binary**. DIAMOND builds its
+  reference database from the shipped FASTA, so nothing outside the sandbox and
+  the tool itself is involved and the campaign declares no external resource at
+  all.
+
+The second shape is the one to prefer where a campaign can be written either way:
+a closed, shipped reference set makes gold a function of the sandbox, whereas a
+campaign searching a library in the image inherits that library's version as part
+of its gold. Both are legitimate; only one can be re-run on a machine that never
+downloaded 9.4 GB.
 
 ### The other half of the PATH lesson: a measured run needs the prefix on it
 

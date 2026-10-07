@@ -40,10 +40,13 @@ scoring path.
 | Campaign: S. aureus topoisomerases | `campaigns/selectivity-saureus-topoisomerase-01/` | oracle 1.0, gate 20/0/5 |
 | Template: EC domain audit | `src/npbench_c/templates/ec_domain_audit/` | HMMER 3.4 + Pfam 35.0, first tool-running template |
 | Campaign: EC 1.1.3.15 FMN_dh audit | `campaigns/ecaudit-fmn-dh-1_1_3_15-01/` | oracle 1.0, gate 20/0/5, **first S1** |
+| Template: annotation transfer | `src/npbench_c/templates/annotation_transfer/` | DIAMOND 2.2.8, closed reference set |
+| Campaign: EC 1.14 transfer | `campaigns/transfer-ec1_14-uniprot-01/` | oracle 1.0, gate 20/0/5 |
+| Tool memo | `src/npbench_c/tools/cache.py` | stub sweeps only; 29m32s to 3m44s |
 | Phase 1 image | `image/Dockerfile`, `image/environment.lock.json` | 8 tools pinned to `version=build`, 185-package closure hashed, antiSMASH databases pinned at 9.4 GB |
 | Tool registry | `src/npbench_c/tools/registry.py` | pins, controls, invocations, declared normalisations, canonicalisations, projections, enforced bans |
 | Thread-invariance suite | `src/npbench_c/tools/invariance.py` | 8/8 tools invariant at 1 and 8 threads |
-| Tests | `tests/` | 353 passing, 2 skipped |
+| Tests | `tests/` | 407 passing, 3 skipped |
 
 ```bash
 PYTHONPATH=src python3 -m pytest tests -q
@@ -1367,6 +1370,90 @@ by the shipped accessions and valued by the declared panel, and the `inverted`
 stub level is the graded form of the same error — it runs the tool correctly, with
 the right panel, and reads the result backwards.
 
+## Campaign 15: the closest hit is often the wrong donor
+
+`transfer-ec1_14-uniprot-01` is T-L1-3, and it is the first catalogued design this
+session that survived grounding almost intact — including the R4 that looked
+expensive. The task is the oldest shortcut in functional genomics: take a
+protein's closest database hit and copy its annotation across.
+
+UniProt 2026_03, all **4,632 reviewed entries under EC 1.14** — oxidoreductases
+acting on paired donors, the class holding the cytochromes P450 and the
+flavin-dependent halogenases this benchmark already uses as subjects. The set is
+searched against itself with pinned DIAMOND 2.2.8, the self hit is dropped while
+the hit table is parsed, and each query's closest remaining hit donates its EC
+number. **The reference set is closed and shipped**: transfer against a live
+database would make gold a function of the day it ran.
+
+| EC level | decidable | agree | rate |
+|---|---|---|---|
+| 3 (sub-subclass) | 3,650 | 3,556 | **0.9742** |
+| 4 (serial) | 2,743 | 2,531 | **0.9227** |
+
+And the curve the ladder exists to expose — level-4 agreement against the identity
+of the closest hit:
+
+| identity | n | agreement |
+|---|---|---|
+| 30–40% | 78 | **0.462** |
+| 40–50% | 146 | 0.740 |
+| 50–60% | 219 | 0.767 |
+| 60–70% | 254 | 0.890 |
+| 70–80% | 360 | 0.950 |
+| 80–90% | 525 | 0.962 |
+| 90–100% | 1,144 | **0.996** |
+
+That is the twilight zone in one column, computed rather than cited. The build
+refuses to emit gold if agreement does not rise with identity, because a campaign
+whose central claim fails on its own instantiation is not a campaign.
+
+R4 is the catalogued counterfactual verbatim — take the closest hit out of the
+reference set, transfer from the next — and **it needs no second search**: removing
+a hit means reading further down a ranking already computed. 501 of 4,552 verdicts
+change, 111 of them from `supported` to `wrong_at_serial`; removing two moves 722.
+The zero-removal variant is the axis's identity control and must reproduce the
+headline census exactly.
+
+### Three declared rules, each one load-bearing and each one measured
+
+**A tie-break, because 602 queries have one.** One query in eight shares its top
+bitscore with another hit, so "the closest hit" is not a function of the data until
+the rule is published. The declared rule is bitscore descending, then subject
+accession ascending. DIAMOND's own emission order is stable for this version — the
+exact invocation came out byte-identical across 1, 2 and 8 threads over two repeats
+each — but gold resting on an undeclared property of a particular build is gold
+that breaks silently on a tool upgrade. Grounding this campaign with an ad-hoc
+tie-break and then with the declared one shifted level-3 agreement from 3,558/3,652
+to 3,556/3,650: small, and exactly the kind of small that nobody can reproduce.
+
+**A dash is not a value.** 1,850 of this set's EC mentions stop early. An entry
+annotated `1.14.-.-` makes no claim at level 3, so it can neither agree nor
+disagree there, and a comparison is **decidable** only where both sides specify the
+level. 902 queries land in `undecidable` rather than being scored either way.
+Getting this wrong does not produce an error — it produces a report that looks
+*more* complete than gold, which is why the `dashvalue` stub exists: it runs the
+search correctly and compares EC strings with the dashes intact, clears R2 and
+fails R3.
+
+**Multi-EC is any-vs-any.** 446 entries carry more than one code, and a
+multifunctional enzyme's annotation is a set rather than a ranking.
+
+### The free component, caught a fourth time
+
+EC levels 1 and 2 agree **1.0** and that is not a result: the query set is defined
+by its EC prefix, so a hit inside the set shares the first two levels with every
+query by construction. Both are computed and reported as `constant_depth_agreement`
+for the record and **excluded from grading**, because a component whose value is
+fixed adds weight to a conjunctive product and no information. That is the same
+defect as `corpus_release`, `compounds_enumerated` and the pocket-geometry rung
+redundancy — four times now, which makes it worth stating as a rule: **before
+grading a component, ask what would have to change in the world for its value to
+change. If the answer is "the campaign's own definition", it is not a measurement.**
+
+The sweep passes all five gates with cold depths 1/2/3/4/2/0 in **55 seconds**,
+which is what the tool memo bought: the same campaign under the previous runner
+would have re-run the all-against-all search about a hundred times.
+
 ## T-L2-4: four comparison keys, four different answers
 
 T-L2-4 (NRPS A-domain substrate specificity) was the next build after T-L5-1 — the
@@ -1514,7 +1601,7 @@ whole purpose is to certify determinism that is the one defect that cannot stand
    target is now 30 at most.** T-L5-2 and T-L2-4 both ground out. The count in this
    file's header and in `docs/catalog.md` is the *catalogued* target and has not
    been restated downward, because the replacement question is the owner's call:
-   re-scope those rows, or accept a smaller benchmark. Fourteen campaigns are
+   re-scope those rows, or accept a smaller benchmark. Fifteen campaigns are
    built. This should be settled before the audit packet quotes a number.
 8. **The S1 sweep cost is fixed for stubs and still open for real systems.**
    `npbench_c.tools.cache` memoises tool output for stub systems in tooled mode

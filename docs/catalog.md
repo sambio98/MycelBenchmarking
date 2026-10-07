@@ -72,13 +72,13 @@ key.
 
 ---
 
-## L1 — Sequence & gene (4 templates, 5 campaigns)
+## L1 — Sequence & gene (4 templates, 5 catalogued campaigns, 1 built)
 
 | # | Template | Data | Build |
 |---|---|---|---|
 | T-L1-1 | Gene calling under assembly fragmentation | probe | image |
 | T-L1-2 ×2 | Domain architecture parsing | likely | image |
-| T-L1-3 | Annotation transfer error detection | verified | **image** (re-tiered) |
+| T-L1-3 | Annotation transfer error detection | verified | **BUILT** (S1) |
 | T-L1-4 | Frameshift / pseudogene detection | probe | image |
 
 **T-L1-1** Prodigal gene calls on a contig, then the same contig fragmented.
@@ -101,6 +101,63 @@ R3 claim: is the transferred annotation supported, verdict enum + the
 discriminating feature · R4 the paralog is removed from the reference set —
 predict the new top hit and whether the verdict flips. `build: now` if the
 reference set ships as a fixed FASTA subset rather than a live database.
+
+**Built**: `campaigns/transfer-ec1_14-uniprot-01`, and the catalogued design
+survives almost intact — including the R4 that looked expensive. UniProt 2026_03,
+all **4,632 reviewed entries under EC 1.14** (oxidoreductases acting on paired
+donors: the class holding the cytochromes P450 and the flavin-dependent
+halogenases this benchmark already uses as subjects). The set is searched against
+itself with pinned DIAMOND 2.2.8, the self hit is dropped while the table is
+parsed, and each query's closest remaining hit donates its EC number.
+
+| EC level | decidable | agree | rate |
+|---|---|---|---|
+| 3 (sub-subclass) | 3,650 | 3,556 | **0.9742** |
+| 4 (serial) | 2,743 | 2,531 | **0.9227** |
+
+And the curve the campaign exists to expose — agreement at level 4 against the
+identity of the closest hit:
+
+| identity | n | agreement |
+|---|---|---|
+| 30–40% | 78 | **0.462** |
+| 40–50% | 146 | 0.740 |
+| 50–60% | 219 | 0.767 |
+| 60–70% | 254 | 0.890 |
+| 70–80% | 360 | 0.950 |
+| 80–90% | 525 | 0.962 |
+| 90–100% | 1,144 | **0.996** |
+
+Verdicts over the 4,552 queries with a non-self hit: 2,531 supported, 845
+supported only to the sub-subclass, 180 wrong at the serial level, 94 wrong at the
+sub-subclass, 902 undecidable. R4 removes the closest hit and transfers from the
+next: **501 verdicts change**, 111 of them from `supported` to `wrong_at_serial`.
+Removing two moves 722. Oracle 1.0 at depth 4, gate 20/0/5, sweep 55s with every
+gate passing.
+
+**Three declared rules, each load-bearing, each measured:**
+
+- **A tie-break.** 602 of the 4,552 queries share their top bitscore, so about one
+  in eight has its closest hit decided by the rule (bitscore descending, then
+  accession ascending) rather than by the score. DIAMOND's order is stable for this
+  version — the exact invocation was checked byte-identical across 1, 2 and 8
+  threads, twice each — but a campaign resting on that breaks silently on a tool
+  upgrade.
+- **A dash is not a value.** 1,850 of this set's EC mentions stop early, and an
+  entry annotated `1.14.-.-` cannot agree or disagree at level 3. A comparison is
+  decidable only where both sides specify the level, which is why 902 queries land
+  in `undecidable` rather than being scored either way.
+- **Multi-EC is any-vs-any.** 446 entries carry more than one code, and a
+  multifunctional enzyme's annotation is a set rather than a ranking.
+
+**Deviations.** The catalogued R3 asked for "the discriminating feature" alongside
+the verdict; it is not graded as a separate claim, because the only features
+computable here are identity, bitscore and the depth at which agreement fails —
+and the last of those *is* the verdict. **And EC levels 1 and 2 are computed but
+excluded from grading: they are 1.0 by construction**, since the query set is
+defined by its EC prefix, so a hit inside it shares the first two levels with
+every query. That is the free-component defect this benchmark has now caught four
+times.
 
 **T-L1-4** Frameshift / pseudogene detection. R1 ORF table · R2 matches gold ·
 R3 claim: which locus is a pseudogene and why, closed enum · R4 an indel is

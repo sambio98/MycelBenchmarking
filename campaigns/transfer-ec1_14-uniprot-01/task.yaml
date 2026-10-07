@@ -1,0 +1,208 @@
+campaign_id: transfer-ec1_14-uniprot-01
+template_id: annotation-transfer
+track: EX
+family: annotation_evidence_audit
+layer: L1_sequence_and_gene
+np_class: mixed
+version: 1.0.0
+horizon_tier: T-short
+license_class: open
+grader_version: "2.0.0+9fc95658"
+grading_spec_version: "1.0.0"
+min_tool_surface: S1
+tool_surface_note: >
+  Needs DIAMOND. No S0 system can answer any rung: the whole experiment is a
+  search. Unlike the EC domain audit this campaign needs no resource from the
+  image beyond the binary -- the reference database is built from the shipped
+  FASTA, so nothing outside the sandbox and the tool itself is involved.
+
+license_notice:
+  source: UniProtKB release 2026_03, reviewed entries annotated under EC 1.14
+  license: CC BY 4.0
+  attribution: >
+    UniProt Consortium, UniProtKB release 2026_03
+    (https://www.uniprot.org/), licensed CC BY 4.0.
+  redistribution: >
+    inputs/ carries the UniProt sequences and their EC annotations. The FASTA
+    headers are reduced to bare accessions so the hit table needs no re-parsing;
+    nothing else is altered. CC BY 4.0 requires attribution and nothing further.
+
+objective: >
+  The oldest shortcut in functional genomics is to take a protein's closest
+  database hit and copy its annotation across. Do exactly that over the shipped,
+  closed reference set: search it against itself with the pinned tool, take each
+  query's closest non-self hit under the declared tie-break, transfer that hit's EC
+  number, and report how often the transfer agrees with the annotation the query
+  already carries -- overall, per EC level, and per band of sequence identity. Then
+  take the closest hit out of the reference set and say what changes.
+
+method_guidance: partial
+
+scope_note: >
+  Gold is arithmetic over one pinned search, tier G1. No rung asks what a protein
+  really does; every verdict is a statement about two annotations and a search
+  result.
+
+  Four things are load-bearing. The reference set is CLOSED and shipped, because
+  transfer against a live database would make gold a function of the day it ran.
+  The top hit needs a declared TIE-BREAK: 602 of the 4,552 queries with a hit share
+  their top bitscore, so "the closest hit" is not a function of the data until the
+  rule is published, and resting on the binary's emission order would make gold
+  hostage to a tool upgrade. An EC number that stops early makes NO CLAIM: 1,850 of
+  this set's EC mentions end in a dash, so a comparison is decidable only where both
+  sides specify the level, and the undecidable cases are counted rather than scored
+  either way. And agreement is a FUNCTION OF IDENTITY rather than a constant, which
+  is the finding the identity bands exist to expose.
+
+catalog_deviation: >
+  The catalogued design is built as specified, including the R4 that looked
+  expensive: "the paralog is removed from the reference set -- predict the new top
+  hit and whether the verdict flips". It needs no second search, because removing a
+  hit means reading further down a ranking already computed.
+
+  Two departures. First, the catalogued R3 wanted "verdict enum + the
+  discriminating feature". The verdict enum is here and graded; the discriminating
+  feature is NOT asked as a free-text claim, because the only features computable
+  from this sandbox are identity, bitscore and the EC depth at which agreement
+  fails -- and the last of those IS the verdict. Asking for it twice would grade one
+  computation as two components.
+
+  Second, EC levels 1 and 2 are computed and reported but EXCLUDED from grading.
+  The query set is defined by its EC prefix, so a hit inside the set cannot
+  disagree above level 2 and both rates are 1.0 by construction. A component whose
+  value is fixed adds weight to a conjunctive product and no information, which is
+  the free-component defect this benchmark has now caught four times.
+
+template_params:
+  sequence_input: inputs/ec_1_14_reviewed_uniprot_2026_03.fasta.gz
+  annotation_input: inputs/ec_1_14_reviewed_annotations_2026_03.json.gz
+
+output_contract:
+  transfer_report.json:
+    release / ec_prefix / tie_break: From the shipped provenance and the rules.
+    diamond_version: >
+      What searched. A transfer verdict is only as pinned as the tool that
+      produced the hit table.
+    entries_total / distinct_ec_codes / ec_codes_per_entry: >
+      The shipped set, the EC vocabulary it uses, and how many entries carry one
+      code, two, and so on.
+    partial_ec_mentions / entries_with_multiple_ec: >
+      EC mentions that stop before the fourth level, and entries carrying more
+      than one code. Both decide what is comparable.
+    queries_with_a_hit / queries_without_a_hit: >
+      Queries with at least one non-self hit, and those with none.
+    tied_top_queries: >
+      Queries whose top bitscore is shared, so the declared tie-break decides
+      their closest hit.
+    top_hit_identity_census: >
+      Per declared identity band, how many queries' closest hit falls in it.
+    agreement_by_depth: >
+      Per graded EC level, the decidable count, the agreeing count and the rate.
+    agreement_by_identity: >
+      The same three numbers per identity band, at the deepest graded level.
+    verdict_census: Per declared verdict, how many queries receive it.
+    transfer_errors_at_subsubclass: >
+      The committed set: queries whose closest hit disagrees at EC level 3.
+    removal_census / removal_changed: >
+      Per declared removal variant, the recomputed verdict census and how many
+      queries' verdicts changed.
+
+constraints:
+  reference_dir: reference
+  pinned_tables:
+    - reference/transfer_rules.json   # search flags, tie-break, decidability, verdicts, bands
+
+snapshots_required:
+  shipped: [uniprot@2026_03]
+  fetched: []
+  image: [diamond@2.2.8]
+
+budgets:
+  wall_clock_minutes: 25
+  cpu: 2
+  memory_gb: 4
+  network: off
+
+rungs:
+  - {rung_id: r1, ordinal: 1, name: execute,        gold_tier: G1, warm_start_bundle: null}
+  - {rung_id: r2, ordinal: 2, name: correct,        gold_tier: G1, warm_start_bundle: gold/warm/r2}
+  - {rung_id: r3, ordinal: 3, name: commit,         gold_tier: G1, warm_start_bundle: gold/warm/r3}
+  - {rung_id: r4, ordinal: 4, name: counterfactual, gold_tier: G1, warm_start_bundle: gold/warm/r4}
+
+# Nothing is planted: the trap this campaign grades -- that the closest hit is
+# often the wrong donor, and that a dash in an EC number is not a value -- is a
+# property of the shipped set rather than something inserted into it.
+structural_elements: [verification, counterfactual, control]
+
+harness:
+  gold_command: ["python3", "-m", "npbench_c.templates.annotation_transfer.build", "{campaign}"]
+  solve_command: ["python3", "-m", "npbench_c.templates.annotation_transfer.solve", "{campaign}", "{submission}"]
+  measure_command: ["python3", "-m", "npbench_c.templates.annotation_transfer.measure", "{campaign}", "{submission}", "{measurement}"]
+  stub_module: npbench_c.sweep.stubs.stub_transfer
+  stub_args: []
+  stub_levels:
+    - {name: stub-reader,     level: reader}
+    - {name: stub-search,     level: search, reference: true}
+    - {name: stub-verdicts,   level: verdicts}
+    - {name: stub-complete,   level: complete}
+    - {name: stub-dashvalue,  level: dashvalue}
+    - {name: stub-noncompute, level: noncompute, mode: no_tool}
+
+grading:
+  chance_levels: {r1: 1.0, r2: 0.002, r3: 0.001, r4: 0.001}
+  chance_level_notes:
+    r1: >
+      Nominal rather than measured. The entry count, the EC vocabulary size and the
+      partial-mention count cannot be guessed, so the no-tool ablation fails R1
+      outright; the level stays at 1.0 because any system that opens the FASTA
+      clears it, and the capped floor is computed over R2 upward.
+
+excluded_from_grading:
+  - field: EC level 1 and level 2 agreement
+    reason: >
+      1.0 by construction. The query set is defined by its EC prefix, so a hit
+      inside the set shares the first two levels with every query by definition.
+      Both rates are computed and reported as `constant_depth_agreement` for the
+      record, and grading them would add weight to the conjunctive product without
+      adding information.
+  - field: the per-query top hit identity
+    reason: >
+      4,552 accession-to-accession pairs would dominate the product while testing
+      one search repeatedly. The identity census, the per-band agreement, the
+      verdict census and the committed error set carry the claim; a system that
+      picks the wrong hit for a query shows up in one of them.
+  - field: the full verdict transition matrix under removal
+    reason: >
+      Reported as `removal_transitions` for audit, not graded. The count of changed
+      verdicts is the claim; the matrix is 30-odd sparse cells whose individual
+      values test nothing beyond it.
+  - field: what any of these proteins actually catalyses
+    reason: >
+      Not decidable from a search. Every verdict here is a statement about two
+      annotations and a hit table, and UniProt's own annotation is taken as the
+      reference point rather than as the truth -- including where it is partial,
+      which is counted as undecidable rather than resolved.
+
+notes_for_audit:
+  - >
+    Check the identity-band curve first, because it is the campaign's central
+    claim and it is the thing a broken search would destroy. Measured, agreement at
+    EC level 4 runs from 0.44 in the 30-40% identity band to 1.00 above 90%, which
+    is the twilight-zone effect in one column. The build refuses to emit gold if
+    agreement does not rise with identity.
+  - >
+    Then check that the verdict census sums to the queries with a hit. The verdicts
+    are tested in a declared order and each query takes the first that applies, so
+    if the parts do not sum, two cells are double-counting and every rate below is
+    suspect.
+  - >
+    The tie-break is not a formality. 602 of 4,552 queries share their top
+    bitscore, so roughly one query in eight has its closest hit decided by the
+    declared rule rather than by the score. DIAMOND's own output order is stable
+    for this version -- the exact invocation was checked byte-identical across 1, 2
+    and 8 threads, twice each -- but a campaign that leaned on that would break
+    silently on a tool upgrade.
+  - >
+    Levels 1 and 2 agree perfectly and that is not a result. It is what defining
+    the set by an EC prefix guarantees, which is why those two levels are reported
+    but excluded from grading.

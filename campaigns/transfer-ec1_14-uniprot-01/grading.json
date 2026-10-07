@@ -1,0 +1,212 @@
+{
+  "campaign_id": "transfer-ec1_14-uniprot-01",
+  "template_id": "annotation-transfer",
+  "grading_spec_version": "1.0.0",
+  "rungs": [
+    {
+      "rung_id": "r1",
+      "ordinal": 1,
+      "name": "execute",
+      "gold_tier": "G1",
+      "composition": "product",
+      "pass_threshold": 1.0,
+      "chance_level": 1.0,
+      "components": [
+        {
+          "name": "report_present",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:present.report",
+            "gold": 1
+          }
+        },
+        {
+          "name": "release",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:release",
+            "gold": "gold:release"
+          }
+        },
+        {
+          "name": "ec_prefix",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:ec_prefix",
+            "gold": "gold:ec_prefix"
+          }
+        },
+        {
+          "name": "tie_break",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:tie_break",
+            "gold": "gold:tie_break"
+          }
+        },
+        {
+          "name": "entries_total",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:entries_total",
+            "gold": "gold:entries_total"
+          }
+        },
+        {
+          "name": "distinct_ec_codes",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:distinct_ec_codes",
+            "gold": "gold:distinct_ec_codes"
+          }
+        },
+        {
+          "name": "ec_codes_per_entry",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:ec_codes_per_entry",
+            "gold": "gold:ec_codes_per_entry"
+          }
+        },
+        {
+          "name": "partial_ec_mentions",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:partial_ec_mentions",
+            "gold": "gold:partial_ec_mentions"
+          }
+        },
+        {
+          "name": "entries_with_multiple_ec",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:entries_with_multiple_ec",
+            "gold": "gold:entries_with_multiple_ec"
+          }
+        },
+        {
+          "name": "diamond_version",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:diamond_version",
+            "gold": "gold:diamond_version"
+          }
+        }
+      ],
+      "chance_level_note": "Nominal rather than measured. The entry count, the EC vocabulary size and the partial-mention count cannot be guessed, so the no-tool ablation fails R1 outright; the level stays at 1.0 because any system that opens the FASTA clears it, and the capped floor is computed over R2 upward.\n"
+    },
+    {
+      "rung_id": "r2",
+      "ordinal": 2,
+      "name": "correct",
+      "gold_tier": "G1",
+      "composition": "product",
+      "pass_threshold": 1.0,
+      "chance_level": 0.002,
+      "components": [
+        {
+          "name": "queries_with_a_hit",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:queries_with_a_hit",
+            "gold": "gold:queries_with_a_hit"
+          }
+        },
+        {
+          "name": "queries_without_a_hit",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:queries_without_a_hit",
+            "gold": "gold:queries_without_a_hit"
+          }
+        },
+        {
+          "name": "tied_top_queries",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:tied_top_queries",
+            "gold": "gold:tied_top_queries"
+          }
+        },
+        {
+          "name": "top_hit_identity_census",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:top_hit_identity_census",
+            "gold": "gold:top_hit_identity_census"
+          }
+        }
+      ]
+    },
+    {
+      "rung_id": "r3",
+      "ordinal": 3,
+      "name": "commit",
+      "gold_tier": "G1",
+      "composition": "product",
+      "pass_threshold": 1.0,
+      "chance_level": 0.001,
+      "components": [
+        {
+          "name": "agreement_by_depth",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:agreement_by_depth",
+            "gold": "gold:agreement_by_depth"
+          }
+        },
+        {
+          "name": "agreement_by_identity",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:agreement_by_identity",
+            "gold": "gold:agreement_by_identity"
+          }
+        },
+        {
+          "name": "verdict_census",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:verdict_census",
+            "gold": "gold:verdict_census"
+          }
+        },
+        {
+          "name": "transfer_errors_at_subsubclass",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:transfer_errors_at_subsubclass",
+            "gold": "gold:transfer_errors_at_subsubclass"
+          }
+        }
+      ]
+    },
+    {
+      "rung_id": "r4",
+      "ordinal": 4,
+      "name": "counterfactual",
+      "gold_tier": "G1",
+      "composition": "product",
+      "pass_threshold": 1.0,
+      "chance_level": 0.001,
+      "components": [
+        {
+          "name": "removal_census",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:removal_census",
+            "gold": "gold:removal_census"
+          }
+        },
+        {
+          "name": "removal_changed",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:removal_changed",
+            "gold": "gold:removal_changed"
+          }
+        }
+      ]
+    }
+  ]
+}
