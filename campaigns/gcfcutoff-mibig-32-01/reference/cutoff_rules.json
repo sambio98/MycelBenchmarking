@@ -1,0 +1,36 @@
+{
+  "clustering": {
+    "cutoffs": [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8],
+    "cutoffs_note": "One BiG-SCAPE run covers the whole grid, so the distances behind every cutoff are identical by construction and a difference between two cutoffs is the cutoff rather than two searches. The cutoff IS the answer's parameter, so the grid is declared and never defaulted.",
+    "baseline_cutoff": 0.3,
+    "baseline_cutoff_note": "BiG-SCAPE's own documented default. R2 grades the partition at this cutoff and R4 sweeps the grid, so the campaign says what the tool's default does on this corpus rather than assuming it is the right choice.",
+    "cores": 2,
+    "include_gbk": "BGC",
+    "include_gbk_note": "Required because the inputs are named BGC*.gbk rather than *.region*.gbk. Without it BiG-SCAPE silently filters every input out and fails with 'no valid input GBKs' -- a message about names, said in a way that sounds like a message about content.",
+    "join_key": "the GBK column",
+    "join_key_note": "The clustering table's Record column carries a region suffix (BGC0000854.gbk_region_1); GBK is the input stem. The engine checks that each GBK appears exactly once per cutoff and that every row is a 'region' record, because a multi-region input would need a different reconstruction rule than the declared one.",
+    "partition_reconstruction": "listed records form their groups; every record the table omits is a singleton",
+    "partition_reconstruction_note": "The clustering table lists only clusters that joined a family, so at the lowest declared cutoff it holds a fraction of the corpus. Reading the table as the partition reports a corpus smaller than the shipped one and a family structure that looks cleaner than it is. The reconstruction is the campaign's first trap.",
+    "verdict_order": [
+      "exact",
+      "fragmented",
+      "absorbed",
+      "fragmented_and_absorbed",
+      "dissolved"
+    ],
+    "verdict_note": "How one chemistry-derived family fares against the called partition. exact = the family is one group with nothing else in it. fragmented = its members span several groups, at least one of them multi-member, with no outsiders. dissolved = every member is a singleton. absorbed = one group holds them all plus outsiders. fragmented_and_absorbed = both at once. The vocabulary is about the SHAPE of the disagreement, since whether a family is recovered at all varies with the cutoff and is the point of the sweep.",
+    "pair_measure": "co-clustered pairs against chemistry-derived pairs",
+    "pair_measure_note": "A pair-counting measure rather than a label comparison, because a family label is a name: two partitions can agree perfectly and call the groups different things. Recovered pairs are chemistry pairs the tool co-clusters, false joins are pairs it co-clusters that no chemistry group puts together, and the Jaccard index over the three counts is the single number the sweep turns on.",
+    "best_cutoff_tie_break": "highest pair Jaccard, then the lowest cutoff",
+    "best_cutoff_tie_break_note": "Two cutoffs can score identically once the partition stops changing, and without a tie-break the best cutoff would be whichever the iteration order reached first. The lower cutoff wins because it is the more conservative claim."
+  },
+  "external_resources": {
+    "pfam_a_hmm": {
+      "relative_path": "lib/python3.*/site-packages/antismash/databases/pfam/*/Pfam-A.hmm",
+      "provider": "antiSMASH 8.0.4 database layer",
+      "version": "Pfam 35.0",
+      "sha256": "8d3e2ffa785f91ee0e24a3994d2dcfff6f382e3cf663784a47688e7d95297fee",
+      "note": "1.5 GB, so it is read from the pinned image rather than shipped; BiG-SCAPE takes it with -p. Pfam itself is CC0, so the reason this file is not redistributed is size, not licence. The image carries one copy for both antiSMASH and BiG-SCAPE rather than two."
+    }
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "controls": [
+    "BGC0000026",
+    "BGC0000605",
+    "BGC0001082",
+    "BGC0001483",
+    "BGC0002197"
+  ],
+  "excluded_placeholder_names": [
+    "capsular polysaccharide",
+    "lipopolysaccharide",
+    "melanin",
+    "carotenoid",
+    "exopolysaccharide"
+  ],
+  "excluded_placeholder_reason": "MIBiG gives these generic names a representative structure, so entries sharing one are not necessarily homologous clusters. Two different formulas appear under 'capsular polysaccharide' alone. Including them would have put apparent family structure in the fixture that the biology does not support.",
+  "families": {
+    "Aflatoxin B1": [
+      "BGC0000006",
+      "BGC0000007",
+      "BGC0000008",
+      "BGC0000009",
+      "BGC0000011"
+    ],
+    "ectoine": [
+      "BGC0000852",
+      "BGC0000853",
+      "BGC0000854",
+      "BGC0000855",
+      "BGC0000856",
+      "BGC0000857",
+      "BGC0000858",
+      "BGC0000859",
+      "BGC0000860",
+      "BGC0002052"
+    ],
+    "kanamycin": [
+      "BGC0000702",
+      "BGC0000703",
+      "BGC0000704",
+      "BGC0000705",
+      "BGC0000706"
+    ],
+    "ochratoxin A": [
+      "BGC0001030",
+      "BGC0002598",
+      "BGC0002605",
+      "BGC0002606",
+      "BGC0002607",
+      "BGC0002608",
+      "BGC0002609"
+    ]
+  },
+  "note": "The families are derived from CHEMISTRY -- entries sharing an InChIKey connectivity block in the chemical-space campaign's table -- and not from any clustering of these sequences. That is what makes them something to reconcile against rather than a restatement of the answer. The controls are one entry per biosynthetic class that belongs to no such group.",
+  "selection_rule": "From the chemical-space campaign's connectivity groups: the four largest groups of 4 to 10 entries sharing an InChIKey connectivity block, after excluding groups whose MIBiG compound name is a class placeholder rather than a specific compound, plus one singleton entry per biosynthetic class as a negative control. Deterministic, and reproducible from tables already in this repository."
+}

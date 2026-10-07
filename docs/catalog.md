@@ -399,12 +399,12 @@ rather than postulated. The R4 counterfactual makes the dependence explicit —
 applying the micromolar mistake deliberately drops the agreement rate from 63.2%
 to 0.36%.
 
-## L3 — Cluster & pathway (5 templates, 7 catalogued campaigns, 3 built)
+## L3 — Cluster & pathway (5 templates, 7 catalogued campaigns, 4 built)
 
 | # | Template | Data | Build |
 |---|---|---|---|
 | T-L3-1 | BGC detection & boundary calling | verified | **BUILT** (first S2) |
-| T-L3-2 | GCF clustering cutoff sensitivity | likely | image |
+| T-L3-2 | GCF clustering cutoff sensitivity | verified | **BUILT** (S2) |
 | T-L3-3 ×2 | MIBiG version diff reconciliation | verified | **BUILT** |
 | T-L3-4 | RiPP precursor annotation | likely | image |
 | T-L3-5 | Self-resistance target identification | verified | **image** (re-tiered) |
@@ -485,6 +485,65 @@ R2 matches gold · R3 claim: family membership at the declared cutoff · R4 the
 cutoff is changed — report the range over which membership flips, scored with
 `interval_score`. Absorbs the AN-5 robustness family. Pin BiG-SCAPE version,
 `--mibig-version`, antiSMASH version, pyhmmer version, classification mode.
+
+**Built**: `campaigns/gcfcutoff-mibig-32-01`. 32 antiSMASH-processed MIBiG
+clusters through pinned BiG-SCAPE 2.0.3 over a declared eight-point cutoff grid in
+**one run**, reconciled against four families derived independently from chemistry
+(entries sharing an InChIKey connectivity block in the chemical-space campaign's
+table) plus five negative controls. Oracle 1.0 at depth 4 first time, gate 21/0/5,
+build 56 s.
+
+**The headline is that BiG-SCAPE's own default cutoff recovers none of them.** At
+`0.3`, the tool's documented default, the partition has 17 groups and **0 of 4
+chemistry-derived families come back as exactly one group** — every one is split,
+one of them across five groups. Pair agreement there is **0.384**.
+
+| cutoff | groups | recovered pairs | missed | false joins | pair Jaccard | families exact |
+|---|---|---|---|---|---|---|
+| 0.1 | 25 | 13 | 73 | 0 | 0.151 | 0 |
+| 0.2 | 21 | 19 | 67 | 0 | 0.221 | 0 |
+| **0.3** | 17 | 33 | 53 | 0 | **0.384** | 0 |
+| 0.4 | 15 | 44 | 42 | 0 | 0.512 | 0 |
+| 0.5 | 13 | 67 | 19 | 0 | 0.779 | 1 |
+| **0.6** | 12 | 71 | 15 | 0 | **0.826** | 2 |
+| 0.7 | 11 | 71 | 15 | **5** | 0.780 | 2 |
+| 0.8 | 11 | 71 | 15 | 5 | 0.780 | 2 |
+
+**Agreement is not monotone, and both ends are inside the grid**: below 0.6 the
+families fragment, and at 0.7 a negative control is absorbed into a family, which
+is where the five false joins come from. The optimum is strictly interior, and the
+build refuses to emit gold if it is not — otherwise the best cutoff might lie
+outside the grid and the claim would be an artefact of where the sweep stopped.
+Two of the four families (kanamycin, ochratoxin A) are **never** recovered exactly
+at any declared cutoff, which reports as null rather than a number.
+
+**The reconstruction is the campaign's first trap.** BiG-SCAPE's clustering table
+lists only clusters that joined a family — at cutoff 0.1 it holds 10 of 32 records
+— so the partition must be reconstructed with every omitted record as a singleton.
+Reading the table as the partition reports a smaller corpus and a tidier structure
+than the tool produced, which is exactly what the `tableonly` stub level does.
+Two smaller traps go with it: the join key is the `GBK` column, not `Record` (which
+carries a region suffix), and a family label is a name, so agreement is counted
+over **pairs** rather than compared as labels.
+
+**Deviation: `interval_score` is not used, and the primitive's own contract is
+why.** It penalises vagueness against a `max_width` taken from "the observed oracle
+spread from the determinism audit", and this campaign has no spread — BiG-SCAPE is
+deterministic, every cutoff comes from one run, and the answer is exact on a
+declared grid. Any `max_width` would therefore be chosen rather than measured,
+which is the thing that primitive exists to prevent. R4 grades the per-cutoff table
+and three boundary claims exactly instead.
+
+**And `--mibig-version` is forbidden rather than pinned**, contrary to the
+catalogued pin list: it downloads a reference set at run time, which would make a
+gold-producing run network-dependent and the reference set unpinned. The corpus is
+shipped.
+
+**The open item on the antiSMASH version is closed, in the "declare" branch.**
+Every input here was processed by the same antiSMASH version (8.0 beta 1, as the
+archive name records), and this campaign never compares them against output from
+the image's antiSMASH 8.0.4 — so no run mixes two versions, which is what the
+cross-version rule actually requires.
 
 **T-L3-3** **Built**: `campaigns/mibig-diff-3_1-to-4_0-01` (3.1 → 4.0, the
 consecutive-release pair; 3.1 is the last 3.x).

@@ -283,7 +283,7 @@ and the right ones to author first.
 | T-L2-4 A-domain specificity | *retired on grounding — see `docs/catalog.md`* | — | — |
 | T-L2-5 kinetics consistency | BRENDA 2026.1 (shipped subset) | — (stdlib only) | **S0** |
 | T-L3-1 BGC detection | antiSMASH DB + rule files (image), GenBank + MIBiG (shipped) | antiSMASH 8.0.4 | **S2, BUILT** |
-| T-L3-2 GCF cutoff | MIBiG, antiSMASH DB | BiG-SCAPE | S2 |
+| T-L3-2 GCF cutoff | MIBiG as8b1 GBKs (shipped), Pfam 35.0 (image) | BiG-SCAPE 2.0.3 | **S2, BUILT** |
 | T-L3-3 MIBiG diff | MIBiG 3.0 + 4.0 | — | **S0** |
 | T-L3-4 RiPP precursor | MIBiG, Pfam | HMMER | S1 |
 | T-L3-5 self-resistance | MIBiG 4.0 | — | **S0** |
@@ -556,6 +556,35 @@ benchmark ships by an order of magnitude, and it cannot be reduced without
 reintroducing the slice artefact. The 26 MB uncompressed record is also read and
 re-parsed once per declared deletion variant, which is why this campaign's budget
 is 60 minutes rather than the usual 25.
+
+### BiG-SCAPE, in use: three flags and one forbidden one
+
+`gcfcutoff-mibig-32-01` (T-L3-2) is the second S2 campaign, and what provisioning
+it added to what the invariance suite already knew:
+
+**`--gcf-cutoffs` takes a COMMA-separated list, not repeated values.** Passing
+`--gcf-cutoffs 0.1 0.2 0.3` fails with `Got unexpected extra arguments` — a click
+message about argument shape rather than about cutoffs. One run then covers the
+whole grid and writes one output directory per cutoff, which is what makes the
+cutoffs comparable: the distances behind them are identical by construction.
+
+**`--include-gbk BGC` is still required** for inputs named `BGC*.gbk` rather than
+`*.region*.gbk`, and the failure without it remains the misleading one: `no valid
+input GBKs`, a message about names phrased like a message about content.
+
+**`-p` wants the Pfam library**, which the image already carries once for both
+antiSMASH and BiG-SCAPE. Declared as an external resource with a fingerprint, as
+the EC-audit campaign does.
+
+**`--mibig-version` is forbidden on a gold-producing path.** It downloads a
+reference set at run time, which makes the run network-dependent and the reference
+set unpinned. The campaign ships its corpus instead. This was in the catalogue's
+pin list for T-L3-2 and should not have been.
+
+**Cost: about a minute** over 32 clusters and eight cutoffs, so this is the
+cheapest S2 campaign by a wide margin — 6m27s for a full stub sweep against
+15m35s for the whole-chromosome one. The difference is not the tool; it is 32
+small files against one 26 MB record copied and reparsed per run.
 
 ### Two shapes of S1 campaign, and the difference matters
 

@@ -44,11 +44,13 @@ scoring path.
 | Campaign: EC 1.14 transfer | `campaigns/transfer-ec1_14-uniprot-01/` | oracle 1.0, gate 21/0/5 |
 | Template: BGC detection | `src/npbench_c/templates/bgc_detection/` | antiSMASH 8.0.4, whole chromosome, **first S2** |
 | Campaign: S. coelicolor regions | `campaigns/bgcdetect-scoelicolor-01/` | oracle 1.0, gate 21/0/5 |
+| Template: GCF cutoff | `src/npbench_c/templates/gcf_cutoff/` | BiG-SCAPE 2.0.3, one run over a declared grid |
+| Campaign: MIBiG 32 cutoff sweep | `campaigns/gcfcutoff-mibig-32-01/` | oracle 1.0, gate 21/0/5 |
 | Tool memo | `src/npbench_c/tools/cache.py` | stub sweeps only; 29m32s to 3m44s |
 | Phase 1 image | `image/Dockerfile`, `image/environment.lock.json` | 8 tools pinned to `version=build`, 185-package closure hashed, antiSMASH databases pinned at 9.4 GB |
 | Tool registry | `src/npbench_c/tools/registry.py` | pins, controls, invocations, declared normalisations, canonicalisations, projections, enforced bans |
 | Thread-invariance suite | `src/npbench_c/tools/invariance.py` | 8/8 tools invariant at 1 and 8 threads |
-| Tests | `tests/` | 432 passing, 4 skipped |
+| Tests | `tests/` | 458 passing, 5 skipped |
 
 ```bash
 PYTHONPATH=src python3 -m pytest tests -q
@@ -1488,6 +1490,92 @@ rung is *about*: R1 is the inventory — run the tool and summarise — and R2 i
 per-region boundaries. The rung split now follows that, and the bundle contains
 exactly R1's answers.
 
+## Campaign 17: the tool's default cutoff recovers none of them
+
+`gcfcutoff-mibig-32-01` is T-L3-2 and the second S2 campaign. BiG-SCAPE partitions
+BGCs into families, and the partition is a function of a distance cutoff the caller
+supplies — so the campaign runs the pinned tool **once** over a declared eight-point
+grid and asks what the partition does across it.
+
+The corpus is 32 antiSMASH-processed MIBiG clusters, and the thing they are
+reconciled against comes from **chemistry rather than from clustering**: four
+groups of entries sharing an InChIKey connectivity block in the chemical-space
+campaign's table, plus five negative controls, one per biosynthetic class,
+belonging to no such group. That independence is what makes R3 a comparison rather
+than a restatement.
+
+| cutoff | groups | recovered pairs | missed | false joins | pair Jaccard | families exact |
+|---|---|---|---|---|---|---|
+| 0.1 | 25 | 13 | 73 | 0 | 0.151 | 0 |
+| 0.2 | 21 | 19 | 67 | 0 | 0.221 | 0 |
+| **0.3** | 17 | 33 | 53 | 0 | **0.384** | **0** |
+| 0.4 | 15 | 44 | 42 | 0 | 0.512 | 0 |
+| **0.6** | 12 | 71 | 15 | 0 | **0.826** | 2 |
+| 0.7 | 11 | 71 | 15 | **5** | 0.780 | 2 |
+
+**At 0.3 — BiG-SCAPE's own documented default — not one of the four
+chemistry-derived families comes back as exactly one group.** Every one is split;
+one across five groups. Pair agreement is 0.384, less than half what the corpus
+allows. The best cutoff is 0.6 at 0.826, and at 0.7 a negative control is absorbed
+into a family, producing the first five false joins. So agreement is **not
+monotone**, and both ends of the curve are inside the grid — the build refuses to
+emit gold if the optimum sits at the edge, because then the claim would be an
+artefact of where the sweep stopped. Two families are never recovered exactly at
+any declared cutoff, which reports as `null` rather than a number.
+
+### Three ways to get a plausible wrong answer
+
+**The clustering table is not the partition.** It lists only clusters that joined
+a family — at cutoff 0.1, ten of thirty-two records. The partition has to be
+reconstructed with every omitted record as a singleton. Read directly, the table
+gives a smaller corpus and a tidier family structure than the tool produced, and
+nothing fails. That is the `tableonly` stub level, and it lands at depth 1.
+
+**The join key is `GBK`, not `Record`.** `Record` carries a region suffix
+(`BGC0000854.gbk_region_1`). The engine checks that each GBK appears exactly once
+per cutoff and that every row is a `region` record, because a multi-region input
+would need a different reconstruction rule than the declared one — checked rather
+than assumed, after the antiSMASH campaign's column-order lesson.
+
+**A family label is a name.** `FAM_00007` is not a result: two runs can agree
+completely on which clusters belong together and disagree on what the groups are
+called. So the partition is graded and agreement is counted over **pairs**.
+
+### `interval_score` is the right primitive for the wrong campaign
+
+The catalogue specified R4 "scored with `interval_score`". It is not used here, and
+the reason is in that primitive's own docstring: `max_width` is "3x the observed
+oracle spread from the determinism audit", so that both thresholds are *measured
+rather than chosen*. This campaign has no spread to measure — BiG-SCAPE is
+deterministic, every cutoff comes from one run, and the answer is exact on a
+declared grid. Any `max_width` would therefore be a number chosen by me, which is
+precisely what the primitive exists to prevent. R4 grades the per-cutoff table and
+three boundary claims exactly instead.
+
+That is worth separating from the other catalogue corrections in this document.
+The earlier ones were cases where the *data* did not support a design. This one is
+a case where **the campaign is too deterministic for the scorer**: `interval_score`
+exists to make a system commit to a bracket when the quantity is uncertain, and
+here it is not.
+
+### Two pins the catalogue got backwards
+
+`--mibig-version` was in the catalogued pin list. It is **forbidden** on a
+gold-producing path: it downloads a reference set at run time, making the run
+network-dependent and the reference set unpinned. The corpus is shipped instead.
+
+And the open item about the MIBiG reference set's antiSMASH version closes here, in
+the "declare" branch — correctly, for a reason worth stating. Every input in this
+corpus was processed by the same antiSMASH version, and the campaign never compares
+them against output from the image's antiSMASH 8.0.4. The cross-version rule
+forbids *mixing* versions in one comparison; it does not require that every file in
+the benchmark come from one version. No run here mixes.
+
+The sweep passes all five gates with cold depths 1/2/3/4/1/0 in **6m27s** — against
+15m35s for the whole-chromosome campaign, because this corpus is 32 small files
+rather than one 26 MB record, which is the other half of the sweep-cost finding
+above.
+
 ## The leak the sandbox was handing over in prose
 
 Writing the first S2 campaign's rules file, I explained the decision to ship a
@@ -1794,7 +1882,7 @@ whole purpose is to certify determinism that is the one defect that cannot stand
    target is now 30 at most.** T-L5-2 and T-L2-4 both ground out. The count in this
    file's header and in `docs/catalog.md` is the *catalogued* target and has not
    been restated downward, because the replacement question is the owner's call:
-   re-scope those rows, or accept a smaller benchmark. Sixteen campaigns are
+   re-scope those rows, or accept a smaller benchmark. Seventeen campaigns are
    built. This should be settled before the audit packet quotes a number.
 8. **Sweep cost: the tool memo covers the tool, not the work around it.**
    `npbench_c.tools.cache` memoises tool output for stub systems in tooled mode
