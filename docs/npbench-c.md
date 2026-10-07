@@ -46,11 +46,14 @@ scoring path.
 | Campaign: S. coelicolor regions | `campaigns/bgcdetect-scoelicolor-01/` | oracle 1.0, gate 21/0/5 |
 | Template: GCF cutoff | `src/npbench_c/templates/gcf_cutoff/` | BiG-SCAPE 2.0.3, one run over a declared grid |
 | Campaign: MIBiG 32 cutoff sweep | `campaigns/gcfcutoff-mibig-32-01/` | oracle 1.0, gate 21/0/5 |
+| Template: RiPP precursor audit | `src/npbench_c/templates/ripp_precursor/` | HMMER 3.4 + declared Pfam panel, elected coordinate convention |
+| Campaign: MIBiG RiPP precursors | `campaigns/ripp-precursor-mibig-4_0-01/` | oracle 1.0, gate 21/0/5 |
+| External resources | `src/npbench_c/tools/resources.py` | one declaration for a pinned file read from the image, shared by 3 campaigns |
 | Tool memo | `src/npbench_c/tools/cache.py` | stub sweeps only; 29m32s to 3m44s |
 | Phase 1 image | `image/Dockerfile`, `image/environment.lock.json` | 8 tools pinned to `version=build`, 185-package closure hashed, antiSMASH databases pinned at 9.4 GB |
 | Tool registry | `src/npbench_c/tools/registry.py` | pins, controls, invocations, declared normalisations, canonicalisations, projections, enforced bans |
 | Thread-invariance suite | `src/npbench_c/tools/invariance.py` | 8/8 tools invariant at 1 and 8 threads |
-| Tests | `tests/` | 458 passing, 5 skipped |
+| Tests | `tests/` | 509 passing, 5 skipped |
 
 ```bash
 PYTHONPATH=src python3 -m pytest tests -q
@@ -1848,6 +1851,206 @@ rather than let a coin decide a verdict. **A test that fails 3% of the time is n
 a strict test; it is a test whose result is partly noise**, and on a suite whose
 whole purpose is to certify determinism that is the one defect that cannot stand.
 
+## Campaign 18: three records of one peptide, and a field with four shapes
+
+`ripp-precursor-mibig-4_0-01` is T-L3-4, the third tool-running campaign and the
+second S1. A RiPP is made from a precursor protein carrying a leader, a core and
+sometimes a follower; the core becomes the product. MIBiG records the precursor's
+gene, the core's sequence and — for some entries — a `leader_cleavage_location`.
+The translation itself is in the antiSMASH-processed reference record for the same
+cluster. So three independent records describe one peptide, and whether they agree
+is entirely checkable.
+
+**Half the catalogued ladder does not survive, and the reason is gradability
+rather than cost.** The catalogued R3 was "the core peptide sequence and the
+cleavage motif". The core peptide sequence *is* a MIBiG field: grading it grades
+transcription, and the campaign must ship the field for anything else to be
+solvable, which makes it a free component twice over. The cleavage motif is not in
+MIBiG at all. The catalogued R4 was "the leader is altered — predict the new
+core", and that has **no oracle**: no pinned tool computes it, the answer is a
+wet-lab fact about a peptide nobody has made, and scoring it against a curator's
+intuition is the human judgement this benchmark excludes from grading. R4 keeps
+the counterfactual's intent — what does the leader carry — and makes it
+measurable, by removing each declared leader and asking the tool what survives.
+
+### The field has four JSON shapes and one of them is not a peptide
+
+| shape of `core_sequence` | records |
+|---|---|
+| list of one string | 35 |
+| bare string | 28 |
+| list of several strings | 2 |
+| **the printed form of a list, as a string** | **2** |
+
+The last is literally `"['GGAGHVPEYFVGIGTPISFYG']"` — brackets and quotes inside
+the value, from a serialiser that printed a list instead of emitting one. Three
+such records exist across the whole class; two are in the corpus.
+
+`core_sequence[0]` — the natural thing to write against the commonest shape — is
+correct for the list shapes and takes **one residue** where the field is a bare
+string. It raises no error on any record, and a one-residue core still localises;
+it just localises many times over, so the report comes back saying *ambiguous*
+rather than *I mis-parsed this*. That is the campaign's competence probe
+(`stub-firstshape`), and it clears R1 and fails R2.
+
+Case is the other half of the same problem and is handled differently on purpose.
+Seven corpus cores are recorded in lower case against upper-case translations.
+Folding case cannot invent a match that is not there, so it is a **normalisation**
+and belongs in the baseline policy; a character that is not an amino-acid letter
+*in either case* is a malformed core. Conflating the two reports a case difference
+as a data defect — which is what the first draft of this campaign did, and the
+build's own policy-sweep assertion caught it: with the fold hard-coded into the
+comparison, the strict policy and the baseline produced identical censuses and the
+build refused gold, saying two of three declared policies were the same policy
+under two names.
+
+### Localisation, and the six entries that pasted in the whole precursor
+
+Under the baseline policy, over 67 precursor records from 54 clusters:
+
+| verdict | records |
+|---|---|
+| core at the C terminus | 49 |
+| core internal | 9 |
+| **core is the whole precursor** | **6** |
+| malformed core | 2 |
+| core ambiguous | 1 |
+
+Leader lengths run **1 to 85**, median 23. The minimum of 1 is real: bottromycin's
+core sits at the N terminus and its leader is the initiator methionine alone.
+
+Six entries put the **entire precursor**, leader included, into `core_sequence`.
+That localises perfectly at offset zero, so a reader that only asks "is the core
+findable" reports a clean record with a zero-length leader. The campaign gives it
+its own verdict and nulls the derived coordinates, and the same is true of the
+tandem-repeat cyanobactin precursor whose core occurs twice: *where is the core*
+has no answer, and filling it with the first match would be a declared choice the
+campaign has not declared.
+
+### The coordinate convention is elected, not assumed
+
+Nothing in MIBiG says whether `leader_cleavage_location` is 0-based or 1-based, or
+whether `from` or `to` marks the core's first residue. All four readings are scored
+against the measured position:
+
+| reading | agrees | disagrees | underivable |
+|---|---|---|---|
+| **`to` as the 0-based core start** | **27** | **0** | 3 |
+| `from` as the 0-based core start | 4 | 23 | 3 |
+| `to` as the 1-based core start | 0 | 27 | 3 |
+| `from` as the 1-based core start | 0 | 27 | 3 |
+
+So `to` is the 0-based index of the first core residue, and on **every** record
+where both a coordinate and a position exist, the two agree. The three that do not
+are the three with no position: the tandem repeat, and two whose `core_sequence` is
+the whole precursor while a cleavage site is *still* declared, with `from == to` —
+which under no convention describes a bond. The four records where `from` also
+agrees are exactly those `from == to` cases, which is why `from` scores 4 rather
+than 0.
+
+This is the same move T-L3-1 had to make for MIBiG's locus bounds, and the build
+refuses gold if the top two readings tie, if none agrees anywhere, or if none
+disagrees anywhere — any of which would make "elected" a tie-break dressed as a
+finding.
+
+### No Pfam family marks the boundary, and the leader is why
+
+HMMER 3.4 against a declared eight-model Pfam 35.0 panel, fetched from the image
+with `hmmfetch`. The panel was fixed at build time by scanning the corpus against
+the whole of Pfam-A once — 27 seconds for 67 sequences of fifty-odd residues — and
+listing every family that came back at the gathering threshold: `DUF5837`,
+`DUF5840`, `DUF5973`, `Gallidermin`, `Lantibiotic_a`, `Nif11`, `RamS`,
+`Thiopep_pre`.
+
+**The panel hits 12 of 67 precursors.** Of the 10 that can be placed against a
+measured boundary, **8 span the cleavage site** and 2 sit in the leader alone.
+**None is core-specific.** The offset between a hit's envelope end and the leader's
+length runs −21 to +30 and is **never zero** — so no family stops where the leader
+does, and "use the domain call as the boundary" is not available. Five of the 12
+envelopes cover the precursor end to end.
+
+Then R4 asks the tool directly. Remove each record's declared leader, re-scan with
+the same panel at the same threshold:
+
+| outcome | records |
+|---|---|
+| **call lost entirely** | **7** |
+| call retained | 3 |
+| never recognised, still not (control) | 48 |
+| no located core, not applicable | 9 |
+
+Seven of the ten calls are carried by the leader. The three that hold are
+`DUF5973` on cinA and `Lantibiotic_a` twice — families whose envelope lies mostly
+in the core. Nothing is gained, which the vocabulary allows for and the corpus
+declines to supply.
+
+### Two measurements about the resources themselves
+
+**The two exclusion clauses coincide exactly.** Of 447 ribosomal entries, 100 name
+both a precursor gene and a core sequence. 46 of those are `retired`; 46 are absent
+from the antiSMASH reference set; and they are **the same 46**, with no exceptions
+in either direction. Applied in sequence the second clause would have reported
+zero and the coincidence would have been invisible — a fact about the evaluation
+order, not about the resources — so the campaign counts the two independently and
+grades their overlap. The audit runs on what survives both: 67 records, 54
+clusters, 30 declaring a cleavage coordinate.
+
+**The reference records shipped are those for every entry of the class**, 363
+files and 3.4 MB compressed, not the 54 the audit uses. Shipping only the entries
+that pass the reference clause would make the count of those that do not readable
+off a directory listing instead of computed from the two resources. That is a
+**free component**, and it is the sixth one caught in this project.
+
+Five echoes are reported and not graded for the same reason — `mibig_release`
+comes from the input provenance, and `biosynthetic_class`, `baseline_policy`,
+`threshold` and `panel_size` from the pinned rules table. Nothing in the world
+would have to change for their values to change, only the campaign's own
+declaration.
+
+### What broke on the way
+
+**The GenBank feature table does not start at column six.** The first parser ended
+the feature table at the first line that did not begin with six spaces — and a
+feature key begins at column *five*, so the table ended at the first feature and
+the campaign found zero translations in every record. The stop condition is now
+the first line that starts in column 0, which is what GenBank actually guarantees,
+and there is a test that writes a minimal record and asserts the one translation
+comes back.
+
+**Factoring, not duplicating.** `Resource` — the declaration for a file read from
+the image and not redistributed — existed twice already, in `ec_domain_audit` and
+in `gcf_cutoff`, with the second supporting a globbed path and the first a
+`verify()`. A third copy would have been the smell this project keeps finding in
+other people's data, so both moved to `npbench_c.tools.resources`, which carries
+the union: globbing, with the fingerprint deciding whether the match was the
+declared one. `resolve()` now raises `ResourceError` rather than a template's own
+error type, which is one line in the EC-audit tests, and both campaigns' suites
+pass unchanged otherwise.
+
+### The sweep, and what it cost
+
+Gold builds in **7.7 seconds**, including both HMMER scans. The stub sweep —
+six systems, four rungs, three repeats, 72 runs — takes **7m51s** with all five
+gates passing and cold depths **1 / 2 / 3 / 4 / 1 / 0**:
+
+| system | mode | cold depth |
+|---|---|---|
+| stub-reader | tooled | 1 |
+| stub-localise | tooled | 2 |
+| stub-evidence | tooled | 3 |
+| stub-complete | tooled | 4 |
+| **stub-firstshape** | tooled | **1** |
+| stub-noncompute | no_tool | 0 |
+
+Per-rung clear rates 1.00 / 0.60 / 0.40 / 0.20, cold mean score 0.55, and the
+no-tool ablation at 0.0000 against a chance floor of 0.2502.
+
+The residual cost is the same one open item 8 names, in its cheaper form: the tool
+memo works, but each of the 72 runs copies 4.3 MB of inputs into a fresh sandbox
+and re-reads a 3,013-entry annotation archive and several hundred GenBank records
+to rebuild the corpus. That is about 6.5 seconds per run of pure re-parsing, and
+it is the whole of the 7m51s.
+
 ## Open items
 
 1. **CAI table provenance.** The relative-adaptiveness values now live in
@@ -1882,7 +2085,7 @@ whole purpose is to certify determinism that is the one defect that cannot stand
    target is now 30 at most.** T-L5-2 and T-L2-4 both ground out. The count in this
    file's header and in `docs/catalog.md` is the *catalogued* target and has not
    been restated downward, because the replacement question is the owner's call:
-   re-scope those rows, or accept a smaller benchmark. Seventeen campaigns are
+   re-scope those rows, or accept a smaller benchmark. Eighteen campaigns are
    built. This should be settled before the audit packet quotes a number.
 8. **Sweep cost: the tool memo covers the tool, not the work around it.**
    `npbench_c.tools.cache` memoises tool output for stub systems in tooled mode
@@ -1892,17 +2095,23 @@ whole purpose is to certify determinism that is the one defect that cannot stand
    re-reads and re-parses a 26 MB GenBank record and copies a 6.8 MB input into a
    fresh sandbox. Two candidate fixes, neither taken yet: cache the parsed record
    beside the tool output, or let a stub level reuse one sandbox across repeats.
+   Measured a third time on T-L3-4, where the tool is cheap and the inputs are
+   small, a 72-run stub sweep still takes **7m51s** — about 6.5 seconds per run of
+   re-parsing a 3,013-entry annotation archive and several hundred GenBank records
+   into the same corpus, with the tool itself memoised. So the pattern holds at
+   both ends of the cost range and the fix is the same one: cache the parsed
+   inputs, or reuse a sandbox across repeats.
    And the real-systems sweep gets no memo at all by design — every such run must
    drive the tool itself — so whether that needs parallelism depends on how long
    real agents take per run, measurable only once item 3 supplies the `SystemSpec`
    entries.
 9. **`structural_elements` is decorative and nothing validates it.** Nine of the
-   fourteen built campaigns declare `planted` and several of them plant nothing —
+   eighteen built campaigns declare `planted` and several of them plant nothing —
    `mibig-diff-3_1-to-4_0-01`'s own notes say its sharpest case is "supplied by the
-   corpus rather than planted". The new campaign declares only what it has
-   (`verification, counterfactual, control`), but the field needs either a
-   definition and a gate check or removal, and fixing the other nine is the owner's
-   taxonomy call rather than a silent edit. A declaration no check reads is the
+   corpus rather than planted". The four campaigns built since declare only what
+   they have (`verification, counterfactual, control`), but the field needs either
+   a definition and a gate check or removal, and fixing the other nine is the
+   owner's taxonomy call rather than a silent edit. A declaration no check reads is the
    thing this project keeps finding in other people's data.
 10. Construct-validity study: inter-rater agreement first, then expert-grader
    agreement with Gwet's AC1 / Krippendorff's alpha alongside kappa, gate on

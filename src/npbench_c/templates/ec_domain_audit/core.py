@@ -44,15 +44,18 @@ from dataclasses import dataclass
 from typing import Mapping, Sequence
 
 from npbench_c.tools import cache
+from npbench_c.tools.resources import (
+    DEFAULT_PREFIX,
+    Resource,
+    load_declared,
+    sha256,
+    tool_prefix,
+)
 
 TEMPLATE_ID = "ec-domain-audit"
 CONSTANTS = pathlib.Path(__file__).resolve().parent / "constants"
 RULES = "audit_rules.json"
 PRECISION = 6
-
-#: Where the pinned image puts its binaries. The suite and the templates share
-#: the override so a different prefix needs no code change.
-DEFAULT_PREFIX = "/opt/npbench-tools/bin"
 
 #: Thread-count and locale pinning for every tool call, matching the invariance
 #: suite. HMMER's tblout is thread-invariant after one declared normalisation
@@ -69,10 +72,6 @@ TIMEOUT_S = 900
 
 class AuditError(RuntimeError):
     """The sequence set or the environment does not support the audit."""
-
-
-def tool_prefix() -> pathlib.Path:
-    return pathlib.Path(os.environ.get("NPBENCH_TOOL_PREFIX", DEFAULT_PREFIX))
 
 
 def _run(argv: Sequence[str], **kwargs) -> subprocess.CompletedProcess:
@@ -96,56 +95,6 @@ def _run(argv: Sequence[str], **kwargs) -> subprocess.CompletedProcess:
                           **kwargs)
 
 
-def sha256(path: pathlib.Path) -> str:
-    digest = hashlib.sha256()
-    with open(path, "rb") as handle:
-        for block in iter(lambda: handle.read(1 << 20), b""):
-            digest.update(block)
-    return digest.hexdigest()
-
-
-# ------------------------------------------------------------------- resources
-
-
-@dataclass(frozen=True)
-class Resource:
-    """A pinned file the campaign reads from the image and does not redistribute.
-
-    Some reference data cannot be shipped inside a campaign: it is too large, or
-    it carries a licence the benchmark is not in a position to pass on. Such a
-    resource is declared here with the path, the provider, the version and a
-    fingerprint, so a campaign records exactly what it was built against even
-    though the bytes live outside it.
-    """
-
-    name: str
-    relative_path: str
-    provider: str
-    version: str
-    sha256: str
-    note: str
-
-    @property
-    def path(self) -> pathlib.Path:
-        return tool_prefix().parent / self.relative_path
-
-    def resolve(self) -> pathlib.Path:
-        if not self.path.is_file():
-            raise AuditError(
-                f"{self.name} is not present at {self.path}. This campaign reads "
-                f"it from the pinned image ({self.provider}) rather than shipping "
-                f"it: {self.note}")
-        return self.path
-
-    def verify(self) -> dict:
-        """Fingerprint the resource as found, for the record."""
-        path = self.resolve()
-        found = sha256(path)
-        return {"name": self.name, "path": str(path), "provider": self.provider,
-                "version": self.version, "declared_sha256": self.sha256,
-                "found_sha256": found, "matches": found == self.sha256}
-
-
 # ----------------------------------------------------------------------- rules
 
 
@@ -164,11 +113,7 @@ class Rules:
     def load(cls, campaign: pathlib.Path) -> "Rules":
         spec = json.loads((pathlib.Path(campaign) / "reference" / RULES).read_text())
         audit = spec["audit"]
-        resources = {
-            name: Resource(name=name, relative_path=r["relative_path"],
-                           provider=r["provider"], version=r["version"],
-                           sha256=r["sha256"], note=r["note"])
-            for name, r in sorted(spec["external_resources"].items())}
+        resources = load_declared(spec["external_resources"])
         return cls(
             ec_number=audit["ec_number"],
             canonical_model=audit["canonical_model"],

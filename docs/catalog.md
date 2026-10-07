@@ -406,7 +406,7 @@ to 0.36%.
 | T-L3-1 | BGC detection & boundary calling | verified | **BUILT** (first S2) |
 | T-L3-2 | GCF clustering cutoff sensitivity | verified | **BUILT** (S2) |
 | T-L3-3 ×2 | MIBiG version diff reconciliation | verified | **BUILT** |
-| T-L3-4 | RiPP precursor annotation | likely | image |
+| T-L3-4 | RiPP precursor annotation | verified | **BUILT** |
 | T-L3-5 | Self-resistance target identification | verified | **image** (re-tiered) |
 | T-L3-5a | Gene-function evidence audit | verified | **BUILT** |
 
@@ -599,6 +599,96 @@ perturbation operations generalise to any release pair.
 R1 precursor table · R2 matches gold · R3 claim: the core peptide sequence and
 the cleavage motif · R4 the leader is altered — predict the new core. 447
 ribosomal-class entries available.
+
+**Built**: `campaigns/ripp-precursor-mibig-4_0-01`, the benchmark's **third
+tool-running campaign and second S1**. MIBiG 4.0's annotation set plus the
+antiSMASH-processed reference records for every one of its 447 `ribosomal`
+entries, with HMMER 3.4 and a declared eight-model Pfam 35.0 panel read from the
+image. Oracle 1.0 at depth 4, gate 21/0/5.
+
+**Two of the four catalogued rungs do not survive, and both refusals are about
+gradability.** The core peptide sequence *is* a MIBiG field, so grading it grades
+transcription — and the campaign has to ship the field for anything else to be
+solvable, which makes it a free component twice over. The "cleavage motif" is not
+in MIBiG at all. And predicting the core of an altered leader has **no oracle**:
+no pinned tool computes it, the answer is a wet-lab fact about a peptide nobody
+has made, and scoring it against a curator's intuition is exactly the human
+judgement this benchmark keeps out of grading. What replaces them is an audit of
+whether the three records of one peptide — the core sequence, the cleavage
+coordinate and the translation — are consistent with each other, which is
+entirely mechanical.
+
+**The corpus is small because the field is sparse, and the sparsity is measured.**
+Of 447 ribosomal entries, 100 name both a precursor gene and a core sequence; 46
+of those are `retired` and the same 46 are absent from the antiSMASH reference
+set — a coincidence that holds with **no exceptions in either direction**, which
+is why the campaign counts the two exclusion clauses independently rather than in
+sequence. The audit runs on **67 precursor records over 54 clusters**, 30 of which
+declare a `leader_cleavage_location`.
+
+**`core_sequence` arrives in four JSON shapes**, which is the campaign's first
+trap:
+
+| shape | records |
+|---|---|
+| list of one string | 35 |
+| bare string | 28 |
+| list of several strings | 2 |
+| **the printed form of a list, as a string** | **2** |
+
+That last shape is literally `"['GGAGHVPEYFVGIGTPISFYG']"` — brackets and quotes
+inside the value. `core_sequence[0]`, the natural thing to write against the
+commonest shape, is correct for the list shapes and silently takes **one residue**
+where the field is a bare string; it raises no error on any record and the broken
+rows still localise, just ambiguously. That is the campaign's competence probe.
+
+**Localisation under the baseline policy** (case folded, no repair), over the 67:
+
+| verdict | records |
+|---|---|
+| core at the C terminus | 49 |
+| core internal | 9 |
+| **core is the whole precursor** | **6** |
+| malformed core | 2 |
+| core ambiguous | 1 |
+
+Leader lengths run 1–85 with a median of 23. Six entries pasted the **entire
+precursor** into `core_sequence`, leader included: it localises perfectly at
+offset zero, so a reader that only asks "is it findable" reports a clean record
+with a zero-length leader. One precursor is a tandem repeat whose core occurs
+twice, so "where is the core" has no answer at all.
+
+**The coordinate convention is elected, not assumed** — the same move T-L3-1 had
+to make for MIBiG's locus bounds, and the result is just as decisive:
+
+| reading of `leader_cleavage_location` | agrees | disagrees | underivable |
+|---|---|---|---|
+| **`to` as the 0-based core start** | **27** | **0** | 3 |
+| `from` as the 0-based core start | 4 | 23 | 3 |
+| `to` as the 1-based core start | 0 | 27 | 3 |
+| `from` as the 1-based core start | 0 | 27 | 3 |
+
+So `to` is the 0-based index of the first core residue, and on every record where
+both a coordinate and a position exist they agree. The three that do not are the
+three with no position — the tandem repeat, and two whose `core_sequence` is the
+whole precursor while a cleavage site is nonetheless declared with `from == to`,
+which under no convention describes a bond.
+
+**No Pfam family marks the boundary, and the leader is why.** The declared panel
+hits **12 of 67** precursors. Of the 10 placeable hits, 8 **span** the cleavage
+site and 2 sit in the leader alone; **none is core-specific**, and the offset
+between a hit's envelope end and the leader's length runs −21 to +30 and is
+**never zero**. Then the R4 counterfactual asks the tool directly: remove each
+declared leader and re-scan. **7 of the 10 calls disappear entirely** and 3 hold —
+`DUF5973` on cinA, and `Lantibiotic_a` twice. The Pfam signal for a RiPP precursor
+is carried by its leader in most cases, which is both a finding and the reason the
+catalogued "use the domain call as the boundary" shortcut would not have worked.
+
+**The reference records shipped are those for every entry of the class** (363
+files, 3.4 MB compressed), not the 54 the audit uses. Shipping only the entries
+that pass the reference clause would make the count of those that do not readable
+off a directory listing instead of computed from the two resources — a free
+component, which this project has now caught six times.
 
 **T-L3-5** **Re-tiered to `build: image`.** MIBiG 4.0 *does* carry a structured
 `Resistance/immunity` gene-function category (43 annotations, 20 entries with

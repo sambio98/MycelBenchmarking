@@ -1,0 +1,22 @@
+{
+  "annotations": {
+    "attribution": "MIBiG 4.0 (https://mibig.secondarymetabolites.org/), licensed CC BY 4.0",
+    "file": "mibig_json_4.0.tar.gz",
+    "license": "CC BY 4.0",
+    "note": "Shipped whole and unfiltered. The selection rule is part of the task, so filtering the set here would answer the first rung in the input.",
+    "sha256": "986f1a69fb5eeb84fd7c0175ae921304c22fd5f8ed04c96d8c1c0c95a145837b",
+    "source": "MIBiG"
+  },
+  "reference_records": {
+    "archive_sha256": "cf7e27514197983c814fbe2b6ade68e723311d10e2f12b2583447192ad6d3310",
+    "attribution": "MIBiG antiSMASH-processed reference set (https://dl.secondarymetabolites.org/mibig/mibig_antismash_4.0_gbk_as8b1.tar.bz2), licensed CC BY 4.0",
+    "file": "mibig_antismash_ribosomal.tar.gz",
+    "license": "CC BY 4.0",
+    "note": "The records are the processed GenBank files as published, including their CDS translations, which is what the audit reads. They are NOT re-run through the image's antiSMASH: this campaign never compares output from two antiSMASH versions, which antiSMASH's own rules forbid.",
+    "selection_rule": "every MIBiG entry of biosynthetic class 'ribosomal' for which the source set carries a record, unchanged",
+    "sha256": "7099ba915162f6da2592fe293d4744d811e96b9b0925a402085b74ab8f8e560a",
+    "source": "MIBiG antiSMASH-processed reference set",
+    "url": "https://dl.secondarymetabolites.org/mibig/mibig_antismash_4.0_gbk_as8b1.tar.bz2"
+  },
+  "release": "4.0"
+}

@@ -285,7 +285,7 @@ and the right ones to author first.
 | T-L3-1 BGC detection | antiSMASH DB + rule files (image), GenBank + MIBiG (shipped) | antiSMASH 8.0.4 | **S2, BUILT** |
 | T-L3-2 GCF cutoff | MIBiG as8b1 GBKs (shipped), Pfam 35.0 (image) | BiG-SCAPE 2.0.3 | **S2, BUILT** |
 | T-L3-3 MIBiG diff | MIBiG 3.0 + 4.0 | — | **S0** |
-| T-L3-4 RiPP precursor | MIBiG, Pfam | HMMER | S1 |
+| T-L3-4 RiPP precursor | MIBiG 4.0 + its antiSMASH reference records (shipped), Pfam 35.0 (image) | HMMER 3.4 | **S1, BUILT** |
 | T-L3-5 self-resistance | MIBiG 4.0 | — | **S0** |
 | T-L4-1 MS² dereplication | MassBank, GNPS, CASMI | matchms, RDKit | S1 |
 | T-L4-2 molecular networking | GNPS | matchms | S1 |

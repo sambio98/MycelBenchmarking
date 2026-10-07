@@ -33,6 +33,7 @@ from npbench_c.templates.ec_domain_audit.core import (
     tool_prefix,
 )
 from npbench_c.templates.ec_domain_audit.measure import measure
+from npbench_c.tools.resources import ResourceError
 
 CAMPAIGN = (pathlib.Path(__file__).resolve().parents[2]
             / "campaigns" / "ecaudit-fmn-dh-1_1_3_15-01")
@@ -334,7 +335,10 @@ def test_a_changed_resource_is_caught_rather_than_silently_used():
     missing = Resource(name="absent", relative_path="no/such/file.hmm",
                        provider=real.provider, version=real.version,
                        sha256=real.sha256, note="test")
-    with pytest.raises(AuditError, match="reads it from the pinned image"):
+    # The declaration itself now lives in npbench_c.tools.resources, shared by
+    # every campaign that reads a resource from the image, so the refusal is a
+    # ResourceError rather than this template's own error type.
+    with pytest.raises(ResourceError, match="reads it from the pinned image"):
         missing.resolve()
 
 

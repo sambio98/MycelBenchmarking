@@ -52,13 +52,17 @@ from dataclasses import dataclass
 from typing import Mapping, Sequence
 
 from npbench_c.tools import cache
+from npbench_c.tools.resources import (
+    DEFAULT_PREFIX,
+    Resource,
+    load_declared,
+    tool_prefix,
+)
 
 TEMPLATE_ID = "gcf-cutoff"
 CONSTANTS = pathlib.Path(__file__).resolve().parent / "constants"
 RULES = "cutoff_rules.json"
 PRECISION = 6
-
-DEFAULT_PREFIX = "/opt/npbench-tools/bin"
 
 FIXED_ENV = {
     "OMP_NUM_THREADS": "1", "OPENBLAS_NUM_THREADS": "1",
@@ -76,10 +80,6 @@ class CutoffError(RuntimeError):
     """The corpus or the environment does not support the clustering experiment."""
 
 
-def tool_prefix() -> pathlib.Path:
-    return pathlib.Path(os.environ.get("NPBENCH_TOOL_PREFIX", DEFAULT_PREFIX))
-
-
 def _run(argv: Sequence[str]) -> subprocess.CompletedProcess:
     """Run a pinned tool with the prefix appended to PATH, last."""
     prefix = str(tool_prefix())
@@ -89,34 +89,6 @@ def _run(argv: Sequence[str]) -> subprocess.CompletedProcess:
     env = {**os.environ, **FIXED_ENV, "PATH": os.pathsep.join([*parts, prefix])}
     return subprocess.run(list(argv), capture_output=True, text=True, env=env,
                           timeout=TIMEOUT_S)
-
-
-# ------------------------------------------------------------------ resources
-
-
-@dataclass(frozen=True)
-class Resource:
-    """A pinned file read from the image and not redistributed."""
-
-    name: str
-    relative_path: str
-    provider: str
-    version: str
-    sha256: str
-    note: str
-
-    def resolve(self) -> pathlib.Path:
-        root = tool_prefix().parent
-        matches = ([p for p in sorted(root.glob(self.relative_path)) if p.is_file()]
-                   if any(c in self.relative_path for c in "*?[")
-                   else [root / self.relative_path])
-        matches = [m for m in matches if m.is_file()]
-        if not matches:
-            raise CutoffError(
-                f"{self.name} is not present under {root}. This campaign reads it "
-                f"from the pinned image ({self.provider}) rather than shipping it: "
-                f"{self.note}")
-        return matches[-1]
 
 
 # ---------------------------------------------------------------------- rules
@@ -135,11 +107,7 @@ class Rules:
     def load(cls, campaign: pathlib.Path) -> "Rules":
         spec = json.loads((pathlib.Path(campaign) / "reference" / RULES).read_text())
         clustering = spec["clustering"]
-        resources = {
-            name: Resource(name=name, relative_path=r["relative_path"],
-                           provider=r["provider"], version=r["version"],
-                           sha256=r["sha256"], note=r["note"])
-            for name, r in sorted(spec["external_resources"].items())}
+        resources = load_declared(spec["external_resources"])
         cutoffs = tuple(float(c) for c in clustering["cutoffs"])
         baseline = float(clustering["baseline_cutoff"])
         if baseline not in cutoffs:
