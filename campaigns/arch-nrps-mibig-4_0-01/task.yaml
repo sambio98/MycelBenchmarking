@@ -1,0 +1,325 @@
+campaign_id: arch-nrps-mibig-4_0-01
+template_id: domain-architecture
+track: EX
+family: cross_database_reconciliation
+layer: L1_sequence_and_annotation
+np_class: nrps
+version: 1.0.0
+horizon_tier: T-short
+license_class: open
+grader_version: "2.0.0+9fc95658"
+grading_spec_version: "1.0.0"
+min_tool_surface: S1
+tool_surface_note: >
+  Needs HMMER and the Pfam library it scans against, which the campaign reads
+  from the image rather than shipping. R1 reports the tool identity and the
+  per-family hit census, so the no-tool ablation fails the first rung; every
+  rung above it is made of the scans. The declared panel keeps each scan to
+  about half a minute instead of the seven minutes a full Pfam-A pass costs on
+  a corpus of this size, and R4 needs four of them.
+
+license_notice:
+  source: >
+    MIBiG 4.0 annotation records, and the CDS translations of every gene named
+    by a curated module, taken from the antiSMASH-processed reference records
+  license: CC BY 4.0
+  attribution: >
+    MIBiG 4.0 (https://mibig.secondarymetabolites.org/) and the MIBiG
+    antiSMASH-processed reference set
+    (https://dl.secondarymetabolites.org/mibig/), both licensed CC BY 4.0.
+  redistribution: >
+    inputs/ carries the annotation archive unchanged and the translations
+    unmodified under a published extraction rule, with the source archive's
+    sha256 recorded in inputs/provenance.json. CC BY 4.0 requires attribution
+    and nothing further. The Pfam library is NOT redistributed: it is read from
+    the pinned image at a declared path with a recorded sha256.
+
+objective: >
+  A non-ribosomal peptide synthetase is one protein carrying a chain of
+  catalytic domains, and its architecture is the ordered list of them. Select the
+  genes whose curated modules are all of the declared type, scan them with a
+  pinned HMMER against a declared Pfam panel, resolve the overlaps the tool
+  produces under a declared policy, and report the architecture of each. Then
+  reconcile what you computed against what MIBiG's curators recorded module by
+  module, and report how all of it moves under each other declared reading of
+  the same scan.
+
+method_guidance: partial
+
+scope_note: >
+  Gold is the declared projection of a pinned tool's own output and exact
+  arithmetic over it, tier G1. No rung asks what a domain is for, or which domain
+  matters: every verdict is a count, a span, a string or a tool's own call.
+
+  Five things are load-bearing.
+
+  Hits OVERLAP, so an architecture needs a resolution rule. Nested Pfam families
+  hit the same residues -- a ketosynthase core inside a thiolase model, five
+  methyltransferase families against each other -- and a report that lists them
+  all as consecutive domains has invented a protein. The policy is declared, the
+  baseline resolves, and the unresolved architecture is one of the counterfactual
+  axes rather than the default.
+
+  Pfam's own rule is NOT available. Pfam resolves overlaps within a clan by
+  keeping the best-scoring hit, and the pinned library carries no clan annotation
+  at all. So the rule here is score and geometry, declared as this campaign's own
+  rather than borrowed and misattributed.
+
+  The coordinate convention is a choice. HMMER reports an alignment span and a
+  wider envelope span for every hit, and ordering by one or the other can reorder
+  the architecture. Both are declared; the baseline is the alignment span.
+
+  A Pfam family is not a domain type. The curated record names an adenylation
+  domain; Pfam splits it into an N-terminal family and a C-terminal family, and
+  counting both double-counts every module. Which family counts is a declared
+  mapping and the counterfactual varies it.
+
+  And the curated side is INDEPENDENT of the tool: MIBiG's modules come from the
+  literature and the product's structure, gene by gene, not from any domain scan
+  of these sequences. That is what makes the reconciliation a comparison rather
+  than a restatement. Only counts are compared, because the curated coordinates
+  are placeholders on all but a handful of records -- which the first rung
+  reports rather than works around.
+
+catalog_deviation: >
+  Four changes, each forced by a measurement rather than by cost.
+
+  The catalogued R1 asked for a "non-overlapping" domain table. Measured on this
+  corpus that is not what the tool produces: the raw hits overlap on hundreds of
+  genes, and the resolution that makes them non-overlapping throws away hits.
+  R1 therefore reports the per-family census and R2 reports the overlap count and
+  the architecture after a declared resolution, so the complication is graded
+  instead of assumed away.
+
+  The catalogued R2 was to be scored by overlap-F1 against gold. It is scored
+  exactly instead. Overlap-F1 exists to absorb boundary disagreement between two
+  independent predictions; both sides here come from the same pinned scan of the
+  same bytes, so any tolerance would be absorbing a difference that cannot occur
+  and hiding one that can.
+
+  The catalogued R3 claimed "which domain is catalytically essential, closed
+  enum". That is a literature claim, not a computation: no pinned tool answers it
+  and scoring it against a curator's intuition is the human judgement this
+  benchmark excludes from grading. R3 reconciles counts against MIBiG's curated
+  modules instead, which is arithmetic over two independent records.
+
+  The catalogued R4 was "a domain is deleted from the sequence -- predict the new
+  architecture and the lost function". The lost function has no oracle, for the
+  same reason. The deletion half is computable and was built and measured: it is
+  DEGENERATE. Removing each gene's first adenylation domain and re-scanning
+  leaves the architecture minus exactly that domain on 1,112 of 1,126 genes, so
+  "one domain fewer" is a free answer and the rung would distinguish almost
+  nothing. R4 instead varies the three declared readings of the same scan --
+  resolution, coordinate span and cutoff -- plus the family-to-domain mapping,
+  each of which was measured to move the answer.
+
+template_params:
+  annotations_input: inputs/mibig_json_4.0.tar.gz
+  proteins_input: inputs/module_gene_proteins.faa.gz
+
+output_contract:
+  architecture_report.json:
+    mibig_release / module_type / baseline_cutoff / baseline_resolution / baseline_span / baseline_mapping / panel_size: >
+      Reported for the record and NOT graded: each is fixed by the campaign's own
+      declaration, so grading it would add weight to a conjunctive product and no
+      information.
+    hmmer_version / pfam_version / pfam_sha256: >
+      What produced the domain calls. An architecture is only as pinned as the
+      tool and the library behind it.
+    selection_census: >
+      How the corpus was arrived at: entries carrying curated modules, modules,
+      modules naming more than one gene, genes a single-gene module names, the
+      genes each clause of the selection rule removes, translations shipped, and
+      the genes and clusters that survive.
+    curated_coordinate_usability / curated_active_flag: >
+      Two properties of the curated record this campaign depends on and does not
+      assume. How many typed domain blocks carry a usable location versus a
+      placeholder, and what values the module `active` flag actually takes.
+    curated_module_census / curated_domain_totals: >
+      Over the corpus: how many genes carry each number of curated modules, and
+      the total per declared typed domain block.
+    protein_length_summary: >
+      Count, minimum, median, maximum and total residues over the corpus.
+    panel_census: >
+      Per declared Pfam model, how many hits at the baseline cutoff before any
+      resolution.
+    architecture_table: >
+      Per corpus gene, in (cluster, gene) order: length, raw hits, domains kept,
+      hits the resolution dropped, the architecture as a hyphen-joined family
+      string in coordinate order, and the first and last domain coordinates.
+      The last two are null for a gene with no domain.
+    architecture_census: >
+      Genes, genes with no domain, distinct architecture strings, total domains,
+      and the per-gene domain count's minimum, median and maximum.
+    overlap_census: >
+      Raw hits, overlapping hit pairs and genes carrying at least one overlap,
+      all before resolution. This is the number the catalogued design assumed was
+      zero.
+    reconciliation_table: >
+      Per gene: curated modules, curated and computed adenylation domains, the
+      signed difference, the verdict, and the same for condensation domains. A
+      gene whose record names no condensation domain reports `not_curated`
+      rather than a disagreement with zero.
+    a_domain_verdicts / c_domain_verdicts / a_delta_census: >
+      The count per declared verdict for each domain type, and the distribution
+      of the signed adenylation difference.
+    module_table / module_verdicts / complete_modules_total: >
+      Per gene, how many non-overlapping occurrences of the declared module
+      pattern the architecture contains, against the curated module count, with a
+      verdict; plus the census and the total. The declared pattern is four
+      families long for a module with three catalytic domains, because the
+      adenylation domain is split -- so this is a different claim from the
+      adenylation count twice over: a gene can carry the right number of
+      adenylation domains and not assemble into complete modules at all.
+    policy_sweep: >
+      One cell per (cutoff, resolution policy, coordinate span), keyed
+      `cutoff|policy|span`: total domains, distinct architectures, adenylation
+      agreement, and how many genes differ from the baseline cell.
+    mapping_sweep: >
+      Per declared family-to-domain mapping for the adenylation domain: the
+      families it names and the verdict census it produces.
+
+constraints:
+  reference_dir: reference
+  pinned_tables:
+    - reference/architecture_rules.json   # selection, panel, policies, mappings
+  external_resources:
+    - name: pfam_a_hmm
+      declared_in: reference/architecture_rules.json
+      reason: >
+        1.5 GB, read from the pinned image rather than shipped and fetched from
+        with hmmfetch. Pfam is CC0, so this is a size decision and not a licence
+        one; the campaign records the path, the provider, the version and a
+        sha256, and the build refuses to emit gold on a mismatch. This copy
+        carries no clan annotation, which is why the overlap rule is the
+        campaign's own.
+
+snapshots_required:
+  shipped: [mibig@4.0, mibig_antismash@4.0_as8b1]
+  fetched: []
+  image: [hmmer@3.4, pfam@35.0]
+
+budgets:
+  wall_clock_minutes: 45
+  cpu: 2
+  memory_gb: 8
+  network: off
+  budget_note: >
+    Four scans of the declared panel over about three and a half million
+    residues, which is roughly two minutes in total. The rest of the budget is
+    for the agent reading a 3,000-entry annotation set, resolving overlaps on
+    twelve thousand hits and doing the reconciliation itself.
+
+rungs:
+  - {rung_id: r1, ordinal: 1, name: execute,        gold_tier: G1, warm_start_bundle: null}
+  - {rung_id: r2, ordinal: 2, name: correct,        gold_tier: G1, warm_start_bundle: gold/warm/r2}
+  - {rung_id: r3, ordinal: 3, name: commit,         gold_tier: G1, warm_start_bundle: gold/warm/r3}
+  - {rung_id: r4, ordinal: 4, name: counterfactual, gold_tier: G1, warm_start_bundle: gold/warm/r4}
+
+# Nothing is planted. The verification is the computed architecture against a
+# curated record that was never derived from it; the control is the genes whose
+# record names no condensation domain, which the reconciliation must report as
+# uncurated rather than as a disagreement with zero.
+structural_elements: [verification, counterfactual, control]
+
+harness:
+  gold_command: ["python3", "-m", "npbench_c.templates.domain_architecture.build", "{campaign}"]
+  solve_command: ["python3", "-m", "npbench_c.templates.domain_architecture.solve", "{campaign}", "{submission}"]
+  measure_command: ["python3", "-m", "npbench_c.templates.domain_architecture.measure", "{campaign}", "{submission}", "{measurement}"]
+  stub_module: npbench_c.sweep.stubs.stub_arch
+  stub_args: []
+  stub_levels:
+    - {name: stub-reader,      level: reader, timeout_s: 3600}
+    - {name: stub-architect,   level: architect, reference: true, timeout_s: 3600}
+    - {name: stub-reconcile,   level: reconcile, timeout_s: 3600}
+    - {name: stub-complete,    level: complete, timeout_s: 3600}
+    - {name: stub-unresolved,  level: unresolved, timeout_s: 3600}
+    - {name: stub-noncompute,  level: noncompute, mode: no_tool, timeout_s: 600}
+
+grading:
+  chance_levels: {r1: 1.0, r2: 0.001, r3: 0.001, r4: 0.001}
+  chance_level_notes:
+    r1: >
+      Nominal rather than measured. The selection census, the per-family hit
+      census and the tool identity cannot be guessed, so the no-tool ablation
+      fails R1 outright; the level stays at 1.0 because any system that reads
+      the inputs and runs the tool clears it, and the capped floor is computed
+      over R2 upward.
+
+excluded_from_grading:
+  - field: which domain is catalytically essential
+    reason: >
+      The catalogued R3 named it. It is a literature claim with no computable
+      oracle: no pinned tool answers it, and scoring a system against a
+      curator's intuition is the human judgement this benchmark excludes from
+      grading entirely. Nothing replaces it, because the honest version of the
+      question is not a benchmark task.
+  - field: the architecture after a declared domain is deleted
+    reason: >
+      The catalogued R4. Built and measured, then dropped: removing each gene's
+      first adenylation domain and re-scanning leaves the architecture minus
+      exactly that domain on 1,112 of the 1,126 genes it applies to, and the
+      adenylation count falls by exactly one on 1,125 of them. So the outcome is
+      one answer repeated and the rung distinguishes almost nothing. Recorded
+      here with the numbers rather than silently omitted, because the
+      measurement is the reason.
+  - field: mibig_release, module_type, baseline_cutoff, baseline_resolution, baseline_span, baseline_mapping, panel_size
+    reason: >
+      Each is an echo of a declared file -- the release from the input
+      provenance, the rest from the pinned rules table. Reported so a run records
+      what it was, and not graded: nothing in the world would have to change for
+      the value to change, only the campaign's own declaration.
+  - field: the curated domain coordinates
+    reason: >
+      Unusable, and the campaign says so with a number instead of working around
+      it. Nearly every typed domain block in the annotation set carries a
+      placeholder location rather than a real one, so a coordinate-level
+      reconciliation would be computed over a hundredth of the record and
+      reported as though it covered all of it. R1 grades the usability census;
+      R3 compares counts.
+  - field: the module `active` flag
+    reason: >
+      Unstated on about half the modules in the annotation set, so "active
+      modules" is not a quantity this database supports. The census of the
+      flag's actual values is graded at R1; nothing downstream filters on it.
+  - field: the overlap fraction as a swept parameter
+    reason: >
+      Measured across 0.8 down to 0.0 and essentially flat -- the architecture
+      moves by at most a handful of genes across the whole range, because the
+      overlaps the tool produces on these proteins are near-total rather than
+      partial. A grid here would be four points reporting one answer, so the
+      fraction is declared once and the axis R4 varies is whether overlaps are
+      resolved at all.
+
+notes_for_audit:
+  - >
+    Check the overlap census first. The campaign's central complication is that
+    the tool's own output is not a clean domain list, and if no two hits overlap
+    then the resolution policy resolves nothing, the baseline equals the
+    unresolved architecture, and one of R4's three axes is a no-op. The build
+    refuses to emit gold in that case and also if the policy drops no hit.
+  - >
+    Then check that the adenylation reconciliation disagrees in both directions
+    and that the delta takes more than two values. Perfect agreement would mean
+    the curated record is recomputable from sequence and R3 grades nothing; a
+    single offset would mean the disagreement is a convention error rather than a
+    distribution. The build refuses both.
+  - >
+    Then check the mapping sweep. The claim is that which Pfam family counts as
+    the adenylation domain is load-bearing, and the build refuses to emit gold
+    unless the best and worst declared mappings differ by at least a factor of
+    two in agreement. If they did not, declaring the mapping would not be worth a
+    rung.
+  - >
+    The translations shipped are those for every gene any curated module names,
+    not the subset this instantiation's module type selects. That is deliberate:
+    shipping only the selected genes would make the corpus size and every drop
+    readable off the input instead of computed from the two resources, and it
+    would let the NRPS and PKS instantiations reveal each other's corpus by file
+    size.
+  - >
+    The three Pfam-curated cutoffs are near-interchangeable on this corpus and
+    the bare E-value is not. That contrast is the point of including it: a
+    per-model curated threshold and a global E-value are not substitutes, and a
+    system that reaches for the E-value because it is the familiar flag gets a
+    materially different architecture.

@@ -274,7 +274,7 @@ and the right ones to author first.
 | Template | Databases | Tools | Min surface |
 |---|---|---|---|
 | T-L1-1 gene calling | — | Prodigal | S1 |
-| T-L1-2 domain architecture | Pfam | HMMER | S1 |
+| T-L1-2 domain architecture | MIBiG 4.0 + module-gene translations (shipped), Pfam 35.0 (image) | HMMER 3.4 | **S1, BUILT** |
 | T-L1-3 annotation transfer | UniProt 2026_03 EC 1.14 (shipped, closed) | DIAMOND 2.2.8 | **S1, BUILT** |
 | T-L1-4 pseudogene | — | Prodigal | S1 |
 | T-L2-1 EC misannotation | UniProt 2026_03 (shipped), Pfam 35.0 (image) | HMMER 3.4 | **S1, BUILT** |

@@ -1,0 +1,147 @@
+{
+  "audit": {
+    "module_type": "nrps-type1",
+    "module_type_note": "MIBiG's own term for a canonical NRPS elongation module. The selection takes genes whose curated modules are ALL of this type: a gene carrying both NRPS and PKS modules has an architecture drawn from two vocabularies and belongs to neither instantiation. The PKS instantiation of this template declares a PKS type here instead, and changes nothing else about the method.",
+    "excluded_statuses": [
+      "retired"
+    ],
+    "excluded_statuses_note": "A retired entry is one MIBiG has withdrawn. Reconciling a computed architecture against an annotation its own curators have taken back would be auditing a retraction.",
+    "model_panel": [
+      "3Beta_HSD",
+      "ADH_N",
+      "ADH_zinc_N",
+      "ADH_zinc_N_2",
+      "AMP-binding",
+      "AMP-binding_C",
+      "APS_kinase",
+      "Abhydrolase_1",
+      "Abhydrolase_6",
+      "Acyl_transf_1",
+      "Aminotran_1_2",
+      "Aminotran_3",
+      "BRCT",
+      "Bac_luciferase",
+      "Condensation",
+      "Dimerisation2",
+      "Docking",
+      "Epimerase",
+      "FAD_binding_3",
+      "Formyl_trans_C",
+      "Formyl_trans_N",
+      "GDP_Man_Dehyd",
+      "Hydrolase_4",
+      "KAsynt_C_assoc",
+      "KR",
+      "Ketoacyl-synt_C",
+      "MTS",
+      "Mbeg1-like",
+      "MbtH",
+      "McyA_C",
+      "MetW",
+      "Methyltransf_11",
+      "Methyltransf_12",
+      "Methyltransf_16",
+      "Methyltransf_2",
+      "Methyltransf_21",
+      "Methyltransf_23",
+      "Methyltransf_25",
+      "Methyltransf_31",
+      "NAD_binding_10",
+      "NAD_binding_4",
+      "NAD_binding_8",
+      "Nitroreductase",
+      "NmrA",
+      "NodS",
+      "PEP-utilizers",
+      "PP-binding",
+      "PRMT5",
+      "PS-DH",
+      "PTCB-BRCT",
+      "Polysacc_synt_2",
+      "QueC",
+      "RmlD_sub_bind",
+      "Sulfotransfer_1",
+      "Sulfotransfer_3",
+      "TauD",
+      "Thioesterase",
+      "Thiolase_N",
+      "Transferase",
+      "TubC_N",
+      "Ubie_methyltran",
+      "adh_short",
+      "adh_short_C2",
+      "ketoacyl-synt",
+      "p450"
+    ],
+    "model_panel_note": "Declared, not discovered. The panel was fixed at build time by scanning the corpus against the whole of the pinned Pfam release once, at the declared baseline cutoff, and listing every family that came back -- so it is a published vocabulary rather than a hint. A full Pfam-A pass over this corpus takes about seven minutes; the declared panel takes about thirty seconds, and the campaign refuses to build if the pinned release does not carry every model.",
+    "cutoffs": [
+      "--cut_ga",
+      "--cut_nc",
+      "--cut_tc",
+      "-E 1e-5"
+    ],
+    "baseline_cutoff": "--cut_ga",
+    "cutoffs_note": "The three Pfam-curated cutoffs are per-model: the gathering threshold Pfam uses to define family membership, the trusted cutoff and the noise cutoff. The fourth is a bare E-value, which is NOT per-model and whose meaning depends on database size. The baseline is the gathering threshold; the others are R4 axes, and the measurement is that the three curated cutoffs are near-interchangeable on this corpus while the E-value is not.",
+    "coordinate_spans": [
+      "ali",
+      "env"
+    ],
+    "baseline_span": "ali",
+    "coordinate_spans_note": "HMMER reports two spans per domain hit: the alignment span, which is the part actually aligned, and the envelope, which is the wider region the model is confident the domain lies within. Ordering an architecture by one or the other can reorder it, so the choice is declared and the alternative is measured. The baseline is the alignment span because it is the one a domain coordinate normally means.",
+    "overlap_fraction": 0.5,
+    "overlap_fraction_note": "A hit is dropped when it overlaps an already-kept hit by more than this fraction of the SHORTER of the two spans. The shorter span is the denominator because a small domain nested inside a large one is the case the rule exists for, and measuring against the longer span would almost never trigger. The value is declared rather than swept: measured across 0.8 down to 0.0 the partition moves by at most a handful of genes, so a grid here would be four points reporting the same answer. What does move the answer is whether overlaps are resolved at all, and that IS an R4 axis.",
+    "resolution_policies": [
+      "keep_all",
+      "resolve_by_score"
+    ],
+    "baseline_resolution": "resolve_by_score",
+    "resolution_policies_note": "Pfam resolves overlaps between families of the same clan by keeping the best-scoring hit. That rule is NOT available here: the pinned library carries no clan annotation at all, so this campaign's rule is score and geometry and is declared as its own rather than borrowed and misattributed. keep_all is the unresolved architecture -- the one the catalogued design assumed was already non-overlapping.",
+    "domain_mappings": {
+      "amp_binding_n": [
+        "AMP-binding"
+      ],
+      "amp_binding_c": [
+        "AMP-binding_C"
+      ],
+      "amp_binding_both": [
+        "AMP-binding",
+        "AMP-binding_C"
+      ],
+      "condensation_domain": [
+        "Condensation"
+      ]
+    },
+    "baseline_mapping": "amp_binding_n",
+    "domain_mappings_note": "A Pfam family is not a domain type. The curated record names an adenylation domain; Pfam splits it into an N-terminal family and a C-terminal family, so which one counts as THE domain is a choice, and counting both double-counts every module. The baseline takes the N-terminal family, which is the one that covers the domain's catalytic core and occurs once per module. condensation_domain is the mapping for the second reconciled domain type and is not part of the R4 sweep, which varies the adenylation mapping alone.",
+    "curated_domain_keys": [
+      "a_domain",
+      "c_domain",
+      "ks_domain",
+      "at_domain"
+    ],
+    "curated_domain_keys_note": "The typed domain blocks a MIBiG module can carry. Only their PRESENCE is used, never their coordinates: the campaign counts how many of these blocks carry a usable location and reports it at R1, because on this database almost none do and a campaign that silently worked around that would be hiding its own foundation.",
+    "module_pattern": [
+      "Condensation",
+      "AMP-binding",
+      "AMP-binding_C",
+      "PP-binding"
+    ],
+    "module_pattern_note": "A canonical NRPS elongation module in PFAM terms, in order. Note the length: the module has three catalytic domains -- condensation, adenylation, thiolation -- and four Pfam families, because the adenylation domain is split into an N-terminal and a C-terminal family. This is the same fact the mapping axis measures, and it was measured here too: the three-family pattern a domain-level reading would write down occurs on a tenth as many genes, and the four-family one is by a wide margin the commonest four-gram in the corpus's architectures. Counting its non-overlapping occurrences is arithmetic over the architecture, and it is a DIFFERENT claim from counting adenylation domains -- a gene can carry the right number of adenylation domains and not assemble into complete modules at all.",
+    "reconciliation_verdicts": [
+      "agrees",
+      "computed_more",
+      "computed_fewer",
+      "not_curated"
+    ],
+    "reconciliation_verdicts_note": "Per gene, the computed count against the curated one. not_curated is a real outcome and not a gap: the record carries modules for the gene but names no domain block of that type, so there is nothing to disagree with."
+  },
+  "external_resources": {
+    "pfam_a_hmm": {
+      "relative_path": "lib/python3.11/site-packages/antismash/databases/pfam/35.0/Pfam-A.hmm",
+      "provider": "antiSMASH 8.0.4 database layer",
+      "version": "Pfam 35.0",
+      "sha256": "8d3e2ffa785f91ee0e24a3994d2dcfff6f382e3cf663784a47688e7d95297fee",
+      "note": "1.5 GB, so it is read from the pinned image rather than shipped. Pfam itself is CC0; the reason this file is not redistributed is size, not licence. This copy carries no clan annotation -- zero CL lines across all 19,632 models -- which is why the overlap rule here is score and geometry rather than Pfam's own intra-clan rule."
+    }
+  }
+}

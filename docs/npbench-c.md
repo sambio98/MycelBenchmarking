@@ -48,12 +48,14 @@ scoring path.
 | Campaign: MIBiG 32 cutoff sweep | `campaigns/gcfcutoff-mibig-32-01/` | oracle 1.0, gate 21/0/5 |
 | Template: RiPP precursor audit | `src/npbench_c/templates/ripp_precursor/` | HMMER 3.4 + declared Pfam panel, elected coordinate convention |
 | Campaign: MIBiG RiPP precursors | `campaigns/ripp-precursor-mibig-4_0-01/` | oracle 1.0, gate 21/0/5 |
+| Template: domain architecture | `src/npbench_c/templates/domain_architecture/` | HMMER 3.4 + declared 65-model Pfam panel, declared overlap resolution |
+| Campaign: MIBiG NRPS architectures | `campaigns/arch-nrps-mibig-4_0-01/` | oracle 1.0, gate 21/0/5 |
 | External resources | `src/npbench_c/tools/resources.py` | one declaration for a pinned file read from the image, shared by 3 campaigns |
 | Tool memo | `src/npbench_c/tools/cache.py` | stub sweeps only; 29m32s to 3m44s |
 | Phase 1 image | `image/Dockerfile`, `image/environment.lock.json` | 8 tools pinned to `version=build`, 185-package closure hashed, antiSMASH databases pinned at 9.4 GB |
 | Tool registry | `src/npbench_c/tools/registry.py` | pins, controls, invocations, declared normalisations, canonicalisations, projections, enforced bans |
 | Thread-invariance suite | `src/npbench_c/tools/invariance.py` | 8/8 tools invariant at 1 and 8 threads |
-| Tests | `tests/` | 509 passing, 5 skipped |
+| Tests | `tests/` | 557 passing, 5 skipped |
 
 ```bash
 PYTHONPATH=src python3 -m pytest tests -q
@@ -2051,6 +2053,209 @@ and re-reads a 3,013-entry annotation archive and several hundred GenBank record
 to rebuild the corpus. That is about 6.5 seconds per run of pure re-parsing, and
 it is the whole of the 7m51s.
 
+## Campaign 19: the tool's output is not a domain list yet
+
+`arch-nrps-mibig-4_0-01` is T-L1-2, the fourth tool-running campaign and the
+third S1. An NRPS is one protein carrying a chain of catalytic domains, and its
+architecture is the ordered list of them. Computing that from a pinned HMMER
+against a pinned Pfam release sounds like a lookup. It is not: the answer is a
+function of three choices nobody writes down, and this campaign declares all
+three and measures what each one costs.
+
+**Two of the four catalogued rungs do not survive, and a third is rewritten.**
+The catalogued R3 claimed "which domain is catalytically essential, closed enum",
+which is a literature claim with no computable oracle — the same refusal T-L3-4's
+"predict the new core" earned. The catalogued R4's "predict the lost function"
+goes with it. The catalogued R1 asked for a "non-overlapping" domain table, and
+that is not what the tool produces.
+
+### Hits overlap, and the resolution is the campaign
+
+Measured over the corpus: **12,975 raw hits, 2,124 overlapping pairs, 315 of
+1,136 genes carrying at least one overlap.** Nested Pfam families hit the same
+residues — a ketosynthase core inside a thiolase model, five methyltransferase
+families against each other, `adh_short` against `KR`. Resolving them drops
+**1,031 hits** and changes the architecture on **314 genes**. A report that lists
+every hit as a consecutive domain has invented a protein, and nothing in it says
+so. That is the campaign's competence probe, and it is the mistake the catalogued
+design made.
+
+**Pfam's own rule is not available, which is worth recording for every future
+campaign.** Pfam resolves intra-clan overlaps by keeping the best-scoring hit.
+The pinned library — antiSMASH's copy of Pfam 35.0, 19,632 models — carries
+**zero `CL` lines**. So the rule here is score and geometry, declared as this
+campaign's own rather than borrowed and misattributed.
+
+**An overlap *threshold* is not a subject.** Swept from 0.8 down to 0.0 the
+architecture moves by at most a handful of genes, because the overlaps these
+proteins produce are near-total rather than partial. A grid would be five points
+reporting one answer, so the fraction is declared once at 0.5 and the axis R4
+varies is whether overlaps are resolved at all.
+
+### What the curated side can and cannot support
+
+MIBiG 4.0 carries **4,034 curated modules over 667 entries**, with per-module gene
+assignment and typed domain blocks. Two of its fields are unusable and the
+campaign says so with a number instead of working around them:
+
+- **Domain coordinates are placeholders**: 5,352 of 5,446 typed blocks carry
+  `{-1, -1}`. A coordinate-level reconciliation would be computed over a
+  sixtieth of the record and reported as though it covered all of it.
+- **The `active` flag is unstated** on 2,025 of 4,034 modules (1,945 true, 64
+  false). So "active modules" is not a quantity this database supports.
+
+So counts are compared, not coordinates. The selection takes genes whose curated
+modules are **all** of the declared type — a gene carrying both NRPS and PKS
+modules draws its architecture from two vocabularies and belongs to neither
+instantiation — on an entry the status rule admits, with a shipped translation:
+**1,136 `nrps-type1` genes over 512 clusters**, 3,440,119 residues, median 2,549
+aa, longest 16,367. **11,944 domains, 458 distinct architectures**, 0 to 61
+domains per gene.
+
+### Curation and the tool agree on one domain type and not the other
+
+| comparison | agrees | computed more | computed fewer | not curated |
+|---|---|---|---|---|
+| adenylation (`AMP-binding`) | **1,059** | 70 | 7 | 0 |
+| condensation (`Condensation`) | **157** | 122 | 7 | **850** |
+
+The adenylation delta is a distribution, not an offset: −6, −2, −1 (×5), 0
+(×1,059), +1 (×60), +2 (×9), +4. A curator records one adenylation domain per
+module by construction, so that column is reliable and agreement is 93%. They
+record a condensation domain only sometimes — 286 of 1,136 genes — and when they
+do, agreement is **55%**. The campaign reports `not_curated` for the other 850
+rather than a disagreement with zero, because there is nothing there to disagree
+with.
+
+The module decomposition is a third, different claim: counting the declared
+pattern's non-overlapping occurrences in the architecture finds **1,881 complete
+modules**, agreeing with the curated module count on 587 genes and falling short
+on **541**. A gene can carry the right number of adenylation domains and not
+assemble into complete modules at all.
+
+### Which Pfam family *is* the adenylation domain
+
+| mapping | agrees |
+|---|---|
+| `AMP-binding` | **1,059** |
+| `AMP-binding_C` | 814 |
+| both | **153** |
+
+Pfam splits the adenylation domain into an N-terminal and a C-terminal family, so
+counting both double-counts every module and agreement collapses by a factor of
+seven. This is the axis the catalogued design did not have and the data demands,
+and the build refuses to emit gold unless the best and worst declared mappings
+differ by at least a factor of two.
+
+### The cutoff, and the one flag that is not a substitute
+
+Sixteen cells, one per (cutoff, resolution, coordinate span), against the
+baseline:
+
+| cutoff | genes moved, resolved | genes moved, unresolved | agreement, resolved | agreement, unresolved |
+|---|---|---|---|---|
+| `--cut_ga` (baseline) | 0 | 314 | 1,059 | 1,059 |
+| `--cut_nc` | 4 | 317 | 1,058 | 1,058 |
+| `--cut_tc` | 4 | 314 | 1,059 | 1,059 |
+| **`-E 1e-5`** | **372** | **549** | **1,032** | **1,026** |
+
+The three Pfam-curated cutoffs are near-interchangeable here — the same result
+the EC-domain audit got on a different set — and the bare E-value is not. It adds
+816 domains, moves a third of the corpus and costs 27 agreements. That contrast
+is why it is in the grid: a per-model curated threshold and a global E-value are
+not substitutes, and the E-value is the familiar flag.
+
+The bottom-right cell is also where a defect in this campaign's own code showed
+up. `reconcile` originally took the architecture table as an argument and then
+**re-resolved the hits at the baseline**, so the sweep's agreement column ignored
+two of its three axes. On the curated cutoffs the numbers coincided, which is why
+it survived a reading; the fix moved the two unresolved E-value cells from 1,032
+to **1,026**, because at that cutoff duplicate overlapping adenylation hits
+inflate the count on six genes and the old code was quietly reporting the
+resolved figure instead. A graded value computed by a function that ignores two
+of its inputs is wrong even where the output happens to be right.
+
+### The catalogued R4 was built, measured, and dropped
+
+Removing each gene's first adenylation domain and re-scanning leaves the
+architecture minus exactly that domain on **1,112 of the 1,126 genes it applies
+to**, and the adenylation count falls by exactly one on 1,125. So "one domain
+fewer" is a free answer and the rung would distinguish almost nothing. It is
+recorded in `excluded_from_grading` with those numbers rather than silently
+omitted, because the measurement is the reason.
+
+### What broke on the way, and it broke twice
+
+**A Pfam family name can contain the architecture separator.** The architecture
+is a hyphen-joined family string, and `AMP-binding` holds a hyphen — so splitting
+it back shreds every family name. The module decomposition did exactly that, and
+the build's own refusal caught it: *"the declared module pattern is found on no
+gene, so the decomposition is empty everywhere."* The decomposition now reads the
+resolved hits; the string is for reading, not for parsing back. Then the test
+written to check the fix made the same mistake on its first draft, asserting the
+domain count against `architecture.split("-")`. Both have tests now, and the
+second one asserts on real gold that splitting over-counts.
+
+**And the declared module pattern is four families long for a module with three
+domains.** `Condensation-AMP-binding-AMP-binding_C-PP-binding` occurs 1,881 times
+and is by a wide margin the commonest four-gram in the corpus; the three-family
+pattern a domain-level reading would write down occurs on a tenth as many genes.
+The same fact the mapping axis measures, arriving a second time through a
+different door.
+
+**`Resource` was factored before this campaign, not during it.** It now carries
+globbed paths and `verify()` in `npbench_c.tools.resources`, which this campaign
+is the third to use.
+
+### The sweep, and what it cost
+
+Gold builds in about **two minutes**, which is four panel scans over 3.44 M
+residues plus a sixteen-cell sweep in Python. The stub sweep — six systems, four
+rungs, three repeats, 72 runs — passes all five gates with cold depths
+**1 / 2 / 3 / 4 / 1 / 0**:
+
+| system | mode | cold depth |
+|---|---|---|
+| stub-reader | tooled | 1 |
+| stub-architect | tooled | 2 |
+| stub-reconcile | tooled | 3 |
+| stub-complete | tooled | 4 |
+| **stub-unresolved** | tooled | **1** |
+| stub-noncompute | no_tool | 0 |
+
+Per-rung clear rates 1.00 / 0.60 / 0.40 / 0.20, cold mean score 0.55, no-tool
+ablation 0.0000 against a chance floor of 0.2502. `stub-unresolved` is the probe
+that matters: it runs the tool correctly and reports every hit as a domain, which
+clears R1 and fails R2 — the catalogued design's own mistake, scored.
+
+The readiness gate is slower here than on any earlier campaign, because two of
+its checks regenerate gold and gold costs four tool scans. That is the gate
+working as intended rather than a cost to optimise away.
+
+### Why HMMER and not antiSMASH's own domain calls
+
+The tool registry already declares an antiSMASH invocation,
+`default_modules_domains`, whose projection is the ordered NRPS/PKS domain
+architecture per CDS — which looks like exactly this campaign's answer, computed
+by one call instead of four. It is not used, for two reasons worth stating.
+
+The catalogued row is a **Pfam** row, and antiSMASH's NRPS/PKS domain calls come
+from its own curated profile library and its own module-assembly logic, not from
+Pfam. Grading those would be grading antiSMASH's opinion of a module, which is a
+different and much more derived claim than "which Pfam families does this
+sequence carry, and where" — and it would make the reconciliation against MIBiG
+circular in part, because MIBiG's own processed records were produced by
+antiSMASH.
+
+And it would hide the campaign's subject. antiSMASH resolves overlaps and
+assembles modules internally and reports the result; the three choices this
+campaign declares and measures would all be made inside the tool, unstated. The
+whole finding — that the architecture is a function of a resolution rule, a
+coordinate span and a cutoff — is only visible from the raw hit table.
+
+The antiSMASH route remains the right one for a campaign that wants to grade
+antiSMASH's module assembly. That is a different row.
+
 ## Open items
 
 1. **CAI table provenance.** The relative-adaptiveness values now live in
@@ -2085,7 +2290,7 @@ it is the whole of the 7m51s.
    target is now 30 at most.** T-L5-2 and T-L2-4 both ground out. The count in this
    file's header and in `docs/catalog.md` is the *catalogued* target and has not
    been restated downward, because the replacement question is the owner's call:
-   re-scope those rows, or accept a smaller benchmark. Eighteen campaigns are
+   re-scope those rows, or accept a smaller benchmark. Nineteen campaigns are
    built. This should be settled before the audit packet quotes a number.
 8. **Sweep cost: the tool memo covers the tool, not the work around it.**
    `npbench_c.tools.cache` memoises tool output for stub systems in tooled mode
@@ -2106,9 +2311,9 @@ it is the whole of the 7m51s.
    real agents take per run, measurable only once item 3 supplies the `SystemSpec`
    entries.
 9. **`structural_elements` is decorative and nothing validates it.** Nine of the
-   eighteen built campaigns declare `planted` and several of them plant nothing —
+   nineteen built campaigns declare `planted` and several of them plant nothing —
    `mibig-diff-3_1-to-4_0-01`'s own notes say its sharpest case is "supplied by the
-   corpus rather than planted". The four campaigns built since declare only what
+   corpus rather than planted". The five campaigns built since declare only what
    they have (`verification, counterfactual, control`), but the field needs either
    a definition and a gate check or removal, and fixing the other nine is the
    owner's taxonomy call rather than a silent edit. A declaration no check reads is the

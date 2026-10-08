@@ -77,7 +77,7 @@ key.
 | # | Template | Data | Build |
 |---|---|---|---|
 | T-L1-1 | Gene calling under assembly fragmentation | probe | image |
-| T-L1-2 ×2 | Domain architecture parsing | likely | image |
+| T-L1-2 ×2 | Domain architecture parsing | verified | **BUILT** (NRPS; PKS axis open) |
 | T-L1-3 | Annotation transfer error detection | verified | **BUILT** (S1) |
 | T-L1-4 | Frameshift / pseudogene detection | probe | image |
 
@@ -94,6 +94,62 @@ pinned) · R2 architecture matches gold by overlap-F1 · R3 claim: domain order
 string and which domain is catalytically essential, closed enum · R4 a domain is
 deleted from the sequence — predict the new architecture and the lost function.
 G1. Instantiation axis: domain family (NRPS A-PCP-C vs PKS KS-AT-ACP).
+
+**Built**: `campaigns/arch-nrps-mibig-4_0-01`, the NRPS instantiation and the
+benchmark's **third S1**. MIBiG 4.0's annotation set plus the CDS translations of
+every gene a curated module names, with HMMER 3.4 and a declared 65-model Pfam
+35.0 panel read from the image. **1,136 `nrps-type1` genes over 512 clusters**,
+3.44 M residues, median 2,549 aa, longest 16,367. Oracle 1.0 at depth 4, gate
+21/0/5. The PKS instantiation is the same template with one field changed.
+
+**The catalogued "non-overlapping" domain table is not what the tool produces.**
+12,975 raw hits carry **2,124 overlapping pairs on 315 genes** — nested Pfam
+families hitting the same residues. Resolving drops 1,031 hits and changes the
+architecture on **314 genes**: 11,944 domains, **458 distinct architectures**, 0
+to 61 domains per gene. And **Pfam's own intra-clan rule is unavailable**: the
+pinned library carries **zero `CL` lines** across 19,632 models, so the rule is
+score and geometry and is declared as the campaign's own. An overlap *threshold*
+is not a subject either — swept 0.8 to 0.0 the answer moves by a handful of
+genes, because these overlaps are near-total rather than partial.
+
+**Two catalogued rungs have no oracle.** "Which domain is catalytically
+essential" is a literature claim; so is "the lost function". The deletion half
+of R4 *was* built and measured and is **degenerate**: removing each gene's first
+adenylation domain leaves the architecture minus exactly that domain on **1,112
+of 1,126** genes, so "one domain fewer" is a free answer. All three are recorded
+in `excluded_from_grading` with their numbers.
+
+**What replaces them is a reconciliation against MIBiG's curated modules** —
+4,034 of them over 667 entries, curated from the literature and the product's
+structure rather than from any scan of these sequences. Counts only, because the
+curated **coordinates are placeholders on 5,352 of 5,446 typed blocks** and the
+`active` flag is unstated on 2,025 of 4,034 modules.
+
+| comparison | agrees | computed more | computed fewer | not curated |
+|---|---|---|---|---|
+| adenylation (`AMP-binding`) | **1,059** | 70 | 7 | 0 |
+| condensation (`Condensation`) | **157** | 122 | 7 | **850** |
+
+A curator records one adenylation domain per module by construction, so that
+column agrees 93% of the time; they record a condensation domain on only 286
+genes and there agreement is **55%**. The module decomposition is a third claim:
+1,881 complete declared modules, agreeing with the curated count on 587 genes
+and short on **541**.
+
+**R4's three live axes, each measured rather than assumed.** Resolution (314
+genes). The family-to-domain mapping — `AMP-binding` agrees on 1,059, its
+C-terminal half on 814, **both together on 153**, because counting both
+double-counts every module. And the cutoff: the three Pfam-curated thresholds
+move 4–5 genes, while **`-E 1e-5` moves 372**, adds 816 domains and costs 27
+agreements. A per-model curated threshold and a global E-value are not
+substitutes.
+
+**The separator bit twice.** The architecture is a hyphen-joined family string
+and `AMP-binding` contains a hyphen, so splitting it back shreds every name. The
+module decomposition did that and the build's own refusal caught it; then the
+test written to check the fix made the same mistake. Both have tests now, and the
+declared module pattern turns out to be **four** families long for a module with
+three catalytic domains — the same split, arriving through a different door.
 
 **T-L1-3** Annotation transfer error: a protein whose closest BLAST/DIAMOND hit
 is a paralog with a different function. R1 hit table · R2 hits match gold ·
