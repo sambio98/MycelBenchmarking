@@ -52,20 +52,25 @@ def main() -> int:
 
     if args.level == "noncompute":
         return write({
-            "mibig_release": "4.0", "module_type": "nrps-type1",
-            "baseline_cutoff": "--cut_ga",
-            "baseline_resolution": "resolve_by_score", "baseline_span": "ali",
-            "baseline_mapping": "amp_binding_n", "panel_size": 65,
+            # Family-agnostic on purpose: this level serves both
+            # instantiations and must not name either one's vocabulary, because
+            # it is the ablation that reads nothing at all.
+            "mibig_release": "", "module_family": "",
+            "primary_domain": "", "secondary_domain": "",
+            "baseline_cutoff": "", "baseline_resolution": "",
+            "baseline_span": "", "baseline_mapping": "", "panel_size": 0,
             "hmmer_version": "HMMER 3.4", "pfam_version": "Pfam 35.0",
             "pfam_sha256": "0" * 64,
             "selection_census": {}, "curated_coordinate_usability": {},
             "curated_active_flag": {}, "curated_module_census": {},
+            "strata_census": {}, "domains_by_module_type": {},
             "curated_domain_totals": {}, "protein_length_summary": {},
             "panel_census": {},
             "architecture_table": [], "architecture_census": {},
             "overlap_census": {},
-            "reconciliation_table": [], "a_domain_verdicts": {},
-            "c_domain_verdicts": {}, "a_delta_census": {},
+            "reconciliation_table": [], "primary_verdicts": {},
+            "secondary_verdicts": {}, "secondary_verdicts_by_stratum": {},
+            "primary_delta_census": {},
             "module_table": [], "module_verdicts": {},
             "complete_modules_total": 0,
             "policy_sweep": {}, "mapping_sweep": {},
@@ -81,7 +86,9 @@ def main() -> int:
     hits = corpus.hits()
     report = {
         "mibig_release": corpus.release,
-        "module_type": rules.module_type,
+        "module_family": rules.module_family,
+        "primary_domain": rules.primary_domain,
+        "secondary_domain": rules.secondary_domain,
         "baseline_cutoff": rules.baseline_cutoff,
         "baseline_resolution": rules.baseline_resolution,
         "baseline_span": rules.baseline_span,
@@ -102,6 +109,9 @@ def main() -> int:
             corpus.annotation_census["curated_coordinate_usability"],
         "curated_active_flag": corpus.annotation_census["curated_active_flag"],
         "curated_module_census": corpus.curated_module_census(),
+        "strata_census": corpus.strata_census(),
+        "domains_by_module_type":
+            corpus.annotation_census["domains_by_module_type"],
         "curated_domain_totals": corpus.curated_domain_totals(),
         "protein_length_summary": corpus.length_summary(),
         "panel_census": {

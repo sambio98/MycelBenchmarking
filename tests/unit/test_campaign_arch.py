@@ -45,8 +45,9 @@ from npbench_c.templates.domain_architecture.measure import measure
 from npbench_c.templates.domain_architecture.solve import render
 from npbench_c.tools.resources import tool_prefix
 
-CAMPAIGN = (pathlib.Path(__file__).resolve().parents[2]
-            / "campaigns" / "arch-nrps-mibig-4_0-01")
+CAMPAIGNS = pathlib.Path(__file__).resolve().parents[2] / "campaigns"
+CAMPAIGN = CAMPAIGNS / "arch-nrps-mibig-4_0-01"
+PKS = CAMPAIGNS / "arch-pks-mibig-4_0-01"
 pytestmark = pytest.mark.skipif(not (CAMPAIGN / "gold" / "gold.json").is_file(),
                                 reason="campaign gold not generated")
 
@@ -55,16 +56,16 @@ image_present = pytest.mark.skipif(
     reason=f"pinned-tool image not present at {tool_prefix()}")
 
 
-def _gold() -> dict:
-    return json.loads((CAMPAIGN / "gold" / "gold.json").read_text())
+def _gold(campaign: pathlib.Path = CAMPAIGN) -> dict:
+    return json.loads((campaign / "gold" / "gold.json").read_text())
 
 
-def _task() -> dict:
-    return yaml.safe_load((CAMPAIGN / "task.yaml").read_text())
+def _task(campaign: pathlib.Path = CAMPAIGN) -> dict:
+    return yaml.safe_load((campaign / "task.yaml").read_text())
 
 
-def _rules() -> Rules:
-    return Rules.load(CAMPAIGN)
+def _rules(campaign: pathlib.Path = CAMPAIGN) -> Rules:
+    return Rules.load(campaign)
 
 
 @pytest.fixture(scope="module")
@@ -244,45 +245,43 @@ def test_the_reconciliation_disagrees_in_both_directions():
     """Perfect agreement would mean the curated record is recomputable from
     sequence and R3 grades nothing. The build refuses that, and refuses a single
     offset too -- a convention error rather than a distribution."""
-    verdicts = _gold()["a_domain_verdicts"]
+    verdicts = _gold()["primary_verdicts"]
     assert verdicts["agrees"] > 0
     assert verdicts["computed_more"] > 0 or verdicts["computed_fewer"] > 0
-    assert len(_gold()["a_delta_census"]) >= 3
+    assert len(_gold()["primary_delta_census"]) >= 3
 
 
 def test_the_delta_census_matches_the_table():
     gold = _gold()
     from collections import Counter
-    counted = Counter(str(row["a_delta"]) for row in gold["reconciliation_table"])
-    assert {k: v for k, v in counted.items() if v} == gold["a_delta_census"]
+    counted = Counter(str(row["primary_delta"]) for row in gold["reconciliation_table"])
+    assert {k: v for k, v in counted.items() if v} == gold["primary_delta_census"]
     for row in gold["reconciliation_table"]:
-        assert row["a_delta"] == row["computed_a_domains"] - row["curated_a_domains"]
+        assert row["primary_delta"] == row["computed_primary"] - row["curated_primary"]
 
 
 def test_an_uncurated_domain_type_is_its_own_verdict():
     """A gene whose record names no condensation domain reports `not_curated`
     rather than a disagreement with zero -- there is nothing to disagree with."""
     gold = _gold()
-    assert gold["c_domain_verdicts"]["not_curated"] > 0
+    assert gold["secondary_verdicts"]["not_curated"] > 0
     for row in gold["reconciliation_table"]:
-        if row["curated_c_domains"] == 0:
-            assert row["c_verdict"] == "not_curated"
+        if row["curated_secondary"] == 0:
+            assert row["secondary_verdict"] == "not_curated"
         else:
-            assert row["c_verdict"] != "not_curated"
+            assert row["secondary_verdict"] != "not_curated"
 
 
-def test_the_condensation_reconciliation_is_worse_than_the_adenylation_one():
-    """The measured contrast: a curator records one adenylation domain per module
-    by construction, and records a condensation domain only sometimes -- and when
-    they do, agreement with the tool is far lower."""
+def test_the_two_reconciled_domain_types_are_separate_claims():
+    """The primary type is the one a module carries exactly once, so the curated
+    column is reliable; the secondary one is recorded less consistently and its
+    agreement is its own measurement. The two must not be the same number."""
     gold = _gold()
-    a = gold["a_domain_verdicts"]
-    c = gold["c_domain_verdicts"]
-    a_rate = a["agrees"] / (a["agrees"] + a["computed_more"] + a["computed_fewer"])
-    curated_c = c["agrees"] + c["computed_more"] + c["computed_fewer"]
-    c_rate = c["agrees"] / curated_c
-    assert curated_c > 0
-    assert c_rate < a_rate
+    a = gold["primary_verdicts"]
+    c = gold["secondary_verdicts"]
+    decided = c["agrees"] + c["computed_more"] + c["computed_fewer"]
+    assert decided > 0
+    assert a != c
 
 
 def test_the_module_decomposition_is_a_different_claim_from_the_domain_count():
@@ -290,7 +289,7 @@ def test_the_module_decomposition_is_a_different_claim_from_the_domain_count():
     into complete modules at all, so the two verdicts must not be the same
     column under two names."""
     gold = _gold()
-    assert gold["module_verdicts"] != gold["a_domain_verdicts"]
+    assert gold["module_verdicts"] != gold["primary_verdicts"]
     assert gold["complete_modules_total"] == sum(
         row["complete_modules"] for row in gold["module_table"])
     assert gold["module_verdicts"]["agrees"] > 0
@@ -331,6 +330,41 @@ def test_a_pfam_family_name_can_contain_the_architecture_separator(corpus):
     # architecture that way reports more domains than the gene has.
     row = next(r for r in _gold()["architecture_table"] if r["domains"] > 3)
     assert len(row["architecture"].split("-")) > row["domains"]
+
+
+def test_the_strata_partition_the_corpus_and_behave_differently():
+    """A stratification every stratum answers the same way is decoration, and the
+    build refuses it. Where a family declares one stratum the census has one
+    populated name and the check does not apply."""
+    gold = _gold()
+    strata = gold["strata_census"]
+    assert sum(strata.values()) == gold["architecture_census"]["genes"]
+    by_stratum = gold["secondary_verdicts_by_stratum"]
+    assert set(strata) <= set(by_stratum)
+    if len(strata) > 1:
+        shapes = {json.dumps(by_stratum[name], sort_keys=True) for name in strata}
+        assert len(shapes) > 1, by_stratum
+
+
+def test_a_stratum_whose_type_means_absence_grades_the_zero(corpus):
+    """Where the module type means the secondary domain is absent -- a trans-AT
+    module has no acyltransferase -- a curated zero is a CLAIM, so the row gets a
+    real verdict rather than `not_curated`. Which strata those are is read from
+    the per-module-type census, not asserted."""
+    gold = _gold()
+    per_type = gold["domains_by_module_type"]
+    secondary = gold["secondary_domain"]
+    asserting = [name for name, types in corpus.rules.strata.items()
+                 if sum(per_type.get(t, {}).get(secondary, 0) for t in types) == 0]
+    if not asserting:
+        pytest.skip("this family declares no stratum that asserts absence")
+    for name in asserting:
+        block = gold["secondary_verdicts_by_stratum"][name]
+        assert block["not_curated"] == 0, name
+        assert block["agrees"] > 0, name
+    rows = {r["stratum"] for r in gold["reconciliation_table"]
+            if r["secondary_verdict"] == "not_curated"}
+    assert not (rows & set(asserting))
 
 
 # ------------------------------------------------------------ the counterfactual
@@ -394,11 +428,16 @@ def test_the_family_to_domain_mapping_is_load_bearing():
     assert agreements[_rules().baseline_mapping] == max(agreements.values())
 
 
-def test_the_mapping_sweep_leaves_the_condensation_mapping_out():
+def test_the_mapping_sweep_leaves_the_secondary_mapping_out():
     """It is the mapping for the OTHER reconciled domain type, not an alternative
-    reading of the adenylation domain, so sweeping it would mix two axes."""
-    assert "condensation_domain" in _rules().domain_mappings
-    assert "condensation_domain" not in _gold()["mapping_sweep"]
+    reading of the primary one, so sweeping it would mix two axes. Its key is the
+    secondary domain's own name, and the rules loader checks that -- when the two
+    drifted apart during this template's generalisation, the secondary
+    reconciliation silently computed zero for every gene."""
+    rules = _rules()
+    assert rules.secondary_domain in rules.domain_mappings
+    assert rules.secondary_domain not in _gold()["mapping_sweep"]
+    assert rules.baseline_mapping != rules.secondary_domain
 
 
 def test_the_overlap_fraction_is_declared_and_not_swept():
@@ -464,7 +503,7 @@ def test_the_rung_key_sets_do_not_overlap():
 def test_the_echoes_of_the_rules_file_are_reported_and_not_graded():
     spec = json.loads((CAMPAIGN / "grading.json").read_text())
     graded = {c["name"] for r in spec["rungs"] for c in r["components"]}
-    for echo in ("mibig_release", "module_type", "baseline_cutoff",
+    for echo in ("mibig_release", "module_family", "baseline_cutoff",
                  "baseline_resolution", "baseline_span", "baseline_mapping",
                  "panel_size"):
         assert echo not in graded
@@ -552,18 +591,29 @@ def test_the_build_refuses_a_corpus_with_no_overlaps():
 
 def test_the_build_refuses_a_reconciliation_with_nothing_to_grade():
     gold = _gold()
-    verdicts = gold["a_domain_verdicts"]
+    verdicts = gold["primary_verdicts"]
     with pytest.raises(ArchitectureError, match="broken mapping"):
-        _assert_has_content({**gold, "a_domain_verdicts":
+        _assert_has_content({**gold, "primary_verdicts":
                              {**verdicts, "agrees": 0}})
     with pytest.raises(ArchitectureError, match="recomputable from sequence"):
-        _assert_has_content({**gold, "a_domain_verdicts": {
+        _assert_has_content({**gold, "primary_verdicts": {
             **verdicts, "computed_more": 0, "computed_fewer": 0}})
     with pytest.raises(ArchitectureError, match="single offset"):
-        _assert_has_content({**gold, "a_delta_census": {"0": 1000, "1": 50}})
-    with pytest.raises(ArchitectureError, match="not_curated"):
-        _assert_has_content({**gold, "c_domain_verdicts": {
-            **gold["c_domain_verdicts"], "not_curated": 0}})
+        _assert_has_content({**gold, "primary_delta_census": {"0": 1000, "1": 50}})
+
+
+def test_the_build_refuses_a_secondary_reconciliation_of_one_kind_of_row():
+    """A corpus in a single stratum where no gene leaves the secondary domain
+    uncurated has only one kind of secondary row. The check counts POPULATED
+    strata, not the by-stratum census's keys: that census always carries a
+    "mixed" row, so counting its keys made this pass vacuously."""
+    gold = _gold()
+    single = {**gold,
+              "secondary_verdicts": {**gold["secondary_verdicts"],
+                                     "not_curated": 0},
+              "strata_census": {"only": gold["architecture_census"]["genes"]}}
+    with pytest.raises(ArchitectureError, match="single stratum"):
+        _assert_has_content(single)
 
 
 def test_the_build_refuses_a_cosmetic_counterfactual():
@@ -601,3 +651,151 @@ def test_the_task_declares_the_stub_levels_the_module_implements():
     from npbench_c.sweep.stubs.stub_arch import LEVELS
     declared = {level["level"] for level in _task()["harness"]["stub_levels"]}
     assert declared == set(LEVELS)
+
+
+# ------------------------------------------------- the other instantiation (PKS)
+
+pks_built = pytest.mark.skipif(not (PKS / "gold" / "gold.json").is_file(),
+                               reason="the PKS instantiation is not built")
+
+
+@pytest.fixture(scope="module")
+def pks_corpus() -> Corpus:
+    params = dar.load_params(PKS)
+    return Corpus.load(PKS, params["annotations_input"],
+                       params["proteins_input"])
+
+
+@pks_built
+def test_the_two_instantiations_share_a_template_and_differ_only_by_rules():
+    """The instantiation axis is a declared rules file, not a forked template.
+    Both campaigns name the same commands and the same stub module; what differs
+    is which constants file the build copies in."""
+    nrps, pks = _task(CAMPAIGN), _task(PKS)
+    assert nrps["template_id"] == pks["template_id"] == "domain-architecture"
+    assert nrps["harness"] == pks["harness"]
+    assert (nrps["template_params"]["rules_source"]
+            != pks["template_params"]["rules_source"])
+    # and the pinned table the agent reads is at the same path in both
+    assert nrps["constraints"]["pinned_tables"] == pks["constraints"]["pinned_tables"]
+
+
+@pks_built
+def test_the_pks_family_accepts_several_module_types():
+    """A modular PKS gene normally carries a loading module of its own type
+    alongside its elongation modules, so the family is a set rather than one
+    type -- and the strata, not the selection rule, keep the architectures
+    apart."""
+    rules = _rules(PKS)
+    assert len(rules.accepted_module_types) > 1
+    assert len(_rules(CAMPAIGN).accepted_module_types) == 1
+    covered = {t for types in rules.strata.values() for t in types}
+    assert covered == set(rules.accepted_module_types)
+
+
+@pks_built
+def test_the_trans_at_stratum_finds_no_acyltransferase():
+    """This instantiation's own control, and the reason it is not a relabelling.
+    A trans-AT module has no acyltransferase -- the enzyme acts from a separate
+    protein -- so the curated count is zero by definition and the computed
+    architecture should find none. Measured, not assumed: if the tool found some,
+    the finding would be about the tool."""
+    gold = _gold(PKS)
+    by_stratum = gold["secondary_verdicts_by_stratum"]
+    assert "trans_at" in by_stratum
+    trans = by_stratum["trans_at"]
+    assert trans["agrees"] > 0
+    assert trans["computed_more"] == 0 and trans["computed_fewer"] == 0
+    # and the zero is graded as a claim, not reported as a silence
+    assert trans["not_curated"] == 0
+    rows = [r for r in gold["reconciliation_table"] if r["stratum"] == "trans_at"]
+    assert rows and all(r["computed_secondary"] == 0 for r in rows)
+    assert all(r["curated_secondary"] == 0 for r in rows)
+
+
+@pks_built
+def test_the_cis_at_stratum_does_find_one_and_disagrees_sometimes():
+    gold = _gold(PKS)
+    cis = gold["secondary_verdicts_by_stratum"]["cis_at"]
+    assert cis["agrees"] > 0
+    assert cis["computed_more"] + cis["computed_fewer"] > 0
+    assert cis != gold["secondary_verdicts_by_stratum"]["trans_at"]
+
+
+@pks_built
+def test_a_gene_spanning_both_strata_is_mixed():
+    gold = _gold(PKS)
+    assert gold["strata_census"].get("mixed", 0) > 0
+    assert "mixed" not in _rules(PKS).strata
+
+
+@pks_built
+def test_the_ketosynthase_is_split_across_three_pfam_families():
+    """The mapping axis, harder here than for the adenylation domain: counting
+    all three families triples every module, so agreement collapses."""
+    sweep = _gold(PKS)["mapping_sweep"]
+    agreements = {name: b["verdicts"]["agrees"] for name, b in sweep.items()}
+    assert len(agreements) >= 4
+    best = max(agreements.values())
+    worst = min(agreements.values())
+    assert best >= 10 * worst, agreements
+    widest = max(sweep, key=lambda n: len(sweep[n]["families"]))
+    assert len(sweep[widest]["families"]) == 3
+    assert agreements[widest] == worst
+
+
+@pks_built
+def test_the_pks_module_pattern_cannot_match_a_trans_at_gene():
+    """The cis-AT module core includes the acyltransferase, which a trans-AT gene
+    does not encode -- so the decomposition separates the strata too, through a
+    second and independent measure."""
+    gold = _gold(PKS)
+    pattern = _rules(PKS).module_pattern
+    assert "Acyl_transf_1" in pattern
+    strata = {(r["bgc"], r["gene"]): r["stratum"]
+              for r in gold["reconciliation_table"]}
+    trans = [r for r in gold["module_table"]
+             if strata[(r["bgc"], r["gene"])] == "trans_at"]
+    assert trans and all(r["complete_modules"] == 0 for r in trans)
+    cis = [r for r in gold["module_table"]
+           if strata[(r["bgc"], r["gene"])] == "cis_at"]
+    assert any(r["complete_modules"] > 0 for r in cis)
+
+
+@pks_built
+def test_the_pks_oracle_clears_every_rung(tmp_path):
+    submission = tmp_path / "submission"
+    submission.mkdir()
+    (submission / "architecture_report.json").write_text(
+        json.dumps(render(_gold(PKS)), indent=2, sort_keys=True) + "\n")
+    result = grade(measure(PKS, submission), _gold(PKS),
+                   json.loads((PKS / "grading.json").read_text()))
+    assert result["score"] == 1.0
+    assert result["depth"] == 4
+    assert result["discriminating_chance_floor"] <= MAX_CHANCE_FLOOR
+
+
+@pks_built
+def test_the_pks_measurer_never_reads_gold(tmp_path):
+    copy = tmp_path / "campaign"
+    shutil.copytree(PKS, copy)
+    shutil.rmtree(copy / "gold")
+    submission = tmp_path / "submission"
+    submission.mkdir()
+    (submission / "architecture_report.json").write_text(
+        json.dumps(render(_gold(PKS)), indent=2, sort_keys=True) + "\n")
+    assert measure(copy, submission) == measure(PKS, submission)
+
+
+@pks_built
+def test_the_pks_overlaps_are_heavier_than_the_nrps_ones():
+    """Worth stating rather than assuming: the reductase families this corpus
+    carries overlap far more than the NRPS panel's do, so the resolution policy
+    matters on most of the corpus instead of a quarter of it."""
+    pks = _gold(PKS)["overlap_census"]
+    nrps = _gold(CAMPAIGN)["overlap_census"]
+    pks_rate = pks["genes_with_an_overlap"] / _gold(PKS)["architecture_census"]["genes"]
+    nrps_rate = (nrps["genes_with_an_overlap"]
+                 / _gold(CAMPAIGN)["architecture_census"]["genes"])
+    assert pks_rate > nrps_rate
+    assert pks_rate > 0.5

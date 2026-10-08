@@ -1,9 +1,9 @@
-campaign_id: arch-nrps-mibig-4_0-01
+campaign_id: arch-pks-mibig-4_0-01
 template_id: domain-architecture
 track: EX
 family: cross_database_reconciliation
 layer: L1_sequence_and_annotation
-np_class: nrps
+np_class: pks
 version: 1.0.0
 horizon_tier: T-short
 license_class: open
@@ -35,14 +35,15 @@ license_notice:
     the pinned image at a declared path with a recorded sha256.
 
 objective: >
-  A non-ribosomal peptide synthetase is one protein carrying a chain of
-  catalytic domains, and its architecture is the ordered list of them. Select the
-  genes whose curated modules are all of the declared type, scan them with a
+  A modular polyketide synthase is one protein carrying a chain of catalytic
+  domains, and its architecture is the ordered list of them. Select the genes
+  whose curated module types all belong to the declared family, scan them with a
   pinned HMMER against a declared Pfam panel, resolve the overlaps the tool
   produces under a declared policy, and report the architecture of each. Then
   reconcile what you computed against what MIBiG's curators recorded module by
-  module, and report how all of it moves under each other declared reading of
-  the same scan.
+  module -- separately for the clusters whose modules carry their own
+  acyltransferase and those whose do not -- and report how all of it moves under
+  each other declared reading of the same scan.
 
 method_guidance: partial
 
@@ -69,10 +70,19 @@ scope_note: >
   wider envelope span for every hit, and ordering by one or the other can reorder
   the architecture. Both are declared; the baseline is the alignment span.
 
-  A Pfam family is not a domain type. The curated record names an adenylation
-  domain; Pfam splits it into an N-terminal family and a C-terminal family, and
-  counting both double-counts every module. Which family counts is a declared
-  mapping and the counterfactual varies it.
+  A Pfam family is not a domain type, and the ketosynthase makes the point harder
+  than the adenylation domain does: Pfam splits it across THREE consecutive
+  families, so counting all of them triples every module. Which family counts is a
+  declared mapping and the counterfactual varies it.
+
+  And the module TYPE decides what a curated zero means. A cis-AT module encodes
+  its own acyltransferase; a trans-AT module does not, and gets one from a
+  separate protein. So on the trans-AT side a curated count of zero
+  acyltransferases is a CLAIM the computed architecture can agree or disagree
+  with, while elsewhere a zero is a silence. Which it is comes from the
+  per-module-type census in the annotation set, not from an assertion in this
+  campaign, so a release that started recording them would change the verdict
+  rather than contradict a hardcoded fact.
 
   And the curated side is INDEPENDENT of the tool: MIBiG's modules come from the
   literature and the product's structure, gene by gene, not from any domain scan
@@ -82,6 +92,13 @@ scope_note: >
   reports rather than works around.
 
 catalog_deviation: >
+  This is the PKS half of the catalogued instantiation axis, built on the same
+  template as the NRPS half and differing only in its declared rules file: the
+  module family, the Pfam panel, the two reconciled domain types, the module
+  pattern and the strata. The method, the three counterfactual axes and every
+  refusal below are shared, and are repeated here so this campaign reads on its
+  own.
+
   Four changes, each forced by a measurement rather than by cost.
 
   The catalogued R1 asked for a "non-overlapping" domain table. Measured on this
@@ -105,18 +122,18 @@ catalog_deviation: >
 
   The catalogued R4 was "a domain is deleted from the sequence -- predict the new
   architecture and the lost function". The lost function has no oracle, for the
-  same reason. The deletion half is computable and was built and measured: it is
-  DEGENERATE. Removing each gene's first adenylation domain and re-scanning
-  leaves the architecture minus exactly that domain on 1,112 of 1,126 genes, so
-  "one domain fewer" is a free answer and the rung would distinguish almost
-  nothing. R4 instead varies the three declared readings of the same scan --
+  same reason. The deletion half is computable and was built and measured on this
+  template's NRPS instantiation: it is DEGENERATE. Removing each gene's first
+  primary domain and re-scanning leaves the architecture minus exactly that
+  domain on 1,112 of 1,126 genes, so "one domain fewer" is a free answer and the
+  rung would distinguish almost nothing. R4 instead varies the three declared readings of the same scan --
   resolution, coordinate span and cutoff -- plus the family-to-domain mapping,
   each of which was measured to move the answer.
 
 template_params:
   annotations_input: inputs/mibig_json_4.0.tar.gz
   proteins_input: inputs/module_gene_proteins.faa.gz
-  rules_source: architecture_rules.json
+  rules_source: architecture_rules_pks.json
 
 output_contract:
   architecture_report.json:
@@ -257,13 +274,13 @@ excluded_from_grading:
       question is not a benchmark task.
   - field: the architecture after a declared domain is deleted
     reason: >
-      The catalogued R4. Built and measured, then dropped: removing each gene's
-      first adenylation domain and re-scanning leaves the architecture minus
-      exactly that domain on 1,112 of the 1,126 genes it applies to, and the
-      adenylation count falls by exactly one on 1,125 of them. So the outcome is
-      one answer repeated and the rung distinguishes almost nothing. Recorded
-      here with the numbers rather than silently omitted, because the
-      measurement is the reason.
+      The catalogued R4. Built and measured on the NRPS instantiation of this
+      template, then dropped for both: removing each gene's first primary domain
+      and re-scanning leaves the architecture minus exactly that domain on 1,112
+      of the 1,126 genes it applied to, and the domain count fell by exactly one
+      on 1,125 of them. So the outcome is one answer repeated and the rung
+      distinguishes almost nothing. Recorded here with the numbers rather than
+      silently omitted, because the measurement is the reason.
   - field: mibig_release, module_type, baseline_cutoff, baseline_resolution, baseline_span, baseline_mapping, panel_size
     reason: >
       Each is an echo of a declared file -- the release from the input
@@ -318,6 +335,14 @@ notes_for_audit:
     readable off the input instead of computed from the two resources, and it
     would let the NRPS and PKS instantiations reveal each other's corpus by file
     size.
+  - >
+    Then check the strata. The trans-AT side is this instantiation's own control
+    and the reason it is not a relabelling of the NRPS one: those modules carry
+    no acyltransferase by definition, so the computed architecture should find
+    none, and if it found some the finding would be about the tool rather than
+    about the curation. The build refuses to emit gold if the declared strata
+    produce one secondary verdict census between them, which would mean the
+    stratification distinguishes nothing.
   - >
     The three Pfam-curated cutoffs are near-interchangeable on this corpus and
     the bare E-value is not. That contrast is the point of including it: a

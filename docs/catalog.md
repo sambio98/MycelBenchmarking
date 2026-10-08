@@ -77,7 +77,7 @@ key.
 | # | Template | Data | Build |
 |---|---|---|---|
 | T-L1-1 | Gene calling under assembly fragmentation | probe | image |
-| T-L1-2 ×2 | Domain architecture parsing | verified | **BUILT** (NRPS; PKS axis open) |
+| T-L1-2 ×2 | Domain architecture parsing | verified | **BUILT ×2** (NRPS + PKS) |
 | T-L1-3 | Annotation transfer error detection | verified | **BUILT** (S1) |
 | T-L1-4 | Frameshift / pseudogene detection | probe | image |
 
@@ -150,6 +150,40 @@ module decomposition did that and the build's own refusal caught it; then the
 test written to check the fix made the same mistake. Both have tests now, and the
 declared module pattern turns out to be **four** families long for a module with
 three catalytic domains — the same split, arriving through a different door.
+
+**Both instantiations are built.** `campaigns/arch-pks-mibig-4_0-01` completes the
+axis: the same template, differing only in its declared rules file — module
+family, panel, the two reconciled domain types, module pattern and strata. **464
+`pks` genes over 162 clusters**, 1.46 M residues, 5,954 domains, 276 distinct
+architectures. Oracle 1.0 at depth 4, gate 21/0/5.
+
+**The second instance measures something the first cannot.** MIBiG's module type
+encodes cis-AT versus trans-AT with no exceptions: `pks-modular` records an
+acyltransferase on 612 of 612 modules, `pks-trans-at` on **0 of 471** — a trans-AT
+synthase gets its acyltransferase in trans from a separate protein. So on that
+side a curated zero is a *claim*, and the campaign grades it per stratum:
+
+| stratum | genes | agrees | disagrees | acyltransferases found |
+|---|---|---|---|---|
+| `cis_at` | 318 | 298 | 20 | 546 |
+| **`trans_at`** | **128** | **128** | **0** | **0** |
+| `mixed` | 18 | 9 | 9 | 26 |
+
+The tool finds none in any of the 128 trans-AT genes — a negative control the data
+supplies rather than one the campaign plants. Which strata assert absence is read
+from the per-module-type census, not asserted, so a release that began recording
+them would change the verdict rather than contradict a hardcoded fact. The module
+decomposition shows the same split independently: the declared cis-AT module core
+includes the acyltransferase, so it occurs 540 times overall and **zero** times in
+the trans-AT stratum.
+
+**The split-family problem is worse here**: Pfam divides the ketosynthase across
+**three** consecutive families, so agreement runs 398 / 393 / 389 for the single
+readings and **13** for all three — a factor of thirty, against seven for the
+adenylation domain. **And the overlaps are much heavier**: 3,002 pairs on **399 of
+464 genes (86%)**, against 315 of 1,136 (28%) for NRPS, because the reductase
+families a PKS carries overlap each other densely. The resolution the catalogued
+design assumed away matters on most of this corpus.
 
 **T-L1-3** Annotation transfer error: a protein whose closest BLAST/DIAMOND hit
 is a paralog with a different function. R1 hit table · R2 hits match gold ·

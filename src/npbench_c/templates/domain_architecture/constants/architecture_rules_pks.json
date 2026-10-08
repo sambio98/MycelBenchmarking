@@ -1,82 +1,85 @@
 {
   "audit": {
-    "module_family": "nrps-type1",
+    "module_family": "pks",
     "accepted_module_types": [
-      "nrps-type1"
+      "pks-modular",
+      "pks-modular-starter",
+      "pks-trans-at",
+      "pks-trans-at-starter"
     ],
-    "module_family_note": "The instantiation axis, as a declared FAMILY of MIBiG module types rather than a single one. A gene is selected when every curated module type it carries is among the accepted ones: a gene carrying both NRPS and PKS modules has an architecture drawn from two vocabularies and belongs to neither instantiation. The NRPS family accepts one type; the PKS family accepts four, because a modular PKS gene normally carries a loading module of its own type alongside its elongation modules, and the strata below keep those distinguishable.",
+    "module_family_note": "The PKS instantiation of this template. Four accepted types rather than one: a modular PKS gene normally carries a loading module of its own type alongside its elongation modules, and the cis-AT and trans-AT architectures are different enough that the strata below keep them apart rather than the selection rule. A gene is selected when every curated module type it carries is among these four, so a gene also carrying an NRPS module is excluded -- its architecture is drawn from two vocabularies.",
     "excluded_statuses": [
       "retired"
     ],
     "excluded_statuses_note": "A retired entry is one MIBiG has withdrawn. Reconciling a computed architecture against an annotation its own curators have taken back would be auditing a retraction.",
     "model_panel": [
       "3Beta_HSD",
+      "ACP_syn_III",
+      "ACP_syn_III_C",
       "ADH_N",
       "ADH_zinc_N",
       "ADH_zinc_N_2",
       "AMP-binding",
       "AMP-binding_C",
-      "APS_kinase",
       "Abhydrolase_1",
       "Abhydrolase_6",
+      "Acetyltransf_1",
+      "Acetyltransf_7",
       "Acyl_transf_1",
-      "Aminotran_1_2",
-      "Aminotran_3",
-      "BRCT",
-      "Bac_luciferase",
+      "AfsA",
+      "Beta_elim_lyase",
+      "CMAS",
+      "Chal_sti_synt_C",
+      "Chal_sti_synt_N",
       "Condensation",
-      "Dimerisation2",
+      "DUF938",
       "Docking",
+      "ECH_1",
+      "ECH_2",
       "Epimerase",
-      "FAD_binding_3",
-      "Formyl_trans_C",
-      "Formyl_trans_N",
+      "Erythro-docking",
+      "FAE1_CUT1_RppA",
+      "FMO-like",
       "GDP_Man_Dehyd",
       "Hydrolase_4",
       "KAsynt_C_assoc",
       "KR",
       "Ketoacyl-synt_C",
-      "MTS",
-      "Mbeg1-like",
-      "MbtH",
-      "McyA_C",
-      "MetW",
+      "LPG_synthase_C",
+      "Lys_Orn_oxgnase",
+      "MaoC_dehydratas",
       "Methyltransf_11",
       "Methyltransf_12",
-      "Methyltransf_16",
       "Methyltransf_2",
       "Methyltransf_21",
       "Methyltransf_23",
       "Methyltransf_25",
       "Methyltransf_31",
-      "NAD_binding_10",
+      "Methyltransf_33",
       "NAD_binding_4",
       "NAD_binding_8",
-      "Nitroreductase",
-      "NmrA",
-      "NodS",
-      "PEP-utilizers",
+      "PKS_DE",
       "PP-binding",
       "PRMT5",
       "PS-DH",
-      "PTCB-BRCT",
+      "Peptidase_S15",
+      "Peptidase_S9",
+      "PhyH",
       "Polysacc_synt_2",
-      "QueC",
+      "Pyr_redox_2",
+      "Pyr_redox_3",
       "RmlD_sub_bind",
+      "SAT",
       "Sulfotransfer_1",
       "Sulfotransfer_3",
-      "TauD",
       "Thioesterase",
       "Thiolase_N",
-      "Transferase",
-      "TubC_N",
       "Ubie_methyltran",
       "adh_short",
       "adh_short_C2",
-      "ketoacyl-synt",
-      "p450"
+      "ketoacyl-synt"
     ],
-    "model_panel_note": "Declared, not discovered. The panel was fixed at build time by scanning the corpus against the whole of the pinned Pfam release once, at the declared baseline cutoff, and listing every family that came back -- so it is a published vocabulary rather than a hint. A full Pfam-A pass over this corpus takes about seven minutes; the declared panel takes about thirty seconds, and the campaign refuses to build if the pinned release does not carry every model.",
+    "model_panel_note": "Declared, not discovered. Fixed at build time by scanning this corpus against the whole of the pinned Pfam release once, at the declared baseline cutoff, and listing every family that came back -- so it is a published vocabulary rather than a hint. It is a different panel from the NRPS instantiation's, discovered the same way, which is what an instantiation axis should produce: the method is shared and the vocabulary is the corpus's own.",
     "cutoffs": [
       "--cut_ga",
       "--cut_nc",
@@ -100,22 +103,26 @@
     "baseline_resolution": "resolve_by_score",
     "resolution_policies_note": "Pfam resolves overlaps between families of the same clan by keeping the best-scoring hit. That rule is NOT available here: the pinned library carries no clan annotation at all, so this campaign's rule is score and geometry and is declared as its own rather than borrowed and misattributed. keep_all is the unresolved architecture -- the one the catalogued design assumed was already non-overlapping.",
     "domain_mappings": {
-      "amp_binding_both": [
-        "AMP-binding",
-        "AMP-binding_C"
+      "ks_n": [
+        "ketoacyl-synt"
       ],
-      "amp_binding_c": [
-        "AMP-binding_C"
+      "ks_c": [
+        "Ketoacyl-synt_C"
       ],
-      "amp_binding_n": [
-        "AMP-binding"
+      "ks_assoc": [
+        "KAsynt_C_assoc"
       ],
-      "c_domain": [
-        "Condensation"
+      "ks_all_three": [
+        "ketoacyl-synt",
+        "Ketoacyl-synt_C",
+        "KAsynt_C_assoc"
+      ],
+      "at_domain": [
+        "Acyl_transf_1"
       ]
     },
-    "baseline_mapping": "amp_binding_n",
-    "domain_mappings_note": "A Pfam family is not a domain type. The curated record names an adenylation domain; Pfam splits it into an N-terminal family and a C-terminal family, so which one counts as THE domain is a choice, and counting both double-counts every module. The baseline takes the N-terminal family, which is the one that covers the domain's catalytic core and occurs once per module. The mapping whose key is the declared SECONDARY domain -- `c_domain` here -- is how that second reconciled type is counted, and it is not part of the R4 sweep, which varies the primary domain's mapping alone. The keying is load-bearing and checked at load time: when it drifted from the secondary domain's name during this template's generalisation, the secondary reconciliation silently computed zero for every gene and the build's assertions still passed.",
+    "baseline_mapping": "ks_n",
+    "domain_mappings_note": "A Pfam family is not a domain type, and the ketosynthase makes the point harder than the adenylation domain does: Pfam splits it across THREE consecutive families, so counting all of them triples every module. The baseline takes the N-terminal family, which covers the catalytic core and occurs once per module. The mapping whose key is the declared secondary domain -- `at_domain` here -- is how that second reconciled type is counted, and it is not part of the R4 sweep, which varies the primary domain's mapping alone. The keying is checked at load time: if it drifts from the secondary domain's name the secondary reconciliation computes zero for every gene and nothing else complains, which is what happened once while this template was being generalised.",
     "curated_domain_keys": [
       "a_domain",
       "c_domain",
@@ -123,22 +130,27 @@
       "at_domain"
     ],
     "curated_domain_keys_note": "The typed domain blocks a MIBiG module can carry. Only their PRESENCE is used, never their coordinates: the campaign counts how many of these blocks carry a usable location and reports it at R1, because on this database almost none do and a campaign that silently worked around that would be hiding its own foundation.",
-    "primary_domain": "a_domain",
-    "secondary_domain": "c_domain",
-    "reconciled_domains_note": "The two curated domain types this family reconciles, declared rather than hardcoded. The primary one is the domain the family's modules carry exactly once -- the adenylation domain here -- so it is the count the curated record states most reliably, and it is the one the mapping sweep varies. The secondary one is a second type whose agreement is a separate claim.",
+    "primary_domain": "ks_domain",
+    "secondary_domain": "at_domain",
+    "reconciled_domains_note": "The two curated domain types this family reconciles. The primary one is the ketosynthase, which a cis-AT elongation module carries exactly once, so it is the count the curated record states most reliably and the one the mapping sweep varies. The secondary one is the acyltransferase, and it is where this instantiation earns its own design: a trans-AT module has NO acyltransferase -- the enzyme acts from a separate protein -- so the curated zero there is a claim rather than a silence, and the strata decide which it is.",
     "module_strata": {
-      "nrps_type1": [
-        "nrps-type1"
+      "cis_at": [
+        "pks-modular",
+        "pks-modular-starter"
+      ],
+      "trans_at": [
+        "pks-trans-at",
+        "pks-trans-at-starter"
       ]
     },
-    "module_strata_note": "A partition of the accepted module types. A gene whose types fall in one stratum takes that stratum's name and one spanning several takes 'mixed', so the strata must cover the accepted types exactly -- which the rules loader checks. The NRPS family has one stratum and the stratification is therefore inert here; it is declared anyway so both instantiations read the same file format. In the PKS family it is load-bearing: a trans-AT module records no acyltransferase at all, so the stratum decides whether a curated zero is a silence or a claim, and the campaign reads which it is from the per-module-type census rather than asserting it.",
+    "module_strata_note": "The partition that makes this instantiation more than a relabelling. A cis-AT module encodes its own acyltransferase; a trans-AT module does not, and gets one from a separate protein. The annotation set records that distinction in the module type, so the stratum decides whether a curated count of zero acyltransferases is a silence or a claim -- and the campaign reads which from the per-module-type census rather than asserting it, so a release that started recording them would change the verdict rather than contradict a hardcoded fact. A gene whose modules span both strata is 'mixed'.",
     "module_pattern": [
-      "Condensation",
-      "AMP-binding",
-      "AMP-binding_C",
-      "PP-binding"
+      "ketoacyl-synt",
+      "Ketoacyl-synt_C",
+      "KAsynt_C_assoc",
+      "Acyl_transf_1"
     ],
-    "module_pattern_note": "A canonical NRPS elongation module in PFAM terms, in order. Note the length: the module has three catalytic domains -- condensation, adenylation, thiolation -- and four Pfam families, because the adenylation domain is split into an N-terminal and a C-terminal family. This is the same fact the mapping axis measures, and it was measured here too: the three-family pattern a domain-level reading would write down occurs on a tenth as many genes, and the four-family one is by a wide margin the commonest four-gram in the corpus's architectures. Counting its non-overlapping occurrences is arithmetic over the architecture, and it is a DIFFERENT claim from counting adenylation domains -- a gene can carry the right number of adenylation domains and not assemble into complete modules at all.",
+    "module_pattern_note": "A cis-AT elongation module's invariant core in Pfam terms: the ketosynthase as its three families, then the acyltransferase. Four families for two catalytic domains. The carrier protein is deliberately NOT in the pattern, because the optional reduction domains sit between the acyltransferase and the carrier -- measured, the five-family pattern that includes it matches a fifteenth as often. And note what the pattern cannot match: a trans-AT module has no acyltransferase, so the count is zero there by construction, which is the stratum showing through a second and independent measure.",
     "reconciliation_verdicts": [
       "agrees",
       "computed_more",

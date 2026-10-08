@@ -28,9 +28,11 @@ REPORT = "architecture_report.json"
 ARCHITECTURE_COLUMNS = ("bgc", "gene", "length", "hits", "domains",
                         "resolved_away", "architecture", "first_domain_start",
                         "last_domain_end")
-RECONCILIATION_COLUMNS = ("bgc", "gene", "curated_modules", "curated_a_domains",
-                          "computed_a_domains", "a_delta", "a_verdict",
-                          "curated_c_domains", "computed_c_domains", "c_verdict")
+RECONCILIATION_COLUMNS = ("bgc", "gene", "stratum", "curated_modules",
+                          "curated_primary", "computed_primary",
+                          "primary_delta", "primary_verdict",
+                          "curated_secondary", "computed_secondary",
+                          "secondary_verdict")
 MODULE_COLUMNS = ("bgc", "gene", "complete_modules", "curated_modules",
                   "verdict")
 LENGTH_KEYS = ("count", "min", "median", "max", "residues")
@@ -69,6 +71,11 @@ def _str_list(value: object) -> list[str]:
     return [str(v) for v in value] if isinstance(value, list) else []
 
 
+def _drop_zeros(block: dict) -> dict:
+    """Keys whose count is zero are omitted, as gold omits them."""
+    return {k: v for k, v in block.items() if v}
+
+
 def _int_map(value: object, keys) -> dict:
     block = value if isinstance(value, dict) else {}
     return {k: _int(block.get(k)) for k in keys}
@@ -102,10 +109,10 @@ _ARCHITECTURE_CASTS = {
     "first_domain_start": _opt_int, "last_domain_end": _opt_int,
 }
 _RECONCILIATION_CASTS = {
-    "bgc": _str, "gene": _str, "curated_modules": _int,
-    "curated_a_domains": _int, "computed_a_domains": _int, "a_delta": _int,
-    "a_verdict": _str, "curated_c_domains": _int, "computed_c_domains": _int,
-    "c_verdict": _str,
+    "bgc": _str, "gene": _str, "stratum": _str, "curated_modules": _int,
+    "curated_primary": _int, "computed_primary": _int, "primary_delta": _int,
+    "primary_verdict": _str, "curated_secondary": _int,
+    "computed_secondary": _int, "secondary_verdict": _str,
 }
 _MODULE_CASTS = {
     "bgc": _str, "gene": _str, "complete_modules": _int,
@@ -137,6 +144,12 @@ def measure(campaign: pathlib.Path, submission_dir: pathlib.Path) -> dict:
         sub.get("curated_coordinate_usability"), ("placeholder", "usable"))
     out["curated_active_flag"] = _free_int_map(sub.get("curated_active_flag"))
     out["curated_module_census"] = _free_int_map(sub.get("curated_module_census"))
+    out["strata_census"] = _free_int_map(sub.get("strata_census"))
+    per_type = sub.get("domains_by_module_type")
+    per_type = per_type if isinstance(per_type, dict) else {}
+    out["domains_by_module_type"] = {
+        str(name): _drop_zeros(_int_map(block, rules.curated_domain_keys))
+        for name, block in sorted(per_type.items()) if isinstance(block, dict)}
     out["curated_domain_totals"] = _int_map(sub.get("curated_domain_totals"),
                                             rules.curated_domain_keys)
     length = sub.get("protein_length_summary")
@@ -170,11 +183,16 @@ def measure(campaign: pathlib.Path, submission_dir: pathlib.Path) -> dict:
     out["reconciliation_table"] = _rows(sub.get("reconciliation_table"),
                                         RECONCILIATION_COLUMNS,
                                         _RECONCILIATION_CASTS)
-    out["a_domain_verdicts"] = _int_map(sub.get("a_domain_verdicts"),
-                                        rules.verdicts)
-    out["c_domain_verdicts"] = _int_map(sub.get("c_domain_verdicts"),
-                                        rules.verdicts)
-    out["a_delta_census"] = _free_int_map(sub.get("a_delta_census"))
+    out["primary_verdicts"] = _int_map(sub.get("primary_verdicts"),
+                                       rules.verdicts)
+    out["secondary_verdicts"] = _int_map(sub.get("secondary_verdicts"),
+                                         rules.verdicts)
+    by_stratum = sub.get("secondary_verdicts_by_stratum")
+    by_stratum = by_stratum if isinstance(by_stratum, dict) else {}
+    out["secondary_verdicts_by_stratum"] = {
+        name: _int_map(by_stratum.get(name), rules.verdicts)
+        for name in sorted(set(rules.strata) | {"mixed"})}
+    out["primary_delta_census"] = _free_int_map(sub.get("primary_delta_census"))
     out["module_table"] = _rows(sub.get("module_table"), MODULE_COLUMNS,
                                 _MODULE_CASTS)
     out["module_verdicts"] = _int_map(sub.get("module_verdicts"), rules.verdicts)
@@ -191,7 +209,7 @@ def measure(campaign: pathlib.Path, submission_dir: pathlib.Path) -> dict:
     mapping = mapping if isinstance(mapping, dict) else {}
     out["mapping_sweep"] = {}
     for name in sorted(rules.domain_mappings):
-        if name == "condensation_domain":
+        if name == rules.secondary_domain:
             continue
         block = mapping.get(name)
         block = block if isinstance(block, dict) else {}

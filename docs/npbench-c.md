@@ -50,12 +50,13 @@ scoring path.
 | Campaign: MIBiG RiPP precursors | `campaigns/ripp-precursor-mibig-4_0-01/` | oracle 1.0, gate 21/0/5 |
 | Template: domain architecture | `src/npbench_c/templates/domain_architecture/` | HMMER 3.4 + declared 65-model Pfam panel, declared overlap resolution |
 | Campaign: MIBiG NRPS architectures | `campaigns/arch-nrps-mibig-4_0-01/` | oracle 1.0, gate 21/0/5 |
+| Campaign: MIBiG PKS architectures | `campaigns/arch-pks-mibig-4_0-01/` | oracle 1.0, gate 21/0/5, cis-AT vs trans-AT strata |
 | External resources | `src/npbench_c/tools/resources.py` | one declaration for a pinned file read from the image, shared by 3 campaigns |
 | Tool memo | `src/npbench_c/tools/cache.py` | stub sweeps only; 29m32s to 3m44s |
 | Phase 1 image | `image/Dockerfile`, `image/environment.lock.json` | 8 tools pinned to `version=build`, 185-package closure hashed, antiSMASH databases pinned at 9.4 GB |
 | Tool registry | `src/npbench_c/tools/registry.py` | pins, controls, invocations, declared normalisations, canonicalisations, projections, enforced bans |
 | Thread-invariance suite | `src/npbench_c/tools/invariance.py` | 8/8 tools invariant at 1 and 8 threads |
-| Tests | `tests/` | 557 passing, 5 skipped |
+| Tests | `tests/` | 571 passing, 6 skipped |
 
 ```bash
 PYTHONPATH=src python3 -m pytest tests -q
@@ -2256,6 +2257,137 @@ coordinate span and a cutoff — is only visible from the raw hit table.
 The antiSMASH route remains the right one for a campaign that wants to grade
 antiSMASH's module assembly. That is a different row.
 
+## Campaign 20: the second instantiation, and what it is for
+
+`arch-pks-mibig-4_0-01` completes T-L1-2's catalogued ×2 axis. It is the same
+template as the NRPS campaign and differs only in its declared rules file — the
+module family, the Pfam panel, the two reconciled domain types, the module
+pattern and the strata. Oracle 1.0 at depth 4, gate 21/0/5.
+
+**464 `pks` genes over 162 clusters**, 1,460,845 residues, median 2,347 aa.
+**5,954 domains, 276 distinct architectures**, 1 to 50 per gene.
+
+An instantiation axis is only worth having if the second instance measures
+something the first cannot, and this one does.
+
+### The curated record encodes cis-AT versus trans-AT, exactly
+
+| module type | modules | ketosynthase recorded | acyltransferase recorded |
+|---|---|---|---|
+| `pks-modular` | 612 | 612 | **612 (100%)** |
+| `pks-modular-starter` | 17 | 0 | 17 |
+| `pks-trans-at` | 471 | 471 | **0 (0%)** |
+| `pks-trans-at-starter` | 33 | 0 | 0 |
+
+A trans-AT polyketide synthase does not encode its own acyltransferase — the
+enzyme acts in trans from a separate protein — and MIBiG records that in the
+module type with no exceptions either way. So on the trans-AT side a curated
+count of **zero** is a claim the computed architecture can agree or disagree
+with, while elsewhere a zero is a silence. The campaign declares two strata over
+the accepted types and grades the secondary reconciliation per stratum:
+
+| stratum | genes | agrees | computed more | computed fewer | acyltransferases found |
+|---|---|---|---|---|---|
+| `cis_at` | 318 | 298 | 10 | 10 | 546 |
+| **`trans_at`** | **128** | **128** | **0** | **0** | **0** |
+| `mixed` | 18 | 9 | 6 | 3 | 26 |
+
+**The tool finds no acyltransferase in any of the 128 trans-AT genes.** That is a
+negative control the data supplies rather than one the campaign plants, and it is
+a measurement: if HMMER had found some, the finding would have been about the
+tool.
+
+And which strata assert absence is **read from the per-module-type census rather
+than asserted in the rules**. A MIBiG release that started recording trans-AT
+acyltransferases would change the verdict instead of contradicting a hardcoded
+fact.
+
+The module decomposition separates the same strata through a second, independent
+measure. The declared cis-AT module core is
+`ketoacyl-synt-Ketoacyl-synt_C-KAsynt_C_assoc-Acyl_transf_1` — four Pfam families
+for two catalytic domains — and it occurs 540 times, agreeing with the curated
+module count on 292 genes. In the trans-AT stratum it occurs **zero** times,
+because the pattern includes an acyltransferase those genes do not have.
+
+### The sweeps
+
+Both instantiations pass all five sweep gates with cold depths
+**1 / 2 / 3 / 4 / 1 / 0** and identical per-rung clear rates (1.00 / 0.60 / 0.40
+/ 0.20), cold mean score 0.55, no-tool ablation 0.0000 against a chance floor of
+0.2502. One stub module serves both campaigns: every level reads the family, the
+panel, the strata and the reconciled domain types out of the rules file, so there
+is nothing family-specific in it — including `noncompute`, the ablation that reads
+nothing and therefore must not name either family's vocabulary.
+
+### The split family problem is worse here
+
+| mapping for the ketosynthase | agrees |
+|---|---|
+| `ketoacyl-synt` | **398** |
+| `Ketoacyl-synt_C` | 393 |
+| `KAsynt_C_assoc` | 389 |
+| **all three** | **13** |
+
+Pfam splits the ketosynthase across **three** consecutive families, so counting
+all of them triples every module and agreement falls by a factor of thirty — against
+seven for the adenylation domain's two halves. The three single-family readings
+agree closely but not identically, which is itself worth having: they are three
+different models of the same region and they disagree on 9 to 55 genes each.
+
+### And the overlaps are much heavier
+
+| | genes | overlapping pairs | genes with an overlap |
+|---|---|---|---|
+| NRPS | 1,136 | 2,124 | 315 (**28%**) |
+| PKS | 464 | 3,002 | 399 (**86%**) |
+
+The reductase families a PKS carries — `KR`, `adh_short`, `adh_short_C2`,
+`ADH_zinc_N`, `3Beta_HSD`, `Epimerase` — overlap each other far more densely than
+the NRPS panel's do. So the resolution policy, which the catalogued design assumed
+away, matters on **86% of this corpus**. The policy sweep says the same thing:
+not resolving moves 399 of 464 genes, and `--cut_tc` moves 58 here against 4 in
+the NRPS corpus.
+
+### What the template had to grow, and the three defects it exposed
+
+The instantiation axis is a declared rules file rather than a forked template, so
+five fields became declarations: the module **family** (a set of accepted types,
+because a modular PKS gene carries a loading module of its own type), the two
+**reconciled domain types** (`ks_domain`/`at_domain` here, `a_domain`/`c_domain`
+there), the **strata**, the module **pattern** and the **panel**. Both campaigns
+name the same commands, the same stub module and the same pinned-table path; only
+`template_params.rules_source` differs.
+
+Generalising a working template broke it three times, and each break is worth
+recording because none of them would have shown up in an oracle run:
+
+- **The secondary domain's mapping key drifted from its name.** `reconcile` looks
+  the mapping up by the declared secondary domain — `c_domain` — and the NRPS
+  rules file still called it `condensation_domain`. The lookup returned nothing,
+  so the secondary reconciliation computed **zero for every gene**: 157 agreements
+  became 0 and 286 genes became `computed_fewer`. Every build assertion still
+  passed, because a uniformly wrong column is still a populated column. The keying
+  is now checked at load time, along with the baseline mapping not being the
+  secondary domain's own.
+
+- **`"mixed"` was a stratum the census had no room for.** A gene spanning two
+  strata belongs to neither, so `stratum()` returns `"mixed"` — which the
+  by-stratum census, initialised from the declared strata alone, raised a
+  `KeyError` on. The NRPS family has one stratum and never produces it, so this
+  surfaced on the PKS build's first run.
+
+- **A build assertion was disabled by the fix for the one above.** The check "a
+  single-stratum corpus whose secondary domain is always curated has one kind of
+  row" counted the keys of the by-stratum census — which now always carries an
+  empty `"mixed"` row, so the count was never below two and the check never fired.
+  It counts **populated** strata now, and a test pins that.
+
+Two shape mismatches between gold and the measurer also had to be settled, and
+the honest fix in both cases was to close a vocabulary rather than teach the
+measurer to drop things: the selection census now names all three of its drop
+clauses whether or not each removed anything, so the census's shape does not
+depend on the data.
+
 ## Open items
 
 1. **CAI table provenance.** The relative-adaptiveness values now live in
@@ -2290,7 +2422,7 @@ antiSMASH's module assembly. That is a different row.
    target is now 30 at most.** T-L5-2 and T-L2-4 both ground out. The count in this
    file's header and in `docs/catalog.md` is the *catalogued* target and has not
    been restated downward, because the replacement question is the owner's call:
-   re-scope those rows, or accept a smaller benchmark. Nineteen campaigns are
+   re-scope those rows, or accept a smaller benchmark. Twenty campaigns are
    built. This should be settled before the audit packet quotes a number.
 8. **Sweep cost: the tool memo covers the tool, not the work around it.**
    `npbench_c.tools.cache` memoises tool output for stub systems in tooled mode
@@ -2311,9 +2443,9 @@ antiSMASH's module assembly. That is a different row.
    real agents take per run, measurable only once item 3 supplies the `SystemSpec`
    entries.
 9. **`structural_elements` is decorative and nothing validates it.** Nine of the
-   nineteen built campaigns declare `planted` and several of them plant nothing —
+   twenty built campaigns declare `planted` and several of them plant nothing —
    `mibig-diff-3_1-to-4_0-01`'s own notes say its sharpest case is "supplied by the
-   corpus rather than planted". The five campaigns built since declare only what
+   corpus rather than planted". The six campaigns built since declare only what
    they have (`verification, counterfactual, control`), but the field needs either
    a definition and a gate check or removal, and fixing the other nine is the
    owner's taxonomy call rather than a silent edit. A declaration no check reads is the

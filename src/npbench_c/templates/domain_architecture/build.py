@@ -22,28 +22,46 @@ from npbench_c.templates.domain_architecture.core import (
 DEFAULT_CHANCE_LEVELS = {"r1": 1.0, "r2": 0.001, "r3": 0.001, "r4": 0.001}
 
 #: R1's answers, and therefore exactly what R2's warm bundle may hand over.
-INVENTORY_KEYS = ("mibig_release", "module_type", "baseline_cutoff",
+INVENTORY_KEYS = ("mibig_release", "module_family", "baseline_cutoff",
                   "baseline_resolution", "baseline_span", "baseline_mapping",
+                  "primary_domain", "secondary_domain",
                   "panel_size", "hmmer_version", "pfam_version", "pfam_sha256",
                   "selection_census", "curated_coordinate_usability",
                   "curated_active_flag", "curated_module_census",
-                  "curated_domain_totals", "protein_length_summary",
-                  "panel_census")
+                  "strata_census", "domains_by_module_type",
+                  "curated_domain_totals",
+                  "protein_length_summary", "panel_census")
 #: R2's answers: the architecture per gene.
 ARCHITECTURE_KEYS = ("architecture_table", "architecture_census",
                      "overlap_census")
 #: R3's answers: against the curated modules.
-RECONCILIATION_KEYS = ("reconciliation_table", "a_domain_verdicts",
-                       "c_domain_verdicts", "a_delta_census", "module_table",
+RECONCILIATION_KEYS = ("reconciliation_table", "primary_verdicts",
+                       "secondary_verdicts", "secondary_verdicts_by_stratum",
+                       "primary_delta_census", "module_table",
                        "module_verdicts", "complete_modules_total")
 #: R4's answers.
 COUNTERFACTUAL_KEYS = ("policy_sweep", "mapping_sweep")
 
 
 def copy_constants(campaign: pathlib.Path) -> None:
-    reference = pathlib.Path(campaign) / "reference"
+    """Copy the instantiation's rules file in under the one name agents read.
+
+    The SOURCE is declared per campaign, because the instantiation axis is a
+    different rules file: the module family, the panel, the reconciled domain
+    types, the strata and the module pattern all change together and none of
+    them makes sense without the others. The DESTINATION is fixed, so the
+    sandbox path, the pinned-table declaration and every agent read are the same
+    in both instantiations.
+    """
+    campaign = pathlib.Path(campaign)
+    source = load_params(campaign).get("rules_source", RULES)
+    if "/" in source or not source.endswith(".json"):
+        raise ArchitectureError(
+            f"rules_source is {source!r}; it names a file in this template's "
+            "constants directory, not a path")
+    reference = campaign / "reference"
     reference.mkdir(parents=True, exist_ok=True)
-    shutil.copyfile(CONSTANTS / RULES, reference / RULES)
+    shutil.copyfile(CONSTANTS / source, reference / RULES)
 
 
 def _assert_has_content(gold: dict) -> None:
@@ -89,7 +107,7 @@ def _assert_has_content(gold: dict) -> None:
 
     # R3 needs real disagreement in both directions of its vocabulary, or the
     # reconciliation is a restatement of one side.
-    a = gold["a_domain_verdicts"]
+    a = gold["primary_verdicts"]
     if not a["agrees"]:
         raise ArchitectureError(
             "the computed adenylation count agrees with the curated one on no "
@@ -100,14 +118,37 @@ def _assert_has_content(gold: dict) -> None:
             "the computed and curated adenylation counts agree on every gene, so "
             "the reconciliation has nothing to grade and the curated record is "
             "recomputable from sequence")
-    if len(gold["a_delta_census"]) < 3:
+    if len(gold["primary_delta_census"]) < 3:
         raise ArchitectureError(
-            f"the adenylation delta takes {len(gold['a_delta_census'])} values, "
+            f"the primary delta takes {len(gold['primary_delta_census'])} values, "
             "so the disagreement is a single offset rather than a distribution")
-    if not gold["c_domain_verdicts"]["not_curated"]:
+    # The secondary domain's `not_curated` outcome has to be reachable OR the
+    # family has to assert absence somewhere -- a stratum whose module type means
+    # the domain is absent by definition, where zero is a claim rather than a
+    # silence. One or the other, or the secondary reconciliation has only one
+    # kind of row.
+    secondary = gold["secondary_verdicts"]
+    by_stratum = gold["secondary_verdicts_by_stratum"]
+    # POPULATED strata, not the keys of the by-stratum census: that census always
+    # carries a "mixed" row, empty or not, so counting its keys made this check
+    # pass vacuously for a single-stratum family -- which is how it was first
+    # written, and what the test below now pins.
+    strata = gold["strata_census"]
+    if not secondary["not_curated"] and len(strata) < 2:
         raise ArchitectureError(
-            "every gene curates a condensation domain, so the not_curated "
-            "outcome is never exercised")
+            "no gene leaves the secondary domain uncurated and the corpus falls "
+            "in a single stratum, so the secondary reconciliation is one kind of "
+            "row repeated")
+
+    # Where the corpus spans several strata, they have to behave differently.
+    # A stratification every stratum answers the same way is decoration.
+    if len(strata) > 1:
+        shapes = {json.dumps(block, sort_keys=True) for block in by_stratum.values()}
+        if len(shapes) < 2:
+            raise ArchitectureError(
+                f"the {len(strata)} declared strata produce one secondary "
+                "verdict census between them, so the stratification "
+                "distinguishes nothing")
     if not gold["module_verdicts"]["agrees"]:
         raise ArchitectureError(
             "the declared module pattern is found on no gene, so the "
@@ -175,14 +216,16 @@ def build_grading(campaign: pathlib.Path, gold: dict) -> dict:
            "args": {"pred": "pred:present.report", "gold": 1}},
           ex("selection_census"), ex("curated_coordinate_usability"),
           ex("curated_active_flag"), ex("curated_module_census"),
+          ex("strata_census"), ex("domains_by_module_type"),
           ex("curated_domain_totals"), ex("protein_length_summary"),
           ex("panel_census"), ex("environment")]
 
     r2 = [ex("architecture_table"), ex("architecture_census"),
           ex("overlap_census")]
 
-    r3 = [ex("reconciliation_table"), ex("a_domain_verdicts"),
-          ex("c_domain_verdicts"), ex("a_delta_census"), ex("module_table"),
+    r3 = [ex("reconciliation_table"), ex("primary_verdicts"),
+          ex("secondary_verdicts"), ex("secondary_verdicts_by_stratum"),
+          ex("primary_delta_census"), ex("module_table"),
           ex("module_verdicts"), ex("complete_modules_total")]
 
     r4 = [ex("policy_sweep"), ex("mapping_sweep")]
@@ -237,7 +280,7 @@ def main(argv: list[str] | None = None) -> int:
     print(f"{campaign.name}: MIBiG {gold['mibig_release']}, "
           f"{census['modules']} curated modules over "
           f"{census['entries_with_modules']} entries")
-    print(f"  corpus: {census['corpus_genes']} {gold['module_type']} genes over "
+    print(f"  corpus: {census['corpus_genes']} {gold['module_family']} genes over "
           f"{census['corpus_entries']} clusters, from "
           f"{census['shipped_proteins']} shipped translations")
     print(f"  curated coordinate usability: {gold['curated_coordinate_usability']}")
@@ -249,9 +292,13 @@ def main(argv: list[str] | None = None) -> int:
           f"distinct architectures, per gene "
           f"{arch['domains_per_gene']}")
     print(f"  overlaps before resolution: {gold['overlap_census']}")
-    print(f"  adenylation reconciliation: {gold['a_domain_verdicts']}")
-    print(f"  delta distribution: {gold['a_delta_census']}")
-    print(f"  condensation reconciliation: {gold['c_domain_verdicts']}")
+    print(f"  primary ({gold['primary_domain']}): {gold['primary_verdicts']}")
+    print(f"  delta distribution: {gold['primary_delta_census']}")
+    print(f"  secondary ({gold['secondary_domain']}): {gold['secondary_verdicts']}")
+    print(f"  strata: {gold['strata_census']}")
+    for name, block in sorted(gold["secondary_verdicts_by_stratum"].items()):
+        print(f"    secondary in {name:<12} {block}")
+    print(f"  curated domains by module type: {gold['domains_by_module_type']}")
     print(f"  complete declared modules: {gold['complete_modules_total']}, "
           f"against curated: {gold['module_verdicts']}")
     print("  policy sweep:")

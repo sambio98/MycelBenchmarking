@@ -1,7 +1,10 @@
 {
   "audit": {
-    "module_type": "nrps-type1",
-    "module_type_note": "MIBiG's own term for a canonical NRPS elongation module. The selection takes genes whose curated modules are ALL of this type: a gene carrying both NRPS and PKS modules has an architecture drawn from two vocabularies and belongs to neither instantiation. The PKS instantiation of this template declares a PKS type here instead, and changes nothing else about the method.",
+    "module_family": "nrps-type1",
+    "accepted_module_types": [
+      "nrps-type1"
+    ],
+    "module_family_note": "The instantiation axis, as a declared FAMILY of MIBiG module types rather than a single one. A gene is selected when every curated module type it carries is among the accepted ones: a gene carrying both NRPS and PKS modules has an architecture drawn from two vocabularies and belongs to neither instantiation. The NRPS family accepts one type; the PKS family accepts four, because a modular PKS gene normally carries a loading module of its own type alongside its elongation modules, and the strata below keep those distinguishable.",
     "excluded_statuses": [
       "retired"
     ],
@@ -97,22 +100,22 @@
     "baseline_resolution": "resolve_by_score",
     "resolution_policies_note": "Pfam resolves overlaps between families of the same clan by keeping the best-scoring hit. That rule is NOT available here: the pinned library carries no clan annotation at all, so this campaign's rule is score and geometry and is declared as its own rather than borrowed and misattributed. keep_all is the unresolved architecture -- the one the catalogued design assumed was already non-overlapping.",
     "domain_mappings": {
-      "amp_binding_n": [
-        "AMP-binding"
-      ],
-      "amp_binding_c": [
-        "AMP-binding_C"
-      ],
       "amp_binding_both": [
         "AMP-binding",
         "AMP-binding_C"
       ],
-      "condensation_domain": [
+      "amp_binding_c": [
+        "AMP-binding_C"
+      ],
+      "amp_binding_n": [
+        "AMP-binding"
+      ],
+      "c_domain": [
         "Condensation"
       ]
     },
     "baseline_mapping": "amp_binding_n",
-    "domain_mappings_note": "A Pfam family is not a domain type. The curated record names an adenylation domain; Pfam splits it into an N-terminal family and a C-terminal family, so which one counts as THE domain is a choice, and counting both double-counts every module. The baseline takes the N-terminal family, which is the one that covers the domain's catalytic core and occurs once per module. condensation_domain is the mapping for the second reconciled domain type and is not part of the R4 sweep, which varies the adenylation mapping alone.",
+    "domain_mappings_note": "A Pfam family is not a domain type. The curated record names an adenylation domain; Pfam splits it into an N-terminal family and a C-terminal family, so which one counts as THE domain is a choice, and counting both double-counts every module. The baseline takes the N-terminal family, which is the one that covers the domain's catalytic core and occurs once per module. The mapping whose key is the declared SECONDARY domain -- `c_domain` here -- is how that second reconciled type is counted, and it is not part of the R4 sweep, which varies the primary domain's mapping alone. The keying is load-bearing and checked at load time: when it drifted from the secondary domain's name during this template's generalisation, the secondary reconciliation silently computed zero for every gene and the build's assertions still passed.",
     "curated_domain_keys": [
       "a_domain",
       "c_domain",
@@ -120,6 +123,15 @@
       "at_domain"
     ],
     "curated_domain_keys_note": "The typed domain blocks a MIBiG module can carry. Only their PRESENCE is used, never their coordinates: the campaign counts how many of these blocks carry a usable location and reports it at R1, because on this database almost none do and a campaign that silently worked around that would be hiding its own foundation.",
+    "primary_domain": "a_domain",
+    "secondary_domain": "c_domain",
+    "reconciled_domains_note": "The two curated domain types this family reconciles, declared rather than hardcoded. The primary one is the domain the family's modules carry exactly once -- the adenylation domain here -- so it is the count the curated record states most reliably, and it is the one the mapping sweep varies. The secondary one is a second type whose agreement is a separate claim.",
+    "module_strata": {
+      "nrps_type1": [
+        "nrps-type1"
+      ]
+    },
+    "module_strata_note": "A partition of the accepted module types. A gene whose types fall in one stratum takes that stratum's name and one spanning several takes 'mixed', so the strata must cover the accepted types exactly -- which the rules loader checks. The NRPS family has one stratum and the stratification is therefore inert here; it is declared anyway so both instantiations read the same file format. In the PKS family it is load-bearing: a trans-AT module records no acyltransferase at all, so the stratum decides whether a curated zero is a silence or a claim, and the campaign reads which it is from the per-module-type census rather than asserting it.",
     "module_pattern": [
       "Condensation",
       "AMP-binding",

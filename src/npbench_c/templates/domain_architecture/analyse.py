@@ -40,11 +40,13 @@ def analyse(campaign: pathlib.Path) -> dict:
 
     return {
         "mibig_release": corpus.release,
-        "module_type": rules.module_type,
+        "module_family": rules.module_family,
         "baseline_cutoff": rules.baseline_cutoff,
         "baseline_resolution": rules.baseline_resolution,
         "baseline_span": rules.baseline_span,
         "baseline_mapping": rules.baseline_mapping,
+        "primary_domain": rules.primary_domain,
+        "secondary_domain": rules.secondary_domain,
         "panel_size": len(rules.panel),
         "hmmer_version": corpus.hmmer_version(),
         "pfam_version": resource["version"],
@@ -62,7 +64,10 @@ def analyse(campaign: pathlib.Path) -> dict:
         "curated_coordinate_usability":
             corpus.annotation_census["curated_coordinate_usability"],
         "curated_active_flag": corpus.annotation_census["curated_active_flag"],
+        "domains_by_module_type":
+            corpus.annotation_census["domains_by_module_type"],
         "curated_module_census": corpus.curated_module_census(),
+        "strata_census": corpus.strata_census(),
         "curated_domain_totals": corpus.curated_domain_totals(),
         "protein_length_summary": corpus.length_summary(),
         "panel_census": {

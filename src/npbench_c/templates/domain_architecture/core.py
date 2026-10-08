@@ -102,7 +102,8 @@ def _digest_text(text: str) -> str:
 
 @dataclass(frozen=True)
 class Rules:
-    module_type: str
+    module_family: str
+    accepted_module_types: tuple[str, ...]
     excluded_statuses: tuple[str, ...]
     panel: tuple[str, ...]
     cutoffs: tuple[str, ...]
@@ -115,7 +116,10 @@ class Rules:
     domain_mappings: Mapping[str, tuple[str, ...]]
     baseline_mapping: str
     curated_domain_keys: tuple[str, ...]
+    primary_domain: str
+    secondary_domain: str
     module_pattern: tuple[str, ...]
+    strata: Mapping[str, tuple[str, ...]]
     verdicts: tuple[str, ...]
     resources: Mapping[str, Resource]
 
@@ -128,13 +132,41 @@ class Rules:
         for field, choices in (("baseline_cutoff", a["cutoffs"]),
                                ("baseline_span", a["coordinate_spans"]),
                                ("baseline_resolution", a["resolution_policies"]),
-                               ("baseline_mapping", sorted(mappings))):
+                               ("baseline_mapping", sorted(mappings)),
+                               ("primary_domain", a["curated_domain_keys"]),
+                               ("secondary_domain", a["curated_domain_keys"])):
             if a[field] not in choices:
                 raise ArchitectureError(
                     f"{field} is {a[field]!r}, which is not among the declared "
                     f"choices {list(choices)}")
+        if a["primary_domain"] == a["secondary_domain"]:
+            raise ArchitectureError(
+                "the primary and secondary reconciled domain types are the same "
+                "key, so the two reconciliations would be one column twice")
+        # The secondary domain is counted through the mapping whose key is its
+        # own name. If that keying drifts, the secondary reconciliation computes
+        # zero for every gene and nothing else complains -- which is exactly what
+        # happened when this template was generalised, so it is checked here.
+        if a["secondary_domain"] not in mappings:
+            raise ArchitectureError(
+                f"the secondary domain {a['secondary_domain']!r} has no entry in "
+                f"domain_mappings (declared: {sorted(mappings)}), so it would be "
+                "counted as absent on every gene")
+        if a["baseline_mapping"] == a["secondary_domain"]:
+            raise ArchitectureError(
+                "the baseline mapping is the secondary domain's own mapping, so "
+                "the primary reconciliation would count the secondary domain")
+        strata = {name: tuple(sorted(types))
+                  for name, types in sorted(a["module_strata"].items())}
+        covered = {t for types in strata.values() for t in types}
+        if covered != set(a["accepted_module_types"]):
+            raise ArchitectureError(
+                "the declared strata must partition the accepted module types "
+                f"exactly; accepted {sorted(a['accepted_module_types'])}, "
+                f"covered {sorted(covered)}")
         return cls(
-            module_type=a["module_type"],
+            module_family=a["module_family"],
+            accepted_module_types=tuple(sorted(a["accepted_module_types"])),
             excluded_statuses=tuple(a["excluded_statuses"]),
             panel=tuple(a["model_panel"]),
             cutoffs=tuple(a["cutoffs"]),
@@ -147,7 +179,10 @@ class Rules:
             domain_mappings=mappings,
             baseline_mapping=a["baseline_mapping"],
             curated_domain_keys=tuple(a["curated_domain_keys"]),
+            primary_domain=a["primary_domain"],
+            secondary_domain=a["secondary_domain"],
             module_pattern=tuple(a["module_pattern"]),
+            strata=strata,
             verdicts=tuple(a["reconciliation_verdicts"]),
             resources=load_declared(spec["external_resources"]),
         )
@@ -227,6 +262,11 @@ def read_curated(path: pathlib.Path, rules: Rules) -> tuple[
     census: collections.Counter = collections.Counter()
     coordinates: collections.Counter = collections.Counter()
     active: collections.Counter = collections.Counter()
+    # Per module TYPE, how many of its modules record each typed domain block.
+    # Counted at module level and not per gene, because a gene can carry modules
+    # of two types and attributing its totals to both would make a type that
+    # never records a domain look as though it sometimes does.
+    by_type: dict[str, collections.Counter] = {}
     genes: dict[tuple[str, str], dict] = {}
     statuses: dict[str, str] = {}
     with tarfile.open(path, "r:*") as archive:
@@ -246,10 +286,13 @@ def read_curated(path: pathlib.Path, rules: Rules) -> tuple[
             for module in modules:
                 census["modules"] += 1
                 active[repr(module.get("active"))] += 1
+                typed = by_type.setdefault(module.get("type"),
+                                           collections.Counter())
                 for key in rules.curated_domain_keys:
                     block = module.get(key)
                     if not block:
                         continue
+                    typed[key] += 1
                     location = block.get("location") or {}
                     usable = (isinstance(location.get("from"), int)
                               and isinstance(location.get("to"), int)
@@ -288,6 +331,10 @@ def read_curated(path: pathlib.Path, rules: Rules) -> tuple[
         "annotation_census": dict(sorted(census.items())),
         "curated_coordinate_usability": dict(sorted(coordinates.items())),
         "curated_active_flag": dict(sorted(active.items())),
+        "domains_by_module_type": {
+            module_type: dict(sorted(counts.items()))
+            for module_type, counts in sorted(by_type.items())
+            if module_type is not None},
     }
 
 
@@ -315,6 +362,8 @@ class Corpus:
     keys: tuple[tuple[str, str], ...]
     shipped_proteins: int
     curated_genes: int
+    #: memo for `_absent_strata`, which walks the whole curated set.
+    _absent_cache: frozenset[str] | None = None
 
     @classmethod
     def load(cls, campaign: pathlib.Path, annotations: str,
@@ -326,18 +375,28 @@ class Corpus:
         sequences = read_proteins(campaign / proteins)
         curated, census = read_curated(campaign / annotations, rules)
 
-        # The declared selection: every gene whose curated modules are ALL of the
-        # declared type, on an entry the status rule admits, with a shipped
-        # translation. "All of the declared type" rather than "any" because a gene
+        # The declared selection: every gene whose curated module types are ALL
+        # among the accepted ones, on an entry the status rule admits, with a
+        # shipped translation. "All accepted" rather than "any" because a gene
         # carrying both NRPS and PKS modules has an architecture drawn from two
-        # vocabularies and belongs to neither instantiation.
+        # vocabularies and belongs to neither instantiation. A family can accept
+        # several types -- a modular PKS gene normally carries a loading module
+        # of its own type alongside its elongation modules -- and the strata
+        # below keep those distinguishable.
         keys = []
-        drops: collections.Counter = collections.Counter()
+        # A closed vocabulary: the selection rule has three clauses and the
+        # census names all three whether or not each removed anything. A Counter
+        # left to itself omits the clauses that happened to remove nothing, which
+        # makes the census's SHAPE depend on the data and a reader cannot tell an
+        # absent key from a clause that does not exist.
+        drops: collections.Counter = collections.Counter(
+            {"excluded_by_status": 0, "other_module_type": 0,
+             "no_shipped_translation": 0})
         for key, gene in curated.items():
             if gene.status in rules.excluded_statuses:
                 drops["excluded_by_status"] += 1
                 continue
-            if gene.module_types != (rules.module_type,):
+            if not set(gene.module_types) <= set(rules.accepted_module_types):
                 drops["other_module_type"] += 1
                 continue
             if key not in sequences:
@@ -346,8 +405,8 @@ class Corpus:
             keys.append(key)
         if not keys:
             raise ArchitectureError(
-                f"no gene survived the selection for module type "
-                f"{rules.module_type!r}")
+                f"no gene survived the selection for module family "
+                f"{rules.module_family!r}")
         census = {**census, "selection_drops": dict(sorted(drops.items()))}
         return cls(rules=rules, release=provenance["release"],
                    proteins=sequences, curated=curated,
@@ -603,42 +662,107 @@ class Corpus:
         families = self.rules.domain_mappings.get(chosen)
         if families is None:
             raise ArchitectureError(f"{chosen!r} is not a declared domain mapping")
-        condensation = self.rules.domain_mappings.get("condensation_domain", ())
+        secondary = self.rules.domain_mappings.get(self.rules.secondary_domain, ())
         rows = []
         for key in self.keys:
             kept = self.resolve(hits.get(key, ()), span, policy)
             counts = collections.Counter(h.model for h in kept)
             curated = self.curated[key]
             computed = sum(counts.get(f, 0) for f in families)
-            declared = curated.domain_counts.get("a_domain", 0)
-            c_computed = sum(counts.get(f, 0) for f in condensation)
-            c_declared = curated.domain_counts.get("c_domain", 0)
+            declared = curated.domain_counts.get(self.rules.primary_domain, 0)
+            s_computed = sum(counts.get(f, 0) for f in secondary)
+            s_declared = curated.domain_counts.get(self.rules.secondary_domain, 0)
             rows.append({
                 "bgc": key[0], "gene": key[1],
+                "stratum": self.stratum(key),
                 "curated_modules": curated.modules,
-                "curated_a_domains": declared,
-                "computed_a_domains": computed,
-                "a_delta": computed - declared,
-                "a_verdict": _verdict(computed, declared),
-                "curated_c_domains": c_declared,
-                "computed_c_domains": c_computed,
-                "c_verdict": (_verdict(c_computed, c_declared)
-                              if c_declared else "not_curated"),
+                "curated_primary": declared,
+                "computed_primary": computed,
+                "primary_delta": computed - declared,
+                "primary_verdict": _verdict(computed, declared),
+                "curated_secondary": s_declared,
+                "computed_secondary": s_computed,
+                # A curated count of zero is `not_curated` only where the record
+                # simply does not say. Where the module TYPE means the domain is
+                # absent -- a trans-AT module has no acyltransferase by
+                # definition -- zero is a claim, and the campaign grades it as
+                # one; that is the data's own negative control.
+                "secondary_verdict": (
+                    _verdict(s_computed, s_declared)
+                    if s_declared or self.stratum_asserts_absence(key)
+                    else "not_curated"),
             })
-        a_counts = collections.Counter(r["a_verdict"] for r in rows)
-        c_counts = collections.Counter(r["c_verdict"] for r in rows)
+        a_counts = collections.Counter(r["primary_verdict"] for r in rows)
+        c_counts = collections.Counter(r["secondary_verdict"] for r in rows)
         unknown = (set(a_counts) | set(c_counts)) - set(self.rules.verdicts)
         if unknown:
             raise ArchitectureError(
                 f"reconciliation verdicts outside the declared vocabulary: "
                 f"{sorted(unknown)}")
-        deltas = collections.Counter(r["a_delta"] for r in rows)
+        deltas = collections.Counter(r["primary_delta"] for r in rows)
+        # "mixed" is a stratum `stratum()` can return and the declared list
+        # cannot contain -- a gene spanning two strata belongs to neither -- so
+        # the census has to make room for it. The NRPS instantiation has one
+        # stratum and never produces it, which is why this only surfaced when
+        # the PKS family was built.
+        by_stratum: dict[str, collections.Counter] = {
+            name: collections.Counter() for name in [*self.rules.strata, "mixed"]}
+        for row in rows:
+            by_stratum[row["stratum"]][row["secondary_verdict"]] += 1
         return {
             "reconciliation_table": rows,
-            "a_domain_verdicts": {v: a_counts.get(v, 0) for v in self.rules.verdicts},
-            "c_domain_verdicts": {v: c_counts.get(v, 0) for v in self.rules.verdicts},
-            "a_delta_census": {str(d): deltas[d] for d in sorted(deltas)},
+            "primary_verdicts": {v: a_counts.get(v, 0) for v in self.rules.verdicts},
+            "secondary_verdicts": {v: c_counts.get(v, 0) for v in self.rules.verdicts},
+            "primary_delta_census": {str(d): deltas[d] for d in sorted(deltas)},
+            "secondary_verdicts_by_stratum": {
+                name: {v: counts.get(v, 0) for v in self.rules.verdicts}
+                for name, counts in sorted(by_stratum.items())},
         }
+
+    def stratum(self, key: tuple[str, str]) -> str:
+        """The declared stratum a gene's module types put it in.
+
+        A gene whose types fall in one stratum takes that stratum's name; one
+        spanning several takes "mixed". The strata partition the accepted types,
+        which `Rules.load` checks, so every gene lands somewhere.
+        """
+        types = set(self.curated[key].module_types)
+        matched = sorted(name for name, members in self.rules.strata.items()
+                         if types & set(members))
+        if not matched:
+            raise ArchitectureError(
+                f"{key} carries module types {sorted(types)}, which no declared "
+                "stratum covers")
+        return matched[0] if len(matched) == 1 else "mixed"
+
+    def stratum_asserts_absence(self, key: tuple[str, str]) -> bool:
+        """Whether the gene's stratum means the secondary domain is absent.
+
+        A stratum asserts absence when every accepted type in it records the
+        secondary domain on none of its modules across the whole annotation set.
+        That is read from the data rather than declared, so the campaign cannot
+        assert a biological fact the record does not actually carry.
+        """
+        return self.stratum(key) in self._absent_strata()
+
+    def _absent_strata(self) -> frozenset[str]:
+        if self._absent_cache is not None:
+            return self._absent_cache
+        per_type = self.annotation_census["domains_by_module_type"]
+        out = []
+        for name, types in sorted(self.rules.strata.items()):
+            total = sum(per_type.get(module_type, {}).get(
+                self.rules.secondary_domain, 0) for module_type in types)
+            if total == 0:
+                out.append(name)
+        frozen = frozenset(out)
+        object.__setattr__(self, "_absent_cache", frozen)
+        return frozen
+
+    def strata_census(self) -> dict[str, int]:
+        counts = collections.Counter(self.stratum(k) for k in self.keys)
+        names = [*sorted(self.rules.strata), "mixed"]
+        return {name: counts.get(name, 0) for name in names if counts.get(name)}
 
     def module_decomposition(self,
                              hits: Mapping[tuple[str, str], Sequence[Hit]],
@@ -701,7 +825,7 @@ class Corpus:
                     agree = sum(
                         1 for row in self.reconcile(
                             hits, span=span, policy=policy)["reconciliation_table"]
-                        if row["a_verdict"] == "agrees")
+                        if row["primary_verdict"] == "agrees")
                     moved = sum(
                         1 for row in table
                         if baseline[row["bgc"] + "|" + row["gene"]]
@@ -716,22 +840,27 @@ class Corpus:
 
     def mapping_sweep(self,
                       hits: Mapping[tuple[str, str], Sequence[Hit]]) -> dict:
-        """Agreement under each declared family-to-domain mapping.
+        """Agreement under each declared mapping for the PRIMARY domain type.
 
         The axis the catalogued design did not have and the data demands: Pfam
-        splits the adenylation domain into an N-terminal and a C-terminal family,
-        so whether you count one, the other or both decides the answer. Counting
-        both double-counts every module, which is the kind of mistake that looks
-        like diligence.
+        splits a catalytic domain across several families -- the adenylation
+        domain into an N- and a C-terminal half, the ketosynthase into three --
+        so whether you count one, another or all of them decides the answer.
+        Counting all of them multiplies every module, which is the kind of
+        mistake that looks like diligence.
+
+        The secondary domain's mapping is left out: it is the OTHER reconciled
+        type, not an alternative reading of the primary one, so sweeping it would
+        mix two axes.
         """
         out = {}
         for name in sorted(self.rules.domain_mappings):
-            if name == "condensation_domain":
+            if name == self.rules.secondary_domain:
                 continue
             block = self.reconcile(hits, name)
             out[name] = {
                 "families": list(self.rules.domain_mappings[name]),
-                "verdicts": block["a_domain_verdicts"],
+                "verdicts": block["primary_verdicts"],
             }
         return out
 

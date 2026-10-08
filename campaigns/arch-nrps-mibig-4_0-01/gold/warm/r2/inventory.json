@@ -34,9 +34,26 @@
     "8": 5,
     "9": 5
   },
+  "domains_by_module_type": {
+    "nrps-type1": {
+      "a_domain": 2901,
+      "c_domain": 833
+    },
+    "pks-modular": {
+      "at_domain": 612,
+      "ks_domain": 612
+    },
+    "pks-modular-starter": {
+      "at_domain": 17
+    },
+    "pks-trans-at": {
+      "ks_domain": 471
+    },
+    "pks-trans-at-starter": {}
+  },
   "hmmer_version": "HMMER 3.4 (Aug 2023); http://hmmer.org/",
   "mibig_release": "4.0",
-  "module_type": "nrps-type1",
+  "module_family": "nrps-type1",
   "panel_census": {
     "3Beta_HSD": 26,
     "ADH_N": 3,
@@ -107,6 +124,7 @@
   "panel_size": 65,
   "pfam_sha256": "8d3e2ffa785f91ee0e24a3994d2dcfff6f382e3cf663784a47688e7d95297fee",
   "pfam_version": "Pfam 35.0",
+  "primary_domain": "a_domain",
   "protein_length_summary": {
     "count": 1136,
     "max": 16367,
@@ -114,6 +132,7 @@
     "min": 365,
     "residues": 3440119
   },
+  "secondary_domain": "c_domain",
   "selection_census": {
     "corpus_entries": 512,
     "corpus_genes": 1136,
@@ -125,5 +144,8 @@
     "modules": 4034,
     "modules_spanning_several_genes": 78,
     "shipped_proteins": 1692
+  },
+  "strata_census": {
+    "nrps_type1": 1136
   }
 }
