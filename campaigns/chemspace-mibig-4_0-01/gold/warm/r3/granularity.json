@@ -1,0 +1,55 @@
+{
+  "connectivity_groups_with_multiple_compound_keys": 111,
+  "cross_entry_duplicates": {
+    "compound": 217,
+    "connectivity": 259,
+    "scaffold": 279
+  },
+  "distinct_compounds_per_class": {
+    "NRPS": 1282,
+    "PKS": 1555,
+    "other": 529,
+    "ribosomal": 183,
+    "saccharide": 155,
+    "terpene": 276
+  },
+  "distinct_scaffolds_per_class": {
+    "NRPS": 723,
+    "PKS": 957,
+    "other": 275,
+    "ribosomal": 145,
+    "saccharide": 117,
+    "terpene": 208
+  },
+  "distinctions_lost_at_connectivity": 119,
+  "records_per_class": {
+    "NRPS": 1380,
+    "PKS": 1711,
+    "other": 591,
+    "ribosomal": 194,
+    "saccharide": 184,
+    "terpene": 298
+  },
+  "scaffold_ring_count_histogram": {
+    "0": 182,
+    "1": 563,
+    "10": 43,
+    "11": 14,
+    "12": 26,
+    "13": 7,
+    "14": 1,
+    "15": 5,
+    "16": 13,
+    "17": 2,
+    "18": 6,
+    "19": 3,
+    "2": 618,
+    "3": 658,
+    "4": 488,
+    "5": 360,
+    "6": 220,
+    "7": 102,
+    "8": 93,
+    "9": 45
+  }
+}

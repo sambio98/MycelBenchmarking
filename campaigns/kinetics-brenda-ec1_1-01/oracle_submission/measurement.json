@@ -1,0 +1,85 @@
+{
+  "agreement_rate": 0.63212,
+  "band_counts": {
+    "agree": 1598,
+    "factor_1000": 31,
+    "factor_60": 25,
+    "near": 166,
+    "other": 708
+  },
+  "checked": 2528,
+  "complete_triples": 2528,
+  "completeness_counts": {
+    "1": 7967,
+    "2": 2486,
+    "3": 2528
+  },
+  "declared_units": {
+    "kcat_km_value": "mM^-1 s^-1",
+    "km_value": "mM",
+    "turnover_number": "s^-1"
+  },
+  "distinct_ec_numbers": 437,
+  "distinct_substrates_in_complete_triples": 737,
+  "ec_prefix": "1.1.",
+  "ec_with_complete_triples": 213,
+  "excluded_non_positive": 0,
+  "parsed_by_field": {
+    "kcat_km_value": 5406,
+    "km_value": 19463,
+    "turnover_number": 9505
+  },
+  "present": {
+    "report": 1
+  },
+  "records_by_field": {
+    "kcat_km_value": 5417,
+    "km_value": 20160,
+    "turnover_number": 9611
+  },
+  "release": "2026.1",
+  "sentinel_and_unparsed": {
+    "sentinel": {
+      "kcat_km_value": 9,
+      "km_value": 477,
+      "turnover_number": 59
+    },
+    "unparsed": {
+      "kcat_km_value": 2,
+      "km_value": 220,
+      "turnover_number": 47
+    }
+  },
+  "triple_keys_total": 12981,
+  "unit_error_agree": {
+    "v0_identity": 1598,
+    "v1_km_in_micromolar": 9,
+    "v2_kcat_per_minute": 8,
+    "v3_both_mistakes": 1
+  },
+  "unit_error_factors": {
+    "v0_identity": {
+      "kcat_factor": 1.0,
+      "km_factor": 1.0
+    },
+    "v1_km_in_micromolar": {
+      "kcat_factor": 1.0,
+      "km_factor": 1000.0
+    },
+    "v2_kcat_per_minute": {
+      "kcat_factor": 60.0,
+      "km_factor": 1.0
+    },
+    "v3_both_mistakes": {
+      "kcat_factor": 60.0,
+      "km_factor": 1000.0
+    }
+  },
+  "unit_error_rates": {
+    "v0_identity": 0.63212,
+    "v1_km_in_micromolar": 0.00356,
+    "v2_kcat_per_minute": 0.003165,
+    "v3_both_mistakes": 0.000396
+  },
+  "unit_mixup_total": 56
+}

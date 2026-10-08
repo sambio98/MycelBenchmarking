@@ -1,0 +1,22 @@
+{
+  "admissible_by_function": {
+    "Activation / processing": 20,
+    "Precursor biosynthesis": 84,
+    "Regulation": 63,
+    "Resistance/immunity": 5,
+    "Scaffold biosynthesis": 225,
+    "Tailoring": 204,
+    "Transport": 19
+  },
+  "backed_minus_admissible": {
+    "Activation / processing": 12,
+    "Precursor biosynthesis": 50,
+    "Regulation": 19,
+    "Resistance/immunity": 16,
+    "Scaffold biosynthesis": 130,
+    "Tailoring": 99,
+    "Transport": 4
+  },
+  "baseline_policy": "strict",
+  "focal_function": "Resistance/immunity"
+}

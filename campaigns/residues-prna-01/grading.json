@@ -1,0 +1,317 @@
+{
+  "campaign_id": "residues-prna-01",
+  "template_id": "structure-features",
+  "grading_spec_version": "1.0.0",
+  "rungs": [
+    {
+      "rung_id": "r1",
+      "ordinal": 1,
+      "name": "execute",
+      "gold_tier": "G1",
+      "composition": "product",
+      "pass_threshold": 1.0,
+      "chance_level": 1.0,
+      "components": [
+        {
+          "name": "report_present",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:present.report",
+            "gold": 1
+          }
+        },
+        {
+          "name": "accession",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:accession",
+            "gold": "gold:accession"
+          }
+        },
+        {
+          "name": "sequence_length",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:sequence_length",
+            "gold": "gold:sequence_length"
+          }
+        },
+        {
+          "name": "functional_record_counts",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:functional_record_counts",
+            "gold": "gold:functional_record_counts"
+          }
+        },
+        {
+          "name": "secondary_structure_counts",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:secondary_structure_counts",
+            "gold": "gold:secondary_structure_counts"
+          }
+        },
+        {
+          "name": "annotated_positions",
+          "scorer": "set_exact",
+          "args": {
+            "pred": "pred:annotated_positions",
+            "gold": "gold:annotated_positions"
+          }
+        },
+        {
+          "name": "ligand_vocabulary",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:ligand_vocabulary",
+            "gold": "gold:ligand_vocabulary"
+          }
+        },
+        {
+          "name": "pdb_cross_references",
+          "scorer": "set_exact",
+          "args": {
+            "pred": "pred:pdb_cross_references",
+            "gold": "gold:pdb_cross_references"
+          }
+        },
+        {
+          "name": "mutagenesis_check",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:mutagenesis_check",
+            "gold": "gold:mutagenesis_check"
+          }
+        }
+      ],
+      "chance_level_note": "Nominal rather than measured. The record counts and the annotated-position list cannot be guessed, so the no-computation ablation fails R1 outright; the level is kept at 1.0 because any system that reads the entry clears it, and the capped floor is computed over R2 upward.\n"
+    },
+    {
+      "rung_id": "r2",
+      "ordinal": 2,
+      "name": "correct",
+      "gold_tier": "G1",
+      "composition": "product",
+      "pass_threshold": 1.0,
+      "chance_level": 0.003,
+      "components": [
+        {
+          "name": "focal_ligand_copies",
+          "scorer": "set_exact",
+          "args": {
+            "pred": "pred:focal_ligand_copies",
+            "gold": "gold:focal_structure.ligand_copies"
+          }
+        },
+        {
+          "name": "focal_polymer_atoms",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:focal_polymer_atom_records",
+            "gold": "gold:focal_structure.polymer_atom_records"
+          }
+        },
+        {
+          "name": "eco_code_citation_totals",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:eco_code_citation_totals",
+            "gold": "gold:eco_code_citation_totals"
+          }
+        },
+        {
+          "name": "record_class_counts",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:record_class_counts",
+            "gold": "gold:record_class_counts"
+          }
+        },
+        {
+          "name": "binding_positions_by_ligand",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:binding_positions_by_ligand",
+            "gold": "gold:binding_positions_by_ligand"
+          }
+        },
+        {
+          "name": "pdb_evidence_index",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:pdb_evidence_index",
+            "gold": "gold:pdb_evidence_index"
+          }
+        },
+        {
+          "name": "unevidenced_records",
+          "scorer": "set_exact",
+          "args": {
+            "pred": "pred:unevidenced_records",
+            "gold": "gold:unevidenced_records"
+          }
+        },
+        {
+          "name": "inferred_only_records",
+          "scorer": "set_exact",
+          "args": {
+            "pred": "pred:inferred_only_records",
+            "gold": "gold:inferred_only_records"
+          }
+        }
+      ]
+    },
+    {
+      "rung_id": "r3",
+      "ordinal": 3,
+      "name": "commit",
+      "gold_tier": "G1",
+      "composition": "product",
+      "pass_threshold": 1.0,
+      "chance_level": 0.002,
+      "components": [
+        {
+          "name": "numbering",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:numbering",
+            "gold": "gold:confirmation.numbering"
+          }
+        },
+        {
+          "name": "annotated_citing_focal",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:annotated_citing_focal",
+            "gold": "gold:confirmation.annotated_by_ligand"
+          }
+        },
+        {
+          "name": "contact_positions_focal",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:contact_positions_focal",
+            "gold": "gold:confirmation.contact_by_ligand"
+          }
+        },
+        {
+          "name": "confirmed_focal",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:confirmed_focal",
+            "gold": "gold:confirmation.confirmed_count_by_ligand"
+          }
+        },
+        {
+          "name": "contact_not_annotated_focal",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:contact_not_annotated_focal",
+            "gold": "gold:confirmation.contact_not_annotated_by_ligand"
+          }
+        },
+        {
+          "name": "confirmation_totals",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:confirmation_totals",
+            "gold": "gold:confirmation.totals"
+          }
+        },
+        {
+          "name": "active_site_position",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:active_site_position",
+            "gold": "gold:confirmation.active_site_position"
+          }
+        },
+        {
+          "name": "active_site_residue",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:active_site_residue",
+            "gold": "gold:confirmation.active_site_residue"
+          }
+        },
+        {
+          "name": "active_site_contacts",
+          "scorer": "set_exact",
+          "args": {
+            "pred": "pred:active_site_contacts",
+            "gold": "gold:confirmation.active_site_contacts"
+          }
+        }
+      ],
+      "chance_level_note": "A confirmation table over four ligands with contact sets of 5 to 42 positions. Guessing the confirmed sets is not a realistic strategy, so the level is a nominal small number rather than a combinatorial computation that would imply more precision than it has.\n"
+    },
+    {
+      "rung_id": "r4",
+      "ordinal": 4,
+      "name": "counterfactual",
+      "gold_tier": "G1",
+      "composition": "product",
+      "pass_threshold": 1.0,
+      "chance_level": 0.001,
+      "components": [
+        {
+          "name": "swap_structure",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:swap_structure",
+            "gold": "gold:structure_swap.structure"
+          }
+        },
+        {
+          "name": "swap_contact_positions",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:swap_contact_positions",
+            "gold": "gold:structure_swap.contact_by_ligand"
+          }
+        },
+        {
+          "name": "swap_confirmed",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:swap_confirmed",
+            "gold": "gold:structure_swap.confirmed_count_by_ligand"
+          }
+        },
+        {
+          "name": "swap_confirmed_delta",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:swap_confirmed_delta",
+            "gold": "gold:structure_swap.confirmed_delta_by_ligand"
+          }
+        },
+        {
+          "name": "policy_admitted_totals",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:policy_admitted_totals",
+            "gold": "gold:policy_admitted_totals"
+          }
+        },
+        {
+          "name": "policy_admitted_counts",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:policy_admitted_counts",
+            "gold": "gold:policy_admitted_counts"
+          }
+        },
+        {
+          "name": "policy_admitted_ligands",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:policy_admitted_ligands",
+            "gold": "gold:policy_admitted_ligands"
+          }
+        }
+      ]
+    }
+  ]
+}

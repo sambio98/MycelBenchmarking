@@ -1,0 +1,34 @@
+{
+  "achievable_gc_rule": "For each residue independently, the lowest and highest GC content reachable with an allowed codon; summed over residues and divided by the ORF length in nucleotides. Codon choices are independent, so these bounds are attained and therefore exact.",
+  "cloning_strategy": "pet28a_ndei_xhoi",
+  "constraint_vocabulary": [
+    "forbidden_codons",
+    "gc_global_min",
+    "forbidden_sites",
+    "gc_window",
+    "homopolymer",
+    "direct_repeat",
+    "internal_rbs"
+  ],
+  "description": "The constraint set this campaign asks you to assess. forbidden_codons and gc_global_min are additional to the composition constraints in composition_limits.json; gc_global_min REPLACES the host's gc_global window for this campaign.",
+  "forbidden_codons": [
+    "CCC",
+    "CCG",
+    "CGC",
+    "CGG",
+    "GCC",
+    "GCG",
+    "GGC",
+    "GGG"
+  ],
+  "forbidden_codons_rationale": "Disallowed by the synthesis vendor for this order; treat the list as given.",
+  "gc_global_min": 0.62,
+  "host": "ecoli_bl21",
+  "verdict_vocabulary": [
+    "feasible",
+    "infeasible_gc_unreachable",
+    "infeasible_no_admissible_codon",
+    "infeasible_other",
+    "insufficient_information"
+  ]
+}

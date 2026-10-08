@@ -1,0 +1,220 @@
+{
+  "campaign_id": "bgcdetect-scoelicolor-01",
+  "template_id": "bgc-detection",
+  "grading_spec_version": "1.0.0",
+  "rungs": [
+    {
+      "rung_id": "r1",
+      "ordinal": 1,
+      "name": "execute",
+      "gold_tier": "G1",
+      "composition": "product",
+      "pass_threshold": 1.0,
+      "chance_level": 1.0,
+      "components": [
+        {
+          "name": "report_present",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:present.report",
+            "gold": 1
+          }
+        },
+        {
+          "name": "accession",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:accession",
+            "gold": "gold:accession"
+          }
+        },
+        {
+          "name": "record_length",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:record_length",
+            "gold": "gold:record_length"
+          }
+        },
+        {
+          "name": "coordinate_convention",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:coordinate_convention",
+            "gold": "gold:coordinate_convention"
+          }
+        },
+        {
+          "name": "search_flags",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:search_flags",
+            "gold": "gold:search_flags"
+          }
+        },
+        {
+          "name": "regions",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:regions",
+            "gold": "gold:regions"
+          }
+        },
+        {
+          "name": "distinct_products",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:distinct_products",
+            "gold": "gold:distinct_products"
+          }
+        },
+        {
+          "name": "product_census",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:product_census",
+            "gold": "gold:product_census"
+          }
+        },
+        {
+          "name": "contig_edge_regions",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:contig_edge_regions",
+            "gold": "gold:contig_edge_regions"
+          }
+        },
+        {
+          "name": "region_bases",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:region_bases",
+            "gold": "gold:region_bases"
+          }
+        },
+        {
+          "name": "fraction_of_record",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:fraction_of_record",
+            "gold": "gold:fraction_of_record"
+          }
+        },
+        {
+          "name": "environment",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:environment",
+            "gold": "gold:environment"
+          }
+        }
+      ],
+      "chance_level_note": "Nominal rather than measured. The region count, the product census and the rule fingerprint cannot be guessed, so the no-tool ablation fails R1 outright; the level stays at 1.0 because any system that runs the tool clears it, and the capped floor is computed over R2 upward.\n"
+    },
+    {
+      "rung_id": "r2",
+      "ordinal": 2,
+      "name": "correct",
+      "gold_tier": "G1",
+      "composition": "product",
+      "pass_threshold": 1.0,
+      "chance_level": 0.001,
+      "components": [
+        {
+          "name": "region_table",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:region_table",
+            "gold": "gold:region_table"
+          }
+        },
+        {
+          "name": "region_span",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:region_span",
+            "gold": "gold:region_span"
+          }
+        }
+      ]
+    },
+    {
+      "rung_id": "r3",
+      "ordinal": 3,
+      "name": "commit",
+      "gold_tier": "G1",
+      "composition": "product",
+      "pass_threshold": 1.0,
+      "chance_level": 0.001,
+      "components": [
+        {
+          "name": "verdict_census",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:verdict_census",
+            "gold": "gold:verdict_census"
+          }
+        },
+        {
+          "name": "per_locus",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:per_locus",
+            "gold": "gold:per_locus"
+          }
+        },
+        {
+          "name": "loci_total",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:loci_total",
+            "gold": "gold:loci_total"
+          }
+        },
+        {
+          "name": "regions_without_a_locus",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:regions_without_a_locus",
+            "gold": "gold:regions_without_a_locus"
+          }
+        },
+        {
+          "name": "regions_holding_several_loci",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:regions_holding_several_loci",
+            "gold": "gold:regions_holding_several_loci"
+          }
+        },
+        {
+          "name": "jaccard_summary",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:jaccard_summary",
+            "gold": "gold:jaccard_summary"
+          }
+        }
+      ]
+    },
+    {
+      "rung_id": "r4",
+      "ordinal": 4,
+      "name": "counterfactual",
+      "gold_tier": "G1",
+      "composition": "product",
+      "pass_threshold": 1.0,
+      "chance_level": 0.001,
+      "components": [
+        {
+          "name": "deletion_summary",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:deletion_summary",
+            "gold": "gold:deletion_summary"
+          }
+        }
+      ]
+    }
+  ]
+}

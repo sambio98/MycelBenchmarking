@@ -1,0 +1,233 @@
+campaign_id: chemspace-mibig-4_0-01
+template_id: chemical-space
+track: EX
+family: chemical_space_and_scaffold_analysis
+layer: L4_molecule_and_structure
+np_class: mixed
+version: 1.0.0
+horizon_tier: T-short
+license_class: open
+grader_version: "2.0.0+9fc95658"
+grading_spec_version: "1.0.0"
+min_tool_surface: S0
+
+objective: >
+  MIBiG 4.0 lists thousands of compound structures across its active entries.
+  How many distinct natural products is that? The question has no single answer:
+  counting full InChIKeys, connectivity blocks and ring scaffolds gives three
+  different numbers over the same records. Compute all three, find the records
+  that restate a structure and the structures that appear under more than one
+  cluster, then make the scaffold-sharing claim that survives a declared
+  informativeness filter and say which scaffolds genuinely span biosynthetic
+  classes. Finally, recompute under four filter settings and under the
+  experimental-evidence gate.
+
+method_guidance: partial
+
+scope_note: >
+  Two traps are deliberate and both are decidable from the shipped tables.
+  First, GRANULARITY. A full InChIKey distinguishes stereochemistry, protonation
+  and isotopic labelling; its first block distinguishes none of them. Where
+  stereochemistry is not determinable, the connectivity block is the honest
+  granularity, and the gap between the two counts is a fact about the corpus
+  rather than a rounding error. Second, SCAFFOLD REDUCTION. Bemis-Murcko keeps
+  ring systems and discards substituents, so a compound carrying one aromatic
+  ring reduces to benzene; the most widely shared scaffold in this corpus IS
+  benzene, in 76 entries, and the second is tetrahydropyran, in 26. The ladder grades both the unfiltered and the filtered
+  statistic, so a system that reports only the unfiltered one is not wrong, it is
+  incomplete -- and R3 is where that shows.
+
+catalog_deviation: >
+  The catalogued T-L4-4 R3 was "which compounds share a scaffold and the
+  distinguishing substitution", and R4 was "a substituent is changed -- predict
+  the new scaffold assignment". Both were re-scoped after the scaffolds were
+  actually computed.
+
+  The distinguishing substitution between two compounds sharing a scaffold is
+  not gradable without judgement: it is the set difference between two molecular
+  graphs, and naming it ("an extra methyl on the C7 hydroxyl") is prose. Worse,
+  the premise is mostly empty -- the shared scaffolds are dominated by benzene
+  and single heterocycles, so the "distinguishing substitution" is almost the
+  whole molecule. R3 instead grades the reconciliation between the naive
+  scaffold-sharing statistic and the one that survives a declared filter, which
+  is exactly the judgement the catalogued rung was reaching for, made
+  mechanical.
+
+  Predicting a new scaffold assignment after a substituent change needs scaffold
+  perception at solve time, which needs a chemistry toolkit and would make the
+  campaign S1 for the sake of one rung. R4 instead varies the declared filter
+  thresholds and the evidence gate, which is exact arithmetic over the pinned
+  table and keeps the campaign S0.
+
+template_params:
+  corpus_release: "4.0"
+  corpus_archive: inputs/mibig_json_4.0.tar.gz
+  # R4's first axis: the informativeness filter is a declared choice, so the
+  # counterfactual is to vary it and see how much of the headline moves.
+  threshold_variants:
+    t1_unfiltered:
+      min_ring_count: 1
+      min_heavy_atom_coverage: 0.0
+    t2_rings_only:
+      min_ring_count: 2
+      min_heavy_atom_coverage: 0.0
+    t3_coverage_only:
+      min_ring_count: 1
+      min_heavy_atom_coverage: 0.5
+    t4_strict:
+      min_ring_count: 3
+      min_heavy_atom_coverage: 0.5
+
+output_contract:
+  chemical_space_report.json:
+    corpus_release / corpus_entries / active_entries: From the archive.
+    compound_records / entries_with_compounds: >
+      Records in the pinned chemistry table, and the number of distinct
+      accessions they come from.
+    distinct_compound_keys / distinct_connectivity_keys / distinct_scaffold_keys: >
+      Distinct values of each declared identity key. The scaffold count excludes
+      acyclic compounds, which have no scaffold key.
+    acyclic_compounds: Records whose Bemis-Murcko scaffold is empty.
+    duplicate_records: compound_records minus distinct_compound_keys.
+    class_vocabulary / entries_per_class / multi_class_entries: >
+      The closed six-term vocabulary, how many active entries carry each class,
+      and how many carry more than one.
+    connectivity_groups_with_multiple_compound_keys: >
+      Connectivity blocks covering more than one full InChIKey -- the
+      stereoisomers and charge states a connectivity count merges.
+    distinctions_lost_at_connectivity: >
+      distinct_compound_keys minus distinct_connectivity_keys.
+    cross_entry_duplicates: >
+      Per identity key, how many keys appear in more than one distinct
+      accession. A key repeated inside one entry does not count.
+    records_per_class / distinct_compounds_per_class / distinct_scaffolds_per_class: >
+      Per class, under the per_class counting rule: a record contributes to
+      every class its entry carries, so these sum above the corpus total.
+    scaffold_ring_count_histogram: >
+      Scaffold ring count to record count, as string keys. Acyclic compounds are
+      bucket "0".
+    informative_rule: The two thresholds in force, echoed.
+    informative_records / informative_scaffold_keys: >
+      Records clearing both floors, and the distinct scaffold keys among them.
+    shared_scaffolds: >
+      Scaffold keys carried by more than one accession, as {all, informative}.
+    cross_class_scaffolds: >
+      As {all, informative, naive_all, naive_informative}. The declared rule
+      needs two entries with disjoint class sets; the naive rule only needs the
+      union of classes to have more than one name.
+    cross_class_informative_entries: >
+      Per cross-class informative scaffold key, the sorted accessions carrying
+      it. The set is what R3 commits to.
+    most_shared_informative_scaffold: >
+      The informative scaffold key carried by the most accessions, with that
+      count, under the declared tie-break: most accessions, then smallest key.
+    threshold_variants: >
+      Per declared variant, informative_records, informative_scaffold_keys,
+      shared_scaffolds and cross_class_scaffolds recomputed.
+    evidence_gate: >
+      The same statistics over only those entries with accepted locus evidence:
+      entries, compound_records, distinct_compound_keys, informative_records,
+      shared_scaffolds, cross_class_scaffolds and the cross-class informative
+      scaffold keys.
+
+constraints:
+  reference_dir: reference
+  pinned_tables:
+    - reference/space_rules.json       # identity keys, filters, counting rules
+    - reference/chemistry_table.json   # chemistry perceived once with RDKit, pinned
+
+snapshots_required:
+  shipped: [mibig@4.0]
+  fetched: []
+
+budgets:
+  wall_clock_minutes: 25
+  cpu: 2
+  memory_gb: 4
+  network: off
+
+rungs:
+  - {rung_id: r1, ordinal: 1, name: execute,        gold_tier: G1, warm_start_bundle: null}
+  - {rung_id: r2, ordinal: 2, name: correct,        gold_tier: G1, warm_start_bundle: gold/warm/r2}
+  - {rung_id: r3, ordinal: 3, name: commit,         gold_tier: G1, warm_start_bundle: gold/warm/r3}
+  - {rung_id: r4, ordinal: 4, name: counterfactual, gold_tier: G1, warm_start_bundle: gold/warm/r4}
+
+structural_elements: [verification, counterfactual, planted]
+
+harness:
+  gold_command: ["python3", "-m", "npbench_c.templates.chemical_space.build", "{campaign}"]
+  solve_command: ["python3", "-m", "npbench_c.templates.chemical_space.solve", "{campaign}", "{submission}"]
+  measure_command: ["python3", "-m", "npbench_c.templates.chemical_space.measure", "{campaign}", "{submission}", "{measurement}"]
+  stub_module: npbench_c.sweep.stubs.stub_chemspace
+  stub_args: []
+  stub_levels:
+    - {name: stub-census,       level: census}
+    - {name: stub-granularity,  level: granularity, reference: true}
+    - {name: stub-informative,  level: informative}
+    - {name: stub-complete,     level: complete}
+    - {name: stub-unfiltered,   level: unfiltered}
+    - {name: stub-noncompute,   level: noncompute, mode: no_tool}
+
+grading:
+  chance_levels: {r1: 1.0, r2: 0.003, r3: 0.001, r4: 0.001}
+  chance_level_notes:
+    r1: >
+      Nominal rather than measured. The record and distinct-key counts cannot be
+      guessed, so the no-computation ablation fails R1 outright; the level is
+      kept at 1.0 because any system that opens the table clears it, and the
+      capped floor is computed over R2 upward.
+    r3: >
+      Four counts in the hundreds plus a committed set of scaffold keys. A
+      nominal small number rather than an enumeration, which would imply more
+      precision than a chance baseline has here.
+
+excluded_from_grading:
+  - field: corpus_release
+    reason: >
+      The pinned chemistry table's header states it, so a component for it would
+      score reading one field rather than any analysis. It stays in the report as
+      provenance, so a submission still records which release it analysed.
+  - field: scaffold_smiles as an identity key
+    reason: >
+      Canonical SMILES is a toolkit output and is not stable across versions, so
+      it cannot identify anything in a benchmark whose scores must stay
+      comparable. It ships in the chemistry table as a human-readable label and
+      every graded scaffold statistic is keyed on scaffold_inchikey. The two keys
+      do not agree exactly -- InChI normalisation merges a handful of
+      SMILES-distinct scaffolds -- which is precisely why the key is declared.
+  - field: the distinguishing substitution between two compounds sharing a scaffold
+    reason: >
+      It is the set difference between two molecular graphs, and naming it is
+      prose, not arithmetic. See catalog_deviation; the graded replacement is the
+      reconciliation between the filtered and unfiltered sharing statistics.
+  - field: any claim that a shared scaffold implies shared biosynthesis
+    reason: >
+      Not decidable from the shipped inputs and not what the campaign asks. The
+      cross-class statistic is a statement about the corpus's annotation, and the
+      declared rule exists so it is not read as more than that.
+  - field: a primary biosynthetic class per entry
+    reason: >
+      456 active entries carry more than one class and MIBiG supplies no rule for
+      choosing between them. Per-class counts therefore sum above the corpus
+      total, which the counting rules state so a correct answer cannot differ on
+      the convention.
+
+notes_for_audit:
+  - >
+    The benzene result is the campaign's reason for existing and should be
+    checked first: in the unfiltered statistic the most shared scaffold is plain
+    benzene across 76 entries, and the second is tetrahydropyran across 26. Any
+    chemical-space analysis of this corpus that does not say what it did about
+    that is reporting an artefact of Bemis-Murcko reduction. R3 grades the
+    filtered and unfiltered counts side by side for exactly that reason.
+  - >
+    Check that the declared cross-class rule and the naive one differ by a large
+    factor. They do, because 456 active entries carry more than one class, so under the
+    naive rule a single hybrid cluster makes its scaffold cross classes with
+    nothing to compare against. The build refuses to emit gold if the two rules
+    agree.
+  - >
+    The two duplicate compound names in this release (BGC0002024 lists
+    'nargenicin A1' twice, BGC0002072 lists 'linearmycin C' twice) are why the
+    record id is (accession, ordinal). Keying on the name would drop two records
+    and shift every count below it by that much, silently.

@@ -1,0 +1,15 @@
+{
+  "binding_constraint": "gc_window",
+  "non_binding_constraints": [
+    "gc_global",
+    "internal_rbs"
+  ],
+  "unconstrained_violations": {
+    "direct_repeat": 11,
+    "forbidden_sites": 3,
+    "gc_global": 0,
+    "gc_window": 50,
+    "homopolymer": 1,
+    "internal_rbs": 0
+  }
+}

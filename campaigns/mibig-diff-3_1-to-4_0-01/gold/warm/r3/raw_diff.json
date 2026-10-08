@@ -1,0 +1,17 @@
+{
+  "only_in_source": 60,
+  "only_in_target": 571,
+  "raw_difference_counts": {
+    "biosynthetic_class": 2442,
+    "compound_formulas": 181,
+    "compound_names": 152,
+    "locus_accession": 0,
+    "ncbi_tax_id": 2442,
+    "organism": 8
+  },
+  "shared_entries": 2442,
+  "shared_status_in_target": {
+    "active": 2414,
+    "retired": 28
+  }
+}

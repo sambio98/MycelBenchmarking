@@ -1,0 +1,2456 @@
+# NPBench-C — build notes (Phase 0 / 0.5)
+
+Benchmark for natural-product and BGC computational agents. 32 campaigns from
+24 templates, four-rung ladders, deterministic grading, no LLM anywhere in the
+scoring path.
+
+## What exists
+
+| Component | Path | State |
+|---|---|---|
+| Scoring primitives | `src/npbench_c/grading/primitives.py` | 12 primitives, stdlib-only |
+| Composition policy | `src/npbench_c/grading/compose.py` | product / geometric+floor / min |
+| Rung ladders | `src/npbench_c/grading/ladder.py` | depth, monotonicity, chance floor |
+| Grader | `src/npbench_c/grading/grade.py` | pure declarative comparator |
+| Grader identity | `src/npbench_c/grading/version.py` | semver + content hash |
+| Readiness gate | `src/npbench_c/readiness/gate.py` | 21 mechanical checks, 5 pending-on-agent-runs |
+| Template: construct design | `src/npbench_c/templates/construct_design/` | shared engine, 2 ladders |
+| Campaign: construct design | `campaigns/construct-ecoli-rebh-01/` | oracle 1.0, gate 21/0/5 |
+| Campaign: constraint conflict | `campaigns/constraint-conflict-ecoli-rebh-01/` | oracle 1.0, gate 21/0/5 |
+| Campaign: feasible control | `campaigns/constraint-feasible-ecoli-rebh-01/` | oracle 1.0, gate 21/0/5 |
+| Template: NRPS mass balance | `src/npbench_c/templates/mass_balance_nrps/` | shared oracle, 2 instantiations |
+| Campaign: malleobactin | `campaigns/massbalance-nrps-malleobactin-01/` | oracle 1.0, gate 21/0/5 |
+| Campaign: sevadicin | `campaigns/massbalance-nrps-sevadicin-01/` | oracle 1.0, gate 21/0/5 |
+| Internal sweep | `src/npbench_c/sweep/` | runner, stats, gates, stub fixtures |
+| Catalog | `docs/catalog.md` | 24 templates / 32 campaigns, grounded |
+| Provisioning | `docs/environment.md` | tools, DBs, sandbox contract |
+| Template: MIBiG release diff | `src/npbench_c/templates/mibig_diff/` | shared oracle |
+| Campaign: MIBiG 3.1→4.0 diff | `campaigns/mibig-diff-3_1-to-4_0-01/` | oracle 1.0, gate 21/0/5 |
+| Template: annotation audit | `src/npbench_c/templates/mibig_annotation_audit/` | shared oracle |
+| Campaign: PrnA construct | `campaigns/construct-ecoli-prna-01/` | oracle 1.0, gate 21/0/5 |
+| Campaign: gene-function evidence | `campaigns/mibig-gene-function-evidence-01/` | oracle 1.0, gate 21/0/5 |
+| Template: structure features | `src/npbench_c/templates/structure_features/` | shared engine, 2 ladders |
+| Campaign: PrnA residue evidence | `campaigns/residues-prna-01/` | oracle 1.0, gate 21/0/5 |
+| Campaign: RebH pocket geometry | `campaigns/pocket-rebh-01/` | oracle 1.0, gate 21/0/5 |
+| Template: chemical space | `src/npbench_c/templates/chemical_space/` | shared oracle, RDKit pinned at instantiation |
+| Campaign: MIBiG 4.0 chemical space | `campaigns/chemspace-mibig-4_0-01/` | oracle 1.0, gate 21/0/5 |
+| Template: kinetics consistency | `src/npbench_c/templates/kinetics_consistency/` | shared oracle, BRENDA 2026.1 |
+| Campaign: BRENDA EC 1.1 kinetics | `campaigns/kinetics-brenda-ec1_1-01/` | oracle 1.0, gate 21/0/5 |
+| Template: ChEMBL selectivity | `src/npbench_c/templates/chembl_selectivity/` | shared oracle, ChEMBL_37, first `share_alike` |
+| Campaign: S. aureus topoisomerases | `campaigns/selectivity-saureus-topoisomerase-01/` | oracle 1.0, gate 21/0/5 |
+| Template: EC domain audit | `src/npbench_c/templates/ec_domain_audit/` | HMMER 3.4 + Pfam 35.0, first tool-running template |
+| Campaign: EC 1.1.3.15 FMN_dh audit | `campaigns/ecaudit-fmn-dh-1_1_3_15-01/` | oracle 1.0, gate 21/0/5, **first S1** |
+| Template: annotation transfer | `src/npbench_c/templates/annotation_transfer/` | DIAMOND 2.2.8, closed reference set |
+| Campaign: EC 1.14 transfer | `campaigns/transfer-ec1_14-uniprot-01/` | oracle 1.0, gate 21/0/5 |
+| Template: BGC detection | `src/npbench_c/templates/bgc_detection/` | antiSMASH 8.0.4, whole chromosome, **first S2** |
+| Campaign: S. coelicolor regions | `campaigns/bgcdetect-scoelicolor-01/` | oracle 1.0, gate 21/0/5 |
+| Template: GCF cutoff | `src/npbench_c/templates/gcf_cutoff/` | BiG-SCAPE 2.0.3, one run over a declared grid |
+| Campaign: MIBiG 32 cutoff sweep | `campaigns/gcfcutoff-mibig-32-01/` | oracle 1.0, gate 21/0/5 |
+| Template: RiPP precursor audit | `src/npbench_c/templates/ripp_precursor/` | HMMER 3.4 + declared Pfam panel, elected coordinate convention |
+| Campaign: MIBiG RiPP precursors | `campaigns/ripp-precursor-mibig-4_0-01/` | oracle 1.0, gate 21/0/5 |
+| Template: domain architecture | `src/npbench_c/templates/domain_architecture/` | HMMER 3.4 + declared 65-model Pfam panel, declared overlap resolution |
+| Campaign: MIBiG NRPS architectures | `campaigns/arch-nrps-mibig-4_0-01/` | oracle 1.0, gate 21/0/5 |
+| Campaign: MIBiG PKS architectures | `campaigns/arch-pks-mibig-4_0-01/` | oracle 1.0, gate 21/0/5, cis-AT vs trans-AT strata |
+| External resources | `src/npbench_c/tools/resources.py` | one declaration for a pinned file read from the image, shared by 3 campaigns |
+| Tool memo | `src/npbench_c/tools/cache.py` | stub sweeps only; 29m32s to 3m44s |
+| Phase 1 image | `image/Dockerfile`, `image/environment.lock.json` | 8 tools pinned to `version=build`, 185-package closure hashed, antiSMASH databases pinned at 9.4 GB |
+| Tool registry | `src/npbench_c/tools/registry.py` | pins, controls, invocations, declared normalisations, canonicalisations, projections, enforced bans |
+| Thread-invariance suite | `src/npbench_c/tools/invariance.py` | 8/8 tools invariant at 1 and 8 threads |
+| Tests | `tests/` | 571 passing, 6 skipped |
+
+```bash
+PYTHONPATH=src python3 -m pytest tests -q
+PYTHONPATH=src python3 -m npbench_c.sweep.cli campaigns/construct-ecoli-rebh-01 --stubs
+PYTHONPATH=src python3 -m npbench_c.readiness.gate campaigns/construct-ecoli-rebh-01
+```
+
+## The rung ladder
+
+The graded unit is the rung, not the campaign. 32 campaigns x 4 rungs = 128
+graded (prompt, gold) pairs.
+
+| Rung | Measures | Target clear rate |
+|---|---|---|
+| R1 Execute | toolchain runs, output contract honoured | 85-95% |
+| R2 Correct | primary artifact matches gold within measured tolerance | 55-70% |
+| R3 Commit | derived claim that depends on R2 | 30-45% |
+| R4 Counterfactual | answer under a perturbation that makes the published answer wrong | 10-25% |
+
+Campaign score = highest **contiguous** rung cleared / rung count.
+`rungs_cleared` is reported alongside so monotonicity violations surface.
+
+Rungs are runnable **cold** (agent attempts everything) or **warm** (agent
+starts from rung *k-1* gold and attempts only rung *k*). Warm mode is what makes
+a rung a standalone pair and what yields a per-rung difficulty profile — in cold
+mode a failure at R2 censors everything above it, so cold runs alone cannot
+calibrate a ladder.
+
+A 0.50 headline under this design means: SOTA agents execute NP pipelines
+correctly but do not reliably convert artifacts into scientific commitments or
+predict perturbation outcomes. That is a pre-registered, falsifiable claim about
+where agents fail, not a tuning target.
+
+### Ladder validity rules (enforced, not aspirational)
+
+1. Monotonicity is **measured** against internal agent runs, never assumed.
+2. R1 must clear at >= 80% for a generic bash-only agent, or the campaign is
+   measuring environment setup rather than science.
+3. R4 must be parametric-proof: its gold depends on a perturbation.
+4. Each rung grades independently of later rungs.
+5. `chance_floor` <= 0.10, computed and stored. This is the rule that most
+   protects calibration — a four-rung ladder whose R3 is a three-way enum is
+   not a hard campaign however hard R1 and R2 are.
+6. Warm-start separability: rung *k* attemptable from rung *k-1* gold.
+7. At most one G2 rung per campaign.
+
+## Architecture: measure, then grade
+
+```
+submission/ --> measure.py --> measurement.json --> grade() --> grade.json
+```
+
+R1/R2 cannot compare the agent's sequence to the oracle's, because many
+sequences satisfy the constraints — grading must check the invariant, not the
+representation. So a campaign-specific deterministic **measurer** computes
+properties from the submission, and the generic **grader** compares those to
+gold and thresholds. The agent cannot self-report, and the grader stays
+declarative. This generalises to every campaign.
+
+## Purity
+
+The grader is a pure function of (submission, gold, grader_version). Enforced:
+
+- stdlib-only scoring path, asserted by an AST test over `grading/*.py`
+- no network, no LLM, no wall-clock, no RNG
+- all float reductions in fixed (sorted) order; every score rounded to 6 dp
+- 100 repeat gradings byte-identical; inputs never mutated; key insertion order
+  irrelevant
+- `grader_version` = semver + content hash over the scoring path
+
+Purity is not validity. A pure grader can be reproducibly wrong, which is what
+the separate construct-validity study measures (see below).
+
+## Campaign L1: construct-ecoli-rebh-01
+
+Design a synthetic ORF for RebH (UniProt Q8KHZ8, SV 1, 530 aa), then analyse
+which design constraint actually binds, and how that changes with host.
+
+- **R1** ORF present and schema-valid
+- **R2** protein identity exact, all six constraints satisfied, CAI >= floor
+- **R3** unconstrained-optimum violation counts (6 exact integers), binding
+  constraint, non-binding set — all for *E. coli*
+- **R4** same under a *Streptomyces* host swap, plus the flipped-constraint set
+
+All four rungs are G1. Measured discrimination on built submissions:
+
+| Submission | Depth | Fails at |
+|---|---|---|
+| oracle | 4 | — |
+| naive reverse translation | 1 | R2 |
+| correct construct, no analysis | 2 | R3 |
+| correct construct + R3, no R4 | 3 | R4 |
+| everything right, assumes binding constraint is host-invariant | 3 | R4 |
+
+The last row is the parametric trap: an agent that carries its R3 answer across
+to the new host instead of recomputing is caught exactly at R4. The binding
+constraint genuinely flips (gc_window -> direct_repeat), which is what makes R4
+unguessable.
+
+### Two fields deliberately excluded from grading
+
+Spec 8.5 says tolerances are measured and an artifact whose spread exceeds what
+the science tolerates is redesigned, never given a wider tolerance. That fired
+here. Running four legitimate optimiser policies:
+
+- **binding constraint: stable** across all four policies, both hosts → graded
+- **`binding_cost`: spread 0.0356** for gc_window, wider than the
+  between-constraint signal for four of six constraints → **not graded**
+- **`cai_full`: spread 0.0528** across policies → graded as a **floor**
+  (0.902 E. coli, 0.929 *Streptomyces*), set below the worst legitimate policy,
+  so a different valid optimiser is never penalised
+
+Both exclusions are recorded in `task.yaml` with the measurement that justified
+them. A reviewer can check the reasoning without rerunning anything.
+
+Note this is a **second tolerance class** the spec did not anticipate: the
+determinism audit measures run-to-run spread, which for a deterministic oracle
+is zero. What matters for a quantity an agent computes with its own method is
+*cross-method* spread. Campaigns must measure both.
+
+## Readiness gate
+
+A campaign is ready when `npbench_c.readiness.gate` returns all-pass — not when
+someone believes it is. Checks requiring internal agent runs report **PENDING**,
+never PASS: the gate does not launder an unmeasured property into a green tick.
+
+Current state, every campaign: **21 pass / 0 fail / 5 pending**.
+
+The five pending checks (monotonicity, R1 clear rate, no-tool leakage,
+difficulty gate, discrimination) are satisfied by an `internal_sweep.json` from
+a sweep over **real** systems. A stub-based sweep leaves them pending by design.
+
+The twentieth check, `external_resources_pinned_and_present`, arrived with the
+first S1 campaign. A campaign may need reference data it cannot ship — too large,
+or under a licence the benchmark cannot pass on — and such a resource is declared
+instead of copied: path, provider, version, sha256. The check resolves each one
+and verifies the fingerprint, because an unverifiable external resource is the
+solvability defect one step out: the sandbox looks complete and the answer depends
+on bytes nobody pinned.
+
+**Never audit before calibrating.** A campaign dropped for non-discrimination
+after a domain expert spent three hours on it has burned the scarcest resource
+in the project. Order is: build → internal sweep → drop/fix → audit → ship.
+Author ~44 to ship 32.
+
+## Campaign solvability
+
+**A campaign must be solvable from its own sandbox.** Every table, vocabulary,
+counting rule and convention its gold depends on must be in `reference/` or
+`task.yaml`.
+
+This campaign shipped briefly with its codon weight table in `oracle/`, which
+the sandbox excludes. R3's gold is a pure function of those weights, so the
+campaign was unanswerable — and no run would have reported it: an agent would
+simply have failed and looked incapable. The stub systems hid it because they
+were handed `--oracle` on the command line.
+
+Guards: `pinned_tables_reachable_by_agent` in the readiness gate, and a test
+that recomputes R3's gold from sandbox files alone. The oracle loads the same
+`reference/` JSON the agent receives, so the two cannot drift — verified by
+regenerating gold after the extraction and diffing byte-for-byte.
+
+See `docs/environment.md` for the full sandbox contract, the tool surfaces, and
+the per-template database and tool requirements.
+
+## A note on what the gate caught
+
+Three real defects surfaced during this build, all by machinery rather than by
+reading the code:
+
+1. **Grader float boundary.** `abs_tol_match(1.0, 1.1, 0.1)` returned 0.0,
+   because `|1.0 - 1.1|` is 0.10000000000000009 in binary floating point. An
+   answer sitting exactly on the stated tolerance was marked wrong — a brittle
+   match contradicting the documented contract, and the kind of defect that
+   reads to an auditor as grader noise. The difference is now rounded to the
+   declared precision before comparison. Regression test in
+   `tests/unit/test_primitives.py`.
+2. **Stale `grader_version` pin.** `task.yaml` carried a hash from before the
+   above fix. The gate checked that a version was *recorded*, not that it
+   *matched* what just ran, so a manual comparison caught what the gate should
+   have. `grader_version_matches_pin` now closes it.
+
+3. **An unsolvable campaign.** Covered above: the pinned tables the task
+   requires were outside every path the sandbox ships.
+
+All three are worth repeating because they are the failure class the benchmark
+is built to detect in others: reproducible, confidently reported, and wrong.
+
+## The internal sweep
+
+Turns the readiness gate's five PENDING checks into numbers. Agent-agnostic: a
+system is a `SystemSpec` (a command, a mode, a timeout), so a bash-only coding
+agent, a general biomedical agent and a tool-equipped system all plug in without
+the harness knowing anything about them.
+
+```
+cold runs   agent gets the objective, attempts everything  -> depth distribution
+warm runs   agent starts from rung k-1 gold, attempts k     -> per-rung profile
+```
+
+Both are needed. Cold runs alone cannot calibrate a ladder: a failure at R2
+censors every rung above it, so cold R3/R4 clear rates conflate "could not do
+it" with "never got there".
+
+### Gold isolation is the load-bearing property
+
+If gold reaches a sandbox, every number the sweep produces is silently invalid
+and nothing downstream notices — the runs simply look successful. So sandboxes
+are built from an allowlist (`inputs/`, `task.yaml`) and then **audited**; a
+violation raises.
+
+Warm starts are **pre-rendered bundles**, never whole gold files. Declaring
+`gold/gold.json#hosts.ecoli` as an R4 warm input and copying the file would hand
+the run the *Streptomyces* answer it is being asked to compute. `gold/warm/r4/`
+contains exactly the E. coli construct and the E. coli analysis, nothing more,
+and a test asserts the *Streptomyces* gold values are absent.
+
+### Statistics at n=3
+
+Three repeats cannot support a claim if the unit of analysis is the campaign.
+With a ladder the unit is the rung-run — 32 campaigns x 4 rungs x 3 repeats =
+384 observations — and CIs come from a **cluster bootstrap resampling
+campaigns**, which absorbs correlation between rungs of one campaign and
+between repeats of one run. Once campaigns are instantiated from templates,
+resample at the **template** level: four instantiations share an oracle and a
+failure mode and are not four independent campaigns.
+
+Pre-register the resulting resolution: **NPBench-C separates systems differing
+by roughly 8 points or more at n=3, and makes no claim about finer ordering.**
+Pass@1 and Pass^3 are both reported; the gap between them is the only variance
+story available without paying for more repeats.
+
+Infra failures (timeout, crash) are excluded from scores and reported
+separately in `run_status_counts`, so the headline is not partly measuring our
+own container.
+
+### Two chance floors
+
+The sweep exposed a contradiction in the original design. R1 is *meant* to be
+easy — its gate is a >= 80% clear rate — and for a construct-design campaign a
+no-tool system clears it by reverse-translating the protein, which needs the
+genetic code and nothing else. The ablation measured R1's no-tool clear rate at
+1.0 against a declared estimate of 0.30. So any four-rung ladder gives a no-tool
+agent 0.25 for free, and a 0.10 cap on the **full** floor is unsatisfiable by
+construction.
+
+Resolved by splitting them:
+
+- `chance_floor` — all rungs (~0.26 here). The baseline the **leakage ablation**
+  is compared against.
+- `discriminating_chance_floor` — R2 upward (~0.007 here). What the **0.10 cap**
+  applies to, since R1 is an execution precondition, not a measurement.
+
+A test asserts the split still catches a guessable R3, so excluding R1 has not
+widened the hole the cap was for.
+
+### Stub fixtures, and why they cannot turn a gate green
+
+`src/npbench_c/sweep/stubs/` holds deterministic stub systems that reach preset
+depths. They exist so the harness's arithmetic and gate logic can be validated
+before any compute is spent — a sweep whose statistics are wrong is worse than
+no sweep, because its numbers look authoritative.
+
+A stub-based sweep therefore marks itself `stub_based: true`, and the readiness
+gate keeps all five checks **PENDING** with the harness result shown but not
+promoted. `ready_to_audit` stays `False` until real systems run. With the stub
+sweep on record the gate reports **16 pass / 0 fail / 5 pending**.
+
+Harness self-test result (fixtures, not evidence): clear rates 1.00 / 0.75 /
+0.50 / 0.25 across R1-R4, cold depths 1/2/3/4, all five gates green.
+
+## Campaign 2: NRPS mass balance
+
+`massbalance-nrps-malleobactin-01` — MIBiG BGC0000386, a four-module NRPS line
+in *Burkholderia thailandensis* with four annotated congeners including a dimer.
+Compute the assembly the modules would produce, quantify the gap to each
+congener, predict every single-module deletion. All four rungs G1, solvable at
+tool surface S0, stub discrimination 1/2/3/4, all five sweep gates green.
+
+Three design decisions worth carrying to the other mass-balance instantiations:
+
+- **Every annotated congener is analysed, not `compounds[0]`.** 17 of 43
+  admissible entries annotate more than one compound, so "the" product is not
+  well defined and picking the first listed would bake an undeclared convention
+  into gold and mark a correct answer about another congener wrong.
+- **Monomer formulas are resolved once with RDKit and pinned** into
+  `reference/monomer_formulas.json` with their SMILES source. The oracle needs
+  no chemistry toolkit at run time, so a toolkit version bump cannot move a
+  score and the campaign stays S0-solvable.
+- **The residual is quantified, never attributed.** Naming the chemistry that
+  closes the gap is expert inference; its gold would be judgement. Excluded with
+  the reason recorded in `task.yaml`.
+
+Also: this campaign's stubs read **only the sandbox**, with no privileged oracle
+path, precisely because the construct-design stubs' oracle access hid an
+unsolvable campaign.
+
+## Abstention gold that is provable
+
+The constraint-conflict campaign is the first where the correct answer is to
+**produce nothing** and say why. That makes its gold the most dangerous in the
+catalog: if the constraints are merely hard rather than impossible, an agent
+with a better optimiser finds a design and we mark it wrong.
+
+So infeasibility is established by arithmetic, never by search failure. For each
+residue independently, the highest-GC admissible codon is determined; because
+codon choices are independent, the resulting whole-ORF bound is **attained**, not
+merely valid — a test constructs the attaining sequence and confirms it encodes
+the protein. A requirement above that bound is unreachable for every sequence,
+whatever other constraints apply, because adding constraints only shrinks the
+feasible set.
+
+```
+unrestricted achievable GC max        0.677338
+after forbidding the 8 GC3 codons     0.584432
+required minimum                      0.620000   -> impossible
+```
+
+Each constraint alone is satisfiable, so the conflict is genuinely pairwise, and
+the build **refuses to emit gold** otherwise: it raises if the requirement is
+still reachable, and separately if it exceeds even the unrestricted maximum.
+Both refusals are tested.
+
+Fabricating a design is a graded component, not advice: `no_design_claimed`
+must be 0, which is the Output-Fabrication failure mode made measurable.
+
+**The control, now built.** Abstention scored on its own rewards reflexive
+abstention — a system that always answers "infeasible" would score full marks on
+the conflict campaign. `constraint-feasible-ecoli-rebh-01` differs from it by
+**one number** (GC floor 0.55 rather than 0.62); everything else is identical.
+Precision and recall are reported separately across the pair, never F1 alone.
+
+Both halves of the property are tested **at the grader**, not inferred from the
+sweep: a submission with every bound correct but a reflexive verdict fails R3 at
+depth 2 on each campaign. That check matters because both ablation stubs happen
+to die at R2, so stub depths alone would have told us nothing about R3.
+
+**The asymmetry.** Infeasibility is decidable by arithmetic. Feasibility of the
+full set is only provable **constructively** — the achievable-GC bound settles
+the GC axis, but the composition constraints could still exclude every
+candidate. So the feasible half rests on an exhibited design, verified to have
+zero violations and to encode the declared protein (GC 0.569994), recorded in
+gold for the audit packet and **not graded**: many designs qualify, so grading
+one would grade our optimiser rather than the agent's reasoning.
+
+Building that witness needed a new engine mode. The greedy repair used by the
+design ladder cannot climb a *global* GC floor — a single synonymous
+substitution rarely crosses the threshold, so the violation count never strictly
+improves and the search stalls. `design_under_conflict_set` instead starts from
+the GC-maximising admissible assignment and repairs composition constraints
+while refusing any substitution that would drop GC back below the floor, with
+the GC delta computed in O(1) and a bounded rotating candidate window. First
+attempt was quadratic in ORF length and too slow for the gate's determinism
+re-run; second was too narrow and stalled on 50-nt GC windows.
+
+**The build refuses to contradict its declared expectation**, in either
+direction, so a campaign cannot silently become the opposite of what it was
+authored to be. Tested both ways.
+
+## A leakage ablation is not a competence probe
+
+The MIBiG campaign made a distinction explicit that the earlier ones let slide.
+Its `stub-nonormalise` loads both corpora, computes the raw diff correctly, and
+reports it as the classified result — clearing R2 and failing R3. Labelling that
+the no-tool ablation made the leakage gate **fail**, and the gate was right to
+complain: it asks "is this answerable without doing the work?", and that system
+did the work.
+
+So the two are now separate roles:
+
+- **competence probe** — a tooled system missing one skill. Useful for
+  discrimination, meaningless for leakage.
+- **leakage ablation** — withholds *computation itself*, which for an S0
+  campaign is the only thing there is to withhold. `stub-noncompute` never opens
+  the archives and answers with round numbers, so it fails R1 at depth 0.
+
+This also corrected a claim carried in the earlier campaigns' chance levels. In
+those, R1 is free — reverse-translating a protein or echoing a table needs no
+computation — and the measured no-computation clear rate was 1.0. Here it is
+**not**: the entry counts cannot be guessed, so the ablation fails R1. R1's
+declared chance level stays 1.0 because any system that reads the inputs clears
+it, and the capped floor is computed over R2 upward regardless, but the note in
+`task.yaml` records that it is nominal here rather than measured.
+
+## Template architecture
+
+A campaign of a factored template contains **no code**: only `inputs/`,
+`reference/`, `task.yaml`, `grading.json` and `gold/`. The oracle is shared, and
+an instantiation is a data change plus two commands:
+
+```bash
+python3 -m npbench_c.templates.mass_balance_nrps.build_reference campaigns/<id>  # RDKit, once
+python3 -m npbench_c.templates.mass_balance_nrps.build           campaigns/<id>  # stdlib, re-runnable
+```
+
+Reference generation is split from gold generation deliberately: the readiness
+gate re-runs gold to check determinism, and it must be able to do that without a
+chemistry toolkit and without silently re-deriving the pinned monomer table.
+`grading.json` is **generated from gold**, so the spec cannot drift from the data
+it grades.
+
+`task.yaml` declares the three harness commands (`gold_command`, `solve_command`,
+`measure_command`) and the stub fixtures, so neither the gate nor the sweep knows
+anything campaign-specific. The construct-design campaign keeps a local oracle
+and declares it the same way, so there is one code path rather than a fallback.
+
+Both template families now work this way. `construct_design` holds one engine
+and two ladders — `design/` (T-L6-1) and `conflict/` (T-L6-2) — which share the
+constraint arithmetic and must not diverge. Migrating the construct campaign
+onto it reproduced its gold **byte-identically**, which is how the port was
+verified rather than assumed.
+
+The payoff is measurable: the sevadicin instantiation is 2 JSON files and a
+`task.yaml`. Copying six oracle files per campaign would have made drift between
+instantiations invisible, and the catalog expects eight doubled templates.
+
+## Catalogued designs corrected by grounding
+
+Each was checked against real data before any oracle was written, and each would
+have produced a plausible-looking campaign that could not be built or whose gold
+would have been wrong.
+
+1. **PKS mass balance** — `at_domain.substrates` is empty throughout MIBiG, so
+   extender-unit identity is absent. The template is NRPS-only.
+2. **"Validate the route"** — MIBiG annotates the enzymatic module count, not the
+   number of monomer incorporations; only 1 of 43 admissible entries is exactly
+   balanced. The campaign quantifies the gap instead.
+3. **"What changed and in which field"** between MIBiG releases — the 4.0
+   re-annotation restructured the schema, so a raw field diff is true and
+   useless. The campaign reconciles on a declared mapping instead, and my own
+   first pass reported 2442 taxon re-annotations where there are 8.
+4. **Self-resistance target identification** — the resistance gene is a field
+   lookup and the target is not in MIBiG; inferring it needs homology search.
+   Re-tiered to `build: image`, with the S0-feasible evidence audit built in its
+   place.
+
+5. **Chemical space / scaffold analysis** — Bemis-Murcko reduction is far coarser
+   than the design assumed: the most shared scaffold over the corpus is plain
+   benzene, in 76 entries. The catalogued "distinguishing substitution" rung is
+   therefore both near-vacuous and prose-only, and the catalogued substituent-swap
+   counterfactual needs a chemistry toolkit at solve time. R3 grades the
+   reconciliation between the naive and filtered sharing statistics instead, and
+   R4 varies the declared filter and the evidence gate.
+
+6. **Selectivity counterfactual (T-L5-1)** — the catalogued R4 excluded a
+   low-confidence assay. Every one of the 105 assays behind this target pair's IC50
+   values scores 7, so the exclusion rejects nothing. The rule stays in the
+   contract; R4 varies the axes that move instead.
+7. **Resistance mutation → target (T-L5-2)** — the structured
+   `assay_variant_mutation` field is populated across 34,921 IC50 activities and
+   carries almost nothing on theme: 45 variant records on the *S. aureus* gyrase
+   complex, 0 on topoisomerase IV, and all 244 *P. falciparum* DHFR records reading
+   "UNDEFINED MUTATION". Re-tiered rather than built on an anecdote.
+
+8. **A-domain substrate specificity (T-L2-4)** — the position of the A-domain in
+   its protein is `-1/-1` for 2,852 of 2,901 domains, the substrate labels are
+   71.6% inference, and the cross-resource comparison gives 0.000, 0.151 or 0.995
+   agreement depending on which key is used. Retired, not built.
+
+The pattern is consistent enough to be a rule: a catalogue entry is a hypothesis
+about data until the fields are inspected.
+
+The fifth case sharpens it, because the fields *were* inspected and the design
+still needed correcting. Scaffold SMILES parse, scaffolds are computable, and
+every count in the re-grounding probe was real — what the probe did not show was
+that the computed scaffolds are mostly bare rings. So the rule has a second half:
+**a field being present does not make the quantity derived from it informative,
+and only computing the distribution shows which.** The campaign's own
+`notes_for_audit` names the benzene result first for that reason.
+
+Cases 6 and 7 are that second half twice more, and the pair separates its two
+outcomes. For T-L5-1 the uninformative field cost a counterfactual, which was
+redesigned around axes that move; for T-L5-2 it cost the campaign. **The rung that
+survives a vacuous field is the one whose claim can be re-pointed at something
+else; the row that does not is the one whose claim *was* the field.**
+
+
+## Campaigns 9 and 10: structure features, two ladders on one engine
+
+`residues-prna-01` and `pocket-rebh-01` are the two ladders of
+`structure_features`, the third factored template. They exist as one template
+because they read the same two sources for the same proteins — UniProt's
+per-residue features with their ECO evidence codes, and the mmCIF coordinates
+those codes cite — and building them apart would have duplicated an mmCIF
+parser, a numbering mapper and an ECO classifier, which would then have drifted.
+
+The proteins are the two already in the benchmark. RebH and PrnA arrived as the
+two construct-design instantiations, so no new provenance is introduced; what is
+new is that both carry evidence-coded residue annotations and seven to ten
+deposited structures each.
+
+### What makes the annotation checkable at all
+
+UniProt does not merely assert that position 348 of PrnA binds chloride. Under
+`ECO:0007744` it names the deposited entry the assertion rests on:
+
+```json
+{"type": "Binding site", "location": {"start": {"value": 348}},
+ "ligand": {"name": "chloride", "id": "ChEBI:CHEBI:17996"},
+ "evidences": [{"evidenceCode": "ECO:0000269", "source": "PubMed", "id": "16195462"},
+               {"evidenceCode": "ECO:0007744", "source": "PDB", "id": "2AQJ"}]}
+```
+
+That field turns "is this annotation supported?" into arithmetic: load 2AQJ,
+find the chloride, compute its contact shell, check whether 348 is in it. No
+curator is consulted and no judgement is exercised, which is the same doctrine
+the MIBiG evidence audit applies — turned on a second database, from the
+structural side.
+
+### What the two ladders found
+
+Both are real results, and both shaped the rungs rather than being discovered
+afterwards.
+
+**The annotation is a strict subset of the geometry, in one direction only.**
+Over 2AQJ, every annotated position is inside its ligand's contact shell — 2 of
+2 for chloride, 10 of 10 for FAD, 5 of 5 for tryptophan — and this holds at
+4.0 Å and 3.5 Å as well, so it is not an artefact of a generous cutoff. The
+disagreement runs entirely the other way: 29 of FAD's 39 contacts, 9 of
+tryptophan's 14 and 3 of chloride's 5 are not annotated. So `unconfirmed` is
+zero on both structures, which means **R3's discriminating content is the contact
+set and the unannotated remainder, not the confirmation verdict** — a system
+could guess "all confirmed" and still fail R3 on the sets. The campaign's audit
+notes say so plainly rather than letting an auditor discover it.
+
+**Truncating a pocket splits it almost evenly.** Deleting each of the 14
+residues lining RebH's substrate site back to alanine, one at a time, removes
+the contact for exactly 7 of them and leaves 7 still touching through backbone
+or CB. Neither verdict is the safe guess, which is what makes the rung worth
+grading; the build refuses to emit gold if the split collapses.
+
+### Three design decisions worth recording
+
+**The pocket volume is a declared lattice count, not a published descriptor.**
+Every published pocket-volume definition carries parameter choices, and a
+benchmark that adopts one grades those choices. So `geometry_rules.json` pins a
+1 Å lattice anchored on integers, a 1.4 Å probe, Bondi radii and three stated
+admission conditions, and the graded quantity is the admitted point count — 57
+for this site. Solvent-accessible surface area and any druggability score are
+excluded for the same reason, with the reason recorded in the campaign.
+
+**No toolkit, on purpose.** Neither ladder uses Biopython, gemmi, RDKit or any
+alignment tool; the parser and the geometry are stdlib, and both campaigns
+declare `min_tool_surface: S0`. The moment pocket geometry runs through a
+toolkit, the toolkit's defaults for hydrogens, alternate locations, symmetry
+expansion and radii become part of the answer.
+
+**R4's perturbation scope is declared by rule, never by list.** The truncation
+sweep covers the focal contact shell, which is R3's answer. Naming those
+positions in `reference/campaign_keys.json` would have handed it over, so the
+sandbox carries `truncation_scope: focal_shell` and a test asserts that no number
+in the declared keys is a shell position. This is the same gold-isolation
+reasoning that replaced whole gold files with pre-rendered warm bundles.
+
+### What the gates caught this time
+
+Three things, all before any agent ran.
+
+1. **An mmCIF category written two ways.** `_struct_ref_seq` appears as a `loop_`
+   in 2E4G and as bare `_category.item value` lines in 2AQJ, because it has two
+   rows in one and one in the other. A parser handling only the loop form returns
+   nothing for the second — and the numbering offset then gets *assumed* rather
+   than read, which produces a shell that is internally consistent and entirely
+   wrong. The parser handles both and a test pins both.
+
+2. **An R2 component that depended on an R3 answer.** The graded nearest-contact
+   distance was being looked up by the copy the *submission* nominated as focal,
+   which lives in its R3 block. The stub that computed the shells correctly and
+   stopped there therefore failed R2, and the difficulty gate failed with it. The
+   measurer now identifies the focal copy from the campaign's own declared keys.
+   Worth stating as a rule: **a rung's components must be answerable from that
+   rung's work alone**, and the sweep is what surfaces a violation.
+
+3. **Two components that restated an earlier rung.** The pocket ladder graded the
+   focal shell in R3 when R2 already graded it per copy, and the residues ladder
+   graded the alternate structure's numbering offsets in R4 when both entries of
+   the protein carry the same offsets as the focal one. Both were caught by a
+   test asserting that no warm bundle contains the answer to the rung it starts
+   — the bundle legitimately carried them, because they were the *previous*
+   rung's deliverable. Both components were dropped and the exclusions recorded
+   in `excluded_from_grading`.
+
+That third check was worth keeping, so it is now the gate's eighteenth
+mechanical check: **if a rung's warm-start bundle contains the answer to one of
+that rung's components, the component belongs to an earlier rung.** It is a
+mechanical test for a design error that is otherwise invisible until a real
+system clears a rung it should not have — the oracle scores 1.0 either way.
+
+Only **composite** gold values are checked. A scalar drawn from a declared
+vocabulary legitimately appears all over an earlier rung's census: the construct
+ladder's R4 asks which constraint binds for the swapped host, gold is
+`"direct_repeat"`, and the R4 bundle contains that string as a key of the first
+host's violation counts. Flagging it would be a false positive there and in every
+other enum-scored component in the benchmark. A test pins the exemption so it is
+not "tightened" later.
+
+Run across the whole benchmark, it caught one more thing: **the mass-balance
+ladders were grading the compound list at R3, and every warm bundle handed it
+over.** They had to — neither the assembly rung nor the reconciliation rung can
+be posed without knowing which compounds the entry names. The list is also just a
+field of the shipped MIBiG entry, so the component was measuring a parse the
+sandbox had already answered. It is gone from both campaigns, with the reason in
+their `excluded_from_grading`.
+
+It is worth being precise about what this check is and is not. It does not detect
+gold leaking into a sandbox — `_audit_sandbox` and `GoldLeak` do that, and they
+catch a file in the wrong place. This catches something subtler and entirely of
+the author's making: a rung graded on work that belongs to the rung below it. The
+three cases it found were all mine, and all of them had passed every other gate.
+
+
+## Campaign 11: chemical space, and the question with no single answer
+
+`chemspace-mibig-4_0-01` asks how many distinct natural products MIBiG 4.0
+contains. There is no single answer, and that is the campaign:
+
+```
+compound records                     3,449
+distinct full InChIKeys              3,115     334 records restate a structure
+distinct InChIKey block 1            2,996     119 further distinctions merged
+distinct Bemis-Murcko scaffolds      1,843     plus 182 compounds with no ring
+```
+
+Three declared identity keys over the same records, three different numbers, and
+every statistic downstream — duplicates, per-class spread, scaffold sharing —
+inherits the choice. The connectivity block is not a rounding of the full key: it
+merges 111 groups of stereoisomers, charge states and labelled variants, and
+where stereochemistry is not determinable it is the honest granularity. The rung
+that distinguishes them is the campaign's spine.
+
+Chemistry is perceived once with RDKit at instantiation and pinned into
+`reference/chemistry_table.json`, the same move that put monomer formulas in
+mass balance's reference directory. The table supplies what needs a toolkit —
+formula, InChIKey, scaffold, atom and ring counts, per record — and nothing
+aggregated. Everything the ladder grades is bookkeeping over it, so the campaign
+is **S0** and a toolkit upgrade cannot move a published score.
+
+### Bemis-Murcko is much coarser than the catalogue assumed
+
+This is the fourth catalogued design that grounding corrected, and the first
+where the correction only appeared *after* the oracle ran:
+
+```
+most shared scaffold, unfiltered       benzene            76 entries
+second                                 tetrahydropyran    26 entries
+```
+
+Bemis-Murcko keeps ring systems and the linkers between them and discards
+everything else, so any natural product carrying one aromatic ring reduces to
+benzene. "These 76 compounds share a scaffold" is true and says nothing. The
+catalogued R3 asked for *the distinguishing substitution* between two compounds
+sharing a scaffold — which on this data is almost the whole molecule, and is in
+any case a set difference between molecular graphs that can only be named in
+prose. So R3 grades the reconciliation instead, under a declared filter of ≥2
+rings and ≥50% heavy-atom coverage:
+
+```
+shared scaffolds           279  ->  190 informative
+cross-class scaffolds       36  ->   14 informative
+```
+
+Both sides are graded. A system that reports only the unfiltered number is not
+wrong, it is incomplete, and R3 is where that shows — which is what the
+`stub-unfiltered` competence probe exists to confirm: it does the whole
+bookkeeping, reports the unfiltered statistic in the informative slots, clears R2
+and fails R3.
+
+The catalogued R4 — predict the scaffold after a substituent change — would need
+scaffold perception at solve time and would make the campaign S1 for the sake of
+one rung. R4 varies the declared thresholds instead (four settings, record counts
+3,267 / 2,704 / 2,497 / 1,954) and then gates the corpus on experimental locus
+evidence, which cuts it to 601 entries and the cross-class informative set from 14
+scaffolds to 3.
+
+### One counting rule the data forced
+
+A scaffold "crosses biosynthetic classes" only when **two of its entries have
+disjoint class sets**. The obvious rule — the union of its entries' classes has
+more than one name — gives 115 where the declared rule gives 36, because 456
+active entries carry more than one class and a single hybrid PKS/NRPS cluster
+therefore crosses classes on its own, with nothing to compare against. Both
+numbers are reported, because the naive one is what most analyses compute and the
+gap is the point.
+
+### Two smaller things worth keeping
+
+**The record id is `(accession, ordinal)`, not `(accession, name)`.** Compound
+names are not unique within an entry: BGC0002024 lists "nargenicin A1" twice and
+BGC0002072 lists "linearmycin C" twice. Keying on the name drops two records and
+shifts every count below it, silently.
+
+**`scaffold_smiles` ships but is never a key.** The existing rule from the
+mass-balance build — RDKit for formula, never canonical SMILES, InChIKey as the
+comparison key — applies here too, so scaffold identity is the scaffold's
+InChIKey. The two do not agree exactly: 1,843 InChIKeys against 1,850 canonical
+SMILES, because InChI normalises tautomers and charge states the SMILES writer
+keeps apart. That disagreement is the argument for declaring the key rather than
+leaving it to the solver, and it is why both numbers appear in a test.
+
+### A correction to the re-grounding report
+
+The re-grounding pass recorded 1,655 distinct Murcko scaffolds, and that number
+does not reproduce under any definition — 1,843 by scaffold InChIKey over active
+entries, 1,850 by canonical SMILES, 2,254 including retired entries. It also
+called the 334-record gap "cross-entry duplicates", which it is not: most of
+those records repeat a structure inside one entry, and the cross-entry figure is
+217 at the full key and 259 at the connectivity block. `docs/regrounding-2026-10-02.md`
+carries the correction. The lesson is narrower than the earlier one about
+catalogue entries being hypotheses: **a probe's summary statistic is a hypothesis
+until the oracle recomputes it**, because a probe has no gate behind it.
+
+
+## Phase 1: the pinned-tool image, and the two controls that were wrong
+
+The provisioning notes set the rule: every tool runs at 1 and 8 threads on fixed
+input and must produce identical output, and anything failing which cannot be
+pinned into determinism is made single-threaded or kept off gold-producing paths.
+`image/` now holds the image and `src/npbench_c/tools/` the suite that enforces
+the rule.
+
+One honest caveat first: **the Dockerfile has not been built end to end**, because
+the host had the Docker CLI and no daemon. Every step in it was run directly —
+the micromamba install of these exact specs, `registry --verify` against the
+resulting prefix, and the full invariance suite — so the pins and the measured
+determinism results are real, and the layer sequence is not yet proven.
+
+Eight tools, each pinned to an exact `version=build` string with the resolved
+185-package closure and every artifact's sha256 in `image/environment.lock.json`:
+HMMER 3.4, DIAMOND 2.2.8, MMseqs2 18.8cc5c, Prodigal 2.6.3, MAFFT 7.526, BLAST+
+2.17.0, antiSMASH 8.0.4 and BiG-SCAPE 2.0.3. **Ubuntu's archive cannot satisfy
+two of the pins** —
+it ships DIAMOND 2.1.9 against a ≥ 2.2.7 floor and BLAST+ 2.12.0 against 2.17.0 —
+which settled the question of whether `apt` would do. A measured dry-run then
+confirmed that adding antiSMASH moves **none** of the six sequence-tool pins, which
+is why there is one environment rather than two.
+
+**This unblocks 10 of the 12 `build: image` templates**: T-L1-1, T-L1-2, T-L1-3,
+T-L1-4, T-L2-1, T-L2-3, T-L2-4, T-L3-1, T-L3-2 and T-L3-4, plus the catalogued
+T-L3-5 target inference that the S0 build re-tiered to `image`. The remaining two
+need matchms, deferred with a recorded reason rather than left as a gap in a
+table.
+
+### What measuring found
+
+Four tools are invariant with nothing asked of them: BLAST+, MAFFT, Prodigal and —
+after one declared normalisation — HMMER, which stamps its own command line, its
+working directory and the wall-clock date into both `--tblout` and the HMM file.
+The other two were not, and both answers were worth the trouble of getting.
+
+**DIAMOND: the control this project had declared was backwards.** The provisioning
+table listed `--no-reorder` as a required determinism control. Measured, *with*
+the flag 2.2.8 emits the same 192 hits in three different query orders across four
+multithreaded runs; *without* it every run at 1, 4 and 8 threads is byte-identical.
+DIAMOND's default restores query order and `--no-reorder` documents itself as
+switching that off for speed — so the flag was the cause, not the cure. It is now
+forbidden on any gold-producing path. A standing **witness invocation** keeps the
+failure under test and is reported as `xfail`, so a future release that fixes it
+shows up as an `XPASS` to re-read rather than as a silently changed assumption.
+
+**MMseqs2: no flag fixes it, so the contract does.** At one thread every run is
+byte-identical; at eight the hit *multiset* is identical and only its order moves.
+Nothing in the tool controls that, so the tabular output is sorted by line before
+anything reads it.
+
+### antiSMASH: the pin is a pair, and three things followed from adding it
+
+**Half the pin is the databases.** The binary is 8.0.4; what decides which regions
+come out is that plus the reference data `download-antismash-databases` fetched —
+knownclusterblast 4.0, Pfam 35.0, MITE 1.3, as-js 0.16 and six more directories,
+**9.4 GB on disk**, now recorded in the lock with their versions. A pin that names
+only the binary leaves out the half that moves the answer.
+
+On top of the version the lock records a **fingerprint over the detection rule
+files** — `04add3eb0e86a816`, a sha256 over `strict.txt`, `relaxed.txt` and
+`loose.txt`. The rule count is **103** at 8.0.4 (90 strict, 7 relaxed, 6 loose),
+against the 88 at v7.1 and 58 at v5 this project had already written down. "Never
+compare antiSMASH results across versions" was a standing instruction; the
+fingerprint is its mechanical form, so a campaign pins what it was built against
+and a changed rule set is detectable even when the version string is not what
+moved.
+
+**A banned binary arrives with it.** antiSMASH depends on the `fasttree` package,
+which ships `FastTreeMP` — banned outright, since thread order affects its
+neighbour-joining heuristic. The ban had been written down and nothing enforced it.
+Now the image deletes the binary and `registry --verify` fails if it reappears,
+which also sharpens a distinction worth keeping: `BANNED_BINARIES` is checked,
+`NOT_IN_IMAGE` is a list of deferrals with reasons, and FastTreeMP belongs in
+exactly one of them.
+
+**It brings its own Python, and that nearly became the benchmark's.** With the tool
+prefix first on `PATH`, `python3` silently resolves to antiSMASH's conda
+interpreter, and the stdlib-only grading core would be running on an interpreter
+nobody chose. It surfaced as `python3 -m pytest` failing to find pytest. antiSMASH's
+console scripts carry an absolute shebang to their own interpreter, so the prefix
+never needed to come first; the image now puts it last.
+
+### BiG-SCAPE: it does not run as published
+
+The sharpest result of the whole Phase 1 effort, and the one that justifies
+running tools rather than installing them.
+
+BiG-SCAPE 2.0.3's bioconda recipe asks for `sqlalchemy >= 2.0.2` with no upper
+bound. A fresh solve therefore installs 2.1.x, and BiG-SCAPE raises
+`ObjectNotExecutableError` **before it reads a single input file** — it passes a
+compiled statement object to `Connection.execute`, which 2.0 tolerated and 2.1
+rejects. The image carries `sqlalchemy=2.0.54`, a bound the upstream recipe does
+not. **Installing is not the same as working**, and nothing short of running it
+tells them apart.
+
+Two smaller things the same session surfaced. BiG-SCAPE filters its input
+directory by filename, defaulting to `cluster,region` to match antiSMASH's
+`*.region001.gbk` convention; MIBiG reference files are named `BGC0000852.gbk`, so
+without an explicit `--include-gbk` the run fails with *no valid input GBKs*
+rather than with anything about names. And it needs `Pfam-A.hmm`, which the
+antiSMASH databases already ship pressed — so the image reuses that copy, saving
+1.5 GB and one separately-pinned release.
+
+**The partition is the result; the labels are not.** `FAM_00001` is a name. Two
+runs can agree completely on which clusters belong together and disagree on what
+the groups are called, and a comparison of labels would score that as a
+difference. The projection keeps, per class, the groups as sorted member sets,
+sorted among themselves, and drops the family label and the connected-component
+number. The cutoff stays in the *invocation* rather than the projection, because a
+partition at a different cutoff is a different answer, not a different rendering
+of one — which is exactly the distinction T-L3-2 ("GCF cutoff") is about.
+
+**The fixture was built to have families.** 32 antiSMASH-processed MIBiG clusters,
+selected by a rule computed from tables this repository already carries: the four
+largest groups of 4–10 entries sharing an InChIKey connectivity block — ectoine
+(10), ochratoxin A (7), kanamycin (5), aflatoxin B1 (5) — plus one singleton per
+biosynthetic class as a negative control. BiG-SCAPE recovers those families at a
+0.3 cutoff, which is what makes this a test of clustering rather than a test of
+whether 32 singletons stay 32 singletons.
+
+The one judgement in that selection is named rather than buried: groups whose
+MIBiG compound name is a **class placeholder** — *capsular polysaccharide*,
+*lipopolysaccharide*, *melanin*, *carotenoid*, *exopolysaccharide* — are excluded,
+because MIBiG gives those generic names a representative structure and entries
+sharing one need not be homologous. Two different molecular formulas appear under
+*capsular polysaccharide* alone. Including them would have put apparent family
+structure in the fixture that the biology does not support.
+
+**One coupling to settle before T-L3-2 is authored.** The MIBiG reference set
+ships as `mibig_antismash_4.0_gbk_as8b1.tar.bz2` — processed with antiSMASH **8.0
+beta 1**, while the image pins **8.0.4**. Harmless for a determinism fixture,
+since both arms of every comparison read the same files. Not harmless for a
+campaign: comparing its own 8.0.4 regions against that reference set is precisely
+the cross-version comparison antiSMASH's rules forbid. Either reprocess the
+reference set with the pinned antiSMASH, or state that both sides come from the
+published set.
+
+### Projections, and why they are a third kind of licence
+
+antiSMASH's output is one JSON object holding the input path, the tool version, a
+record timestamp and the full HMM hit table in the same structure as the detected
+regions. A line-drop normalisation cannot reach inside that. So the suite gained a
+**projection**: a declared map from the raw artifact to the bytes that are actually
+results.
+
+| | What it says | Where it applies |
+|---|---|---|
+| **Normalisation** | this line is not a result, ignore it when comparing | inside the suite only |
+| **Canonicalisation** | the content is right but its order is not guaranteed — fix the order before anybody reads it | every gold-producing use |
+| **Projection** | these fields are the answer and the rest is not | every gold-producing use |
+
+The two antiSMASH invocations project different things on purpose:
+`minimal_detection` projects the regions, which is what a BGC-detection campaign
+grades; `default_modules_domains` runs the analysis modules and projects the
+ordered NRPS/PKS domain architecture per CDS, which is what a domain-architecture
+or substrate-specificity campaign grades. The second drops the e-values and
+bitscores — a float's last digits are a reduction-order artefact, and nothing
+downstream needs them to state an architecture.
+
+Two safety properties matter here more than they look:
+
+- A projected invocation is reported as **`projection-identical`, never
+  `raw-identical`**, because the raw artifact demonstrably is not identical. This
+  is the same rule as the incidental-match one, one layer up: a claim must say what
+  it is a claim about.
+- A projection that finds nothing **raises**. A projection yielding empty bytes
+  would turn the determinism test into a tautology — every run agreeing on the same
+  emptiness — so an antiSMASH structure change or a fixture with no detectable
+  cluster fails loudly instead of passing quietly. A test asserts the refusal.
+
+### The antiSMASH fixture
+
+Three complete deposited records, concatenated: *Vibrio anguillarum* 775 plasmid
+pJM1 (anguibactin, NRPS, 65 kb), a *Kamptonema* landornamide cluster (ribosomal,
+16.5 kb) and a *Streptomyces sampsonii* julichrome cluster (PKS, 16 kb). The run
+detects three regions across four product names — `NRP-metallophore`+`NRPS`,
+`lanthipeptide-class-ii`+`proteusin`, `T2PKS` — so the rules exercised are not all
+of a kind, which a single-cluster fixture would not have achieved.
+
+Three properties were chosen rather than stumbled into. Each record is **complete**
+and its MIBiG locus starts at position 1, so the provenance is three accessions
+with no coordinates to get wrong. Each is **annotated**, so antiSMASH's verdict is
+about antiSMASH and not about a gene caller feeding it — which is why the
+provisioning controls now forbid FASTA input on a gold-producing path. And all
+three are **bacterial**, so one `--taxon` setting covers the file.
+
+### Normalisation and canonicalisation are not the same licence
+
+That second case forced a distinction the suite now carries explicitly, because
+collapsing it is how a determinism claim becomes cheap:
+
+- a **normalisation** says *this line is not a result, ignore it when comparing*.
+  It lives inside the suite, and each rule carries a reason.
+- a **canonicalisation** says *the content is right but its order is not
+  guaranteed, so fix the order before anybody reads it*. It is part of the
+  invocation contract for every gold-producing use — oracle and agent alike — and
+  a tool that needs one and does not get it is not admissible as a gold source.
+
+Sorting lines is sound for MMseqs2's tabular output only because it has no header
+and each line is an independent record, which the declaration states. It would not
+be sound for an aligned or sectioned format, and saying so is the difference
+between a declared transform and a convenient one.
+
+The suite reports the raw, normalised and canonical verdicts separately and names
+the rules that fired. Reporting only the last would let any tool pass by stripping
+whatever differs; reporting only the first would fail every tool that stamps its
+own command line, which says nothing about determinism.
+
+One smaller rule, which looks pedantic until it bites: **a raw byte match while a
+normalisation rule fired is reported as incidental, not as raw-identical.**
+`hmmbuild` writes a build date, and four runs inside the same second agree on it.
+The first suite run reported `hmmbuild` as raw-identical for exactly that reason
+and the next one did not, which is how the problem surfaced. Calling a timing
+accident a property is the same error as laundering an unmeasured check into a
+green tick, one layer down.
+
+### The fixtures are committed, hashed, and one of them is synthetic
+
+A determinism suite whose input moves measures nothing, so the fixtures are files
+in the repo with recorded provenance. `halogenases.faa` is 24 reviewed UniProt
+entries carrying Pfam PF04820: real homologs across the similarity range,
+including RebH and PrnA — already in the benchmark, so no new provenance — plus
+one fragment, because a short record is where a search tool's and an aligner's
+tie-breaks show. `synthetic.fna` is reverse-translated from that set under a
+declared codon cycle and spacer, giving Prodigal a contig with exactly 24 known
+ORFs that regenerates from the repo with no download; a test rebuilds it in pure
+Python and compares bytes. `halogenases.afa` is a frozen MAFFT alignment, and that
+it came from a tool the suite also tests is not circular: once written it is a
+file, so a later MAFFT regression cannot change the HMMER results computed from
+it.
+
+
+## Campaign 12: BRENDA kinetics, a corpus that checks itself
+
+`kinetics-brenda-ec1_1-01` reconciles three numbers BRENDA stores separately and
+arithmetic links: the Michaelis constant, the catalytic constant, and the
+catalytic efficiency that is their quotient. No external standard, no curator —
+the corpus is its own gold, and the shape of the disagreement is the finding.
+
+Over EC subclass 1.1.- (437 EC numbers, 35,188 kinetic records, 2,528 complete
+triples):
+
+```
+agree, within 5%                1598   63.2%
+other                            708   28.0%
+near, 5-25%                      166    6.6%
+factor ~1000  (mM read as uM)     31    1.2%
+factor ~60    (per-s as per-min)  25    1.0%
+```
+
+### The units are the task, and BRENDA records none of them
+
+A value is a string — `0.05 {benzyl alcohol}` — a number and the substrate in
+braces. The unit belongs to the **field**: Km in mM, kcat in s⁻¹, kcat/Km in
+mM⁻¹s⁻¹. A system that does not know that cannot relate the three at all, and one
+that assumes micromolar is wrong by exactly a factor of a thousand. R4 makes the
+dependence explicit by applying the mistakes deliberately:
+
+```
+identity (control)      63.2%
+Km read in micromolar    0.36%
+kcat read per minute     0.32%
+both                     0.04%
+```
+
+A 177-fold collapse from a unit assumption is as direct a demonstration as the
+benchmark has that an implicit convention is load-bearing.
+
+### Two traps that are in the data rather than in the task
+
+**BRENDA writes -999 for a missing measurement** — large, negative, and present
+in 545 records of this subclass alone. A pass that treats it as a number reports a
+negative mean kinetic constant and silently loses every triple it belongs to. The
+counting rules exclude it by numeric comparison, not string prefix, so `-999.0`
+and `-9.99e2` are the sentinel and `-9990` is a measurement.
+
+**Some values are ranges**, like `0.05 - 0.1`. They are counted as unparsed, never
+averaged into a number nobody wrote down. 269 records in this subclass.
+
+### The key has to be tight, and a test proves it
+
+A triple is keyed on `(EC, proteins, substrate, references)`. Dropping the
+reference pairs values from different papers; dropping the protein pairs different
+enzymes. Either way the disagreement rate stops meaning anything — so a test
+builds the loose key as well and asserts the two give different answers. A
+counting rule nobody can tell the difference from its alternative is not doing
+work.
+
+### What this row cost the catalogue: two corrections at once
+
+**The access was not blocked.** The catalogue recorded T-L2-5 as blocked on BRENDA
+credentials. It is not: `download.php` serves a form, a licence-acceptance
+checkbox enables the download buttons, and a POST with
+`dlfile=dl-json&accept-license=1` returns 83 MB of JSON with no account and no API
+key. The licence is plain CC BY 4.0 and the page says so. The earlier verdict came
+from guessing an archive URL and reading its 404 as a wall.
+
+**And the catalogued task was not buildable as written.** "Kinetics harmonisation
+across unit conventions" presumes competing conventions in the source; BRENDA has
+already normalised units per field and records none. The catalogued *intent*
+survives — the unit conventions really are what the campaign turns on — but the
+mechanism is the corpus checking itself rather than two sources being brought into
+line. That is now five catalogued designs corrected by grounding, and the first
+where the correction and the access correction arrived together.
+
+## The ChEMBL decision
+
+ChEMBL is CC BY-SA 3.0, and the project had been carrying it as an open licensing
+question. **Decided: use it, under a new `license_class: share_alike`.** The
+reasoning, recorded so it can be overturned on its merits rather than re-derived:
+
+- ShareAlike attaches to an **Adaptation**, not to a **Collection**. A filtered
+  ChEMBL subset is an adaptation, and so is gold computed from ChEMBL values, so
+  both carry CC BY-SA 3.0 onward. A benchmark made of separable campaigns is a
+  collection, not an adaptation of any one of them — so the code, the grader and
+  every other campaign are untouched.
+- The obligation is therefore satisfiable and **local**: attribution, the same
+  licence on those data files, and a notice. A share-alike campaign can be dropped
+  without touching anything else, which is exactly why the class is per-campaign.
+- The alternatives do not help. IUPHAR/Guide to Pharmacology is CC BY-SA 4.0 — the
+  same condition. PubChem BioAssay largely mirrors ChEMBL, so routing through it
+  would be laundering rather than compliance. And ChEMBL is the source a reviewer
+  expects for measured IC50s.
+
+Made enforceable rather than asserted: `license_class` now admits
+`open | nc | share_alike`, and the gate's nineteenth check requires a
+`share_alike` campaign to carry a `license_notice` naming the source, the licence,
+the attribution and what a redistributor must do. A licence condition recorded
+only in a design document is a condition the person redistributing the files will
+never see.
+
+**What is left for the owner**: whether an evaluator's legal position rules out
+shipping ShareAlike content at all. If so, T-L5-1 comes out and nothing else
+changes — which is the property the per-campaign class was chosen to give.
+**Exercised since**: `selectivity-saureus-topoisomerase-01` is the first
+`share_alike` campaign and the gate's `share_alike_notice_present` check passes on
+it, so the nineteenth check is confirmed against a real campaign rather than a
+fixture. T-L5-2, the other row this decision was taken for, turned out not to be
+blocked on licensing at all — see below.
+
+## Campaign 13: ChEMBL selectivity, where the licence travels with the files
+
+`selectivity-saureus-topoisomerase-01` is T-L5-1 and the first campaign in the
+benchmark whose data carries an onward obligation. *S. aureus* DNA gyrase
+(CHEMBL3038482) against topoisomerase IV (CHEMBL3038508), ChEMBL_37: the two type
+II topoisomerases an antibacterial of this class can hit, so whether a compound
+hits one or both is the real selectivity question rather than an arbitrary pair.
+
+The admission rules **are** the task. Every one reads a structured ChEMBL field,
+and two of them are where a potency table goes wrong in practice:
+
+- **`confidence_score` lives on the assay, not the activity.** Admission needs an
+  activity-to-assay join. A system that looks for the field on the activity record
+  finds nothing and admits everything, and nothing in the data says it went wrong.
+- **A `standard_relation` of `>` or `<` is a bound, not a measurement.** 235 of the
+  1,117 IC50 records on this pair are exactly that. Admitting one as a value is the
+  commonest way a potency table acquires numbers nobody measured.
+
+Measured, with the rejections partitioning exactly — 739 of 1,117 admitted; 235
+censored, 81 in mass-per-volume units that cannot be converted without a molecular
+weight the campaign refuses to import, 33 flagged by ChEMBL, 29 potential
+duplicates. 668 (molecule, target) pairs carry an aggregated value and **173
+molecules are measured against both targets**. At twofold, 122 molecules favour
+gyrase and 21 favour topoisomerase IV, so neither direction is a foregone
+conclusion; the build refuses to emit gold if either side is empty. The most
+selective compound is CHEMBL4555272 at 16,666.7×.
+
+**The rejection breakdown is first in `notes_for_audit` for a mechanical reason**:
+the reasons are tested in a declared order, each activity takes the first that
+applies, so admitted plus rejections must equal the IC50 total per target. If that
+sum fails, two rules are double-counting and every number below it is suspect. That
+is a check an auditor can run in one line, which is the point.
+
+### R4 had to be redesigned, and the reason generalises
+
+The catalogued R4 was "a low-confidence assay is excluded — predict the new ratio".
+It is a **no-op on this pair**: all 105 assays behind these IC50 values score 7,
+"Direct protein complex subunits assigned". So the rule stays declared and graded —
+a rule that happens to be a no-op on one instantiation is not a rule that can be
+dropped from the contract — but a counterfactual has to vary an axis that moves.
+R4 relaxes the censored-relation rule, the ChEMBL flag and the duplicate rule, and
+swaps the aggregator. All five variants move something: admitting censored
+relations takes eligibility 173 → 193, and **minimum instead of median leaves the
+admitted count identical at 739 while moving the focal counts 122/74/18 →
+139/90/25** — a reduction choice, not an admission choice, and it changes the
+answer. That variant is the one worth keeping in mind: an agent can get every
+admission decision right and still report a different selectivity profile.
+
+This is the second half of the grounding rule again, in its sharpest form yet:
+`confidence_score` is present on every assay, and computing its distribution is the
+only thing that shows it carries no information here.
+
+## T-L5-2: a field that is populated and says nothing
+
+T-L5-2 (resistance mutation → target assignment) was the obvious companion build —
+same source, same licence decision, and the re-grounding probe had confirmed the
+structured `assay_variant_mutation` field it needs. **It does not survive counting.**
+ChEMBL_37 has 34,921 IC50 activities carrying that field, and per on-theme target:
+
+| Target | Variant records | Usable |
+|---|---|---|
+| *S. aureus* gyrase complex | 45 (D83N 41) | 1 clean WT/mutant pair |
+| *S. aureus* GyrA | 39 (S84L 32, D83N 6) | mutant values mostly `None` |
+| *S. aureus* ParE / topoisomerase IV complex | 0 | — |
+| *P. falciparum* DHFR | 244 | 0 — all "UNDEFINED MUTATION" |
+| HIV-1 RT | 5,423 (Y181C, P236L, K103N) | off-theme |
+
+44 wild-type/mutant key pairs exist across the bacterial targets, but most mutant
+`standard_value`s are `None`, so they cannot be turned into a ratio. The one clean
+pair in the set is ciprofloxacin against gyrase: WT 5.0 nM versus D83N 580,000 nM.
+A campaign on that is an anecdote, and a campaign on HIV-1 RT grades resistance
+reasoning on an antiviral target whose chemistry is nothing like this benchmark's.
+
+So the row is **re-tiered, and not for the reason it was previously blocked**:
+ChEMBL is accepted, the data is thin. The alternatives are named in
+`docs/catalog.md` and left to the owner — instantiate on HIV-1 RT and accept the
+theme drift, re-scope the ladder to the census itself (how much resistance data
+exists per target class is a real and gradeable question), or wait for a release
+that fills the bacterial values. **The counts are recorded so the next person does
+not re-probe.** This is also a correction to the re-grounding note, which called
+T-L5-2 "data-verified": the probe verified the field, not the data behind it.
+
+## Campaign 14: the first one that runs a tool
+
+`ecaudit-fmn-dh-1_1_3_15-01` is T-L2-1 and the benchmark's first **S1** campaign.
+Everything before it was pure computation over shipped data; this one needs HMMER
+on the path and the pinned Pfam release in the image, and no S0 system can answer
+any rung of it. That is declared in `task.yaml` rather than left for the results
+matrix to discover, so the empty S0 column reads as tooling and not as capability.
+
+UniProt 2026_03, every entry annotated EC 1.1.3.15 — an FMN-dependent
+(S)-2-hydroxy-acid oxidase, so the annotation implies the FMN_dh domain.
+**7,675 sequences: 29 reviewed and 7,646 unreviewed, both sections in full.** No
+sampling, because the reviewed/unreviewed split is the campaign's control and a
+sampled control is not one.
+
+| | FMN_dh present | absent | rate |
+|---|---|---|---|
+| reviewed | 29 / 29 | **0** | 0.0000 |
+| unreviewed | 6,300 / 7,646 | **1,346** | **0.1760** |
+
+**The published figure does not reproduce, which is exactly why the G1 rule
+exists.** Rembeza & Engqvist found 78% of EC 1.1.3.15 proteins in BRENDA 2017.1
+lacked the FMN-dh domain, and that paper is why this row is in the catalog. On
+UniProt 2026_03 the measured figure is 17.6%. Had the campaign graded the paper's
+number it would have been a literature-recall test, and it would have been wrong.
+Gold here is what the pinned tool says about the shipped sequences, and nothing
+else; the literature figure is in `excluded_from_grading` with that reason.
+
+### The two findings that make it a ladder rather than a tool invocation
+
+**The absent sequences are not fragments.** This was the explanation that would
+have made the whole audit an artefact: a sequence can miss a 348-column model
+simply by being short, in which case "lacks the domain" is a statement about
+sequencing completeness. Measured, the canonical-absent side is **longer** than
+the present side — median 466 residues against 367 — and 2.4% of it falls under
+300 residues against 12.6% of the present side. The length profile is a graded R2
+component and the first item in `notes_for_audit`, because a refutation nobody can
+check is just an assertion.
+
+**They are a coherent enzyme family.** 967 of the 1,346 (71.8%) carry exactly
+`FAD-oxidase_C + FAD_binding_4`: the FAD-linked glycolate oxidase subunit
+architecture, which oxidises the same substrate through a different cofactor. The
+rest are mostly `DAO` combinations, and 11 carry nothing from the panel. So the
+absent set is not junk, and **absence of the canonical domain is not
+misannotation**. The campaign therefore refuses to report a misannotation rate and
+grades the count under three published policies instead:
+
+| policy | accepts | misannotated |
+|---|---|---|
+| `p0_canonical_only` | FMN_dh | **1,346** |
+| `p1_accept_fad_oxidase` | + the FAD-oxidase architecture | **319** |
+| `p2_accept_any_flavin` | + any panel flavin family | **22** |
+
+The campaign does not rule between p0 and p1. The gap between them *is* the
+finding, and publishing the policy rather than asserting a rate is what keeps a
+human judgement out of gold.
+
+### R4 had to be rebuilt, and one of its axes is deliberately inert
+
+The catalogued R4 was "a sequence is mutated to disrupt the FMN-dh domain —
+predict the reclassification". It cannot be built honestly: mutating a sequence to
+destroy an HMM match means choosing which residues to break, any choice large
+enough to drop a curated gathering threshold is a choice about the answer, and
+gold would then describe a sequence nobody deposited. R4 varies the two axes
+already in the data — the declared cutoff and the declared policy.
+
+The cutoff axis **barely moves**: 1,342 to 1,371 absent across six cutoffs, with
+`--cut_ga`, `--cut_nc` and `--cut_tc` giving an identical answer. The baseline
+cutoff is among the six, which makes it that axis's **identity control** — it
+re-runs the audit under the flag that produced the headline and has to land on the
+same number, the way the kinetics ladder's `v0_identity` variant does, and the
+build refuses to emit gold if it drifts. Normally a
+counterfactual that does not move is the defect that re-scoped the selectivity
+campaign. Here it is a robustness measurement — the headline rate does not depend
+on where the threshold sits — and it is admissible **only because the policy axis
+in the same rung moves by a factor of sixty**. The build asserts exactly that: it
+refuses to emit gold if both axes go flat, and refuses if the strict policy stops
+reproducing the absence count.
+
+The catalogued discrimination ECs are not used either, and measurement is why:
+1.13.12.4 has 204 entries, 1.1.99.31 has 234, and **EC 1.1.2.3 is itself an FMN_dh
+family member** — all three reviewed L-lactate dehydrogenase (cytochrome) entries
+hit the model at the gathering threshold — so the canonical domain does not
+discriminate it from EC 1.1.3.15 at all. Three more sequence sets, no signal.
+
+### Declared, not discovered: how the tool stays affordable
+
+The model panel is **published in `reference/`**, 13 Pfam models. It was fixed
+once at build time by scanning the canonical-absent set against the whole of Pfam
+35.0 and listing every family that fired above the gathering threshold. An agent
+then scans with exactly those models: **11 seconds**, against the **2m36s** a full
+Pfam-A pass costs. Making the discovery part of the task would have hidden the
+answer behind an open-ended search whose cost is multiplied by every rung, every
+repeat and every stub level in the sweep.
+
+It also **partitions the set**: all 6,329 canonical-present sequences carry FMN_dh
+and nothing else from the panel, so the architecture census is a real partition
+rather than a ranking of overlapping families. That is a test, because a panel
+that overlapped the canonical model would make the dominant-architecture claim
+depend on which family happened to score higher.
+
+### A resource the campaign may read but not ship
+
+Pfam-A.hmm is 1.5 GB, so it is not redistributed. What replaces the bytes is a
+declaration: the path, the provider (the antiSMASH 8.0.4 database layer), the
+version and a **sha256**, recorded in `reference/audit_rules.json`. The build
+refuses to emit gold if the file it finds does not hash to what it recorded,
+because a domain verdict against a different Pfam release is not this campaign's
+gold.
+
+This is the mechanism the T-L2-4 grounding said every S2 campaign would need, and
+the gate now has a **twentieth check**, `external_resources_pinned_and_present`,
+which resolves each declared resource and verifies its fingerprint. Here the
+reason for not shipping is **size** and Pfam is CC0 — recorded explicitly, because
+the next campaign to use this mechanism will be withholding for licence instead,
+and "we did not ship it" means different things in the two cases.
+
+### The sweep, and what it cost
+
+All five sweep gates pass, with cold depths exactly where the stub ladder predicts:
+
+| stub | mode | cold depths |
+|---|---|---|
+| `stub-reader` | tooled | 1, 1, 1 |
+| `stub-presence` | tooled | 2, 2, 2 |
+| `stub-architecture` | tooled | 3, 3, 3 |
+| `stub-complete` | tooled | 4, 4, 4 |
+| `stub-inverted` | tooled | **1, 1, 1** |
+| `stub-noncompute` | no_tool | 0, 0, 0 |
+
+Per-rung clear rates 1.000 / 0.600 / 0.400 / 0.200, mean cold score 0.55, and the
+no-tool ablation scores 0.0000 against a 0.2505 chance floor. `stub-inverted`
+landing at depth 1 is the result worth reading: it runs the tool correctly with
+the right panel and reads the hit table backwards, so it clears the inventory rung
+and fails at presence — the rung whose claim the column swap actually corrupts.
+
+The first run took **29m32s of wall clock and 47m of CPU**, against seconds for a
+stdlib campaign, because every stub level re-ran the same HMMER call for every
+rung and every repeat over an input that never changes — roughly a hundred
+identical tool runs. Fixed below, and now **3m44s** with every gate result and
+every depth bit-identical.
+
+### A memo for tool output, and where it is not allowed
+
+`npbench_c.tools.cache` memoises an expensive tool call to a JSON file. The
+mechanism is three lines of hashing; the design is entirely about where it may
+apply, because a memo in the wrong place turns a measurement into a tautology.
+
+- **Off unless `NPBENCH_TOOL_CACHE` names a directory.** A build, a test, a human
+  invocation and a real agent run all compute from scratch.
+- **Only a stub, and only in tooled mode.** The sweep runner sets the variable for
+  stub systems alone and **raises `ToolCacheMisuse`** if handed a memo for anything
+  else. A sweep over real systems is partly a measurement of whether they can
+  drive the tool at all, and a `no_tool` ablation's entire claim is that it did not
+  compute — handing either one a memo would quietly void the leakage check.
+- **The key is the whole identity of the computation**: the input file's digest,
+  the library's fingerprint, the tool version, the panel and the flags. A key
+  missing any of those would survive a change it must not survive and return an
+  answer from the wrong world. Key parts are validated *before* the
+  caching-disabled early return, so a malformed key fails everywhere rather than
+  only on the one run where caching is on — a key defect that surfaces only inside
+  a sweep is a key defect nobody sees.
+- **The memo lives beside the sandboxes, never inside one**, so the gold-isolation
+  audit still sees a clean sandbox, and it only ever holds tool output derived
+  from shipped inputs.
+
+Measured on this campaign: **29m32s → 3m44s**, CPU **47m → 3m12s**, six memo
+entries (one per declared cutoff) in place of about a hundred identical runs, and
+the gate block of `internal_sweep.json` byte-identical to the uncached run.
+
+The cost of the mechanism is that a cached sweep's wall clock is no longer a cost
+measurement of the campaign, so `_meta.tool_cache_note` says exactly that in the
+report and a test asserts the sentence is there. That is the honest trade: the
+sweep exists to check the grader and the ladder, and it now does that in minutes;
+anyone who wants the campaign's real tool cost runs it without the variable.
+
+### The parsing mistake that does not fail
+
+`hmmsearch --domtblout` puts the **target** (a sequence) in column 1 and the
+**query** (a model) in column 4. Reading them the other way round reports model
+names as sequence accessions and accessions as models: no error, a
+plausible-looking table, every number wrong. I made exactly that mistake while
+grounding this row and it produced a convincing census of families named
+`tr|Q7NQA5|Q7NQA5_CHRVO`. There is now a test that the returned mapping is keyed
+by the shipped accessions and valued by the declared panel, and the `inverted`
+stub level is the graded form of the same error — it runs the tool correctly, with
+the right panel, and reads the result backwards.
+
+## Campaign 16: the first S2, and two artefacts it had to refuse
+
+`bgcdetect-scoelicolor-01` is T-L3-1 and the benchmark's **first S2 campaign**: it
+needs antiSMASH 8.0.4 with its database layer, and it reads the three detection
+rule files from the image. The complete *Streptomyces coelicolor* A3(2)
+chromosome (AL645882.2, 8,667,507 bp) goes in; 29 regions over 22 distinct products
+come out, covering **13.0% of the chromosome**, median span 29.8 kb, and **every
+region `contig_edge=False`**.
+
+### The slice that looked obvious and was wrong twice
+
+A whole chromosome is a 6.8 MB input and the obvious move is to slice windows
+around the clusters of interest. That fails on two counts, and both were measured
+rather than reasoned about:
+
+1. **A slice truncates CDS features at its edges**, which arrive carrying
+   GenBank's `<`/`>` partiality markers, and antiSMASH rejects the record outright:
+   `feature translation extends out of record`. Dropping those features makes it
+   acceptable, which is how the second problem stays hidden.
+2. **A region that reaches the slice edge has its boundary set by the window.** On
+   an 81 kb window around the actinorhodin cluster — a 30 kb flank on each side —
+   antiSMASH returned a single T2PKS region running to the record end with
+   `contig_edge=True`. The boundary is what R2 and R3 grade, so that campaign would
+   have graded my flank choice.
+
+On the whole chromosome neither happens, and a `--minimal` pass takes **75
+seconds**. The slice bought nothing at all. The build refuses to emit gold if any
+region touches an edge, so the artefact cannot creep back in through a
+re-instantiation.
+
+### The reconciliation, which is the actual campaign
+
+Running a tool and reporting its output is an R1. What makes this a ladder is the
+comparison with the 15 cluster boundaries MIBiG 4.0 maps to the same accession:
+
+| | |
+|---|---|
+| curated loci detected | **15 of 15** |
+| fully inside a called region | 14 |
+| partially covered | 1 (CDA, 95.3%) |
+| median Jaccard | **0.295** |
+| Jaccard range | 0.023 – 0.934 |
+| called regions with no curated locus | **15 of 29** |
+
+So detection is not the question — extent is. antiSMASH extends a region from the
+protocluster core by a class-dependent distance, and this campaign measures by how
+much rather than calling it an error. The extremes are instructive on their own: a
+1.7 kb signalling cluster sits inside a 75.6 kb region (Jaccard 0.023) while CDA
+agrees to 0.934. And **half of what the tool finds has no curated counterpart**,
+which is a statement about the coverage of the curated record rather than a false
+positive — MIBiG records what has been characterised.
+
+One region holds two curated loci, because the SCB1 butyrolactone genes lie inside
+the coelimycin cluster. A one-to-one join would have silently dropped one of them,
+so the reconciliation reports which regions hold several.
+
+**The two coordinate conventions differ, and the difference is verified rather than
+assumed.** antiSMASH writes 0-based half-open; MIBiG's `from`/`to` are 1-based
+inclusive. That is established against the source annotation: BGC0000194's `to` is
+5,535,091, and SCO5092 ends at 5,535,091 in AL645882.2. A MIBiG locus therefore
+spans `to - from + 1` bases, one more than its own numbers suggest at a glance. I
+had assumed half-open before checking, which would have shifted every interval by
+one base.
+
+### R4 is the catalogued counterfactual, plus the control it needed
+
+Delete the core biosynthetic genes of a declared region from the annotation — the
+sequence untouched, so every other coordinate stays put — and run again:
+
+| variant | outcome |
+|---|---|
+| `v0_identity` | nothing deleted; reproduces the baseline exactly |
+| `v1_t2pks_core_both` | actinorhodin region **abolished** |
+| `v2_t2pks_core_one` | **also abolished** — the rule is conjunctive |
+| `v3_nrps_core` | CDA region abolished |
+| `v4_lanthipeptide_core` | lanthipeptide region abolished |
+| `v5_additional_not_core` | **nothing changes** |
+| `v6_multiproduct_one_product` | region survives with one product fewer |
+
+My first attempt had only v0–v4, and **the build refused it**: every variant lost
+exactly one region, so the signature was constant and the rung was testing one
+dependency four times. v5 and v6 are what the refusal bought. v5 deletes the
+actinorhodin acyl carrier protein, which antiSMASH marks
+`biosynthetic-additional` rather than core — the negative control, without which
+"a deletion costs a region" is a free answer. v6 deletes a gene core to two nested
+protoclusters, so the region is replaced rather than removed. The build now
+requires three distinct outcome signatures, one of them a no-op and one of them an
+outright loss.
+
+### The sweep, and the cost the memo does not cover
+
+All five sweep gates pass, with cold depths 1/2/3/4/1/0. `stub-offbyone` landing
+at depth 1 is the result worth reading: it runs antiSMASH over the whole
+chromosome correctly, projects all 29 regions correctly, and reports the 1-based
+inclusive start without the conversion. It clears the inventory and fails at the
+boundaries — the rung whose claim one arithmetic operation corrupts.
+
+**It took 15m35s**, against 55 seconds for the S1 transfer campaign. The tool memo
+is working — 7 antiSMASH runs serve all 72 rung-repeats — so what remains is not
+the tool: it is reading and re-parsing a 26 MB GenBank record once per run, plus
+copying a 6.8 MB input into each sandbox. **The memo caches the tool call, not the
+work around it**, which is a limitation worth stating now rather than discovering
+at the third S2 campaign. If S2 sweeps become routine, the next move is to cache
+the parsed record alongside the tool output, or to let a stub level reuse one
+sandbox across repeats.
+
+### What else the gate caught here
+
+`product_census` was graded at R2 **and** handed over by R2's warm bundle, because I
+had put it in the inventory that R2's bundle publishes. Two scalars beside it,
+`region_bases` and `fraction_of_record`, had the same defect and escaped only
+because the warm-bundle check examines composites. The fix was to settle what each
+rung is *about*: R1 is the inventory — run the tool and summarise — and R2 is the
+per-region boundaries. The rung split now follows that, and the bundle contains
+exactly R1's answers.
+
+## Campaign 17: the tool's default cutoff recovers none of them
+
+`gcfcutoff-mibig-32-01` is T-L3-2 and the second S2 campaign. BiG-SCAPE partitions
+BGCs into families, and the partition is a function of a distance cutoff the caller
+supplies — so the campaign runs the pinned tool **once** over a declared eight-point
+grid and asks what the partition does across it.
+
+The corpus is 32 antiSMASH-processed MIBiG clusters, and the thing they are
+reconciled against comes from **chemistry rather than from clustering**: four
+groups of entries sharing an InChIKey connectivity block in the chemical-space
+campaign's table, plus five negative controls, one per biosynthetic class,
+belonging to no such group. That independence is what makes R3 a comparison rather
+than a restatement.
+
+| cutoff | groups | recovered pairs | missed | false joins | pair Jaccard | families exact |
+|---|---|---|---|---|---|---|
+| 0.1 | 25 | 13 | 73 | 0 | 0.151 | 0 |
+| 0.2 | 21 | 19 | 67 | 0 | 0.221 | 0 |
+| **0.3** | 17 | 33 | 53 | 0 | **0.384** | **0** |
+| 0.4 | 15 | 44 | 42 | 0 | 0.512 | 0 |
+| **0.6** | 12 | 71 | 15 | 0 | **0.826** | 2 |
+| 0.7 | 11 | 71 | 15 | **5** | 0.780 | 2 |
+
+**At 0.3 — BiG-SCAPE's own documented default — not one of the four
+chemistry-derived families comes back as exactly one group.** Every one is split;
+one across five groups. Pair agreement is 0.384, less than half what the corpus
+allows. The best cutoff is 0.6 at 0.826, and at 0.7 a negative control is absorbed
+into a family, producing the first five false joins. So agreement is **not
+monotone**, and both ends of the curve are inside the grid — the build refuses to
+emit gold if the optimum sits at the edge, because then the claim would be an
+artefact of where the sweep stopped. Two families are never recovered exactly at
+any declared cutoff, which reports as `null` rather than a number.
+
+### Three ways to get a plausible wrong answer
+
+**The clustering table is not the partition.** It lists only clusters that joined
+a family — at cutoff 0.1, ten of thirty-two records. The partition has to be
+reconstructed with every omitted record as a singleton. Read directly, the table
+gives a smaller corpus and a tidier family structure than the tool produced, and
+nothing fails. That is the `tableonly` stub level, and it lands at depth 1.
+
+**The join key is `GBK`, not `Record`.** `Record` carries a region suffix
+(`BGC0000854.gbk_region_1`). The engine checks that each GBK appears exactly once
+per cutoff and that every row is a `region` record, because a multi-region input
+would need a different reconstruction rule than the declared one — checked rather
+than assumed, after the antiSMASH campaign's column-order lesson.
+
+**A family label is a name.** `FAM_00007` is not a result: two runs can agree
+completely on which clusters belong together and disagree on what the groups are
+called. So the partition is graded and agreement is counted over **pairs**.
+
+### `interval_score` is the right primitive for the wrong campaign
+
+The catalogue specified R4 "scored with `interval_score`". It is not used here, and
+the reason is in that primitive's own docstring: `max_width` is "3x the observed
+oracle spread from the determinism audit", so that both thresholds are *measured
+rather than chosen*. This campaign has no spread to measure — BiG-SCAPE is
+deterministic, every cutoff comes from one run, and the answer is exact on a
+declared grid. Any `max_width` would therefore be a number chosen by me, which is
+precisely what the primitive exists to prevent. R4 grades the per-cutoff table and
+three boundary claims exactly instead.
+
+That is worth separating from the other catalogue corrections in this document.
+The earlier ones were cases where the *data* did not support a design. This one is
+a case where **the campaign is too deterministic for the scorer**: `interval_score`
+exists to make a system commit to a bracket when the quantity is uncertain, and
+here it is not.
+
+### Two pins the catalogue got backwards
+
+`--mibig-version` was in the catalogued pin list. It is **forbidden** on a
+gold-producing path: it downloads a reference set at run time, making the run
+network-dependent and the reference set unpinned. The corpus is shipped instead.
+
+And the open item about the MIBiG reference set's antiSMASH version closes here, in
+the "declare" branch — correctly, for a reason worth stating. Every input in this
+corpus was processed by the same antiSMASH version, and the campaign never compares
+them against output from the image's antiSMASH 8.0.4. The cross-version rule
+forbids *mixing* versions in one comparison; it does not require that every file in
+the benchmark come from one version. No run here mixes.
+
+The sweep passes all five gates with cold depths 1/2/3/4/1/0 in **6m27s** — against
+15m35s for the whole-chromosome campaign, because this corpus is 32 small files
+rather than one 26 MB record, which is the other half of the sweep-cost finding
+above.
+
+## The leak the sandbox was handing over in prose
+
+Writing the first S2 campaign's rules file, I explained the decision to ship a
+whole chromosome by saying "on the whole chromosome all 29 regions come back
+contig_edge=False". **29 is R1's graded answer**, and `reference/` is a file the
+agent reads before it has done anything. My own gold-isolation test caught it.
+
+Checking the rest of the project found the same leak in **seven of sixteen
+campaigns**, four of them written in earlier sessions:
+
+| campaign | stated in the cold sandbox |
+|---|---|
+| `bgcdetect-scoelicolor-01` | the record length, and the region count in prose |
+| `ecaudit-fmn-dh-1_1_3_15-01` | `sequences_total`, in an exclusion's reason |
+| `selectivity-saureus-topoisomerase-01` | `activities_of_declared_type`, in the scope note |
+| `transfer-ec1_14-uniprot-01` | `partial_ec_mentions` and `queries_with_a_hit`, twice each |
+| `constraint-conflict-ecoli-rebh-01` | `unrestricted_gc_max`, `restricted_gc_max`, and most of R4 |
+| `constraint-feasible-ecoli-rebh-01` | `restricted_gc_max`, and most of R4 |
+| `mibig-diff-3_1-to-4_0-01` | `shared_entries` and both raw difference counts |
+
+The constraint pair is the worst of them: the task description contains a worked
+feasibility table quoting both GC maxima, which are R2's answers and also the
+value most of R4's `relax_*_gc_max` components take. A real agent could clear R2
+and most of R4 by reading the task description.
+
+**Every one of these is invisible in everything the project already checks.** The
+oracle still scores 1.0, because the oracle reads gold. The no-tool ablation still
+scores zero, because a stub does not read prose. The warm-bundle check guards each
+rung against its own bundle and says nothing about `task.yaml`. Only a real system
+benefits — and then the per-rung difficulty profile is fiction in exactly the
+direction that flatters the benchmark.
+
+### Why it happens, and the rule
+
+The mechanism is specific and worth naming: **a note explaining a design decision
+drifts into quoting the measurement that motivated the decision.** Every leaked
+number above sits in a sentence that was true, useful and well-intentioned — "the
+reason we ship the whole chromosome is that all 29 regions then come back clean".
+The explanation needs the phenomenon. It does not need the number.
+
+So: `task.yaml` and `reference/` publish the objective, the contract, the
+conventions and the vocabularies. **The measurements that motivated them belong in
+`docs/`, which the sandbox never sees.** Where an audit note genuinely wants a
+number, it says where to recompute it from rather than printing it: an auditor has
+gold, and a system does not.
+
+### Made mechanical, because a rule applied by hand drifts
+
+The readiness gate's **twenty-first check**,
+`cold_sandbox_withholds_answers`, builds the cold sandbox, strips `inputs/`, and
+searches `task.yaml` and `reference/` for the string form of every graded value.
+All sixteen campaigns pass it now.
+
+Three design points in it, each one a false positive it had to stop producing:
+
+- **Only distinctive scalars.** A graded count of 2 or a rate of 0.5 occurs in any
+  prose by coincidence, so an integer needs four or more digits and a float four or
+  more decimals. That leaves small graded values unchecked, which the docstring
+  says plainly rather than implying coverage it does not have.
+- **Word boundaries on integers.** `informative_records` is 2359 and the shipped
+  chemistry table contains `BGC0002359`. Two campaigns failed on that substring
+  before the match was anchored.
+- **`inputs/` is excluded, and empty composites are skipped.** A number in `inputs/`
+  is the data the agent was asked to read; a value readable straight out of it
+  without doing the work is a *free component*, which is a different defect. And
+  `[]` serialises to a string that occurs in any YAML file.
+
+That last distinction found the only two remaining failures, and both were free
+components rather than disclosures. `mibig-diff`'s `retired_class_terms` is
+published in the class mapping — which the campaign *must* publish to be solvable
+— so it is now dropped from grading with the exclusion recorded. That makes **five**
+free components caught across the project, and the rule from campaign 15 holds
+again: before grading a component, ask what would have to change in the world for
+its value to change.
+
+## Campaign 15: the closest hit is often the wrong donor
+
+`transfer-ec1_14-uniprot-01` is T-L1-3, and it is the first catalogued design this
+session that survived grounding almost intact — including the R4 that looked
+expensive. The task is the oldest shortcut in functional genomics: take a
+protein's closest database hit and copy its annotation across.
+
+UniProt 2026_03, all **4,632 reviewed entries under EC 1.14** — oxidoreductases
+acting on paired donors, the class holding the cytochromes P450 and the
+flavin-dependent halogenases this benchmark already uses as subjects. The set is
+searched against itself with pinned DIAMOND 2.2.8, the self hit is dropped while
+the hit table is parsed, and each query's closest remaining hit donates its EC
+number. **The reference set is closed and shipped**: transfer against a live
+database would make gold a function of the day it ran.
+
+| EC level | decidable | agree | rate |
+|---|---|---|---|
+| 3 (sub-subclass) | 3,650 | 3,556 | **0.9742** |
+| 4 (serial) | 2,743 | 2,531 | **0.9227** |
+
+And the curve the ladder exists to expose — level-4 agreement against the identity
+of the closest hit:
+
+| identity | n | agreement |
+|---|---|---|
+| 30–40% | 78 | **0.462** |
+| 40–50% | 146 | 0.740 |
+| 50–60% | 219 | 0.767 |
+| 60–70% | 254 | 0.890 |
+| 70–80% | 360 | 0.950 |
+| 80–90% | 525 | 0.962 |
+| 90–100% | 1,144 | **0.996** |
+
+That is the twilight zone in one column, computed rather than cited. The build
+refuses to emit gold if agreement does not rise with identity, because a campaign
+whose central claim fails on its own instantiation is not a campaign.
+
+R4 is the catalogued counterfactual verbatim — take the closest hit out of the
+reference set, transfer from the next — and **it needs no second search**: removing
+a hit means reading further down a ranking already computed. 501 of 4,552 verdicts
+change, 111 of them from `supported` to `wrong_at_serial`; removing two moves 722.
+The zero-removal variant is the axis's identity control and must reproduce the
+headline census exactly.
+
+### Three declared rules, each one load-bearing and each one measured
+
+**A tie-break, because 602 queries have one.** One query in eight shares its top
+bitscore with another hit, so "the closest hit" is not a function of the data until
+the rule is published. The declared rule is bitscore descending, then subject
+accession ascending. DIAMOND's own emission order is stable for this version — the
+exact invocation came out byte-identical across 1, 2 and 8 threads over two repeats
+each — but gold resting on an undeclared property of a particular build is gold
+that breaks silently on a tool upgrade. Grounding this campaign with an ad-hoc
+tie-break and then with the declared one shifted level-3 agreement from 3,558/3,652
+to 3,556/3,650: small, and exactly the kind of small that nobody can reproduce.
+
+**A dash is not a value.** 1,850 of this set's EC mentions stop early. An entry
+annotated `1.14.-.-` makes no claim at level 3, so it can neither agree nor
+disagree there, and a comparison is **decidable** only where both sides specify the
+level. 902 queries land in `undecidable` rather than being scored either way.
+Getting this wrong does not produce an error — it produces a report that looks
+*more* complete than gold, which is why the `dashvalue` stub exists: it runs the
+search correctly and compares EC strings with the dashes intact, clears R2 and
+fails R3.
+
+**Multi-EC is any-vs-any.** 446 entries carry more than one code, and a
+multifunctional enzyme's annotation is a set rather than a ranking.
+
+### The free component, caught a fourth time
+
+EC levels 1 and 2 agree **1.0** and that is not a result: the query set is defined
+by its EC prefix, so a hit inside the set shares the first two levels with every
+query by construction. Both are computed and reported as `constant_depth_agreement`
+for the record and **excluded from grading**, because a component whose value is
+fixed adds weight to a conjunctive product and no information. That is the same
+defect as `corpus_release`, `compounds_enumerated` and the pocket-geometry rung
+redundancy — four times now, which makes it worth stating as a rule: **before
+grading a component, ask what would have to change in the world for its value to
+change. If the answer is "the campaign's own definition", it is not a measurement.**
+
+The sweep passes all five gates with cold depths 1/2/3/4/2/0 in **55 seconds**,
+which is what the tool memo bought: the same campaign under the previous runner
+would have re-run the all-against-all search about a hundred times.
+
+## T-L2-4: four comparison keys, four different answers
+
+T-L2-4 (NRPS A-domain substrate specificity) was the next build after T-L5-1 — the
+only `build: image` row with verified data, so the one that would have opened the
+image tier. Grounded against MIBiG 4.0 and the Stachelhaus signature table
+antiSMASH 8.0.4 ships, **it does not carry a ladder**, and the way it fails is
+worth more than the campaign would have been.
+
+The resources join on protein accession: MIBiG has 2,901 A-domains over 1,228 gene
+accessions, the table has 2,319 rows over 1,637, and 714 accessions are shared. Of
+those, **304 genes carry exactly one A-domain on both sides** — the only pairs that
+can be matched without assuming MIBiG's module order equals the table's `.A1/.A2`
+index, which nothing in either resource confirms (180 genes with equal counts above
+one, holding 473 A-domains, hang entirely on that assumption).
+
+On those 304 pairs, each comparison key tells a different story:
+
+| key | decidable | agreement |
+|---|---|---|
+| raw substrate names | 304 | **0.000** |
+| `aaSMILES` comment field read as a name table | 193 | 0.912 |
+| stereo-aware InChIKey | 219 | **0.151** |
+| connectivity InChIKey (block 1) | 219 | **0.995** |
+
+Read top to bottom that is one resource compared with itself four times. Raw names
+score zero because the vocabularies differ (`Ile` against `isoleucine`).
+Stereo-aware structures score 0.151 because `aaSMILES` writes serine flat and
+MIBiG writes the L-enantiomer — an annotation convention, not a disagreement about
+chemistry. At connectivity level, the key this project already pinned for the
+chemical-space campaign, the two resources agree on **218 of 219** comparable
+A-domains; the single substantive disagreement in the whole set is ABA59548.1,
+`Val` against pyruvic acid.
+
+**The second row is the one to remember.** `aaSMILES.txt` ends each line with a `#`
+comment that usually holds a substrate name, and using it as a name table yields 18
+disagreements of which exactly one is real. The others are a hyphen
+(`4-hydroxy-phenylglycine` against `4-hydroxyphenylglycine`) or a note the
+maintainer left themselves: `salicylic acid (not in norine yet)`, `actually aile,
+allo-isoleucine`. A field that usually parses is the most dangerous kind, because
+nothing fails — it just quietly reports 17 findings that are not there. My own
+first pass through this row did exactly that, and reported a stratified agreement
+difference (0.875 experimental against 0.930 sequence-predicted) that **does not
+survive controlling for substrate class**: the experimental stratum simply holds
+more non-proteinogenic substrates, which are the ones the bridge cannot resolve.
+That reading is withdrawn, not recorded as a finding.
+
+Everything else about the row fails for an adjacent reason. The A-domain's position
+in its protein — which the catalogued R3 needs to extract specificity residues — is
+`-1/-1` for **2,852 of 2,901** domains, and MIBiG ships no sequences. The substrate
+labels themselves are **71.6% inference-only and 10.2% unsupported**, with 1,049
+naming "Sequence-based prediction", so grading an agent against them grades
+agreement with a predictor. The catalogued proteinogenic/non-proteinogenic
+instantiation axis gives **1.000 agreement with zero disagreements** on one side and
+**83 of 112 unmappable** on the other. And the bridge-free route — group A-domains
+by identical signature, then ask whether MIBiG's own labels agree — collapses as
+well: the 34-residue extended signature is **unique for all 304**, grouping
+nothing, while the 10-residue signature gives 33 groups of two or more whose 10
+"inconsistencies" are mostly granularity (`threonine` against `allo-threonine`,
+`glutamic acid` against `d-glutamic acid branched`).
+
+So every rung available here is near-constant or decided by a naming artefact.
+That is a vocabulary quiz with a hidden key, and the standing rule — no human
+judgement anywhere, and a question-answer pair that depends on one comes out —
+retires the row rather than dressing it up. Counts recorded in `docs/catalog.md`.
+
+### The rule this adds, which binds every S2 campaign
+
+`aaSMILES.txt` is antiSMASH package data under **AGPL-3.0-or-later**.
+`stachelhaus/1.1/signatures.tsv` arrives from the antiSMASH database download with
+**no stated licence at all**. So neither can be shipped in a campaign:
+**you cannot redistribute data whose licence you cannot name**, and pulling AGPL
+material into `inputs/` is not a thing to do by accident. An S2 campaign reads such
+a resource from the pinned image at a declared path with a recorded sha256, and
+redistributes nothing — which also means the tool surfaces need reading as
+*installation* requirements, not tool-execution requirements. A campaign can need
+S2 for a pinned table and never invoke a tool.
+
+## The measurement environment was reading the ambient shell
+
+Refreshing `image/thread_invariance.json` for this commit turned antiSMASH from
+PASS to FAIL — both invocations, 4/4 runs, `RuntimeError: Modules failing
+prerequisites`. The databases were present and the pin was right. The cause:
+**the invariance runner invoked `{bin}/tool` by absolute path but never put the
+tool prefix on the subprocess `PATH`.** antiSMASH shells out to nine helpers —
+hmmscan, hmmsearch, hmmpress, hmmpfam2, blastp, makeblastdb, diamond, prodigal and
+FastTree — and resolves every one of them on `PATH`, so the measurement was reading
+whatever the measuring shell happened to export. On the shell that produced the
+original 8/8 it was exported; on a clean one it was not, and
+`antismash --check-prereqs` reports **44 prerequisite failures** across those nine,
+every one of which is sitting in the prefix.
+
+The verdicts were right and the way they were obtained was not, which is the worse
+of the two failures: a determinism measurement that depends on the ambient
+environment is not a measurement of the image. `_image_path()` now builds the
+subprocess `PATH` as the ambient one with the prefix **appended** — last, matching
+the image's own `PATH`, so the tool environment still cannot shadow the system
+interpreter this suite runs under, which is the other half of a lesson this project
+has already paid for once. A test pins both properties.
+
+### And a witness assertion that was a 3% coin flip
+
+The same pass caught `test_diamond_no_reorder_is_still_the_witness_it_is_declared_to_be`
+failing on `assert not witness["repeatable_at_fixed_threads"]`. The witness
+documents a per-run reordering, so every claim about it is a claim about a sample:
+over 30 measurements the two single-thread repeats agreed **30/30** and the two
+eight-thread repeats agreed **0/30** — but one four-run draw can still land on two
+matching eight-thread runs, and that is what happened. The property under test is
+that the eight-thread order is unspecified, which needs two distinct outputs
+*somewhere* in the sample, not in one particular pair. The test now draws again
+rather than let a coin decide a verdict. **A test that fails 3% of the time is not
+a strict test; it is a test whose result is partly noise**, and on a suite whose
+whole purpose is to certify determinism that is the one defect that cannot stand.
+
+## Campaign 18: three records of one peptide, and a field with four shapes
+
+`ripp-precursor-mibig-4_0-01` is T-L3-4, the third tool-running campaign and the
+second S1. A RiPP is made from a precursor protein carrying a leader, a core and
+sometimes a follower; the core becomes the product. MIBiG records the precursor's
+gene, the core's sequence and — for some entries — a `leader_cleavage_location`.
+The translation itself is in the antiSMASH-processed reference record for the same
+cluster. So three independent records describe one peptide, and whether they agree
+is entirely checkable.
+
+**Half the catalogued ladder does not survive, and the reason is gradability
+rather than cost.** The catalogued R3 was "the core peptide sequence and the
+cleavage motif". The core peptide sequence *is* a MIBiG field: grading it grades
+transcription, and the campaign must ship the field for anything else to be
+solvable, which makes it a free component twice over. The cleavage motif is not in
+MIBiG at all. The catalogued R4 was "the leader is altered — predict the new
+core", and that has **no oracle**: no pinned tool computes it, the answer is a
+wet-lab fact about a peptide nobody has made, and scoring it against a curator's
+intuition is the human judgement this benchmark excludes from grading. R4 keeps
+the counterfactual's intent — what does the leader carry — and makes it
+measurable, by removing each declared leader and asking the tool what survives.
+
+### The field has four JSON shapes and one of them is not a peptide
+
+| shape of `core_sequence` | records |
+|---|---|
+| list of one string | 35 |
+| bare string | 28 |
+| list of several strings | 2 |
+| **the printed form of a list, as a string** | **2** |
+
+The last is literally `"['GGAGHVPEYFVGIGTPISFYG']"` — brackets and quotes inside
+the value, from a serialiser that printed a list instead of emitting one. Three
+such records exist across the whole class; two are in the corpus.
+
+`core_sequence[0]` — the natural thing to write against the commonest shape — is
+correct for the list shapes and takes **one residue** where the field is a bare
+string. It raises no error on any record, and a one-residue core still localises;
+it just localises many times over, so the report comes back saying *ambiguous*
+rather than *I mis-parsed this*. That is the campaign's competence probe
+(`stub-firstshape`), and it clears R1 and fails R2.
+
+Case is the other half of the same problem and is handled differently on purpose.
+Seven corpus cores are recorded in lower case against upper-case translations.
+Folding case cannot invent a match that is not there, so it is a **normalisation**
+and belongs in the baseline policy; a character that is not an amino-acid letter
+*in either case* is a malformed core. Conflating the two reports a case difference
+as a data defect — which is what the first draft of this campaign did, and the
+build's own policy-sweep assertion caught it: with the fold hard-coded into the
+comparison, the strict policy and the baseline produced identical censuses and the
+build refused gold, saying two of three declared policies were the same policy
+under two names.
+
+### Localisation, and the six entries that pasted in the whole precursor
+
+Under the baseline policy, over 67 precursor records from 54 clusters:
+
+| verdict | records |
+|---|---|
+| core at the C terminus | 49 |
+| core internal | 9 |
+| **core is the whole precursor** | **6** |
+| malformed core | 2 |
+| core ambiguous | 1 |
+
+Leader lengths run **1 to 85**, median 23. The minimum of 1 is real: bottromycin's
+core sits at the N terminus and its leader is the initiator methionine alone.
+
+Six entries put the **entire precursor**, leader included, into `core_sequence`.
+That localises perfectly at offset zero, so a reader that only asks "is the core
+findable" reports a clean record with a zero-length leader. The campaign gives it
+its own verdict and nulls the derived coordinates, and the same is true of the
+tandem-repeat cyanobactin precursor whose core occurs twice: *where is the core*
+has no answer, and filling it with the first match would be a declared choice the
+campaign has not declared.
+
+### The coordinate convention is elected, not assumed
+
+Nothing in MIBiG says whether `leader_cleavage_location` is 0-based or 1-based, or
+whether `from` or `to` marks the core's first residue. All four readings are scored
+against the measured position:
+
+| reading | agrees | disagrees | underivable |
+|---|---|---|---|
+| **`to` as the 0-based core start** | **27** | **0** | 3 |
+| `from` as the 0-based core start | 4 | 23 | 3 |
+| `to` as the 1-based core start | 0 | 27 | 3 |
+| `from` as the 1-based core start | 0 | 27 | 3 |
+
+So `to` is the 0-based index of the first core residue, and on **every** record
+where both a coordinate and a position exist, the two agree. The three that do not
+are the three with no position: the tandem repeat, and two whose `core_sequence` is
+the whole precursor while a cleavage site is *still* declared, with `from == to` —
+which under no convention describes a bond. The four records where `from` also
+agrees are exactly those `from == to` cases, which is why `from` scores 4 rather
+than 0.
+
+This is the same move T-L3-1 had to make for MIBiG's locus bounds, and the build
+refuses gold if the top two readings tie, if none agrees anywhere, or if none
+disagrees anywhere — any of which would make "elected" a tie-break dressed as a
+finding.
+
+### No Pfam family marks the boundary, and the leader is why
+
+HMMER 3.4 against a declared eight-model Pfam 35.0 panel, fetched from the image
+with `hmmfetch`. The panel was fixed at build time by scanning the corpus against
+the whole of Pfam-A once — 27 seconds for 67 sequences of fifty-odd residues — and
+listing every family that came back at the gathering threshold: `DUF5837`,
+`DUF5840`, `DUF5973`, `Gallidermin`, `Lantibiotic_a`, `Nif11`, `RamS`,
+`Thiopep_pre`.
+
+**The panel hits 12 of 67 precursors.** Of the 10 that can be placed against a
+measured boundary, **8 span the cleavage site** and 2 sit in the leader alone.
+**None is core-specific.** The offset between a hit's envelope end and the leader's
+length runs −21 to +30 and is **never zero** — so no family stops where the leader
+does, and "use the domain call as the boundary" is not available. Five of the 12
+envelopes cover the precursor end to end.
+
+Then R4 asks the tool directly. Remove each record's declared leader, re-scan with
+the same panel at the same threshold:
+
+| outcome | records |
+|---|---|
+| **call lost entirely** | **7** |
+| call retained | 3 |
+| never recognised, still not (control) | 48 |
+| no located core, not applicable | 9 |
+
+Seven of the ten calls are carried by the leader. The three that hold are
+`DUF5973` on cinA and `Lantibiotic_a` twice — families whose envelope lies mostly
+in the core. Nothing is gained, which the vocabulary allows for and the corpus
+declines to supply.
+
+### Two measurements about the resources themselves
+
+**The two exclusion clauses coincide exactly.** Of 447 ribosomal entries, 100 name
+both a precursor gene and a core sequence. 46 of those are `retired`; 46 are absent
+from the antiSMASH reference set; and they are **the same 46**, with no exceptions
+in either direction. Applied in sequence the second clause would have reported
+zero and the coincidence would have been invisible — a fact about the evaluation
+order, not about the resources — so the campaign counts the two independently and
+grades their overlap. The audit runs on what survives both: 67 records, 54
+clusters, 30 declaring a cleavage coordinate.
+
+**The reference records shipped are those for every entry of the class**, 363
+files and 3.4 MB compressed, not the 54 the audit uses. Shipping only the entries
+that pass the reference clause would make the count of those that do not readable
+off a directory listing instead of computed from the two resources. That is a
+**free component**, and it is the sixth one caught in this project.
+
+Five echoes are reported and not graded for the same reason — `mibig_release`
+comes from the input provenance, and `biosynthetic_class`, `baseline_policy`,
+`threshold` and `panel_size` from the pinned rules table. Nothing in the world
+would have to change for their values to change, only the campaign's own
+declaration.
+
+### What broke on the way
+
+**The GenBank feature table does not start at column six.** The first parser ended
+the feature table at the first line that did not begin with six spaces — and a
+feature key begins at column *five*, so the table ended at the first feature and
+the campaign found zero translations in every record. The stop condition is now
+the first line that starts in column 0, which is what GenBank actually guarantees,
+and there is a test that writes a minimal record and asserts the one translation
+comes back.
+
+**Factoring, not duplicating.** `Resource` — the declaration for a file read from
+the image and not redistributed — existed twice already, in `ec_domain_audit` and
+in `gcf_cutoff`, with the second supporting a globbed path and the first a
+`verify()`. A third copy would have been the smell this project keeps finding in
+other people's data, so both moved to `npbench_c.tools.resources`, which carries
+the union: globbing, with the fingerprint deciding whether the match was the
+declared one. `resolve()` now raises `ResourceError` rather than a template's own
+error type, which is one line in the EC-audit tests, and both campaigns' suites
+pass unchanged otherwise.
+
+### The sweep, and what it cost
+
+Gold builds in **7.7 seconds**, including both HMMER scans. The stub sweep —
+six systems, four rungs, three repeats, 72 runs — takes **7m51s** with all five
+gates passing and cold depths **1 / 2 / 3 / 4 / 1 / 0**:
+
+| system | mode | cold depth |
+|---|---|---|
+| stub-reader | tooled | 1 |
+| stub-localise | tooled | 2 |
+| stub-evidence | tooled | 3 |
+| stub-complete | tooled | 4 |
+| **stub-firstshape** | tooled | **1** |
+| stub-noncompute | no_tool | 0 |
+
+Per-rung clear rates 1.00 / 0.60 / 0.40 / 0.20, cold mean score 0.55, and the
+no-tool ablation at 0.0000 against a chance floor of 0.2502.
+
+The residual cost is the same one open item 8 names, in its cheaper form: the tool
+memo works, but each of the 72 runs copies 4.3 MB of inputs into a fresh sandbox
+and re-reads a 3,013-entry annotation archive and several hundred GenBank records
+to rebuild the corpus. That is about 6.5 seconds per run of pure re-parsing, and
+it is the whole of the 7m51s.
+
+## Campaign 19: the tool's output is not a domain list yet
+
+`arch-nrps-mibig-4_0-01` is T-L1-2, the fourth tool-running campaign and the
+third S1. An NRPS is one protein carrying a chain of catalytic domains, and its
+architecture is the ordered list of them. Computing that from a pinned HMMER
+against a pinned Pfam release sounds like a lookup. It is not: the answer is a
+function of three choices nobody writes down, and this campaign declares all
+three and measures what each one costs.
+
+**Two of the four catalogued rungs do not survive, and a third is rewritten.**
+The catalogued R3 claimed "which domain is catalytically essential, closed enum",
+which is a literature claim with no computable oracle — the same refusal T-L3-4's
+"predict the new core" earned. The catalogued R4's "predict the lost function"
+goes with it. The catalogued R1 asked for a "non-overlapping" domain table, and
+that is not what the tool produces.
+
+### Hits overlap, and the resolution is the campaign
+
+Measured over the corpus: **12,975 raw hits, 2,124 overlapping pairs, 315 of
+1,136 genes carrying at least one overlap.** Nested Pfam families hit the same
+residues — a ketosynthase core inside a thiolase model, five methyltransferase
+families against each other, `adh_short` against `KR`. Resolving them drops
+**1,031 hits** and changes the architecture on **314 genes**. A report that lists
+every hit as a consecutive domain has invented a protein, and nothing in it says
+so. That is the campaign's competence probe, and it is the mistake the catalogued
+design made.
+
+**Pfam's own rule is not available, which is worth recording for every future
+campaign.** Pfam resolves intra-clan overlaps by keeping the best-scoring hit.
+The pinned library — antiSMASH's copy of Pfam 35.0, 19,632 models — carries
+**zero `CL` lines**. So the rule here is score and geometry, declared as this
+campaign's own rather than borrowed and misattributed.
+
+**An overlap *threshold* is not a subject.** Swept from 0.8 down to 0.0 the
+architecture moves by at most a handful of genes, because the overlaps these
+proteins produce are near-total rather than partial. A grid would be five points
+reporting one answer, so the fraction is declared once at 0.5 and the axis R4
+varies is whether overlaps are resolved at all.
+
+### What the curated side can and cannot support
+
+MIBiG 4.0 carries **4,034 curated modules over 667 entries**, with per-module gene
+assignment and typed domain blocks. Two of its fields are unusable and the
+campaign says so with a number instead of working around them:
+
+- **Domain coordinates are placeholders**: 5,352 of 5,446 typed blocks carry
+  `{-1, -1}`. A coordinate-level reconciliation would be computed over a
+  sixtieth of the record and reported as though it covered all of it.
+- **The `active` flag is unstated** on 2,025 of 4,034 modules (1,945 true, 64
+  false). So "active modules" is not a quantity this database supports.
+
+So counts are compared, not coordinates. The selection takes genes whose curated
+modules are **all** of the declared type — a gene carrying both NRPS and PKS
+modules draws its architecture from two vocabularies and belongs to neither
+instantiation — on an entry the status rule admits, with a shipped translation:
+**1,136 `nrps-type1` genes over 512 clusters**, 3,440,119 residues, median 2,549
+aa, longest 16,367. **11,944 domains, 458 distinct architectures**, 0 to 61
+domains per gene.
+
+### Curation and the tool agree on one domain type and not the other
+
+| comparison | agrees | computed more | computed fewer | not curated |
+|---|---|---|---|---|
+| adenylation (`AMP-binding`) | **1,059** | 70 | 7 | 0 |
+| condensation (`Condensation`) | **157** | 122 | 7 | **850** |
+
+The adenylation delta is a distribution, not an offset: −6, −2, −1 (×5), 0
+(×1,059), +1 (×60), +2 (×9), +4. A curator records one adenylation domain per
+module by construction, so that column is reliable and agreement is 93%. They
+record a condensation domain only sometimes — 286 of 1,136 genes — and when they
+do, agreement is **55%**. The campaign reports `not_curated` for the other 850
+rather than a disagreement with zero, because there is nothing there to disagree
+with.
+
+The module decomposition is a third, different claim: counting the declared
+pattern's non-overlapping occurrences in the architecture finds **1,881 complete
+modules**, agreeing with the curated module count on 587 genes and falling short
+on **541**. A gene can carry the right number of adenylation domains and not
+assemble into complete modules at all.
+
+### Which Pfam family *is* the adenylation domain
+
+| mapping | agrees |
+|---|---|
+| `AMP-binding` | **1,059** |
+| `AMP-binding_C` | 814 |
+| both | **153** |
+
+Pfam splits the adenylation domain into an N-terminal and a C-terminal family, so
+counting both double-counts every module and agreement collapses by a factor of
+seven. This is the axis the catalogued design did not have and the data demands,
+and the build refuses to emit gold unless the best and worst declared mappings
+differ by at least a factor of two.
+
+### The cutoff, and the one flag that is not a substitute
+
+Sixteen cells, one per (cutoff, resolution, coordinate span), against the
+baseline:
+
+| cutoff | genes moved, resolved | genes moved, unresolved | agreement, resolved | agreement, unresolved |
+|---|---|---|---|---|
+| `--cut_ga` (baseline) | 0 | 314 | 1,059 | 1,059 |
+| `--cut_nc` | 4 | 317 | 1,058 | 1,058 |
+| `--cut_tc` | 4 | 314 | 1,059 | 1,059 |
+| **`-E 1e-5`** | **372** | **549** | **1,032** | **1,026** |
+
+The three Pfam-curated cutoffs are near-interchangeable here — the same result
+the EC-domain audit got on a different set — and the bare E-value is not. It adds
+816 domains, moves a third of the corpus and costs 27 agreements. That contrast
+is why it is in the grid: a per-model curated threshold and a global E-value are
+not substitutes, and the E-value is the familiar flag.
+
+The bottom-right cell is also where a defect in this campaign's own code showed
+up. `reconcile` originally took the architecture table as an argument and then
+**re-resolved the hits at the baseline**, so the sweep's agreement column ignored
+two of its three axes. On the curated cutoffs the numbers coincided, which is why
+it survived a reading; the fix moved the two unresolved E-value cells from 1,032
+to **1,026**, because at that cutoff duplicate overlapping adenylation hits
+inflate the count on six genes and the old code was quietly reporting the
+resolved figure instead. A graded value computed by a function that ignores two
+of its inputs is wrong even where the output happens to be right.
+
+### The catalogued R4 was built, measured, and dropped
+
+Removing each gene's first adenylation domain and re-scanning leaves the
+architecture minus exactly that domain on **1,112 of the 1,126 genes it applies
+to**, and the adenylation count falls by exactly one on 1,125. So "one domain
+fewer" is a free answer and the rung would distinguish almost nothing. It is
+recorded in `excluded_from_grading` with those numbers rather than silently
+omitted, because the measurement is the reason.
+
+### What broke on the way, and it broke twice
+
+**A Pfam family name can contain the architecture separator.** The architecture
+is a hyphen-joined family string, and `AMP-binding` holds a hyphen — so splitting
+it back shreds every family name. The module decomposition did exactly that, and
+the build's own refusal caught it: *"the declared module pattern is found on no
+gene, so the decomposition is empty everywhere."* The decomposition now reads the
+resolved hits; the string is for reading, not for parsing back. Then the test
+written to check the fix made the same mistake on its first draft, asserting the
+domain count against `architecture.split("-")`. Both have tests now, and the
+second one asserts on real gold that splitting over-counts.
+
+**And the declared module pattern is four families long for a module with three
+domains.** `Condensation-AMP-binding-AMP-binding_C-PP-binding` occurs 1,881 times
+and is by a wide margin the commonest four-gram in the corpus; the three-family
+pattern a domain-level reading would write down occurs on a tenth as many genes.
+The same fact the mapping axis measures, arriving a second time through a
+different door.
+
+**`Resource` was factored before this campaign, not during it.** It now carries
+globbed paths and `verify()` in `npbench_c.tools.resources`, which this campaign
+is the third to use.
+
+### The sweep, and what it cost
+
+Gold builds in about **two minutes**, which is four panel scans over 3.44 M
+residues plus a sixteen-cell sweep in Python. The stub sweep — six systems, four
+rungs, three repeats, 72 runs — passes all five gates with cold depths
+**1 / 2 / 3 / 4 / 1 / 0**:
+
+| system | mode | cold depth |
+|---|---|---|
+| stub-reader | tooled | 1 |
+| stub-architect | tooled | 2 |
+| stub-reconcile | tooled | 3 |
+| stub-complete | tooled | 4 |
+| **stub-unresolved** | tooled | **1** |
+| stub-noncompute | no_tool | 0 |
+
+Per-rung clear rates 1.00 / 0.60 / 0.40 / 0.20, cold mean score 0.55, no-tool
+ablation 0.0000 against a chance floor of 0.2502. `stub-unresolved` is the probe
+that matters: it runs the tool correctly and reports every hit as a domain, which
+clears R1 and fails R2 — the catalogued design's own mistake, scored.
+
+The readiness gate is slower here than on any earlier campaign, because two of
+its checks regenerate gold and gold costs four tool scans. That is the gate
+working as intended rather than a cost to optimise away.
+
+### Why HMMER and not antiSMASH's own domain calls
+
+The tool registry already declares an antiSMASH invocation,
+`default_modules_domains`, whose projection is the ordered NRPS/PKS domain
+architecture per CDS — which looks like exactly this campaign's answer, computed
+by one call instead of four. It is not used, for two reasons worth stating.
+
+The catalogued row is a **Pfam** row, and antiSMASH's NRPS/PKS domain calls come
+from its own curated profile library and its own module-assembly logic, not from
+Pfam. Grading those would be grading antiSMASH's opinion of a module, which is a
+different and much more derived claim than "which Pfam families does this
+sequence carry, and where" — and it would make the reconciliation against MIBiG
+circular in part, because MIBiG's own processed records were produced by
+antiSMASH.
+
+And it would hide the campaign's subject. antiSMASH resolves overlaps and
+assembles modules internally and reports the result; the three choices this
+campaign declares and measures would all be made inside the tool, unstated. The
+whole finding — that the architecture is a function of a resolution rule, a
+coordinate span and a cutoff — is only visible from the raw hit table.
+
+The antiSMASH route remains the right one for a campaign that wants to grade
+antiSMASH's module assembly. That is a different row.
+
+## Campaign 20: the second instantiation, and what it is for
+
+`arch-pks-mibig-4_0-01` completes T-L1-2's catalogued ×2 axis. It is the same
+template as the NRPS campaign and differs only in its declared rules file — the
+module family, the Pfam panel, the two reconciled domain types, the module
+pattern and the strata. Oracle 1.0 at depth 4, gate 21/0/5.
+
+**464 `pks` genes over 162 clusters**, 1,460,845 residues, median 2,347 aa.
+**5,954 domains, 276 distinct architectures**, 1 to 50 per gene.
+
+An instantiation axis is only worth having if the second instance measures
+something the first cannot, and this one does.
+
+### The curated record encodes cis-AT versus trans-AT, exactly
+
+| module type | modules | ketosynthase recorded | acyltransferase recorded |
+|---|---|---|---|
+| `pks-modular` | 612 | 612 | **612 (100%)** |
+| `pks-modular-starter` | 17 | 0 | 17 |
+| `pks-trans-at` | 471 | 471 | **0 (0%)** |
+| `pks-trans-at-starter` | 33 | 0 | 0 |
+
+A trans-AT polyketide synthase does not encode its own acyltransferase — the
+enzyme acts in trans from a separate protein — and MIBiG records that in the
+module type with no exceptions either way. So on the trans-AT side a curated
+count of **zero** is a claim the computed architecture can agree or disagree
+with, while elsewhere a zero is a silence. The campaign declares two strata over
+the accepted types and grades the secondary reconciliation per stratum:
+
+| stratum | genes | agrees | computed more | computed fewer | acyltransferases found |
+|---|---|---|---|---|---|
+| `cis_at` | 318 | 298 | 10 | 10 | 546 |
+| **`trans_at`** | **128** | **128** | **0** | **0** | **0** |
+| `mixed` | 18 | 9 | 6 | 3 | 26 |
+
+**The tool finds no acyltransferase in any of the 128 trans-AT genes.** That is a
+negative control the data supplies rather than one the campaign plants, and it is
+a measurement: if HMMER had found some, the finding would have been about the
+tool.
+
+And which strata assert absence is **read from the per-module-type census rather
+than asserted in the rules**. A MIBiG release that started recording trans-AT
+acyltransferases would change the verdict instead of contradicting a hardcoded
+fact.
+
+The module decomposition separates the same strata through a second, independent
+measure. The declared cis-AT module core is
+`ketoacyl-synt-Ketoacyl-synt_C-KAsynt_C_assoc-Acyl_transf_1` — four Pfam families
+for two catalytic domains — and it occurs 540 times, agreeing with the curated
+module count on 292 genes. In the trans-AT stratum it occurs **zero** times,
+because the pattern includes an acyltransferase those genes do not have.
+
+### The sweeps
+
+Both instantiations pass all five sweep gates with cold depths
+**1 / 2 / 3 / 4 / 1 / 0** and identical per-rung clear rates (1.00 / 0.60 / 0.40
+/ 0.20), cold mean score 0.55, no-tool ablation 0.0000 against a chance floor of
+0.2502. One stub module serves both campaigns: every level reads the family, the
+panel, the strata and the reconciled domain types out of the rules file, so there
+is nothing family-specific in it — including `noncompute`, the ablation that reads
+nothing and therefore must not name either family's vocabulary.
+
+### The split family problem is worse here
+
+| mapping for the ketosynthase | agrees |
+|---|---|
+| `ketoacyl-synt` | **398** |
+| `Ketoacyl-synt_C` | 393 |
+| `KAsynt_C_assoc` | 389 |
+| **all three** | **13** |
+
+Pfam splits the ketosynthase across **three** consecutive families, so counting
+all of them triples every module and agreement falls by a factor of thirty — against
+seven for the adenylation domain's two halves. The three single-family readings
+agree closely but not identically, which is itself worth having: they are three
+different models of the same region and they disagree on 9 to 55 genes each.
+
+### And the overlaps are much heavier
+
+| | genes | overlapping pairs | genes with an overlap |
+|---|---|---|---|
+| NRPS | 1,136 | 2,124 | 315 (**28%**) |
+| PKS | 464 | 3,002 | 399 (**86%**) |
+
+The reductase families a PKS carries — `KR`, `adh_short`, `adh_short_C2`,
+`ADH_zinc_N`, `3Beta_HSD`, `Epimerase` — overlap each other far more densely than
+the NRPS panel's do. So the resolution policy, which the catalogued design assumed
+away, matters on **86% of this corpus**. The policy sweep says the same thing:
+not resolving moves 399 of 464 genes, and `--cut_tc` moves 58 here against 4 in
+the NRPS corpus.
+
+### What the template had to grow, and the three defects it exposed
+
+The instantiation axis is a declared rules file rather than a forked template, so
+five fields became declarations: the module **family** (a set of accepted types,
+because a modular PKS gene carries a loading module of its own type), the two
+**reconciled domain types** (`ks_domain`/`at_domain` here, `a_domain`/`c_domain`
+there), the **strata**, the module **pattern** and the **panel**. Both campaigns
+name the same commands, the same stub module and the same pinned-table path; only
+`template_params.rules_source` differs.
+
+Generalising a working template broke it three times, and each break is worth
+recording because none of them would have shown up in an oracle run:
+
+- **The secondary domain's mapping key drifted from its name.** `reconcile` looks
+  the mapping up by the declared secondary domain — `c_domain` — and the NRPS
+  rules file still called it `condensation_domain`. The lookup returned nothing,
+  so the secondary reconciliation computed **zero for every gene**: 157 agreements
+  became 0 and 286 genes became `computed_fewer`. Every build assertion still
+  passed, because a uniformly wrong column is still a populated column. The keying
+  is now checked at load time, along with the baseline mapping not being the
+  secondary domain's own.
+
+- **`"mixed"` was a stratum the census had no room for.** A gene spanning two
+  strata belongs to neither, so `stratum()` returns `"mixed"` — which the
+  by-stratum census, initialised from the declared strata alone, raised a
+  `KeyError` on. The NRPS family has one stratum and never produces it, so this
+  surfaced on the PKS build's first run.
+
+- **A build assertion was disabled by the fix for the one above.** The check "a
+  single-stratum corpus whose secondary domain is always curated has one kind of
+  row" counted the keys of the by-stratum census — which now always carries an
+  empty `"mixed"` row, so the count was never below two and the check never fired.
+  It counts **populated** strata now, and a test pins that.
+
+Two shape mismatches between gold and the measurer also had to be settled, and
+the honest fix in both cases was to close a vocabulary rather than teach the
+measurer to drop things: the selection census now names all three of its drop
+clauses whether or not each removed anything, so the census's shape does not
+depend on the data.
+
+## Open items
+
+1. **CAI table provenance.** The relative-adaptiveness values now live in
+   `campaigns/*/reference/codon_tables.json` (shipped to agents; the oracle
+   loads the same file). They are representative values for highly-expressed
+   genes, flagged in the JSON, and need a cited source release — a named
+   Kazusa / HIVE-CUT release, or a table computed over a declared
+   ribosomal-protein gene set — with a hash, before the audit packet ships. Gold
+   does not depend on them being *the* correct measurement, only on their being
+   frozen, hashed and published; but an auditor will and should ask.
+2. **Release packaging must exclude `gold/`, `oracle/` and `oracle_submission/`.**
+   They are committed here because this is the build repo. Gold is never
+   published for either split.
+3. Real systems for the sweep. The harness is built and self-tested; it needs
+   `SystemSpec` entries for the actual agents (bash-only, general biomedical,
+   tool-equipped) before the five checks can go green.
+4. **matchms fixtures.** The last provisioning gap, for T-L4-1 and T-L4-2. The
+   tools are pip-installable; what the rows need first is an MS² fixture set from
+   MassBank with its own grounding pass, because for a spectral match the
+   invariance question becomes a tolerance question and that is a different suite
+   from this one. (This item appeared twice in earlier revisions, as 5 and 6; the
+   duplicate is merged here.)
+5. **Reprocess the MIBiG reference set with the pinned antiSMASH**, or declare
+   that a T-L3-2 campaign takes both sides from the published `as8b1` set. As
+   shipped, the reference clusters were processed with antiSMASH 8.0 beta 1 and
+   the image pins 8.0.4.
+6. **T-L5-2 is a decision, not a build task.** T-L5-1 is built. T-L5-2 has no
+   on-theme data (counts above); the owner picks between HIV-1 RT with the theme
+   drift, a re-scoped census ladder, and waiting for a release that fills the
+   bacterial variant values. Nothing is blocked on licensing.
+7. **Two L2/L5 rows are retired on measurement, so the catalogue's 32-campaign
+   target is now 30 at most.** T-L5-2 and T-L2-4 both ground out. The count in this
+   file's header and in `docs/catalog.md` is the *catalogued* target and has not
+   been restated downward, because the replacement question is the owner's call:
+   re-scope those rows, or accept a smaller benchmark. Twenty campaigns are
+   built. This should be settled before the audit packet quotes a number.
+8. **Sweep cost: the tool memo covers the tool, not the work around it.**
+   `npbench_c.tools.cache` memoises tool output for stub systems in tooled mode
+   only, which took the EC-audit sweep from 29m32s to **3m44s** with identical
+   results. Measured since on the first S2 campaign, a stub sweep still takes
+   **15m35s** with the memo fully effective, because each of the 72 rung-repeats
+   re-reads and re-parses a 26 MB GenBank record and copies a 6.8 MB input into a
+   fresh sandbox. Two candidate fixes, neither taken yet: cache the parsed record
+   beside the tool output, or let a stub level reuse one sandbox across repeats.
+   Measured a third time on T-L3-4, where the tool is cheap and the inputs are
+   small, a 72-run stub sweep still takes **7m51s** — about 6.5 seconds per run of
+   re-parsing a 3,013-entry annotation archive and several hundred GenBank records
+   into the same corpus, with the tool itself memoised. So the pattern holds at
+   both ends of the cost range and the fix is the same one: cache the parsed
+   inputs, or reuse a sandbox across repeats.
+   And the real-systems sweep gets no memo at all by design — every such run must
+   drive the tool itself — so whether that needs parallelism depends on how long
+   real agents take per run, measurable only once item 3 supplies the `SystemSpec`
+   entries.
+9. **`structural_elements` is decorative and nothing validates it.** Nine of the
+   twenty built campaigns declare `planted` and several of them plant nothing —
+   `mibig-diff-3_1-to-4_0-01`'s own notes say its sharpest case is "supplied by the
+   corpus rather than planted". The six campaigns built since declare only what
+   they have (`verification, counterfactual, control`), but the field needs either
+   a definition and a gate check or removal, and fixing the other nine is the
+   owner's taxonomy call rather than a silent edit. A declaration no check reads is the
+   thing this project keeps finding in other people's data.
+10. Construct-validity study: inter-rater agreement first, then expert-grader
+   agreement with Gwet's AC1 / Krippendorff's alpha alongside kappa, gate on
+   Spearman against the continuous rating. This is the one place humans are
+   involved, and it sits outside the grading pipeline by design.

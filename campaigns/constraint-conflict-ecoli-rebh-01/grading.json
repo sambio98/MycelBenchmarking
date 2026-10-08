@@ -1,0 +1,297 @@
+{
+  "campaign_id": "constraint-conflict-ecoli-rebh-01",
+  "template_id": "construct-conflict",
+  "grading_spec_version": "1.0.0",
+  "rungs": [
+    {
+      "rung_id": "r1",
+      "ordinal": 1,
+      "name": "execute",
+      "gold_tier": "G1",
+      "composition": "product",
+      "pass_threshold": 1.0,
+      "chance_level": 1.0,
+      "components": [
+        {
+          "name": "report_present",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:present.report",
+            "gold": 1
+          }
+        },
+        {
+          "name": "orf_length_nt",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:orf_length_nt",
+            "gold": "gold:orf_length_nt"
+          }
+        },
+        {
+          "name": "constraints_restated",
+          "scorer": "set_exact",
+          "args": {
+            "pred": "pred:constraints_assessed",
+            "gold": "gold:constraint_vocabulary"
+          }
+        },
+        {
+          "name": "codon_counts_reported",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:codon_counts_reported",
+            "gold": 1
+          }
+        }
+      ],
+      "chance_level_note": "R1 asks only that the constraint set be restated and the codon counts reported, which a non-computing system does from reference/ alone. A no-tool ablation is not meaningful for an S0 campaign, so the ablation withholds computation instead.\n"
+    },
+    {
+      "rung_id": "r2",
+      "ordinal": 2,
+      "name": "correct",
+      "gold_tier": "G1",
+      "composition": "product",
+      "pass_threshold": 1.0,
+      "chance_level": 0.01,
+      "components": [
+        {
+          "name": "unrestricted_gc_max",
+          "scorer": "abs_tol_match",
+          "args": {
+            "pred": "pred:unrestricted_gc_max",
+            "gold": "gold:unrestricted_gc_max",
+            "abs_tol": 1e-06
+          }
+        },
+        {
+          "name": "unrestricted_gc_min",
+          "scorer": "abs_tol_match",
+          "args": {
+            "pred": "pred:unrestricted_gc_min",
+            "gold": "gold:unrestricted_gc_min",
+            "abs_tol": 1e-06
+          }
+        },
+        {
+          "name": "restricted_gc_max",
+          "scorer": "abs_tol_match",
+          "args": {
+            "pred": "pred:restricted_gc_max",
+            "gold": "gold:restricted_gc_max",
+            "abs_tol": 1e-06
+          }
+        },
+        {
+          "name": "restricted_gc_min",
+          "scorer": "abs_tol_match",
+          "args": {
+            "pred": "pred:restricted_gc_min",
+            "gold": "gold:restricted_gc_min",
+            "abs_tol": 1e-06
+          }
+        },
+        {
+          "name": "admissible_codon_counts",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:admissible_codon_counts",
+            "gold": "gold:admissible_codon_counts"
+          }
+        }
+      ]
+    },
+    {
+      "rung_id": "r3",
+      "ordinal": 3,
+      "name": "commit",
+      "gold_tier": "G1",
+      "composition": "product",
+      "pass_threshold": 1.0,
+      "chance_level": 0.01,
+      "components": [
+        {
+          "name": "verdict",
+          "scorer": "enum_exact",
+          "args": {
+            "pred": "pred:verdict",
+            "gold": "gold:verdict",
+            "vocabulary": [
+              "feasible",
+              "infeasible_gc_unreachable",
+              "infeasible_no_admissible_codon",
+              "infeasible_other",
+              "insufficient_information"
+            ]
+          }
+        },
+        {
+          "name": "conflicting_pair",
+          "scorer": "set_exact",
+          "args": {
+            "pred": "pred:conflicting_constraints",
+            "gold": "gold:conflicting_constraints"
+          }
+        },
+        {
+          "name": "witness_required",
+          "scorer": "abs_tol_match",
+          "args": {
+            "pred": "pred:witness.required_gc_min",
+            "gold": "gold:witness.required_gc_min",
+            "abs_tol": 1e-06
+          }
+        },
+        {
+          "name": "witness_achievable",
+          "scorer": "abs_tol_match",
+          "args": {
+            "pred": "pred:witness.max_achievable_gc_under_forbidden_codons",
+            "gold": "gold:witness.max_achievable_gc_under_forbidden_codons",
+            "abs_tol": 1e-06
+          }
+        },
+        {
+          "name": "no_design_claimed",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:claims_satisfying_design",
+            "gold": 0
+          }
+        }
+      ],
+      "chance_level_note": "Higher than it looks at first: a system that notices \"forbidden codons\" and \"GC minimum\" are the only two GC-relevant constraints can name the pair without computing either bound, and \"infeasible_gc_unreachable\" is the most guessable verdict given the framing. The two witness numbers are what make R3 real, and they are not guessable. The feasible sibling instantiation (see required_sibling) is what stops reflexive abstention from scoring.\n"
+    },
+    {
+      "rung_id": "r4",
+      "ordinal": 4,
+      "name": "counterfactual",
+      "gold_tier": "G1",
+      "composition": "product",
+      "pass_threshold": 1.0,
+      "chance_level": 0.0005,
+      "components": [
+        {
+          "name": "relax_forbidden_codons_gc_max",
+          "scorer": "abs_tol_match",
+          "args": {
+            "pred": "pred:relaxations.forbidden_codons.max_achievable_gc",
+            "gold": "gold:single_constraint_relaxations.forbidden_codons.max_achievable_gc",
+            "abs_tol": 1e-06
+          }
+        },
+        {
+          "name": "relax_forbidden_codons_reachable",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:relaxations.forbidden_codons.gc_requirement_reachable",
+            "gold": "gold:single_constraint_relaxations.forbidden_codons.gc_requirement_reachable"
+          }
+        },
+        {
+          "name": "relax_gc_global_min_gc_max",
+          "scorer": "abs_tol_match",
+          "args": {
+            "pred": "pred:relaxations.gc_global_min.max_achievable_gc",
+            "gold": "gold:single_constraint_relaxations.gc_global_min.max_achievable_gc",
+            "abs_tol": 1e-06
+          }
+        },
+        {
+          "name": "relax_gc_global_min_reachable",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:relaxations.gc_global_min.gc_requirement_reachable",
+            "gold": "gold:single_constraint_relaxations.gc_global_min.gc_requirement_reachable"
+          }
+        },
+        {
+          "name": "relax_forbidden_sites_gc_max",
+          "scorer": "abs_tol_match",
+          "args": {
+            "pred": "pred:relaxations.forbidden_sites.max_achievable_gc",
+            "gold": "gold:single_constraint_relaxations.forbidden_sites.max_achievable_gc",
+            "abs_tol": 1e-06
+          }
+        },
+        {
+          "name": "relax_forbidden_sites_reachable",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:relaxations.forbidden_sites.gc_requirement_reachable",
+            "gold": "gold:single_constraint_relaxations.forbidden_sites.gc_requirement_reachable"
+          }
+        },
+        {
+          "name": "relax_gc_window_gc_max",
+          "scorer": "abs_tol_match",
+          "args": {
+            "pred": "pred:relaxations.gc_window.max_achievable_gc",
+            "gold": "gold:single_constraint_relaxations.gc_window.max_achievable_gc",
+            "abs_tol": 1e-06
+          }
+        },
+        {
+          "name": "relax_gc_window_reachable",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:relaxations.gc_window.gc_requirement_reachable",
+            "gold": "gold:single_constraint_relaxations.gc_window.gc_requirement_reachable"
+          }
+        },
+        {
+          "name": "relax_homopolymer_gc_max",
+          "scorer": "abs_tol_match",
+          "args": {
+            "pred": "pred:relaxations.homopolymer.max_achievable_gc",
+            "gold": "gold:single_constraint_relaxations.homopolymer.max_achievable_gc",
+            "abs_tol": 1e-06
+          }
+        },
+        {
+          "name": "relax_homopolymer_reachable",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:relaxations.homopolymer.gc_requirement_reachable",
+            "gold": "gold:single_constraint_relaxations.homopolymer.gc_requirement_reachable"
+          }
+        },
+        {
+          "name": "relax_direct_repeat_gc_max",
+          "scorer": "abs_tol_match",
+          "args": {
+            "pred": "pred:relaxations.direct_repeat.max_achievable_gc",
+            "gold": "gold:single_constraint_relaxations.direct_repeat.max_achievable_gc",
+            "abs_tol": 1e-06
+          }
+        },
+        {
+          "name": "relax_direct_repeat_reachable",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:relaxations.direct_repeat.gc_requirement_reachable",
+            "gold": "gold:single_constraint_relaxations.direct_repeat.gc_requirement_reachable"
+          }
+        },
+        {
+          "name": "relax_internal_rbs_gc_max",
+          "scorer": "abs_tol_match",
+          "args": {
+            "pred": "pred:relaxations.internal_rbs.max_achievable_gc",
+            "gold": "gold:single_constraint_relaxations.internal_rbs.max_achievable_gc",
+            "abs_tol": 1e-06
+          }
+        },
+        {
+          "name": "relax_internal_rbs_reachable",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:relaxations.internal_rbs.gc_requirement_reachable",
+            "gold": "gold:single_constraint_relaxations.internal_rbs.gc_requirement_reachable"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,67 @@
+{
+  "accession": "BGC0000426",
+  "compounds": [
+    "sevadicin"
+  ],
+  "monomer_formulas": {
+    "alanine": "C3H7NO2",
+    "phenylalanine": "C9H11NO2",
+    "tryptophan": "C11H12N2O2"
+  },
+  "monomers": [
+    "phenylalanine",
+    "alanine",
+    "tryptophan"
+  ],
+  "n_modules": 3,
+  "naive_assembly_formula": "C23H26N4O4",
+  "naive_assembly_monoisotopic_mass": 422.1954,
+  "peptide_bonds": 2,
+  "per_compound": {
+    "sevadicin": {
+      "product_formula": "C23H26N4O4",
+      "product_monoisotopic_mass": 422.1954,
+      "residual": {},
+      "residual_full": {
+        "Br": 0,
+        "C": 0,
+        "Cl": 0,
+        "F": 0,
+        "Fe": 0,
+        "H": 0,
+        "N": 0,
+        "O": 0,
+        "P": 0,
+        "S": 0,
+        "Zn": 0
+      },
+      "verdict": "balanced"
+    }
+  },
+  "single_module_deletions": {
+    "1": {
+      "deleted_monomer": "phenylalanine",
+      "feasible": true,
+      "formula": "C14H17N3O3",
+      "mass_shift": -147.0684,
+      "monoisotopic_mass": 275.127,
+      "peptide_bonds": 1
+    },
+    "2": {
+      "deleted_monomer": "alanine",
+      "feasible": true,
+      "formula": "C20H21N3O3",
+      "mass_shift": -71.0371,
+      "monoisotopic_mass": 351.1583,
+      "peptide_bonds": 1
+    },
+    "3": {
+      "deleted_monomer": "tryptophan",
+      "feasible": true,
+      "formula": "C12H16N2O3",
+      "mass_shift": -186.0793,
+      "monoisotopic_mass": 236.1161,
+      "peptide_bonds": 1
+    }
+  }
+}

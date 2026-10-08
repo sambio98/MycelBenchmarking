@@ -1,0 +1,15 @@
+{
+  "license": "CC BY 4.0",
+  "note": "Consecutive releases. 3.1 is the last 3.x; the 4.0 re-annotation restructured the schema entirely, which is why this campaign is a reconciliation rather than a field diff.",
+  "releases": {
+    "3.1": "mibig_json_3.1.tar.gz",
+    "4.0": "mibig_json_4.0.tar.gz"
+  },
+  "retrieved": "2026-10-02",
+  "sha256": {
+    "mibig_json_3.1.tar.gz": "87221d7ead87709fbcfe81176d4f1684520017e1d30d5f1f24ef7a39310d1e94",
+    "mibig_json_4.0.tar.gz": "986f1a69fb5eeb84fd7c0175ae921304c22fd5f8ed04c96d8c1c0c95a145837b"
+  },
+  "source": "MIBiG",
+  "url": "https://dl.secondarymetabolites.org/mibig/"
+}

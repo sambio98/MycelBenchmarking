@@ -1,0 +1,172 @@
+campaign_id: construct-ecoli-prna-01
+template_id: construct-design
+track: EX
+family: construct_and_sequence_design
+layer: L6_translation_and_design
+version: 1.0.0
+horizon_tier: T-short
+license_class: open
+grader_version: "2.0.0+9fc95658"
+grading_spec_version: "1.0.0"
+
+objective: >
+  Design a synthetic open reading frame for heterologous expression of the
+  flavin-dependent tryptophan 7-halogenase PrnA (UniProt P95480, sequence
+  version 1, 538 aa), then analyse which of the declared design constraints
+  actually binds for this protein, and how that changes when the expression
+  host changes.
+
+method_guidance: partial
+
+# The ORF contract, pinned so that no legitimate answer can be marked wrong on
+# a convention the task never stated (audit form item 4).
+output_contract:
+  orf_ecoli.fasta:
+    description: ORF for Escherichia coli BL21(DE3) in pET-28a(+), NdeI/XhoI
+    includes_start_codon: true
+    includes_stop_codon: true           # TAA, TAG or TGA as the final codon
+    includes_vector_tag: false          # the pET-28a His6 tag is NOT part of the ORF
+    alphabet: ACGT
+    strand: coding
+  orf_streptomyces.fasta:
+    description: ORF for Streptomyces coelicolor A3(2) in pSET152, NdeI/XhoI
+    includes_start_codon: true
+    includes_stop_codon: true
+    includes_vector_tag: false
+    alphabet: ACGT
+    strand: coding
+  analysis.json:
+    description: per-rung analytical claims
+    constraint_vocabulary:                 # closed; the only admissible names
+      - forbidden_sites
+      - gc_window
+      - gc_global
+      - homopolymer
+      - direct_repeat
+      - internal_rbs
+    unconstrained_violations: >
+      Violation counts measured on the unconstrained optimum -- the sequence in
+      which every residue takes its single most-adapted codon under the pinned
+      host table, ties broken by lexicographically smallest codon. Counting
+      rules: forbidden_sites = site occurrences; gc_window = 50-nt windows
+      (step 1) outside the host range; gc_global = 1 if whole-ORF GC is outside
+      the host range else 0; homopolymer = maximal runs longer than the limit;
+      direct_repeat = distinct 11-mers occurring more than once;
+      internal_rbs = occurrences of AGGAGG.
+    non_binding_constraints: >
+      Constraints whose relaxation does not increase achievable CAI (cost <= 0).
+    flipped_constraints: >
+      Symmetric difference of the two hosts' non_binding_constraints sets.
+
+# Everything an agent needs to answer every rung is in reference/, which is
+# shipped into the sandbox. The oracle loads the same files, so the tables used
+# to compute gold and the tables given to the agent cannot drift.
+template_params:
+  protein_input: inputs/prna.faa
+  hosts:
+    ecoli: {host: ecoli_bl21, strategy: pet28a_ndei_xhoi}
+    streptomyces: {host: streptomyces_coelicolor, strategy: pset152_ndei_xhoi}
+
+constraints:
+  reference_dir: reference
+  pinned_tables:
+    - reference/codon_tables.json        # per-host weights, GC global and window ranges
+    - reference/cloning_strategies.json  # forbidden sites per strategy
+    - reference/composition_limits.json  # homopolymer, repeat, window, RBS, counting rules
+
+snapshots_required:
+  shipped: []
+  fetched: []
+  inputs_pinned:
+    - source: UniProtKB
+      accession: P95480
+      sequence_version: 1
+      length_aa: 538
+      sha256_sequence: f6ad6a376a4ccae7
+      license: CC BY 4.0
+
+budgets:
+  wall_clock_minutes: 25
+  cpu: 2
+  memory_gb: 4
+  network: off
+
+# Warm starts are pre-rendered bundles, never whole gold files: copying
+# gold/gold.json to give a rung "the previous answer" would also hand over the
+# answer that rung is being asked to compute.
+rungs:
+  - {rung_id: r1, ordinal: 1, name: execute,        gold_tier: G1, warm_start_bundle: null}
+  - {rung_id: r2, ordinal: 2, name: correct,        gold_tier: G1, warm_start_bundle: gold/warm/r2}
+  - {rung_id: r3, ordinal: 3, name: commit,         gold_tier: G1, warm_start_bundle: gold/warm/r3}
+  - {rung_id: r4, ordinal: 4, name: counterfactual, gold_tier: G1, warm_start_bundle: gold/warm/r4}
+
+# A campaign of this template contains no code: the engine and both ladders are
+# shared at npbench_c.templates.construct_design, so an instantiation is a data
+# change plus one build command.
+harness:
+  gold_command: ["python3", "-m", "npbench_c.templates.construct_design.design.build", "{campaign}"]
+  solve_command: ["python3", "-m", "npbench_c.templates.construct_design.design.solve", "{campaign}", "{submission}"]
+  measure_command: ["python3", "-m", "npbench_c.templates.construct_design.design.measure", "{campaign}", "{submission}", "{measurement}"]
+  stub_module: npbench_c.sweep.stubs.stub_system
+  stub_args: []
+  stub_levels:
+    - {name: stub-naive,       level: naive}
+    - {name: stub-constrained, level: constrained}
+    - {name: stub-analyst,     level: analyst, reference: true}
+    - {name: stub-complete,    level: complete}
+    - {name: stub-parametric,  level: parametric, mode: no_tool}
+
+structural_elements: [verification, abstention_free, counterfactual]
+
+# Quantities deliberately NOT graded, with the measurement that excluded them.
+excluded_from_grading:
+  - field: binding_cost
+    reason: >
+      Cross-optimiser spread (0.0356 for gc_window) exceeds the between-constraint
+      signal for four of six constraints, so the magnitude is not gradable. The
+      argmax is stable across all four optimiser policies and is graded instead.
+      Measured by oracle/generate_gold.py; recorded in gold/gold.json.
+  - field: cai_full
+    reason: >
+      Spread 0.0528 across legitimate optimiser policies. Graded as a floor
+      (cai >= 0.902 for E. coli, >= 0.929 for Streptomyces) rather than against
+      the oracle's value, so a different valid optimiser is never penalised.
+
+instantiation_note: >
+  Second instantiation of the construct-design template; the first is
+  construct-ecoli-rebh-01. The instantiation axis is the enzyme, with the host
+  swap staying as R4. PrnA is a low-GC proteobacterial halogenase where RebH is
+  a high-GC actinomycete one, so the two are not near-duplicates: the per-residue
+  codon demand differs and the binding-constraint analysis is recomputed rather
+  than inherited.
+
+split_constraint: >
+  These two instantiations MUST NOT be split across the public and private sets.
+  Measured against construct-ecoli-rebh-01, 3 of 6 graded sub-answers are
+  identical: the binding constraint for both hosts (gc_window for E. coli,
+  direct_repeat for Streptomyces) and the Streptomyces non-binding set. A system
+  that has solved the public half can transfer those to the private half without
+  recomputing anything.
+
+  What does differ, and is what this instantiation actually adds: every
+  unconstrained-violation count (E. coli 20/1/0/29/0/0 against RebH's
+  11/3/0/50/1/0, Streptomyces direct_repeat 23 against 15), the E. coli
+  non-binding set, and the flipped-constraint set (RebH also flips homopolymer).
+  So R3's six integer components and R4's flipped set remain real work while
+  R3's binding-constraint component does not.
+
+  If the private set needs a construct-design campaign, author a third
+  instantiation whose binding constraint genuinely differs -- a protein or host
+  pairing where gc_window is not the E. coli bottleneck -- rather than reusing
+  either of these.
+
+notes_for_audit:
+  - >
+    The CAI relative-adaptiveness tables need a cited source release before this
+    packet ships. See the PROVENANCE GAP note in
+    reference/codon_tables.json; the tables are shared with every instantiation
+    of this template, so the gap closes for all of them at once.
+  - >
+    Compare the binding constraint and the flipped-constraint set against
+    construct-ecoli-rebh-01. If they were identical, the second instantiation
+    would add coverage without adding discrimination.

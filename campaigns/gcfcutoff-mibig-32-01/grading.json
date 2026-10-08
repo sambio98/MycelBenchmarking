@@ -1,0 +1,196 @@
+{
+  "campaign_id": "gcfcutoff-mibig-32-01",
+  "template_id": "gcf-cutoff",
+  "grading_spec_version": "1.0.0",
+  "rungs": [
+    {
+      "rung_id": "r1",
+      "ordinal": 1,
+      "name": "execute",
+      "gold_tier": "G1",
+      "composition": "product",
+      "pass_threshold": 1.0,
+      "chance_level": 1.0,
+      "components": [
+        {
+          "name": "report_present",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:present.report",
+            "gold": 1
+          }
+        },
+        {
+          "name": "corpus_size",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:corpus_size",
+            "gold": "gold:corpus_size"
+          }
+        },
+        {
+          "name": "designed_families",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:designed_families",
+            "gold": "gold:designed_families"
+          }
+        },
+        {
+          "name": "controls",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:controls",
+            "gold": "gold:controls"
+          }
+        },
+        {
+          "name": "cutoffs",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:cutoffs",
+            "gold": "gold:cutoffs"
+          }
+        },
+        {
+          "name": "baseline_cutoff",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:baseline_cutoff",
+            "gold": "gold:baseline_cutoff"
+          }
+        },
+        {
+          "name": "include_gbk",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:include_gbk",
+            "gold": "gold:include_gbk"
+          }
+        },
+        {
+          "name": "class_census",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:class_census",
+            "gold": "gold:class_census"
+          }
+        },
+        {
+          "name": "environment",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:environment",
+            "gold": "gold:environment"
+          }
+        }
+      ],
+      "chance_level_note": "Nominal rather than measured. The class census and the tool identity cannot be guessed, so the no-tool ablation fails R1 outright; the level stays at 1.0 because any system that runs the tool clears it, and the capped floor is computed over R2 upward.\n"
+    },
+    {
+      "rung_id": "r2",
+      "ordinal": 2,
+      "name": "correct",
+      "gold_tier": "G1",
+      "composition": "product",
+      "pass_threshold": 1.0,
+      "chance_level": 0.001,
+      "components": [
+        {
+          "name": "baseline_partition",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:baseline_partition",
+            "gold": "gold:baseline_partition"
+          }
+        },
+        {
+          "name": "group_census",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:group_census",
+            "gold": "gold:group_census"
+          }
+        }
+      ]
+    },
+    {
+      "rung_id": "r3",
+      "ordinal": 3,
+      "name": "commit",
+      "gold_tier": "G1",
+      "composition": "product",
+      "pass_threshold": 1.0,
+      "chance_level": 0.001,
+      "components": [
+        {
+          "name": "per_family",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:per_family",
+            "gold": "gold:per_family"
+          }
+        },
+        {
+          "name": "verdict_census",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:verdict_census",
+            "gold": "gold:verdict_census"
+          }
+        },
+        {
+          "name": "families_exact",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:families_exact",
+            "gold": "gold:families_exact"
+          }
+        },
+        {
+          "name": "controls_absorbed",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:controls_absorbed",
+            "gold": "gold:controls_absorbed"
+          }
+        },
+        {
+          "name": "pair_statistics",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:pair_statistics",
+            "gold": "gold:pair_statistics"
+          }
+        }
+      ]
+    },
+    {
+      "rung_id": "r4",
+      "ordinal": 4,
+      "name": "counterfactual",
+      "gold_tier": "G1",
+      "composition": "product",
+      "pass_threshold": 1.0,
+      "chance_level": 0.001,
+      "components": [
+        {
+          "name": "cutoff_sweep_summary",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:cutoff_sweep_summary",
+            "gold": "gold:cutoff_sweep_summary"
+          }
+        },
+        {
+          "name": "sweep_boundaries",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:sweep_boundaries",
+            "gold": "gold:sweep_boundaries"
+          }
+        }
+      ]
+    }
+  ]
+}

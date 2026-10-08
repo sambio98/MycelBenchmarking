@@ -1,0 +1,181 @@
+campaign_id: kinetics-brenda-ec1_1-01
+template_id: kinetics-consistency
+track: EX
+family: measurement_reconciliation
+layer: L2_enzyme_and_function
+np_class: mixed
+version: 1.0.0
+horizon_tier: T-short
+license_class: open
+grader_version: "2.0.0+9fc95658"
+grading_spec_version: "1.0.0"
+min_tool_surface: S0
+
+objective: >
+  BRENDA stores the Michaelis constant, the catalytic constant and the catalytic
+  efficiency as three independent records, and the third is arithmetically
+  determined by the first two. So the corpus can be checked against itself. Parse
+  the records of EC subclass 1.1.- , build the triples that share a protein, a
+  substrate and a reference, compute kcat/Km from kcat and Km, and compare it to
+  the stored value. Then say what the disagreements are: report them banded, and
+  recompute under three declared unit mistakes.
+
+method_guidance: partial
+
+scope_note: >
+  The units are the whole difficulty and BRENDA records none of them. A value is
+  a string like "0.05 {benzyl alcohol}" -- a number and the substrate in braces --
+  and the unit belongs to the FIELD, not the record: Km in mM, kcat in s^-1,
+  kcat/Km in mM^-1 s^-1. A system that does not know that cannot relate the three
+  at all, and one that assumes micromolar is wrong by exactly a factor of 1000.
+
+  Two other traps are in the data rather than in the task. BRENDA writes -999 for
+  a missing measurement; it is large, negative, and present in thousands of
+  records, and a pass that treats it as a number will report a negative mean
+  kinetic constant without noticing. And some values are ranges rather than
+  numbers, which the counting rules require to be counted as unparsed rather than
+  averaged into a number nobody wrote down.
+
+catalog_deviation: >
+  The catalogued T-L2-5 was "kinetics harmonisation across unit conventions", and
+  the data does not support that task as written: BRENDA has already normalised
+  units per field and records no unit on any value, so there are no competing
+  conventions in the file to harmonise. What the data does support is the
+  consequence of the convention being implicit -- an arithmetic reconciliation
+  that only works if you know which units each field is in, and whose
+  disagreements, measured, cluster at exactly the factors a unit mistake would
+  produce. The catalogued intent survives; the mechanism is the corpus checking
+  itself rather than two sources being brought into line.
+
+  The catalogue also recorded this row as blocked on BRENDA credentials. That was
+  wrong: the download is behind a licence-acceptance checkbox, not a registration
+  wall, and the licence is CC BY 4.0.
+
+template_params:
+  ec_prefix: "1.1."
+  kinetics_input: inputs/brenda_kinetics_ec1_1.json.gz
+  # The counterfactual: if the implicit unit convention did not matter, scaling
+  # Km or kcat by the factor a mistake would introduce would leave the agreement
+  # rate alone. The identity variant is a control and must reproduce R3 exactly.
+  unit_error_variants:
+    v0_identity:
+      km_factor: 1.0
+      kcat_factor: 1.0
+    v1_km_in_micromolar:
+      km_factor: 1000.0
+      kcat_factor: 1.0
+    v2_kcat_per_minute:
+      km_factor: 1.0
+      kcat_factor: 60.0
+    v3_both_mistakes:
+      km_factor: 1000.0
+      kcat_factor: 60.0
+
+output_contract:
+  kinetics_report.json:
+    release / ec_prefix / distinct_ec_numbers: From the shipped input.
+    declared_units: The unit per field, echoed from the pinned rules.
+    records_by_field / parsed_by_field / sentinel_by_field / unparsed_by_field: >
+      Per field, never summed across fields: they carry different units and
+      different sentinel rates. A record is one entry in a field's array.
+    triple_keys_total / completeness_counts: >
+      Distinct (EC, proteins, substrate, references) keys, and how many carry one,
+      two or three of the fields.
+    complete_triples / ec_with_complete_triples / distinct_substrates_in_complete_triples: >
+      Keys carrying all three parsed non-sentinel values, and their spread.
+    checked / excluded_non_positive: >
+      Complete triples entering the ratio, and those excluded because Km or the
+      stored efficiency is not positive.
+    band_counts: >
+      Per declared band, how many triples fall in it, under the declared
+      first-match-wins order. Bands outside the list are "other".
+    agreement_rate: agree divided by checked, to six decimals.
+    unit_mixup_total: factor_60 plus factor_1000.
+    unit_error_variants: >
+      Per declared variant, the factors applied and the resulting checked count
+      and agreement rate.
+    band_examples: >
+      A few triples from each unit-mix-up band, for a reader to see what is being
+      claimed. Reported for audit; see excluded_from_grading.
+
+constraints:
+  reference_dir: reference
+  pinned_tables:
+    - reference/kinetic_units.json   # units per field, parsing, keys, bands
+
+snapshots_required:
+  shipped: [brenda@2026.1]
+  fetched: []
+
+budgets:
+  wall_clock_minutes: 25
+  cpu: 2
+  memory_gb: 4
+  network: off
+
+rungs:
+  - {rung_id: r1, ordinal: 1, name: execute,        gold_tier: G1, warm_start_bundle: null}
+  - {rung_id: r2, ordinal: 2, name: correct,        gold_tier: G1, warm_start_bundle: gold/warm/r2}
+  - {rung_id: r3, ordinal: 3, name: commit,         gold_tier: G1, warm_start_bundle: gold/warm/r3}
+  - {rung_id: r4, ordinal: 4, name: counterfactual, gold_tier: G1, warm_start_bundle: gold/warm/r4}
+
+structural_elements: [verification, counterfactual, control, planted]
+
+harness:
+  gold_command: ["python3", "-m", "npbench_c.templates.kinetics_consistency.build", "{campaign}"]
+  solve_command: ["python3", "-m", "npbench_c.templates.kinetics_consistency.solve", "{campaign}", "{submission}"]
+  measure_command: ["python3", "-m", "npbench_c.templates.kinetics_consistency.measure", "{campaign}", "{submission}", "{measurement}"]
+  stub_module: npbench_c.sweep.stubs.stub_kinetics
+  stub_args: []
+  stub_levels:
+    - {name: stub-parser,     level: parser}
+    - {name: stub-triples,    level: triples, reference: true}
+    - {name: stub-consistent, level: consistent}
+    - {name: stub-complete,   level: complete}
+    - {name: stub-micromolar, level: micromolar}
+    - {name: stub-noncompute, level: noncompute, mode: no_tool}
+
+grading:
+  chance_levels: {r1: 1.0, r2: 0.003, r3: 0.001, r4: 0.001}
+  chance_level_notes:
+    r1: >
+      Nominal rather than measured. Record and sentinel counts cannot be guessed,
+      so the no-computation ablation fails R1 outright; the level is kept at 1.0
+      because any system that opens the file clears it, and the capped floor is
+      computed over R2 upward.
+
+excluded_from_grading:
+  - field: band_examples
+    reason: >
+      Illustrative rows for a reader, chosen by sorted key rather than by any
+      property of the measurement. The band COUNTS are the claim and are graded;
+      grading which five examples came first would grade an ordering convention.
+  - field: a verdict on which of the three constants is wrong in a disagreeing triple
+    reason: >
+      Not decidable from the record. A ratio near 1000 is consistent with Km read
+      in the wrong unit, with the stored efficiency being wrong, and with the two
+      values coming from different experiments in the same paper. The campaign
+      reports the factor, which is arithmetic, and not the culprit, which would be
+      judgement.
+  - field: any aggregate over the kinetic values themselves
+    reason: >
+      A mean Km over a subclass mixes enzymes, substrates and conditions, and
+      would be a number with no referent. The campaign counts records and compares
+      triples; it never averages a measurement across experiments.
+
+notes_for_audit:
+  - >
+    Check the sentinel counts first. BRENDA writes -999 for a missing value and
+    this subclass carries thousands of them; a pass that treats them as numbers
+    will report a negative mean and will also silently lose every triple they
+    belong to. The counting rules exclude them explicitly for that reason.
+  - >
+    The disagreement bands are the campaign's centre, and the two that matter are
+    factor_60 and factor_1000 -- the factors a per-minute kcat and a micromolar Km
+    would produce. They are a small fraction of the triples, and that is the
+    point: the corpus is mostly self-consistent, so the exceptions are
+    identifiable rather than lost in noise. band_examples shows a few.
+  - >
+    The v0_identity variant must reproduce R3's agreement rate exactly. It is a
+    control: a system that computes R4 by a different route than R3 will disagree
+    with itself there before it disagrees with gold anywhere else.

@@ -1,0 +1,221 @@
+{
+  "campaign_id": "kinetics-brenda-ec1_1-01",
+  "template_id": "kinetics-consistency",
+  "grading_spec_version": "1.0.0",
+  "rungs": [
+    {
+      "rung_id": "r1",
+      "ordinal": 1,
+      "name": "execute",
+      "gold_tier": "G1",
+      "composition": "product",
+      "pass_threshold": 1.0,
+      "chance_level": 1.0,
+      "components": [
+        {
+          "name": "report_present",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:present.report",
+            "gold": 1
+          }
+        },
+        {
+          "name": "release",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:release",
+            "gold": "gold:release"
+          }
+        },
+        {
+          "name": "ec_prefix",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:ec_prefix",
+            "gold": "gold:ec_prefix"
+          }
+        },
+        {
+          "name": "distinct_ec_numbers",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:distinct_ec_numbers",
+            "gold": "gold:distinct_ec_numbers"
+          }
+        },
+        {
+          "name": "declared_units",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:declared_units",
+            "gold": "gold:declared_units"
+          }
+        },
+        {
+          "name": "records_by_field",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:records_by_field",
+            "gold": "gold:records_by_field"
+          }
+        },
+        {
+          "name": "parsed_by_field",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:parsed_by_field",
+            "gold": "gold:parsed_by_field"
+          }
+        },
+        {
+          "name": "sentinel_and_unparsed",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:sentinel_and_unparsed",
+            "gold": "gold:sentinel_and_unparsed"
+          }
+        }
+      ],
+      "chance_level_note": "Nominal rather than measured. Record and sentinel counts cannot be guessed, so the no-computation ablation fails R1 outright; the level is kept at 1.0 because any system that opens the file clears it, and the capped floor is computed over R2 upward.\n"
+    },
+    {
+      "rung_id": "r2",
+      "ordinal": 2,
+      "name": "correct",
+      "gold_tier": "G1",
+      "composition": "product",
+      "pass_threshold": 1.0,
+      "chance_level": 0.003,
+      "components": [
+        {
+          "name": "triple_keys_total",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:triple_keys_total",
+            "gold": "gold:triple_keys_total"
+          }
+        },
+        {
+          "name": "completeness_counts",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:completeness_counts",
+            "gold": "gold:completeness_counts"
+          }
+        },
+        {
+          "name": "complete_triples",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:complete_triples",
+            "gold": "gold:complete_triples"
+          }
+        },
+        {
+          "name": "ec_with_complete_triples",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:ec_with_complete_triples",
+            "gold": "gold:ec_with_complete_triples"
+          }
+        },
+        {
+          "name": "distinct_substrates_in_complete_triples",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:distinct_substrates_in_complete_triples",
+            "gold": "gold:distinct_substrates_in_complete_triples"
+          }
+        }
+      ]
+    },
+    {
+      "rung_id": "r3",
+      "ordinal": 3,
+      "name": "commit",
+      "gold_tier": "G1",
+      "composition": "product",
+      "pass_threshold": 1.0,
+      "chance_level": 0.001,
+      "components": [
+        {
+          "name": "checked",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:checked",
+            "gold": "gold:checked"
+          }
+        },
+        {
+          "name": "excluded_non_positive",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:excluded_non_positive",
+            "gold": "gold:excluded_non_positive"
+          }
+        },
+        {
+          "name": "band_counts",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:band_counts",
+            "gold": "gold:band_counts"
+          }
+        },
+        {
+          "name": "agreement_rate",
+          "scorer": "abs_tol_match",
+          "args": {
+            "pred": "pred:agreement_rate",
+            "gold": "gold:agreement_rate",
+            "abs_tol": 1e-06
+          }
+        },
+        {
+          "name": "unit_mixup_total",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:unit_mixup_total",
+            "gold": "gold:unit_mixup_total"
+          }
+        }
+      ]
+    },
+    {
+      "rung_id": "r4",
+      "ordinal": 4,
+      "name": "counterfactual",
+      "gold_tier": "G1",
+      "composition": "product",
+      "pass_threshold": 1.0,
+      "chance_level": 0.001,
+      "components": [
+        {
+          "name": "unit_error_factors",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:unit_error_factors",
+            "gold": "gold:unit_error_factors"
+          }
+        },
+        {
+          "name": "unit_error_agree",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:unit_error_agree",
+            "gold": "gold:unit_error_agree"
+          }
+        },
+        {
+          "name": "unit_error_rates",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:unit_error_rates",
+            "gold": "gold:unit_error_rates"
+          }
+        }
+      ]
+    }
+  ]
+}

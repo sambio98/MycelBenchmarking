@@ -1,0 +1,253 @@
+campaign_id: gcfcutoff-mibig-32-01
+template_id: gcf-cutoff
+track: EX
+family: boundary_and_robustness
+layer: L3_cluster_and_pathway
+np_class: mixed
+version: 1.0.0
+horizon_tier: T-short
+license_class: open
+grader_version: "2.0.0+9fc95658"
+grading_spec_version: "1.0.0"
+min_tool_surface: S2
+tool_surface_note: >
+  Needs BiG-SCAPE 2.0.3 and the Pfam library it scans with, which the campaign
+  reads from the image rather than shipping. No S0 or S1 system can answer any
+  rung. One invocation covers the whole declared cutoff grid, so the tool cost is
+  a single run of a few minutes.
+
+license_notice:
+  source: >
+    The MIBiG antiSMASH-processed reference set, restricted to a declared
+    selection of clusters, plus the chemistry-derived groups for them
+  license: CC BY 4.0
+  attribution: >
+    MIBiG antiSMASH-processed reference set
+    (https://dl.secondarymetabolites.org/mibig/), licensed CC BY 4.0.
+  redistribution: >
+    inputs/clusters/ carries the selected GenBank files unchanged, and
+    inputs/designed_families.json records the groups and the rule that selected
+    them. CC BY 4.0 requires attribution and nothing further. The Pfam library is
+    NOT redistributed: it is read from the pinned image at a declared path with a
+    recorded sha256.
+
+objective: >
+  BiG-SCAPE partitions a set of biosynthetic gene clusters into families, and the
+  partition depends on a distance cutoff the caller supplies. Run the pinned tool
+  once over the declared cutoff grid, reconstruct the partition over the whole
+  corpus at the declared baseline cutoff, and reconcile it with families derived
+  independently from chemistry: which are recovered exactly, which are split,
+  whether any negative control is absorbed. Then report how all of that moves
+  across the grid.
+
+method_guidance: partial
+
+scope_note: >
+  Gold is the declared projection of the tool's own output and exact arithmetic
+  over it, tier G1. No rung asks whether two clusters "are" the same family;
+  every verdict compares two partitions of the same corpus.
+
+  Five things are load-bearing.
+
+  The clustering table lists ONLY clusters that joined a family, so the partition
+  over the corpus has to be reconstructed: listed records form their groups and
+  every record the table omits is a singleton. At the lowest declared cutoff the
+  table holds a fraction of the corpus, so reading it as the partition reports a
+  corpus smaller than the shipped one and a family structure that looks cleaner
+  than it is.
+
+  The join key is the GBK column, not the Record column: Record carries a region
+  suffix. The engine checks that each GBK appears exactly once per cutoff and that
+  every row is a region record, because a multi-region input would need a
+  different reconstruction rule than the declared one.
+
+  A family label is a NAME rather than a result. Two runs can agree completely on
+  which clusters belong together and disagree on what the groups are called, so
+  what is graded is the partition and the agreement is measured by counting pairs.
+
+  The cutoff is the answer's parameter, so the grid is declared and never
+  defaulted, and the baseline is BiG-SCAPE's own documented default rather than a
+  number chosen to flatter it.
+
+  And the families being reconciled against come from CHEMISTRY -- entries sharing
+  an InChIKey connectivity block in the chemical-space campaign's table -- not
+  from any clustering of these sequences. That is what makes them something to
+  reconcile against rather than a restatement of the answer.
+
+catalog_deviation: >
+  The catalogued R4 was to be scored with `interval_score`. It is not, and the
+  reason is in that primitive's own contract: it penalises vagueness against a
+  `max_width` taken from "the observed oracle spread from the determinism audit",
+  and this campaign has no spread to take one from. BiG-SCAPE is deterministic,
+  every cutoff in the grid comes from one run, and the answer is exact on a
+  declared grid -- so any `max_width` would be a number chosen rather than
+  measured, which is what the primitive exists to avoid. R4 instead grades the
+  per-cutoff table and three boundary claims exactly: the cutoff maximising
+  agreement under a declared tie-break, the first cutoff producing a false join,
+  and per family the first cutoff recovering it exactly, which is null where no
+  declared cutoff does.
+
+  The catalogued pins included `--mibig-version`. That flag is forbidden on a
+  gold-producing path: it downloads a reference set at run time, which would make
+  the run network-dependent and the reference set unpinned. The corpus is shipped
+  instead.
+
+template_params:
+  cluster_dir: inputs/clusters
+  designed_families_input: inputs/designed_families.json
+
+output_contract:
+  clustering_report.json:
+    corpus_size / designed_families / controls: >
+      The shipped corpus, the size of each chemistry-derived family, and the
+      negative controls.
+    bigscape_version / pfam_version / pfam_sha256: >
+      What clustered. A partition is only as pinned as the tool and the library
+      behind it.
+    cutoffs / baseline_cutoff / include_gbk: The declared invocation.
+    class_census: >
+      Per BiG-SCAPE class, how many records the clustering table lists at the
+      baseline cutoff.
+    baseline_partition: >
+      The partition over the WHOLE corpus at the baseline cutoff: groups as
+      sorted member lists, sorted among themselves. Records the clustering table
+      omits are singletons.
+    groups / size_census / largest_group / singletons / clustered_records: >
+      The shape of that partition.
+    per_family: >
+      Per chemistry-derived family: the declared verdict, how many groups its
+      members span, those group sizes descending, and any outsiders sharing a
+      group with them.
+    verdict_census / families_exact: >
+      The count per declared verdict, and how many families are recovered
+      exactly.
+    controls_absorbed: >
+      Negative controls that have joined a multi-member group.
+    designed_pairs / co_clustered_pairs / recovered_pairs / missed_pairs / false_join_pairs / pair_jaccard: >
+      Agreement counted over pairs, and the Jaccard index over the three.
+    cutoff_sweep: >
+      Per declared cutoff, the same partition shape, pair counts, exact-family
+      count, absorbed controls and per-family verdicts.
+    best_cutoff / best_pair_jaccard: >
+      The cutoff maximising pair agreement under the declared tie-break, and that
+      agreement.
+    first_cutoff_with_a_false_join / first_cutoff_absorbing_a_control: >
+      Where over-merging begins, by each measure.
+    first_cutoff_recovering_each_family: >
+      Per family, the lowest declared cutoff recovering it exactly, or null if no
+      declared cutoff does.
+
+constraints:
+  reference_dir: reference
+  pinned_tables:
+    - reference/cutoff_rules.json   # cutoffs, baseline, reconstruction, verdicts
+  external_resources:
+    - name: pfam_a_hmm
+      declared_in: reference/cutoff_rules.json
+      reason: >
+        1.5 GB, read from the pinned image rather than shipped and passed to
+        BiG-SCAPE with -p. Pfam is CC0, so this is a size decision and not a
+        licence one; the campaign records the path, the provider, the version and
+        a sha256, and the build refuses to emit gold on a mismatch.
+
+snapshots_required:
+  shipped: [mibig_antismash@4.0_as8b1]
+  fetched: []
+  image: [bigscape@2.0.3, pfam@35.0]
+
+budgets:
+  wall_clock_minutes: 30
+  cpu: 2
+  memory_gb: 8
+  network: off
+  budget_note: >
+    One BiG-SCAPE invocation covers the whole cutoff grid. The run is a few
+    minutes on this corpus; the budget allows for the agent reading 32 GenBank
+    files and doing the reconstruction and the pair counting itself.
+
+rungs:
+  - {rung_id: r1, ordinal: 1, name: execute,        gold_tier: G1, warm_start_bundle: null}
+  - {rung_id: r2, ordinal: 2, name: correct,        gold_tier: G1, warm_start_bundle: gold/warm/r2}
+  - {rung_id: r3, ordinal: 3, name: commit,         gold_tier: G1, warm_start_bundle: gold/warm/r3}
+  - {rung_id: r4, ordinal: 4, name: counterfactual, gold_tier: G1, warm_start_bundle: gold/warm/r4}
+
+# Nothing is planted. The negative controls are part of the declared selection
+# rule, not an insertion: one entry per biosynthetic class belonging to no
+# chemistry-derived group.
+structural_elements: [verification, counterfactual, control]
+
+harness:
+  gold_command: ["python3", "-m", "npbench_c.templates.gcf_cutoff.build", "{campaign}"]
+  solve_command: ["python3", "-m", "npbench_c.templates.gcf_cutoff.solve", "{campaign}", "{submission}"]
+  measure_command: ["python3", "-m", "npbench_c.templates.gcf_cutoff.measure", "{campaign}", "{submission}", "{measurement}"]
+  stub_module: npbench_c.sweep.stubs.stub_gcfcutoff
+  stub_args: []
+  stub_levels:
+    - {name: stub-reader,      level: reader, timeout_s: 3600}
+    - {name: stub-partition,   level: partition, reference: true, timeout_s: 3600}
+    - {name: stub-reconcile,   level: reconcile, timeout_s: 3600}
+    - {name: stub-complete,    level: complete, timeout_s: 3600}
+    - {name: stub-tableonly,   level: tableonly, timeout_s: 3600}
+    - {name: stub-noncompute,  level: noncompute, mode: no_tool, timeout_s: 600}
+
+grading:
+  chance_levels: {r1: 1.0, r2: 0.001, r3: 0.001, r4: 0.001}
+  chance_level_notes:
+    r1: >
+      Nominal rather than measured. The class census and the tool identity cannot
+      be guessed, so the no-tool ablation fails R1 outright; the level stays at
+      1.0 because any system that runs the tool clears it, and the capped floor is
+      computed over R2 upward.
+
+excluded_from_grading:
+  - field: the family labels BiG-SCAPE assigns
+    reason: >
+      FAM_00007 is a name, not a result. Two runs can agree completely on which
+      clusters belong together and disagree on what the groups are called, and
+      comparing the labels would call that a difference. The partition is graded
+      instead, which is the projection the tool registry already declares for this
+      artifact.
+  - field: the pairwise distance matrix itself
+    reason: >
+      The catalogued R1 named it. BiG-SCAPE 2.x keeps distances in a SQLite
+      database rather than a published table, and grading several hundred floats
+      would dominate the conjunctive product while testing one run repeatedly. The
+      partition at each declared cutoff is what the distances are for, and it is
+      graded at every cutoff in the grid.
+  - field: whether two clusters are "really" the same gene cluster family
+    reason: >
+      Not decidable from a distance cutoff, and not what the campaign asks. Every
+      verdict compares two partitions of one corpus. In particular a false join is
+      a disagreement with a chemistry-derived grouping, not proof that the tool is
+      wrong: sharing a compound connectivity block and sharing cluster architecture
+      are different claims.
+  - field: cross-version comparison of any kind
+    reason: >
+      Forbidden. BiG-SCAPE consumes antiSMASH region files, so a run mixing two
+      antiSMASH versions is the comparison antiSMASH's own rules forbid. Every
+      input here was processed by the same antiSMASH version, which is recorded in
+      the provenance, and this campaign never compares them against output from
+      the image's antiSMASH.
+
+notes_for_audit:
+  - >
+    Check the singleton count at the baseline cutoff first. If it is zero, the
+    reconstruction R2 turns on was not exercised and the rule was inherited from
+    another instantiation rather than tested here. The build refuses to emit gold
+    in that case, and also if the baseline partition is all singletons.
+  - >
+    Then check that the partition covers the corpus exactly. The reconstruction
+    adds a singleton for every record the clustering table omits, so the flattened
+    partition must equal the shipped corpus; if it does not, the table names a
+    record the corpus does not hold and every count below is suspect.
+  - >
+    The campaign's claim is that agreement with the chemistry-derived families is
+    NOT monotone in the cutoff: too low fragments them, too high absorbs a
+    negative control. Both ends have to be visible inside the grid, and the build
+    refuses to emit gold if no declared cutoff produces a false join or if the best
+    cutoff is the highest one declared -- either would mean the optimum may lie
+    outside the grid.
+  - >
+    A family that no declared cutoff recovers exactly reports null rather than a
+    number. That is a real answer and not a gap: it says the tool does not
+    reproduce that chemistry group at any cutoff in the grid.

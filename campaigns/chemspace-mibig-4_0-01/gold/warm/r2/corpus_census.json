@@ -1,0 +1,29 @@
+{
+  "active_entries": 2437,
+  "acyclic_compounds": 182,
+  "class_vocabulary": [
+    "NRPS",
+    "PKS",
+    "other",
+    "ribosomal",
+    "saccharide",
+    "terpene"
+  ],
+  "compound_records": 3449,
+  "corpus_entries": 3013,
+  "corpus_release": "4.0",
+  "distinct_compound_keys": 3115,
+  "distinct_connectivity_keys": 2996,
+  "distinct_scaffold_keys": 1843,
+  "duplicate_records": 334,
+  "entries_per_class": {
+    "NRPS": 836,
+    "PKS": 1010,
+    "other": 382,
+    "ribosomal": 326,
+    "saccharide": 193,
+    "terpene": 169
+  },
+  "entries_with_compounds": 1944,
+  "multi_class_entries": 456
+}

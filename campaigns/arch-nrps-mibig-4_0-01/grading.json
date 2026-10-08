@@ -1,0 +1,244 @@
+{
+  "campaign_id": "arch-nrps-mibig-4_0-01",
+  "template_id": "domain-architecture",
+  "grading_spec_version": "1.0.0",
+  "rungs": [
+    {
+      "rung_id": "r1",
+      "ordinal": 1,
+      "name": "execute",
+      "gold_tier": "G1",
+      "composition": "product",
+      "pass_threshold": 1.0,
+      "chance_level": 1.0,
+      "components": [
+        {
+          "name": "report_present",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:present.report",
+            "gold": 1
+          }
+        },
+        {
+          "name": "selection_census",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:selection_census",
+            "gold": "gold:selection_census"
+          }
+        },
+        {
+          "name": "curated_coordinate_usability",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:curated_coordinate_usability",
+            "gold": "gold:curated_coordinate_usability"
+          }
+        },
+        {
+          "name": "curated_active_flag",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:curated_active_flag",
+            "gold": "gold:curated_active_flag"
+          }
+        },
+        {
+          "name": "curated_module_census",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:curated_module_census",
+            "gold": "gold:curated_module_census"
+          }
+        },
+        {
+          "name": "strata_census",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:strata_census",
+            "gold": "gold:strata_census"
+          }
+        },
+        {
+          "name": "domains_by_module_type",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:domains_by_module_type",
+            "gold": "gold:domains_by_module_type"
+          }
+        },
+        {
+          "name": "curated_domain_totals",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:curated_domain_totals",
+            "gold": "gold:curated_domain_totals"
+          }
+        },
+        {
+          "name": "protein_length_summary",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:protein_length_summary",
+            "gold": "gold:protein_length_summary"
+          }
+        },
+        {
+          "name": "panel_census",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:panel_census",
+            "gold": "gold:panel_census"
+          }
+        },
+        {
+          "name": "environment",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:environment",
+            "gold": "gold:environment"
+          }
+        }
+      ],
+      "chance_level_note": "Nominal rather than measured. The selection census, the per-family hit census and the tool identity cannot be guessed, so the no-tool ablation fails R1 outright; the level stays at 1.0 because any system that reads the inputs and runs the tool clears it, and the capped floor is computed over R2 upward.\n"
+    },
+    {
+      "rung_id": "r2",
+      "ordinal": 2,
+      "name": "correct",
+      "gold_tier": "G1",
+      "composition": "product",
+      "pass_threshold": 1.0,
+      "chance_level": 0.001,
+      "components": [
+        {
+          "name": "architecture_table",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:architecture_table",
+            "gold": "gold:architecture_table"
+          }
+        },
+        {
+          "name": "architecture_census",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:architecture_census",
+            "gold": "gold:architecture_census"
+          }
+        },
+        {
+          "name": "overlap_census",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:overlap_census",
+            "gold": "gold:overlap_census"
+          }
+        }
+      ]
+    },
+    {
+      "rung_id": "r3",
+      "ordinal": 3,
+      "name": "commit",
+      "gold_tier": "G1",
+      "composition": "product",
+      "pass_threshold": 1.0,
+      "chance_level": 0.001,
+      "components": [
+        {
+          "name": "reconciliation_table",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:reconciliation_table",
+            "gold": "gold:reconciliation_table"
+          }
+        },
+        {
+          "name": "primary_verdicts",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:primary_verdicts",
+            "gold": "gold:primary_verdicts"
+          }
+        },
+        {
+          "name": "secondary_verdicts",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:secondary_verdicts",
+            "gold": "gold:secondary_verdicts"
+          }
+        },
+        {
+          "name": "secondary_verdicts_by_stratum",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:secondary_verdicts_by_stratum",
+            "gold": "gold:secondary_verdicts_by_stratum"
+          }
+        },
+        {
+          "name": "primary_delta_census",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:primary_delta_census",
+            "gold": "gold:primary_delta_census"
+          }
+        },
+        {
+          "name": "module_table",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:module_table",
+            "gold": "gold:module_table"
+          }
+        },
+        {
+          "name": "module_verdicts",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:module_verdicts",
+            "gold": "gold:module_verdicts"
+          }
+        },
+        {
+          "name": "complete_modules_total",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:complete_modules_total",
+            "gold": "gold:complete_modules_total"
+          }
+        }
+      ]
+    },
+    {
+      "rung_id": "r4",
+      "ordinal": 4,
+      "name": "counterfactual",
+      "gold_tier": "G1",
+      "composition": "product",
+      "pass_threshold": 1.0,
+      "chance_level": 0.001,
+      "components": [
+        {
+          "name": "policy_sweep",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:policy_sweep",
+            "gold": "gold:policy_sweep"
+          }
+        },
+        {
+          "name": "mapping_sweep",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:mapping_sweep",
+            "gold": "gold:mapping_sweep"
+          }
+        }
+      ]
+    }
+  ]
+}
