@@ -72,14 +72,14 @@ key.
 
 ---
 
-## L1 — Sequence & gene (4 templates, 5 catalogued campaigns, 1 built)
+## L1 — Sequence & gene (4 templates, 5 catalogued campaigns, 5 built)
 
 | # | Template | Data | Build |
 |---|---|---|---|
 | T-L1-1 | Gene calling under assembly fragmentation | verified | **BUILT** (S1) |
 | T-L1-2 ×2 | Domain architecture parsing | verified | **BUILT ×2** (NRPS + PKS) |
 | T-L1-3 | Annotation transfer error detection | verified | **BUILT** (S1) |
-| T-L1-4 | Frameshift / pseudogene detection | probe | image |
+| T-L1-4 | Frameshift / pseudogene detection | verified | **BUILT** (S1) |
 
 **T-L1-1** Prodigal gene calls on a contig, then the same contig fragmented.
 R1 emit a GFF-like call table honouring the coordinate contract · R2 calls match
@@ -289,6 +289,80 @@ times.
 R3 claim: which locus is a pseudogene and why, closed enum · R4 an indel is
 introduced elsewhere — predict the new pseudogene call. Perturbation:
 `shift_coordinates`.
+
+**Built**: `campaigns/frameshift-scoelicolor-01`. The same *S. coelicolor*
+chromosome as T-L1-1, pinned Prodigal 2.6.3, **7,758 baseline calls** in meta
+mode. 21 declared targets from 99 to 22,392 bp, each broken by deleting one
+base at its midpoint. Oracle 1.0 at depth 4, gate 21/0/5, stub sweep 5/5 with
+exact depth separation [1, 2, 3, 4]. Build: 32 caller runs, 12 min 47 s.
+
+**This campaign plants, and that is what makes it gradeable.** "Which locus is a
+pseudogene" has no oracle — the literature disagrees, the pipelines disagree, and
+scoring against a curator's reading is the human judgement this benchmark keeps
+out of grading. A frameshift the campaign introduces itself is known by
+construction, so the claim is never whether a gene is broken but what the caller
+reports when it demonstrably is. The catalogued R3 is excluded by name and
+replaced.
+
+**Two campaigns on one tool, opposite modes, each for a measurement.** T-L1-1
+pins Prodigal's `single` mode because its retraining *is* the finding there: the
+flag moves 546 calls against 145 from fragmentation. Here retraining is the
+noise. One deleted base out of 8.67 Mb moves **43 to 57 calls elsewhere** in
+single mode, against a signature of one call lost and two gained — a
+noise-to-signal ratio of **14 to 53**, measured per target in the noise arm
+rather than asserted. In meta mode the same deletion moves nothing but the gene
+it broke: `other_calls_lost` and `other_calls_gained` are **0 on 19 of 21
+targets**. The arm is why the mode is a measurement and not a preference, and
+the build refuses gold if the retraining mode comes out quieter than the signal.
+
+**The coordinate lift past the deletion is the competence probe.** Delete a base
+at position *p* and every mutated coordinate at or after *p* stands for a parent
+coordinate one higher. Skipping that moves some seven thousand calls by one base
+— and the symptom is not the obvious one. **The verdict mostly survives**,
+because overlap with a gene's span is robust to a one-base shift. What breaks is
+everything that compares two runs: on the 22 kb target, the truth is two new
+calls of 11,233 and 11,187 bases with no collateral, and the unlifted run reports
+three new calls — 11,232, 11,187 and 11,013 — with 4,571 lost and 4,570 gained.
+Across the ladder it still gets **19 of 21 verdicts right** and flips two (240 bp
+reads truncated instead of abolished, 249 bp split instead of truncated, both
+from a call already inside the span counting as new), with collateral columns of
+1,539 to 7,745 against gold's 0 on nineteen rows. It clears R1, fails R2 in every
+row, and fails R3 by two rows out of twenty-one.
+
+**Deviations, each forced by a measurement.** Four.
+
+- **R3 is not "which locus is a pseudogene".** No oracle; see above.
+- **R4 grades the split point, not the verdict.** The catalogued R4 asked for the
+  new call as an indel moves. Measured on a 22 kb gene, every declared offset
+  from 5% to 95% gives the same verdict — two overlapping ORFs. What moves is
+  where the gene splits, and it tracks the indel exactly: first fragment
+  1,141 → 6,145 → 11,233 → 17,869 → 21,322 bases. Grading the verdict would
+  grade one answer five times, so the verdict-as-a-function-of-position is
+  excluded by name and the split point is graded instead.
+- **The perturbation deletes a base, not a coordinate.** The catalogued name was
+  `shift_coordinates`; moving an annotation and leaving the bases alone is a
+  different experiment, and one a gene caller cannot notice.
+- **The target ladder is a measurement, not a set of round numbers.** Nothing
+  caught this one: the build passed, the oracle scored 1.0 at depth 4 and every
+  assertion held. What made it visible was a stale sentence in the template's own
+  docstring, left from a grounding pass run before the ladder was declared, which
+  claimed an alternation the shipped ladder did not show. The guard against it
+  exists now because of that, not before it. The first draft declared eleven
+  lengths — 100, 150, 200, 250, 300, 450, 700, 1200, 3000, 10000, 20000 — and the
+  verdict list came out in three contiguous blocks: abolished to 201 bp,
+  truncated at 249 and 300, split from 450 up. **That list is two cut points in
+  disguise**, which makes R3 one threshold restated once per target: the
+  free-component defect in a new costume. Measured at a ten-base step, the
+  caller's recovery has no threshold. It turns over between 170 and 280 bases and
+  inside that band it **alternates** — 171 truncated, 180 abolished, 189
+  truncated, 201 through 240 abolished, 249 truncated, 261 and 270 abolished, 279
+  truncated. Whether each half of a broken gene is callable depends on a start
+  codon and a ribosome-binding site landing in the right place, not only on how
+  much room there is. The shipped ladder samples that band at a uniform ten-base
+  step, so the band's width is the measurement and no length inside it is chosen
+  over another: **abolished 10, truncated_to_one 5, split_into_two 6, and
+  `verdict_is_monotone_in_length` is False**. The build now refuses gold if the
+  list comes out contiguous.
 
 ## L2 — Enzyme & function (5 templates, 7 catalogued campaigns, **4 reachable**)
 

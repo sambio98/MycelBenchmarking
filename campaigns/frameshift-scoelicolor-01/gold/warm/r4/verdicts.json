@@ -1,0 +1,32 @@
+{
+  "verdict_by_length": {
+    "100": "abolished",
+    "10000": "split_into_two",
+    "1200": "split_into_two",
+    "150": "abolished",
+    "170": "truncated_to_one",
+    "180": "abolished",
+    "190": "truncated_to_one",
+    "200": "abolished",
+    "20000": "split_into_two",
+    "210": "abolished",
+    "220": "abolished",
+    "230": "abolished",
+    "240": "abolished",
+    "250": "truncated_to_one",
+    "260": "abolished",
+    "270": "abolished",
+    "280": "truncated_to_one",
+    "300": "truncated_to_one",
+    "3000": "split_into_two",
+    "450": "split_into_two",
+    "700": "split_into_two"
+  },
+  "verdict_census": {
+    "abolished": 10,
+    "split_into_two": 6,
+    "truncated_to_one": 5,
+    "unchanged": 0
+  },
+  "verdict_is_monotone_in_length": false
+}

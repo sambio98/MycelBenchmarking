@@ -52,6 +52,7 @@ TEST_FILES = {
     "chemical_space": "test_campaign_chemspace.py",
     "domain_architecture": "test_campaign_arch.py",
     "ec_domain_audit": "test_campaign_ecaudit.py",
+    "frameshift_response": "test_campaign_frameshift.py",
     "gcf_cutoff": "test_campaign_gcfcutoff.py",
     "gene_calling": "test_campaign_genecall.py",
     "kinetics_consistency": "test_campaign_kinetics.py",

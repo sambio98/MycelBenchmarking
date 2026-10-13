@@ -107,7 +107,7 @@ ClusterBlast DB ↔ MIBiG version ↔ pyhmmer move together.
 | **BLAST+** | L1-3, L2-2 | pin version, fixed `-num_threads` |
 | **DIAMOND** | L1-3, L2-3 | **≥ 2.2.7**, fixed `--threads`, explicit `--max-target-seqs` (it changes which hits survive). **Never `--no-reorder`** — measured, that flag is what breaks determinism, not what provides it (see below) |
 | **MMseqs2** | L2-3 | pin post-fix build, always `createindex`, fixed `--threads`, explicit `--max-seqs` (issue #277: results differ by core count), **plus a declared canonical line order** — no flag fixes its multithreaded output order |
-| **Prodigal** | L1-1, L1-4 | pin version **and mode** (single vs meta changes calls); Prodigal-GV is a different tool |
+| **Prodigal** | L1-1, L1-4 | pin version **and mode** (single vs meta changes calls); Prodigal-GV is a different tool. **The two built campaigns pin opposite modes, each for a measurement**: L1-1 pins `single`, whose retraining on its own input is that campaign's finding; L1-4 pins `meta`, because the same retraining moves 43-57 calls from one deleted base and would swamp a signature of one call lost and two gained. The mode is not a house convention, it is a per-campaign measurement |
 | **antiSMASH** | L3-1, L3-5 | pin the exact version **and** the database release — they are one pin. Fixed `--cpus`. **Annotated input only** (GenBank/EMBL, never FASTA), or the gene caller's determinism is folded into antiSMASH's. Grade a declared **projection** of the JSON, never the HTML and never the whole JSON. **Never compare across versions** — 58 rules at v5, 88 at v7.1, **103 at 8.0.4** |
 | **BiG-SCAPE** | L3-2 | pin the version **and `sqlalchemy < 2.1`** — the recipe's own bound is wrong and 2.0.3 crashes on 2.1 before reading an input. Pin the antiSMASH version that produced the inputs. Fixed `--cores`, explicit `--gcf-cutoffs`, explicit `--include-gbk` when inputs are not named `*.region*.gbk`. **Never `--mibig-version`** on a gold path: it downloads a reference set at run time |
 | **MAFFT** | L2-3 | pin major version, prefer deterministic modes |
@@ -276,7 +276,7 @@ and the right ones to author first.
 | T-L1-1 gene calling | INSDC AL645882.2 bases (shipped), no database | Prodigal 2.6.3 | **S1, BUILT** |
 | T-L1-2 domain architecture ×2 | MIBiG 4.0 + module-gene translations (shipped), Pfam 35.0 (image) | HMMER 3.4 | **S1, BUILT ×2** (NRPS + PKS) |
 | T-L1-3 annotation transfer | UniProt 2026_03 EC 1.14 (shipped, closed) | DIAMOND 2.2.8 | **S1, BUILT** |
-| T-L1-4 pseudogene | — | Prodigal | S1 |
+| T-L1-4 frameshift response | INSDC AL645882.2 bases (shipped), no database | Prodigal 2.6.3 | **S1, BUILT** |
 | T-L2-1 EC misannotation | UniProt 2026_03 (shipped), Pfam 35.0 (image) | HMMER 3.4 | **S1, BUILT** |
 | T-L2-2 catalytic residues | PDB, UniProt | — (stdlib only) | **S0** |
 | T-L2-3 remote homology | UniProt subset | MMseqs2/DIAMOND | S1 |

@@ -22,7 +22,8 @@ scoring path.
 | Campaign: malleobactin | `campaigns/massbalance-nrps-malleobactin-01/` | oracle 1.0, gate 21/0/5 |
 | Campaign: sevadicin | `campaigns/massbalance-nrps-sevadicin-01/` | oracle 1.0, gate 21/0/5 |
 | Internal sweep | `src/npbench_c/sweep/` | runner, stats, gates, stub fixtures |
-| Refusal contract | `tests/unit/test_build_refusals.py` | every one of 114 build refusals named by a test |
+| Refusal contract | `tests/unit/test_build_refusals.py` | every one of 133 build refusals across 11 templates named by a test |
+| Categorical leak check | `tests/unit/test_cold_sandbox_prose.py` | no graded closed-vocabulary term stated against its own label in any cold sandbox |
 | Catalog | `docs/catalog.md` | 24 templates / 32 campaigns, grounded |
 | Provisioning | `docs/environment.md` | tools, DBs, sandbox contract |
 | Template: MIBiG release diff | `src/npbench_c/templates/mibig_diff/` | shared oracle |
@@ -54,6 +55,8 @@ scoring path.
 | Campaign: MIBiG PKS architectures | `campaigns/arch-pks-mibig-4_0-01/` | oracle 1.0, gate 21/0/5, cis-AT vs trans-AT strata |
 | Template: gene calling | `src/npbench_c/templates/gene_calling/` | Prodigal 2.6.3, declared fragmentation rule, no external resource |
 | Campaign: S. coelicolor gene calls | `campaigns/genecall-scoelicolor-01/` | oracle 1.0, gate 21/0/5 |
+| Template: frameshift response | `src/npbench_c/templates/frameshift_response/` | Prodigal 2.6.3 in the opposite mode, planted single-base deletion, coordinate lift past the cut |
+| Campaign: S. coelicolor frameshifts | `campaigns/frameshift-scoelicolor-01/` | oracle 1.0, gate 21/0/5, ladder samples the measured turnover band |
 | External resources | `src/npbench_c/tools/resources.py` | one declaration for a pinned file read from the image, shared by 3 campaigns |
 | Tool memo | `src/npbench_c/tools/cache.py` | stub sweeps only; 29m32s to 3m44s |
 | Phase 1 image | `image/Dockerfile`, `image/environment.lock.json` | 8 tools pinned to `version=build`, 185-package closure hashed, antiSMASH databases pinned at 9.4 GB |
@@ -2658,6 +2661,213 @@ real gold, assert the refusal fires. Two were worth the trouble on their own:
   flattened alone. Writing those is where the ordering of a template's refusals
   stops being incidental and becomes part of its contract.
 
+## Campaign 22: breaking the gene on purpose
+
+T-L1-4 is frameshift and pseudogene detection, and its catalogued R3 is "which
+locus is a pseudogene and why, closed enum". That claim cannot be graded. The
+literature disagrees about which *S. coelicolor* loci are pseudogenes, the
+annotation pipelines disagree with the literature and with each other, and there
+is no oracle to appeal to. Scoring a system against a curator's reading is the
+human judgement this benchmark keeps out of grading, so the catalogued claim is
+excluded by name.
+
+What replaces it: the campaign deletes a base itself. Take Prodigal's own call
+table on the chromosome, pick the call closest to each declared gene length,
+delete one base at its midpoint, run the caller again, lift the coordinates back
+past the deletion, and report what became of the gene. The gene is broken by
+construction, so the graded question is never whether it is broken. It is what
+the caller says about a gene that demonstrably is.
+
+`campaigns/frameshift-scoelicolor-01`: AL645882.2 again, 8,667,507 bp, Prodigal
+2.6.3, 7,758 baseline calls, 21 targets from 99 to 22,392 bp. Oracle 1.0 at depth
+4, gate 21/0/5. The build is 32 caller runs and takes 12m47s.
+
+### The same tool, the opposite flag
+
+Campaign 21 pins Prodigal's `single` mode on this exact chromosome. This one
+pins `meta`, and the two reasons are the same measurement read in opposite
+directions.
+
+Single mode trains on the input it is given. In campaign 21 that is the finding:
+fragmenting the contig changes the training set, which moves 546 calls against
+145 that the cuts themselves explain, and the headline is that the flag matters
+more than the assembly. Here the same property is the noise floor. One deleted
+base out of 8.67 megabases moves 43 to 57 calls elsewhere on the chromosome in
+single mode, and the signature this campaign is trying to see is one call lost
+and two gained. The signal does not survive that.
+
+So the campaign reports a ratio rather than an argument. The noise arm re-runs
+four of the targets under single mode and gives, per target, how many moved calls
+the broken gene itself explains against how many moved elsewhere: 53.0, 19.0,
+18.0, 14.3. In meta mode the collateral columns are 0 on 19 of the 21 targets.
+The build refuses to emit gold if the retraining mode comes out quieter than the
+signal, which is the one case where the choice of baseline would need
+re-measuring.
+
+Two campaigns on one tool with opposite pins, each stated as a number, is the
+closest this project has come to a result about a tool rather than about data.
+
+### The lift, and a probe that surprised me
+
+Delete a base at position *p* and every coordinate in the mutated run at or after
+*p* stands for a parent coordinate one higher. The lift is one addition per call.
+I expected skipping it to be catastrophic and obvious, since it displaces roughly
+seven thousand calls by one base.
+
+It is catastrophic and it is not obvious. The verdict usually survives. Overlap
+with a gene's own span is robust to a one-base shift, so a system that never
+lifted anything still reports that the 22 kb gene split in two and that the
+189 bp gene truncated to one ORF. What breaks is every column that compares two
+runs. On the 22 kb target
+the truth is two new calls of 11,233 and 11,187 bases with no collateral at all;
+the unlifted run reports three new calls (11,232, 11,187 and 11,013, the third
+being a pre-existing call inside the span that moved and so counts as new) with
+4,571 calls lost and 4,570 gained.
+
+Measured across the whole ladder, the unlifted run gets **19 of the 21 verdicts
+right** and flips two: the 240 bp gene reads as truncated instead of abolished
+and the 249 bp one as split instead of truncated, because the displacement turns
+a call that was already inside each span into a spurious new one. Its collateral
+columns run from 1,539 to 7,745 against gold's 0 on 19 of 21 rows.
+
+So `stub-unlifted` clears R1, fails R2 in every row, and fails R3 by two rows out
+of twenty-one. That ratio is the probe's value: a system can be right about what
+happened to nearly every gene in the experiment and still not have run the
+experiment, and the rung that notices is the one where two coordinate systems
+have to meet.
+
+### The ladder was a threshold in disguise
+
+The first draft declared the lengths anyone would declare: 100, 150, 200, 250,
+300, 450, 700, 1200, 3000, 10000, 20000. The build passed, the oracle scored 1.0
+at depth 4, every assertion held, and the verdict list came out in three blocks.
+Abolished through 201 bp. Truncated at 249 and 300. Split from 450 up.
+
+A list in contiguous blocks is its own cut points. Two numbers, 249 and 450,
+regenerate all eleven entries, which makes R3's per-length verdict list one
+threshold restated once per target. It is the free-component defect again, in a
+shape I had not seen before: not a value readable out of the inputs, but a list
+whose entries are a function of two of its own. Nothing in the build noticed,
+because nothing was looking for it.
+
+What made it visible was a stale sentence. The template docstring claimed, from a
+grounding pass run before the ladder was declared, that a 189 bp gene survives as
+one truncated ORF while 219 and 261 bp genes are abolished outright. The shipped
+ladder contained none of those lengths and reported a clean threshold, so either
+the docstring or the ladder was wrong. Re-measuring at a ten-base step from 170
+to 280 settled it:
+
+| length | 171 | 180 | 189 | 201 | 210 | 219 | 231 | 240 | 249 | 261 | 270 | 279 |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| verdict | trunc | abol | trunc | abol | abol | abol | abol | abol | trunc | abol | abol | trunc |
+
+There is no threshold. Whether a frameshifted gene leaves a callable ORF behind
+depends on a start codon and a ribosome-binding site falling in the right place
+downstream of the break, not only on how much room the halves have, and the round
+numbers step straight over the band where that shows.
+
+The temptation was to fix the docstring. What the ladder's own declared purpose
+said, in the rules file, was that it "has to cross wherever that turns over", and
+it did not. So the ladder changed instead: the wide anchors stay, and the band
+from 170 to 280 is sampled at a uniform ten-base step. Uniform matters. Picking
+189 and 219 because they show the inversion would be selecting the finding;
+declaring every length in a band whose width is itself the measurement does not
+select among them. The provenance of the band, the twelve verdicts above, is
+recorded in the rules file next to the lengths.
+
+The shipped campaign: abolished 10, truncated_to_one 5, split_into_two 6, and
+`verdict_is_monotone_in_length` is False. R3 is now 21 verdicts that no two
+numbers reproduce. And the build refuses gold when that boolean comes out True,
+which is the guard the first draft needed and did not have — not a claim that the
+data must be non-monotone, but a refusal to ship a rung that grades one cut point
+21 times.
+
+The ladder went from 11 targets to 21, the build from 22 caller runs to 32, and
+the declared budget from 30 minutes to 60.
+
+### R4 grades a coordinate, not a verdict
+
+The catalogued R4 asks for the new pseudogene call as an indel is introduced
+elsewhere. Walked across the 22 kb target at 5, 25, 50, 75 and 95 per cent, the
+verdict does not move at all: five offsets, five times `split_into_two`. Grading
+it would grade one answer five times.
+
+What moves is where the gene splits, and it tracks the deletion exactly. First
+fragment: 1,141 → 6,145 → 11,233 → 17,869 → 21,322 bases, against deletions
+1,120 → 5,598 → 11,196 → 16,794 → 21,272 bases into the gene. So R4 grades the
+split point, the verdict-as-a-function-of-position is excluded by name, and the
+build refuses gold if those first-fragment lengths repeat or come out of order.
+
+### Two refusals the contract caught
+
+Registering this template in `test_build_refusals.py` reported 17 refusals with
+no test, which is what that file is for, and writing them found two real defects.
+
+The length-proximity rule read `abs(chosen.length - want) > want`, which is
+one-sided. The gap between a 300 bp call and a declared 100 kb target is bounded
+by 100 kb, so a declared length far larger than anything on the contig can never
+trip it: a ladder asking for 20 kb on a contig whose longest gene is 300 bp would
+have audited that gene as its 20 kb target without complaint. It is now a factor
+of two in both directions.
+
+And the first mutation I wrote for that refusal reached a different one. Five
+copies of a declared length exhaust the single available call, so "no call is
+left to stand for" fires before the proximity check ever runs. Same lesson as
+last campaign, one layer down: a template's refusals have an order, the order
+decides which mutations can reach which refusal, and nothing but these tests
+records it.
+
+### The sweep
+
+Six stub levels, three repeats, 72 runs in 15m11s with the memo effective, and
+the depth separation is exact: reader 1, respond 2, verdict 3, complete 4,
+unlifted 1, noncompute 0. All five gates pass — R1 clear rate 1.0, clear rates
+non-increasing at 1.0 / 0.6 / 0.4 / 0.2, cold mean 0.55, no-tool score 0.0000
+against a chance floor of 0.2502.
+
+The memo's value shows in the shape of the cost here rather than its size. The
+whole campaign is 32 unique caller runs; 72 sweep runs need those same 32 and
+nothing more, so the sweep costs about what one build costs plus the sandbox
+overhead, instead of about what nine builds cost.
+
+### The same leak, in a shape check 21 cannot see
+
+Writing the ladder's own justification into the rules file, I explained why one
+length band is sampled densely by saying what the verdicts in that band are. The
+band is twelve of the twenty-one declared targets, so that sentence handed over
+twelve of R3's answers in a file the agent reads before doing anything, and
+`task.yaml` carried the same list in its deviation note.
+
+Check 21 passed it. It searches `task.yaml` and `reference/` for the string form
+of every graded value and looks only at distinctive scalars, by design: an
+integer needs four digits and a float four decimals, because a graded count of 2
+occurs in any prose by coincidence. Here neither half of the pair is a
+distinctive scalar. `170` is a declared target length that has to be in the rules
+file, and `truncated_to_one` is published vocabulary that also has to be. The
+answer is the two of them in one sentence.
+
+So the mechanism is the one the project already named — a note explaining a
+design decision drifts into quoting the measurement that motivated the decision —
+and the shape is new: not a value in prose, but a PAIRING in prose.
+
+`tests/unit/test_cold_sandbox_prose.py` checks it across every built campaign:
+for each graded value that is a map from a declared label to a term, it fails if
+the label and its term occur within 160 characters of each other anywhere in the
+cold sandbox. It is bounded to terms the campaign itself declares as a closed
+vocabulary, and that bound is what makes it precise. A graded string that is not
+a declared term — a molecular formula, a unit, an InChIKey — is published because
+the campaign cannot be solved without it, and whether grading it back is a free
+component is a different question with a different answer per campaign. Run
+unbounded, the scan fired on six campaigns; triaged, one was this leak, three
+were free components (open item 10), and two were the aggregate-over-a-published-
+table case, which is not a defect at all.
+
+Fixing it meant deleting the verdict list from both files and saying, where it
+stood, that the band's verdicts are what R3 grades and are therefore not recorded
+in the sandbox. The numbers are in this file instead, which the sandbox never
+sees. The audit notes went the same way: they now say what to recompute and from
+where, rather than printing what it comes to.
+
 ## Open items
 
 1. **CAI table provenance.** The relative-adaptiveness values now live in
@@ -2708,19 +2918,58 @@ real gold, assert the refusal fires. Two were worth the trouble on their own:
    into the same corpus, with the tool itself memoised. So the pattern holds at
    both ends of the cost range and the fix is the same one: cache the parsed
    inputs, or reuse a sandbox across repeats.
+   Measured a fourth time on T-L1-4, where the tool is expensive and the input is
+   one 8.7 MB contig rather than a large corpus, a 72-run stub sweep takes
+   **15m11s** against a 12m47s build — so with the memo working the sweep costs
+   roughly one build plus sandbox overhead, and the overhead per run is small when
+   there is no corpus to re-parse. That is the counter-case to the three above and
+   it points the same way: what the memo cannot help with is re-reading inputs,
+   not re-running tools.
    And the real-systems sweep gets no memo at all by design — every such run must
    drive the tool itself — so whether that needs parallelism depends on how long
    real agents take per run, measurable only once item 3 supplies the `SystemSpec`
    entries.
 9. **`structural_elements` is decorative and nothing validates it.** Nine of the
-   twenty-one built campaigns declare `planted` and several of them plant nothing —
+   twenty-two built campaigns declare `planted` and several of them plant nothing —
    `mibig-diff-3_1-to-4_0-01`'s own notes say its sharpest case is "supplied by the
-   corpus rather than planted". The seven campaigns built since declare only what
-   they have (`verification, counterfactual, control`), but the field needs either
-   a definition and a gate check or removal, and fixing the other nine is the
-   owner's taxonomy call rather than a silent edit. A declaration no check reads is the
+   corpus rather than planted". The campaigns built since declare only what they
+   have (`verification, counterfactual, control`), with one exception that earns
+   the term: `frameshift-scoelicolor-01` deletes a base from the chromosome
+   itself, and that planting is the whole reason its R3 is gradeable. So the field
+   now has one worked example of what `planted` should mean, which makes the
+   definition easier to write and the other nine easier to judge. It still needs
+   either a definition and a gate check or removal, and fixing the other nine is
+   the owner's taxonomy call rather than a silent edit. A declaration no check reads is the
    thing this project keeps finding in other people's data.
-10. Construct-validity study: inter-rater agreement first, then expert-grader
+10. **Eight graded components are readable straight out of `reference/`**, found
+   by the categorical-leak scan above and triaged out of it, because they are a
+   different defect: free components rather than prose leaks. Each sits in a
+   conjunctive rung beside components that are not free, so no rung becomes
+   passable for nothing, but the per-rung difficulty profile is flattered in
+   exactly the direction that flatters the benchmark.
+   - `massbalance-nrps-sevadicin-01` R2: `formula_alanine`,
+     `formula_phenylalanine`, `formula_tryptophan`.
+   - `massbalance-nrps-malleobactin-01` R2: the four `formula_*` components.
+   - `kinetics-brenda-ec1_1-01` R1: `declared_units`.
+
+   In every case the table is published for a stated reason — the mass-balance
+   formulas so that a system is not marked wrong because its RDKit counts
+   hydrogens differently, the units so that a correct number in the wrong
+   convention is not scored as an error — so the table has to stay and the
+   component has to go, which is the `mibig-diff` precedent exactly. The fix is
+   mechanical for all three (gold is pure computation): drop the component,
+   record the exclusion with its reason, rebuild, re-gate. Two scans that fired
+   on the same campaigns are **not** this defect and were triaged as such:
+   `chemspace-mibig-4_0-01`'s most-shared scaffold is an aggregate over a table
+   that necessarily contains the winner, and `pocket-rebh-01`'s focal ligand is
+   declared in `task.yaml` but is not among that rung's graded descriptors.
+11. **The categorical-leak check belongs in the readiness gate**, as check 22.
+   It lives in `tests/unit/test_cold_sandbox_prose.py` instead, because the gate
+   certifies a campaign by regenerating its gold and the antiSMASH campaigns cost
+   half an hour each; moving it in means a gate run over all 22 campaigns, which
+   is an afternoon rather than a question. Same guarantee either way, and the test
+   runs in a tenth of a second.
+12. Construct-validity study: inter-rater agreement first, then expert-grader
    agreement with Gwet's AC1 / Krippendorff's alpha alongside kappa, gate on
    Spearman against the continuous rating. This is the one place humans are
    involved, and it sits outside the grading pipeline by design.
