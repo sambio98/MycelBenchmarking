@@ -76,7 +76,7 @@ key.
 
 | # | Template | Data | Build |
 |---|---|---|---|
-| T-L1-1 | Gene calling under assembly fragmentation | probe | image |
+| T-L1-1 | Gene calling under assembly fragmentation | verified | **BUILT** (S1) |
 | T-L1-2 ×2 | Domain architecture parsing | verified | **BUILT ×2** (NRPS + PKS) |
 | T-L1-3 | Annotation transfer error detection | verified | **BUILT** (S1) |
 | T-L1-4 | Frameshift / pseudogene detection | probe | image |
@@ -87,6 +87,42 @@ gold within overlap-F1 tolerance · R3 claim: which genes are truncated at a
 contig boundary, from a closed enum · R4 contig re-fragmented at new
 breakpoints — predict which calls change. G1 throughout. R4 perturbation:
 `truncate_contig`.
+
+**Built**: `campaigns/genecall-scoelicolor-01`. Pinned Prodigal 2.6.3 over the
+complete *S. coelicolor* chromosome (AL645882.2, 8,667,507 bp), **7,738 calls**
+covering 88.5% of it. Oracle 1.0 at depth 4, gate 21/0/5. **The first
+tool-running campaign here with no external resource to pin** — an ab initio
+caller reads only the sequence, so the version and the mode are the whole pin.
+
+**Nothing annotated is shipped.** The detection campaign uses this same accession
+and ships the annotated GenBank; here the annotation is what the tool is asked to
+reproduce, so the input is the bases alone and the record's **7,825 CDS features
+are discarded**, with the count in the provenance. The curated annotation is also
+refused as a reference: it would make the campaign about accuracy against an
+annotation that is itself largely pipeline output.
+
+**Cut into 50 fragments**: 7,738 → 7,779 calls, 7,686 retained, 52 lost, 93 new.
+The whole contig has no partial call at all; the fragmented run has 86. The 52
+losses classify as **43 crossing a cut**, 4 near one, and **5 distant from every
+cut** — and that third term is the campaign:
+
+| mode | 2 frags | 10 frags | 50 frags |
+|---|---|---|---|
+| single (trains on its input) | **2** distant | 0 | **5** distant |
+| meta (pre-trained) | **0** | **0** | **0** |
+
+Prodigal's single mode trains on what it is given, so fragmenting changes the
+training set in one mode and not the other. Measured per cell, not asserted.
+
+**And the headline: the flag moves more calls than the assembly.** The two modes
+on identical input bytes differ on **546 calls** (263 only in single, 283 only in
+meta) against **145** moved by cutting the chromosome into fifty pieces.
+
+**Two catalogued choices gave way.** Overlap-F1 at R2 is replaced by exact
+scoring — Prodigal's GFF is byte-identical on re-run, so there is no spread to
+take a tolerance from. And R3's closed enum is the caller's own `partial` flag
+rather than one the campaign invents, with the loss classification added to make
+the rung a measurement rather than a lookup.
 
 **T-L1-2** HMMER/Pfam domain architecture of a multidomain biosynthetic protein.
 R1 schema-valid domain table (ordered, non-overlapping, coordinate convention

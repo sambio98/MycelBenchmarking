@@ -22,7 +22,7 @@ scoring path.
 | Campaign: malleobactin | `campaigns/massbalance-nrps-malleobactin-01/` | oracle 1.0, gate 21/0/5 |
 | Campaign: sevadicin | `campaigns/massbalance-nrps-sevadicin-01/` | oracle 1.0, gate 21/0/5 |
 | Internal sweep | `src/npbench_c/sweep/` | runner, stats, gates, stub fixtures |
-| Refusal contract | `tests/unit/test_build_refusals.py` | every one of 97 build refusals named by a test |
+| Refusal contract | `tests/unit/test_build_refusals.py` | every one of 114 build refusals named by a test |
 | Catalog | `docs/catalog.md` | 24 templates / 32 campaigns, grounded |
 | Provisioning | `docs/environment.md` | tools, DBs, sandbox contract |
 | Template: MIBiG release diff | `src/npbench_c/templates/mibig_diff/` | shared oracle |
@@ -52,12 +52,14 @@ scoring path.
 | Template: domain architecture | `src/npbench_c/templates/domain_architecture/` | HMMER 3.4 + declared 65-model Pfam panel, declared overlap resolution |
 | Campaign: MIBiG NRPS architectures | `campaigns/arch-nrps-mibig-4_0-01/` | oracle 1.0, gate 21/0/5 |
 | Campaign: MIBiG PKS architectures | `campaigns/arch-pks-mibig-4_0-01/` | oracle 1.0, gate 21/0/5, cis-AT vs trans-AT strata |
+| Template: gene calling | `src/npbench_c/templates/gene_calling/` | Prodigal 2.6.3, declared fragmentation rule, no external resource |
+| Campaign: S. coelicolor gene calls | `campaigns/genecall-scoelicolor-01/` | oracle 1.0, gate 21/0/5 |
 | External resources | `src/npbench_c/tools/resources.py` | one declaration for a pinned file read from the image, shared by 3 campaigns |
 | Tool memo | `src/npbench_c/tools/cache.py` | stub sweeps only; 29m32s to 3m44s |
 | Phase 1 image | `image/Dockerfile`, `image/environment.lock.json` | 8 tools pinned to `version=build`, 185-package closure hashed, antiSMASH databases pinned at 9.4 GB |
 | Tool registry | `src/npbench_c/tools/registry.py` | pins, controls, invocations, declared normalisations, canonicalisations, projections, enforced bans |
 | Thread-invariance suite | `src/npbench_c/tools/invariance.py` | 8/8 tools invariant at 1 and 8 threads |
-| Tests | `tests/` | 631 passing, 6 skipped |
+| Tests | `tests/` | 685 passing, 6 skipped |
 
 ```bash
 PYTHONPATH=src python3 -m pytest tests -q
@@ -2389,6 +2391,174 @@ measurer to drop things: the selection census now names all three of its drop
 clauses whether or not each removed anything, so the census's shape does not
 depend on the data.
 
+## Campaign 21: the flag matters more than the assembly
+
+`genecall-scoelicolor-01` is T-L1-1, the fifth tool-running campaign and the
+fourth S1. A gene caller reads a contig and predicts coding sequences; cut the
+same contig into pieces and run it again and the answer changes. How much of the
+change is geometry and how much is the tool reacting to its input is the
+campaign, and on this chromosome the answer is not the one the catalogued design
+implies.
+
+Pinned Prodigal 2.6.3 over the complete *Streptomyces coelicolor* A3(2)
+chromosome (AL645882.2, 8,667,507 bp, GC 0.721). Oracle 1.0 at depth 4, gate
+21/0/5. **7,738 calls** on the whole contig — 3,969 forward, 3,769 reverse —
+covering **88.5%** of the chromosome, median call 855 bp.
+
+**This is the first tool-running campaign here with no external resource to
+pin.** Every other one reads a reference database from the image and declares it
+by path, provider, version and digest. An ab initio caller reads only the
+sequence it is given, so the version and the mode are the whole of the pin, and
+`constraints.external_resources` is an empty list the gate reports as such.
+
+### Nothing annotated is shipped, and that is the design
+
+The detection campaign uses this same accession and ships the annotated GenBank,
+because there the annotation is what antiSMASH reads. Here it is what the tool is
+asked to reproduce, so the input is the bases alone: a 2.44 MB gzipped FASTA, and
+the **7,825 CDS features of the source record are discarded**, with the count
+recorded in the provenance so what was thrown away is stated rather than implied.
+
+The curated annotation is also refused as a reference, with the reason in
+`excluded_from_grading`: using it would make the campaign about calling
+*accuracy* against an annotation that is itself largely pipeline output, which is
+a much more derived claim than "what does this pinned caller do to this contig,
+and what does cutting the contig do to that".
+
+The provenance also does **not** state the sequence's length or digest, both of
+which R1 grades. Writing them there would have made two free components, and the
+digest is over the bases rather than the file precisely so that computing it is
+where the declared normalisation gets checked — a FASTA rewrapped at another
+width must fingerprint the same.
+
+### The fragmentation is a rule, and the coordinates are the trap
+
+The breakpoints are arithmetic: for a contig of length L cut into n fragments,
+cut at `round(k·L/n)`. The campaign ships one unfragmented file and the agent
+cuts it, because shipping pre-cut fragments would put each fragment's offset in
+the input — and the offsets *are* the coordinate contract.
+
+The caller reports 1-based inclusive positions **on the fragment**. A parent
+coordinate is that plus the fragment's 0-based offset. Skip the lift and almost
+every whole-contig call looks lost and almost every fragment call looks new, with
+counts in the right order of magnitude and tables the right shape. Measured, the
+unlifted comparison reports **more than twenty times** the real losses and gains,
+with an identical set of keys and the same vocabulary. That is the competence
+probe, and it clears R1 and R2 — which concern the whole contig and need no lift
+— before failing at R3, where the two coordinate systems first have to meet.
+
+The two conventions also meet once inside the engine, in one line: a cut at
+0-based offset `c` falls strictly inside a 1-based inclusive call when
+`start ≤ c < end`. Off by one either way and a gene spanning a breakpoint is
+classified as merely near one.
+
+### Fragmentation at the declared baseline
+
+Cut into 50: **7,738 → 7,779 calls, 7,686 retained, 52 lost, 93 new.** The whole
+contig has **no partial call at all** — a complete record has no edge for a call
+to run off — and the fragmented run has 42 running off the left of their fragment
+and 44 off the right.
+
+The 52 losses, classified against the breakpoints:
+
+| verdict | calls |
+|---|---|
+| crosses a cut | **43** |
+| near a cut (≤ 5 kb) | 4 |
+| **distant from every cut** | **5** |
+
+The first is geometry and it dominates: a gene spanning a breakpoint cannot be
+called whole. The third is the one that matters, because no cut can explain it.
+
+### Only the mode that trains loses calls a cut cannot explain
+
+Prodigal's single mode **trains on the input it is given**; its meta mode scores
+against pre-trained models. So fragmenting the contig changes the training set in
+one mode and not the other, and the grid separates the two effects:
+
+| mode | fragments | lost | gained | crosses | near | **distant** |
+|---|---|---|---|---|---|---|
+| single | 2 | 3 | 3 | 0 | 1 | **2** |
+| single | 10 | 9 | 17 | 7 | 2 | 0 |
+| single | 50 | 52 | 93 | 43 | 4 | **5** |
+| meta | 2 | 2 | 2 | 0 | 2 | **0** |
+| meta | 10 | 10 | 16 | 7 | 3 | **0** |
+| meta | 50 | 48 | 88 | 43 | 5 | **0** |
+
+**The distant column is empty in meta mode at every fragmentation level and
+populated in single mode.** The campaign does not assert that; it reports it per
+cell, and the grid compares each mode against its *own* unfragmented run — not
+against the baseline mode's, which would add the mode difference to the
+fragmentation difference and report the sum as fragmentation.
+
+### And the headline
+
+The two modes on **identical input bytes**: 7,475 shared calls, 263 only in
+single, 283 only in meta. **546 calls move because of one command-line flag,
+against 145 that move from cutting the chromosome into fifty pieces.**
+
+So a campaign that looks like it is about assembly quality is, on this genome,
+mostly about a flag — which is why `environment.md` already warned that
+Prodigal's mode must be pinned, and why the mode is a declared axis here rather
+than a default.
+
+### Two things worth recording about the tool
+
+**The GFF is byte-identical on re-run.** Prodigal stamps no date and no command
+line into its output, unlike HMMER, which needs a declared normalisation for
+exactly that. So this campaign declares none, and that is a measurement rather
+than an assumption.
+
+**`retained_but_truncated` is zero everywhere, and is kept.** A call that crosses
+a cut gets clipped, so it changes coordinates and appears as a loss plus a gain
+rather than as a retained call with a changed flag. The quantity is not
+structurally impossible — a call ending exactly at a fragment boundary could keep
+its coordinates and gain a partial flag — so it is computed and reported inside
+the fragmentation claim rather than dropped. On this contig it is zero at every
+cell of the grid.
+
+### What the catalogued design had to give up
+
+The catalogued R2 was to be scored by overlap-F1 within a measured tolerance.
+Scored exactly instead, for the reason the domain-architecture campaign found:
+overlap-F1 absorbs boundary disagreement between two *independent* predictions,
+and both sides here come from the same pinned caller over the same bytes. With a
+byte-identical GFF there is no spread to take a tolerance from, so any tolerance
+would absorb a difference that cannot occur while hiding one that can.
+
+The catalogued R3 — "which genes are truncated at a contig boundary, from a
+closed enum" — is built, and the enum is the caller's **own** `partial` flag
+rather than one the campaign invents. What is added is the classification of the
+losses, because that is what turns the rung from a lookup into a measurement.
+
+### The sweep, and a probe that gets further than the others
+
+Gold builds in about **two minutes** — eight caller runs over the chromosome at
+roughly fifteen seconds each, with no database to load. The stub sweep passes all
+five gates with cold depths **1 / 2 / 3 / 4 / 2 / 0** and per-rung clear rates
+1.00 / 0.80 / 0.40 / 0.20, cold mean score 0.60, no-tool ablation 0.0000 against
+a chance floor of 0.2502.
+
+| system | mode | cold depth |
+|---|---|---|
+| stub-reader | tooled | 1 |
+| stub-caller | tooled | 2 |
+| stub-reconcile | tooled | 3 |
+| stub-complete | tooled | 4 |
+| **stub-unlifted** | tooled | **2** |
+| stub-noncompute | no_tool | 0 |
+
+The probe reaching **depth 2** rather than 1 is the point, and it is the first
+one here that does. Every earlier competence probe failed at the rung after R1,
+because its defect was visible in the first thing it reported. This one runs the
+tool correctly, reports the whole contig correctly, and clears two rungs — the
+coordinate lift it skipped does not exist yet at R1 or R2, because both are about
+the unfragmented contig. It fails at R3, the first rung where fragment
+coordinates and parent coordinates have to be compared.
+
+That is worth having in the benchmark: a defect whose depth tells you *where* the
+convention was missed rather than only that something was wrong.
+
 ## The guards nobody was guarding
 
 The previous campaign ended with a build assertion that had stopped asserting: a
@@ -2522,8 +2692,8 @@ real gold, assert the refusal fires. Two were worth the trouble on their own:
    target is now 30 at most.** T-L5-2 and T-L2-4 both ground out. The count in this
    file's header and in `docs/catalog.md` is the *catalogued* target and has not
    been restated downward, because the replacement question is the owner's call:
-   re-scope those rows, or accept a smaller benchmark. Twenty campaigns are
-   built. This should be settled before the audit packet quotes a number.
+   re-scope those rows, or accept a smaller benchmark. Twenty-one campaigns
+   are built. This should be settled before the audit packet quotes a number.
 8. **Sweep cost: the tool memo covers the tool, not the work around it.**
    `npbench_c.tools.cache` memoises tool output for stub systems in tooled mode
    only, which took the EC-audit sweep from 29m32s to **3m44s** with identical
@@ -2543,9 +2713,9 @@ real gold, assert the refusal fires. Two were worth the trouble on their own:
    real agents take per run, measurable only once item 3 supplies the `SystemSpec`
    entries.
 9. **`structural_elements` is decorative and nothing validates it.** Nine of the
-   twenty built campaigns declare `planted` and several of them plant nothing —
+   twenty-one built campaigns declare `planted` and several of them plant nothing —
    `mibig-diff-3_1-to-4_0-01`'s own notes say its sharpest case is "supplied by the
-   corpus rather than planted". The six campaigns built since declare only what
+   corpus rather than planted". The seven campaigns built since declare only what
    they have (`verification, counterfactual, control`), but the field needs either
    a definition and a gate check or removal, and fixing the other nine is the
    owner's taxonomy call rather than a silent edit. A declaration no check reads is the
