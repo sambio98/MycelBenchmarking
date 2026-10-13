@@ -185,6 +185,12 @@ def test_a_unit_mistake_collapses_the_agreement_rate():
     (lambda g: g.__setitem__("unit_mixup_total", 0), "unit-mix-up band"),
     (lambda g: g["unit_error_variants"]["v0_identity"].__setitem__(
         "agreement_rate", 0.1), "identity variant"),
+    # Every declared unit mistake leaving the agreement rate where it was: the
+    # mistake is supposed to wreck it, and a counterfactual that barely moves
+    # shows nothing.
+    (lambda g: [v.__setitem__("agreement_rate", g["agreement_rate"])
+                for n, v in g["unit_error_variants"].items()
+                if n != "v0_identity"], "R4 shows nothing"),
 ])
 def test_build_refuses_gold_without_content(mutate, message):
     doctored = json.loads(json.dumps(_gold()))

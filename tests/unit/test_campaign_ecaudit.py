@@ -539,3 +539,31 @@ def test_the_sweep_report_says_the_wall_clock_is_not_a_timing():
     assert meta["tool_cache_systems"]
     assert "stub-noncompute" not in meta["tool_cache_systems"]
     assert "NOT a timing measurement" in meta["tool_cache_note"]
+
+
+# ------------------------------------------------- the remaining gold refusals
+
+
+def test_the_build_refuses_a_set_where_nothing_carries_the_canonical_domain():
+    """Universal absence means the panel or the threshold is wrong, not that the
+    annotations are. The audit has to be able to tell those apart."""
+    gold = _gold()
+    with pytest.raises(AuditError, match="not an annotation finding"):
+        _assert_has_content({**gold,
+                             "canonical_absent_total": gold["sequences_total"]})
+
+
+def test_a_flat_policy_axis_is_refused_and_a_flat_threshold_axis_is_not():
+    """The asymmetry is deliberate and it is why the "neither axis moves" refusal
+    that used to sit below this one was unreachable: a flat policy axis is
+    rejected outright, so "both flat" could never be reached, while an inert
+    threshold axis is a measured robustness result and allowed."""
+    gold = _gold()
+    absent = gold["canonical_absent_total"]
+    flat_policy = {k: absent for k in gold["misannotated_by_policy"]}
+    with pytest.raises(AuditError, match="policy axis does not move"):
+        _assert_has_content({**gold, "misannotated_by_policy": flat_policy})
+
+    # The threshold axis flattened on its own is accepted.
+    flat_threshold = {k: absent for k in gold["threshold_absent"]}
+    _assert_has_content({**gold, "threshold_absent": flat_threshold})

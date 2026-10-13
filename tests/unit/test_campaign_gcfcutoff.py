@@ -257,6 +257,56 @@ def test_interval_score_is_not_used_and_the_reason_is_recorded():
     assert "max_width" in _task()["catalog_deviation"]
 
 
+def test_the_build_refuses_a_corpus_too_small_to_partition():
+    gold = _gold()
+    with pytest.raises(CutoffError, match="worth partitioning"):
+        _assert_has_content({**gold, "corpus_size": 8})
+
+
+def test_the_build_refuses_fewer_than_three_designed_families():
+    """Two families is an anecdote: the reconciliation would be a pair of
+    comparisons rather than a distribution over them."""
+    gold = _gold()
+    families = dict(sorted(gold["designed_families"].items())[:2])
+    with pytest.raises(CutoffError, match="an anecdote rather than"):
+        _assert_has_content({**gold, "designed_families": families})
+
+
+def test_the_build_refuses_a_corpus_with_no_negative_controls():
+    """Without a control nothing in the corpus can show the tool over-merging,
+    so the upper end of the sweep means nothing."""
+    gold = _gold()
+    with pytest.raises(CutoffError, match="over-merging"):
+        _assert_has_content({**gold, "controls": []})
+
+
+def test_the_build_refuses_a_grid_too_short_to_show_a_dependence():
+    gold = _gold()
+    short = dict(sorted(gold["cutoff_sweep"].items(), key=lambda kv: float(kv[0]))[:3])
+    with pytest.raises(CutoffError, match="cannot show a dependence"):
+        _assert_has_content({**gold, "cutoff_sweep": short})
+
+
+def test_the_build_refuses_a_partition_with_too_few_distinct_shapes():
+    """The pair agreement can move while the partition's shape does not, so the
+    two refusals are separate: this one fixes `groups` across the grid and leaves
+    the agreement alone."""
+    gold = _gold()
+    sweep = {label: {**row, "groups": 7}
+             for label, row in gold["cutoff_sweep"].items()}
+    with pytest.raises(CutoffError, match="distinct shapes"):
+        _assert_has_content({**gold, "cutoff_sweep": sweep})
+
+
+def test_the_build_refuses_one_cutoff_recovering_every_family():
+    """Every family recovered at the same single cutoff makes the per-family
+    claim one number repeated."""
+    gold = _gold()
+    recovered = {name: "0.6" for name in gold["first_cutoff_recovering_each_family"]}
+    with pytest.raises(CutoffError, match="one number repeated"):
+        _assert_has_content({**gold, "first_cutoff_recovering_each_family": recovered})
+
+
 def test_the_build_refuses_a_sweep_that_shows_nothing():
     gold = _gold()
     sweep = gold["cutoff_sweep"]

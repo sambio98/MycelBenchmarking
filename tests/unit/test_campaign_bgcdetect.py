@@ -278,6 +278,106 @@ def test_the_build_refuses_gold_whose_rungs_say_nothing():
         _assert_has_content(flat)
 
 
+def test_the_build_refuses_a_record_whose_regions_touch_an_edge():
+    """The whole reason the input is an unsliced chromosome: a region at the
+    record edge has its boundary set by the record rather than by the rules, and
+    the boundary is what R2 and R3 grade."""
+    gold = _gold()
+    with pytest.raises(DetectionError, match="set by the record"):
+        _assert_has_content(dict(gold, contig_edge_regions=2))
+
+
+def test_the_build_refuses_a_nearly_constant_product_census():
+    gold = _gold()
+    with pytest.raises(DetectionError, match="nearly a constant"):
+        _assert_has_content(dict(gold, distinct_products=3))
+
+
+def test_the_build_refuses_an_extent_vocabulary_with_two_cells():
+    gold = _gold()
+    census = gold["verdict_census"]
+    # Whichever term the vocabulary happens to lead with, not a hardcoded one:
+    # the extent terms are declared in the rules file and renaming one there
+    # should not silently turn this test into a different test.
+    sole = next(k for k in sorted(census) if k != "not_detected")
+    collapsed = {k: (gold["loci_total"] if k == sole else 0) for k in census}
+    with pytest.raises(DetectionError, match="boolean dressed up"):
+        _assert_has_content(dict(gold, verdict_census=collapsed))
+
+
+def test_the_build_refuses_a_run_that_detects_no_curated_locus():
+    """Zero detections is a broken run, not a finding about extent -- and it is a
+    different refusal from the vocabulary one, which this corpus would otherwise
+    hit first."""
+    gold = _gold()
+    census = gold["verdict_census"]
+    none_found = {k: (gold["loci_total"] if k == "not_detected" else 1)
+                  for k in census}
+    with pytest.raises(DetectionError, match="broken run"):
+        _assert_has_content(dict(gold, verdict_census=none_found))
+
+
+def test_the_build_refuses_a_jaccard_range_that_distinguishes_nothing():
+    gold = _gold()
+    middle = gold["jaccard_median"]
+    with pytest.raises(DetectionError, match="not distinguishing anything"):
+        _assert_has_content(dict(gold, jaccard_min=middle, jaccard_max=middle))
+
+
+def _variants(gold: dict, **overrides) -> dict:
+    """Gold with every non-identity deletion variant overridden."""
+    return dict(gold, deletion_outcomes={
+        name: (o if name == "v0_identity" else {**o, **overrides})
+        for name, o in gold["deletion_outcomes"].items()})
+
+
+def test_the_build_refuses_deletions_that_change_nothing():
+    gold = _gold()
+    inert = _variants(gold, regions_lost=0, regions_gained=0,
+                      lost_products=[], gained_products=[])
+    with pytest.raises(DetectionError, match="R4 shows nothing"):
+        _assert_has_content(inert)
+
+
+def test_the_build_refuses_deletions_with_no_negative_control():
+    """If every declared deletion changed the region set, 'a deletion costs a
+    region' would be a free answer. The corpus supplies a no-op variant and the
+    build insists on one."""
+    gold = _gold()
+    outcomes = gold["deletion_outcomes"]
+    # Give each variant a distinct signature so the earlier distinctness refusal
+    # does not fire first, and leave none of them inert.
+    busy = dict(gold, deletion_outcomes={
+        name: (o if name == "v0_identity"
+               else {**o, "regions_lost": 1, "regions_gained": 1,
+                     "lost_products": [f"lost-{i}"],
+                     "gained_products": [f"gained-{i}"]})
+        for i, (name, o) in enumerate(sorted(outcomes.items()))})
+    with pytest.raises(DetectionError, match="no negative control"):
+        _assert_has_content(busy)
+
+
+def test_the_build_refuses_deletions_that_never_abolish_a_region():
+    """A rung that never shows detection failing outright is only ever showing
+    boundaries move."""
+    gold = _gold()
+    outcomes = gold["deletion_outcomes"]
+    names = [n for n in sorted(outcomes) if n != "v0_identity"]
+    softened = dict(gold, deletion_outcomes={
+        name: (o if name == "v0_identity"
+               # one inert variant keeps the negative control satisfied; the
+               # rest gain as well as lose, so none is an outright loss
+               else {**o, "regions_lost": 0, "regions_gained": 0,
+                     "lost_products": [], "gained_products": []}
+               if name == names[0]
+               else {**o, "regions_lost": 1, "regions_gained": 1,
+                     "lost_products": [f"lost-{i}"],
+                     "gained_products": [f"gained-{i}"]})
+        for i, (name, o) in enumerate(sorted(outcomes.items()))})
+    with pytest.raises(DetectionError, match="never shows detection failing"):
+        _assert_has_content(softened)
+
+
 # ------------------------------------------------------- the gene deletion
 
 

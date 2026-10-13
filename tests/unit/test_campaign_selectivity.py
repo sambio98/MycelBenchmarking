@@ -202,6 +202,22 @@ def test_the_extreme_molecule_has_a_declared_tie_break():
      "foregone conclusion"),
     (lambda g: g["admission_variants"]["v0_baseline"].__setitem__(
         "focal_selective_counts", {"2": 1, "10": 1, "100": 1}), "baseline variant"),
+    # The rejection reasons are ordered and first-match-wins, so they have to
+    # partition the rejected set exactly. One extra activity in the of-type
+    # total and they no longer do, which means two rules are double-counting and
+    # every number downstream is suspect.
+    (lambda g: g["_of_type_by_target"].__setitem__(
+        sorted(g["_of_type_by_target"])[0],
+        g["_of_type_by_target"][sorted(g["_of_type_by_target"])[0]] + 1),
+     "do not partition the rejected set"),
+    # A declared admission variant that changes nothing is a graded component
+    # that cannot discriminate, so every non-baseline variant has to move.
+    (lambda g: [v.update({
+        "eligible_molecules": g["admission_variants"]["v0_baseline"]["eligible_molecules"],
+        "focal_selective_counts": dict(
+            g["admission_variants"]["v0_baseline"]["focal_selective_counts"])})
+        for n, v in g["admission_variants"].items() if n != "v0_baseline"],
+     "cannot discriminate"),
 ])
 def test_build_refuses_gold_without_content(mutate, message, selectivity):
     doctored = json.loads(json.dumps(_gold()))

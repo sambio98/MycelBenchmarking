@@ -22,6 +22,7 @@ scoring path.
 | Campaign: malleobactin | `campaigns/massbalance-nrps-malleobactin-01/` | oracle 1.0, gate 21/0/5 |
 | Campaign: sevadicin | `campaigns/massbalance-nrps-sevadicin-01/` | oracle 1.0, gate 21/0/5 |
 | Internal sweep | `src/npbench_c/sweep/` | runner, stats, gates, stub fixtures |
+| Refusal contract | `tests/unit/test_build_refusals.py` | every one of 97 build refusals named by a test |
 | Catalog | `docs/catalog.md` | 24 templates / 32 campaigns, grounded |
 | Provisioning | `docs/environment.md` | tools, DBs, sandbox contract |
 | Template: MIBiG release diff | `src/npbench_c/templates/mibig_diff/` | shared oracle |
@@ -56,7 +57,7 @@ scoring path.
 | Phase 1 image | `image/Dockerfile`, `image/environment.lock.json` | 8 tools pinned to `version=build`, 185-package closure hashed, antiSMASH databases pinned at 9.4 GB |
 | Tool registry | `src/npbench_c/tools/registry.py` | pins, controls, invocations, declared normalisations, canonicalisations, projections, enforced bans |
 | Thread-invariance suite | `src/npbench_c/tools/invariance.py` | 8/8 tools invariant at 1 and 8 threads |
-| Tests | `tests/` | 571 passing, 6 skipped |
+| Tests | `tests/` | 631 passing, 6 skipped |
 
 ```bash
 PYTHONPATH=src python3 -m pytest tests -q
@@ -2387,6 +2388,105 @@ the honest fix in both cases was to close a vocabulary rather than teach the
 measurer to drop things: the selection census now names all three of its drop
 clauses whether or not each removed anything, so the census's shape does not
 depend on the data.
+
+## The guards nobody was guarding
+
+The previous campaign ended with a build assertion that had stopped asserting: a
+check for a single-stratum corpus counted the keys of a census that always
+carried one extra, so the condition could never hold. Its test caught it — but
+only because a test existed. That raised the obvious question, which turned out
+to have an uncomfortable answer.
+
+**Of 97 refusals across the nine templates that have a `_assert_has_content`, 43
+were named by no test at all.** Three templates — `chembl_selectivity`,
+`chemical_space`, `kinetics_consistency` — looked like they had none, though two
+of those turned out to be an artefact of how the check first read the tests.
+
+A `_assert_has_content` is the only thing between a campaign whose rungs measure
+nothing and a campaign that ships. Every refusal in it is a claim about what the
+data has to look like, and a claim no test exercises is a claim nobody has
+checked — the same defect this project keeps finding in other people's
+declarations, turned on its own.
+
+### Two failure modes, and they need different mechanisms
+
+- **A refusal is added without a test.** Nothing notices. The build still passes
+  on real gold, the oracle still scores 1.0, and the refusal may be unreachable
+  or inverted. Nothing in the project checked for this.
+- **A refusal's condition becomes unreachable while its test still exists.** The
+  test notices, because `pytest.raises` fails with "DID NOT RAISE". This is what
+  caught the strata check.
+
+`tests/unit/test_build_refusals.py` is the check for the first, and the two
+together cover both directions. For every `raise` inside a template's
+`_assert_has_content`, it requires the template's campaign test file to carry a
+pattern that matches that refusal's message — which is why every refusal message
+in this project ends up with a distinctive phrase. **The phrase is the contract
+between the refusal and its test.**
+
+**It is static and order-independent on purpose.** Tracing the suite and
+asserting every `raise` line executed would be more precise, and it was the first
+design. It was dropped: it would depend on the whole suite running in one process
+and on test order, and this project runs its tests under `pytest-randomly`.
+
+Three things the check needed before it was honest about its own subject:
+
+- **It reads the syntax, not a regex over `match=`.** Two idioms are in use here:
+  `pytest.raises(Err, match="...")` directly, and a parametrised refusal test
+  whose `(mutate, message)` pairs put the pattern in the decorator and a variable
+  at the call site. A regex sees only the first, and on the first run it reported
+  `chemical_space` and `kinetics_consistency` as having zero coverage when they
+  were largely covered. Two of the three "templates with nothing" were my own
+  measurement error, and the correction is in the numbers above.
+- **It resolves a message held in a variable.** Several templates loop over
+  `(field, complaint)` pairs and raise the complaint, so the message is a `Name`
+  at the raise site. The literals are still in the function and a refusal written
+  that way is no less a refusal.
+- **It takes only the tuple position the name unpacks from.** Collecting every
+  literal in such a loop's iterable also collects the field names sitting beside
+  the messages, and the check went looking for tests naming
+  `entries_excluded_by_status`.
+
+And it guards itself: one test asserts every template with a
+`_assert_has_content` is listed, another that each listed template actually has
+refusals, so emptying a template's assertions cannot make the coverage check pass
+vacuously.
+
+### It found a dead refusal immediately
+
+`ec_domain_audit` refused gold when "neither the threshold nor the policy axis
+moves". That branch was **unreachable**: a flat policy axis means every declared
+policy gives the same count, which an earlier refusal already rejects
+unconditionally, so the conjunction could never hold. The comment above it
+explained the intent clearly and the code did nothing.
+
+It is removed rather than tested, because a refusal that cannot fire is not a
+guard, and the asymmetry it was reaching for is real and worth stating where the
+code says it: a flat **policy** axis is refused outright, while an inert
+**threshold** axis is allowed, because on this set the threshold barely mattering
+is a measured robustness result. A test now pins both halves of that — the
+refusal fires on a flat policy axis, and gold with a flattened threshold axis is
+accepted.
+
+### What closing the other 42 cost
+
+42 new mutation tests across seven templates, each small: doctor one field of
+real gold, assert the refusal fires. Two were worth the trouble on their own:
+
+- `bgc_detection`'s extent-vocabulary refusal was first written against a verdict
+  term called `contained`, which that campaign's vocabulary does not have — the
+  terms are declared in its rules file and are `congruent`,
+  `contained_generous`, `contained_much_larger`, `marginal`, `not_detected`,
+  `partial`. The test now takes whichever term the vocabulary leads with, so
+  renaming one in the rules file cannot quietly turn the test into a different
+  test.
+- Several refusals sit behind an earlier one that fires first on the obvious
+  mutation, so reaching them needs a mutation that satisfies everything above.
+  `bgc_detection`'s "no deletion abolishes a region outright" needs one inert
+  variant to keep the negative-control refusal happy and the rest gaining as well
+  as losing; `ec_domain_audit`'s policy asymmetry needs the threshold axis
+  flattened alone. Writing those is where the ordering of a template's refusals
+  stops being incidental and becomes part of its contract.
 
 ## Open items
 

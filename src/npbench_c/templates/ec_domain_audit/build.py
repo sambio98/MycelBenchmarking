@@ -69,16 +69,16 @@ def _assert_has_content(gold: dict) -> None:
             "policy axis does not move and the rung would show nothing")
 
     # The threshold axis is allowed to be inert -- that is a measured robustness
-    # result -- but only because the policy axis is not. If both go flat the rung
-    # is vacuous, which is the defect that re-scoped the selectivity campaign.
-    spread = max(gold["threshold_absent"].values()) - min(
-        gold["threshold_absent"].values())
+    # result -- but only because the policy axis is not, which the refusal above
+    # enforces unconditionally.
+    #
+    # There used to be a second refusal here, for "neither axis moves". It was
+    # UNREACHABLE: a flat policy axis means every policy gives the same count,
+    # which the refusal above has already rejected, so the conjunction could
+    # never hold. It is removed rather than tested, because a refusal that cannot
+    # fire is not a guard -- and nothing noticed until the project started
+    # requiring every refusal to be named by a test.
     strict = policies.get("p0_canonical_only")
-    widest = max(policies.values()) - min(policies.values())
-    if spread == 0 and widest == 0:
-        raise AuditError(
-            "neither the threshold nor the policy axis moves, so R4 is not a "
-            "counterfactual")
     # The baseline cutoff appears in the threshold variants, which makes it the
     # identity control of that axis: it must reproduce the headline absence count
     # or the two are not measuring the same thing. The kinetics ladder carries the

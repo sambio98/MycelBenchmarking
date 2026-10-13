@@ -656,6 +656,42 @@ def test_the_build_refuses_a_deletion_counterfactual_with_one_answer():
                              {**census, "retained": 0}})
 
 
+def test_the_build_refuses_a_corpus_over_too_few_clusters():
+    gold = _gold()
+    with pytest.raises(PrecursorError, match="handful of submissions"):
+        _assert_has_content({**gold, "selection_census": {
+            **gold["selection_census"], "corpus_entries": 4}})
+
+
+def test_the_build_refuses_a_collapsed_localisation_vocabulary():
+    """Four populated verdicts or more. A vocabulary that collapses to two or
+    three cells is an enum dressed up, which is the same complaint the detection
+    campaign's extent vocabulary carries."""
+    gold = _gold()
+    census = gold["localisation_census"]
+    collapsed = {k: (sum(census.values()) if k == "core_at_C_terminus" else 0)
+                 for k in census}
+    with pytest.raises(PrecursorError, match="collapses to two or three"):
+        _assert_has_content({**gold, "localisation_census": collapsed})
+
+
+def test_the_build_refuses_a_corpus_where_no_core_is_located():
+    """The opposite end from the fully-located refusal: a read that locates
+    nothing is broken rather than a finding about the annotations."""
+    gold = _gold()
+    table = [{**row, "core_start": None, "leader_length": None,
+              "follower_length": None} for row in gold["localisation_table"]]
+    with pytest.raises(PrecursorError, match="broken read"):
+        _assert_has_content({**gold, "localisation_table": table})
+
+
+def test_the_build_refuses_a_policy_sweep_too_small_to_show_a_dependence():
+    gold = _gold()
+    name, block = next(iter(gold["policy_sweep"].items()))
+    with pytest.raises(PrecursorError, match="cannot show a dependence"):
+        _assert_has_content({**gold, "policy_sweep": {name: block}})
+
+
 # --------------------------------------------------------------- the stub probe
 
 

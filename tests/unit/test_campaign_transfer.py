@@ -336,3 +336,45 @@ def test_the_warm_bundles_withhold_their_own_rung():
         blob = json.dumps({p.name: json.loads(p.read_text())
                            for p in bundle.iterdir()})
         assert json.dumps(gold[forbidden]) not in blob
+
+
+# ------------------------------------------------- the remaining gold refusals
+
+
+def test_the_build_refuses_a_verdict_partition_with_two_cells():
+    gold = _gold()
+    census = gold["verdict_census"]
+    sole = next(iter(sorted(census)))
+    collapsed = {k: (sum(census.values()) if k == sole else 0) for k in census}
+    with pytest.raises(TransferError, match="boolean dressed up"):
+        _assert_has_content({**gold, "verdict_census": collapsed})
+
+
+def test_the_build_refuses_a_set_where_no_transfer_is_supported():
+    """Zero supported transfers means the search or the annotation join is
+    broken, not that transfer is unreliable."""
+    gold = _gold()
+    census = gold["verdict_census"]
+    broken = {**census, "supported": 0,
+              "wrong_at_serial": census["wrong_at_serial"] + census["supported"]}
+    with pytest.raises(TransferError, match="annotation join is broken"):
+        _assert_has_content({**gold, "verdict_census": broken})
+
+
+def test_the_build_refuses_too_few_populated_identity_bands():
+    """The accuracy-against-identity curve needs four bands carrying ten
+    decidable queries each, or it is a line through two points."""
+    gold = _gold()
+    bands = gold["agreement_by_identity"]
+    thin = {label: {**block, "decidable": 1} for label, block in bands.items()}
+    with pytest.raises(TransferError, match="not supported by this set"):
+        _assert_has_content({**gold, "agreement_by_identity": thin})
+
+
+def test_the_build_refuses_a_zero_removal_variant_that_moved_a_verdict():
+    """Removing nothing must change nothing. If it did, the removal logic is
+    reading the wrong column and every other variant is suspect."""
+    gold = _gold()
+    changed = {**gold["removal_changed"], "v0_identity": 1}
+    with pytest.raises(TransferError, match="impossible unless"):
+        _assert_has_content({**gold, "removal_changed": changed})

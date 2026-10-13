@@ -644,6 +644,48 @@ def test_the_build_refuses_a_mapping_choice_that_does_not_matter():
         _assert_has_content({**gold, "mapping_sweep": close})
 
 
+def test_the_build_refuses_a_corpus_over_too_few_clusters():
+    gold = _gold()
+    with pytest.raises(ArchitectureError, match="handful of submissions"):
+        _assert_has_content({**gold, "selection_census": {
+            **gold["selection_census"], "corpus_entries": 5}})
+
+
+def test_the_build_refuses_an_empty_module_decomposition():
+    """The refusal that caught the separator bug: a declared module pattern that
+    matches nothing means the decomposition has no content anywhere."""
+    gold = _gold()
+    with pytest.raises(ArchitectureError, match="found on no gene"):
+        _assert_has_content({**gold, "module_verdicts": {
+            **gold["module_verdicts"], "agrees": 0}})
+
+
+def test_the_build_refuses_a_sweep_too_small_to_hold_three_axes():
+    gold = _gold()
+    cell = next(iter(gold["policy_sweep"].values()))
+    with pytest.raises(ArchitectureError, match="cannot show three axes"):
+        _assert_has_content({**gold, "policy_sweep": {"only|one|cell": cell}})
+
+
+def test_the_build_refuses_a_mapping_sweep_too_small_to_show_anything():
+    gold = _gold()
+    name, block = next(iter(gold["mapping_sweep"].items()))
+    with pytest.raises(ArchitectureError, match="cannot show that the family"):
+        _assert_has_content({**gold, "mapping_sweep": {name: block}})
+
+
+def test_the_build_refuses_strata_that_answer_the_same_way():
+    """Where the corpus spans several strata they have to behave differently; a
+    stratification every stratum answers the same way is decoration."""
+    gold = _gold()
+    block = next(iter(gold["secondary_verdicts_by_stratum"].values()))
+    with pytest.raises(ArchitectureError, match="distinguishes nothing"):
+        _assert_has_content({
+            **gold,
+            "strata_census": {"a": 10, "b": 20},
+            "secondary_verdicts_by_stratum": {"a": block, "b": dict(block)}})
+
+
 # --------------------------------------------------------------- the stub probe
 
 
