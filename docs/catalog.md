@@ -90,7 +90,7 @@ breakpoints — predict which calls change. G1 throughout. R4 perturbation:
 
 **Built**: `campaigns/genecall-scoelicolor-01`. Pinned Prodigal 2.6.3 over the
 complete *S. coelicolor* chromosome (AL645882.2, 8,667,507 bp), **7,738 calls**
-covering 88.5% of it. Oracle 1.0 at depth 4, gate 21/0/5. **The first
+covering 88.5% of it. Oracle 1.0 at depth 4, gate 22/0/5. **The first
 tool-running campaign here with no external resource to pin** — an ab initio
 caller reads only the sequence, so the version and the mode are the whole pin.
 
@@ -136,7 +136,7 @@ benchmark's **third S1**. MIBiG 4.0's annotation set plus the CDS translations o
 every gene a curated module names, with HMMER 3.4 and a declared 65-model Pfam
 35.0 panel read from the image. **1,136 `nrps-type1` genes over 512 clusters**,
 3.44 M residues, median 2,549 aa, longest 16,367. Oracle 1.0 at depth 4, gate
-21/0/5. The PKS instantiation is the same template with one field changed.
+22/0/5. The PKS instantiation is the same template with one field changed.
 
 **The catalogued "non-overlapping" domain table is not what the tool produces.**
 12,975 raw hits carry **2,124 overlapping pairs on 315 genes** — nested Pfam
@@ -191,7 +191,7 @@ three catalytic domains — the same split, arriving through a different door.
 axis: the same template, differing only in its declared rules file — module
 family, panel, the two reconciled domain types, module pattern and strata. **464
 `pks` genes over 162 clusters**, 1.46 M residues, 5,954 domains, 276 distinct
-architectures. Oracle 1.0 at depth 4, gate 21/0/5.
+architectures. Oracle 1.0 at depth 4, gate 22/0/5.
 
 **The second instance measures something the first cannot.** MIBiG's module type
 encodes cis-AT versus trans-AT with no exceptions: `pks-modular` records an
@@ -293,7 +293,7 @@ introduced elsewhere — predict the new pseudogene call. Perturbation:
 **Built**: `campaigns/frameshift-scoelicolor-01`. The same *S. coelicolor*
 chromosome as T-L1-1, pinned Prodigal 2.6.3, **7,758 baseline calls** in meta
 mode. 21 declared targets from 99 to 22,392 bp, each broken by deleting one
-base at its midpoint. Oracle 1.0 at depth 4, gate 21/0/5, stub sweep 5/5 with
+base at its midpoint. Oracle 1.0 at depth 4, gate 22/0/5, stub sweep 5/5 with
 exact depth separation [1, 2, 3, 4]. Build: 32 caller runs, 12 min 47 s.
 
 **This campaign plants, and that is what makes it gradeable.** "Which locus is a
@@ -629,7 +629,7 @@ campaign**. The complete *Streptomyces coelicolor* A3(2) chromosome (AL645882.2,
 `--minimal`, and the called regions reconciled against the 15 cluster boundaries
 MIBiG 4.0 maps to that accession. **29 regions, 22 distinct products, 13.0% of the
 chromosome inside a region, median span 29.8 kb, and every region
-`contig_edge=False`.** Oracle 1.0 at depth 4, gate 21/0/5.
+`contig_edge=False`.** Oracle 1.0 at depth 4, gate 22/0/5.
 
 **The reconciliation is the campaign.** Every curated locus is detected, so
 detection is not the question; extent is. 14 of 15 curated loci sit entirely inside
@@ -698,7 +698,7 @@ cutoff is changed — report the range over which membership flips, scored with
 clusters through pinned BiG-SCAPE 2.0.3 over a declared eight-point cutoff grid in
 **one run**, reconciled against four families derived independently from chemistry
 (entries sharing an InChIKey connectivity block in the chemical-space campaign's
-table) plus five negative controls. Oracle 1.0 at depth 4 first time, gate 21/0/5,
+table) plus five negative controls. Oracle 1.0 at depth 4 first time, gate 22/0/5,
 build 56 s.
 
 **The headline is that BiG-SCAPE's own default cutoff recovers none of them.** At
@@ -812,7 +812,7 @@ ribosomal-class entries available.
 tool-running campaign and second S1**. MIBiG 4.0's annotation set plus the
 antiSMASH-processed reference records for every one of its 447 `ribosomal`
 entries, with HMMER 3.4 and a declared eight-model Pfam 35.0 panel read from the
-image. Oracle 1.0 at depth 4, gate 21/0/5.
+image. Oracle 1.0 at depth 4, gate 22/0/5.
 
 **Two of the four catalogued rungs do not survive, and both refusals are about
 gradability.** The core peptide sequence *is* a MIBiG field, so grading it grades

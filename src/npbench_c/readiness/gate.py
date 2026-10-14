@@ -489,6 +489,47 @@ def _cold_sandbox_withholds_answers(campaign: pathlib.Path) -> Check:
                          else "; none stated"))
 
 
+def _cold_sandbox_withholds_small_answers(campaign: pathlib.Path) -> Check:
+    """Check 22: the two shapes check 21's distinctiveness threshold cannot reach.
+
+    Check 21 above searches for DISTINCTIVE graded values -- four digits, four
+    decimals -- because a graded count of 2 appears in any prose by coincidence.
+    That threshold is right for what it does and it leaves a gap, which an audit
+    found twelve answers sitting in: a small scalar stated in a sentence
+    (`15` as a locus total, `456` as a corpus count, `0.62` as a GC floor), and a
+    declared term stated against its own label, where neither half of the pair is
+    distinctive but the pair is the answer.
+
+    So this check anchors on the component rather than on the digit count, which
+    reaches those at the cost of real collisions. Collisions are declared in
+    `audit/cold_sandbox_exemptions.json`, which sits outside `campaigns/` because
+    an exemption names the declared value an answer equals and so states the
+    answer. Every exemption must still collide: a stale one is a check nobody is
+    getting, and this project produced one within a minute of writing its first
+    waiver list.
+    """
+    import tempfile
+
+    from npbench_c.readiness import cold_sandbox
+    from npbench_c.sweep.runner import build_sandbox
+
+    with tempfile.TemporaryDirectory() as tmp:
+        sandbox = build_sandbox(campaign, pathlib.Path(tmp) / "cold", None)
+        hits = cold_sandbox.findings(campaign, sandbox, _resolve_gold)
+        stale = cold_sandbox.stale_exemptions(campaign, sandbox, _resolve_gold)
+        waived = cold_sandbox.exemptions(campaign.name)
+
+    problems = ([f"stated: {h}" for h in sorted(hits)]
+                + [f"stale exemption: {s}" for s in stale])
+    detail = (f"{len(waived)} declared collision(s)"
+              if waived else "no declared collisions")
+    if problems:
+        detail += "; " + "; ".join(problems)
+    else:
+        detail += "; no small graded value or label/term pair stated"
+    return _check("cold_sandbox_withholds_small_answers", not problems, detail)
+
+
 def _integrity(campaign: pathlib.Path) -> list[Check]:
     hits = []
     for path in sorted(campaign.rglob("*")):
@@ -539,6 +580,7 @@ def run(campaign_dir: pathlib.Path) -> list[Check]:
     checks += _contract_and_provenance(campaign)
     checks.append(_warm_bundles_withhold_answers(campaign))
     checks.append(_cold_sandbox_withholds_answers(campaign))
+    checks.append(_cold_sandbox_withholds_small_answers(campaign))
     checks += _integrity(campaign)
     checks += _pending_agent_runs(campaign)
     return checks

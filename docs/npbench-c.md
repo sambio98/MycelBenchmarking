@@ -13,50 +13,50 @@ scoring path.
 | Rung ladders | `src/npbench_c/grading/ladder.py` | depth, monotonicity, chance floor |
 | Grader | `src/npbench_c/grading/grade.py` | pure declarative comparator |
 | Grader identity | `src/npbench_c/grading/version.py` | semver + content hash |
-| Readiness gate | `src/npbench_c/readiness/gate.py` | 21 mechanical checks, 5 pending-on-agent-runs |
+| Readiness gate | `src/npbench_c/readiness/gate.py` | 22 mechanical checks, 5 pending-on-agent-runs |
 | Template: construct design | `src/npbench_c/templates/construct_design/` | shared engine, 2 ladders |
-| Campaign: construct design | `campaigns/construct-ecoli-rebh-01/` | oracle 1.0, gate 21/0/5 |
-| Campaign: constraint conflict | `campaigns/constraint-conflict-ecoli-rebh-01/` | oracle 1.0, gate 21/0/5 |
-| Campaign: feasible control | `campaigns/constraint-feasible-ecoli-rebh-01/` | oracle 1.0, gate 21/0/5 |
+| Campaign: construct design | `campaigns/construct-ecoli-rebh-01/` | oracle 1.0, gate 22/0/5 |
+| Campaign: constraint conflict | `campaigns/constraint-conflict-ecoli-rebh-01/` | oracle 1.0, gate 22/0/5 |
+| Campaign: feasible control | `campaigns/constraint-feasible-ecoli-rebh-01/` | oracle 1.0, gate 22/0/5 |
 | Template: NRPS mass balance | `src/npbench_c/templates/mass_balance_nrps/` | shared oracle, 2 instantiations |
-| Campaign: malleobactin | `campaigns/massbalance-nrps-malleobactin-01/` | oracle 1.0, gate 21/0/5 |
-| Campaign: sevadicin | `campaigns/massbalance-nrps-sevadicin-01/` | oracle 1.0, gate 21/0/5 |
+| Campaign: malleobactin | `campaigns/massbalance-nrps-malleobactin-01/` | oracle 1.0, gate 22/0/5 |
+| Campaign: sevadicin | `campaigns/massbalance-nrps-sevadicin-01/` | oracle 1.0, gate 22/0/5 |
 | Internal sweep | `src/npbench_c/sweep/` | runner, stats, gates, stub fixtures |
 | Refusal contract | `tests/unit/test_build_refusals.py` | every one of 133 build refusals across 11 templates named by a test |
-| Cold-sandbox prose checks | `tests/unit/test_cold_sandbox_prose.py` | no graded term stated against its label, and no graded scalar stated at all, in any cold sandbox; waivers checked for staleness |
+| Cold-sandbox scan | `src/npbench_c/readiness/cold_sandbox.py` | gate check 22 and a project-wide test on one implementation; declared collisions in `audit/`, outside every sandbox, checked for staleness |
 | Catalog | `docs/catalog.md` | 24 templates / 32 campaigns, grounded |
 | Provisioning | `docs/environment.md` | tools, DBs, sandbox contract |
 | Template: MIBiG release diff | `src/npbench_c/templates/mibig_diff/` | shared oracle |
-| Campaign: MIBiG 3.1→4.0 diff | `campaigns/mibig-diff-3_1-to-4_0-01/` | oracle 1.0, gate 21/0/5 |
+| Campaign: MIBiG 3.1→4.0 diff | `campaigns/mibig-diff-3_1-to-4_0-01/` | oracle 1.0, gate 22/0/5 |
 | Template: annotation audit | `src/npbench_c/templates/mibig_annotation_audit/` | shared oracle |
-| Campaign: PrnA construct | `campaigns/construct-ecoli-prna-01/` | oracle 1.0, gate 21/0/5 |
-| Campaign: gene-function evidence | `campaigns/mibig-gene-function-evidence-01/` | oracle 1.0, gate 21/0/5 |
+| Campaign: PrnA construct | `campaigns/construct-ecoli-prna-01/` | oracle 1.0, gate 22/0/5 |
+| Campaign: gene-function evidence | `campaigns/mibig-gene-function-evidence-01/` | oracle 1.0, gate 22/0/5 |
 | Template: structure features | `src/npbench_c/templates/structure_features/` | shared engine, 2 ladders |
-| Campaign: PrnA residue evidence | `campaigns/residues-prna-01/` | oracle 1.0, gate 21/0/5 |
-| Campaign: RebH pocket geometry | `campaigns/pocket-rebh-01/` | oracle 1.0, gate 21/0/5 |
+| Campaign: PrnA residue evidence | `campaigns/residues-prna-01/` | oracle 1.0, gate 22/0/5 |
+| Campaign: RebH pocket geometry | `campaigns/pocket-rebh-01/` | oracle 1.0, gate 22/0/5 |
 | Template: chemical space | `src/npbench_c/templates/chemical_space/` | shared oracle, RDKit pinned at instantiation |
-| Campaign: MIBiG 4.0 chemical space | `campaigns/chemspace-mibig-4_0-01/` | oracle 1.0, gate 21/0/5 |
+| Campaign: MIBiG 4.0 chemical space | `campaigns/chemspace-mibig-4_0-01/` | oracle 1.0, gate 22/0/5 |
 | Template: kinetics consistency | `src/npbench_c/templates/kinetics_consistency/` | shared oracle, BRENDA 2026.1 |
-| Campaign: BRENDA EC 1.1 kinetics | `campaigns/kinetics-brenda-ec1_1-01/` | oracle 1.0, gate 21/0/5 |
+| Campaign: BRENDA EC 1.1 kinetics | `campaigns/kinetics-brenda-ec1_1-01/` | oracle 1.0, gate 22/0/5 |
 | Template: ChEMBL selectivity | `src/npbench_c/templates/chembl_selectivity/` | shared oracle, ChEMBL_37, first `share_alike` |
-| Campaign: S. aureus topoisomerases | `campaigns/selectivity-saureus-topoisomerase-01/` | oracle 1.0, gate 21/0/5 |
+| Campaign: S. aureus topoisomerases | `campaigns/selectivity-saureus-topoisomerase-01/` | oracle 1.0, gate 22/0/5 |
 | Template: EC domain audit | `src/npbench_c/templates/ec_domain_audit/` | HMMER 3.4 + Pfam 35.0, first tool-running template |
-| Campaign: EC 1.1.3.15 FMN_dh audit | `campaigns/ecaudit-fmn-dh-1_1_3_15-01/` | oracle 1.0, gate 21/0/5, **first S1** |
+| Campaign: EC 1.1.3.15 FMN_dh audit | `campaigns/ecaudit-fmn-dh-1_1_3_15-01/` | oracle 1.0, gate 22/0/5, **first S1** |
 | Template: annotation transfer | `src/npbench_c/templates/annotation_transfer/` | DIAMOND 2.2.8, closed reference set |
-| Campaign: EC 1.14 transfer | `campaigns/transfer-ec1_14-uniprot-01/` | oracle 1.0, gate 21/0/5 |
+| Campaign: EC 1.14 transfer | `campaigns/transfer-ec1_14-uniprot-01/` | oracle 1.0, gate 22/0/5 |
 | Template: BGC detection | `src/npbench_c/templates/bgc_detection/` | antiSMASH 8.0.4, whole chromosome, **first S2** |
-| Campaign: S. coelicolor regions | `campaigns/bgcdetect-scoelicolor-01/` | oracle 1.0, gate 21/0/5 |
+| Campaign: S. coelicolor regions | `campaigns/bgcdetect-scoelicolor-01/` | oracle 1.0, gate 22/0/5 |
 | Template: GCF cutoff | `src/npbench_c/templates/gcf_cutoff/` | BiG-SCAPE 2.0.3, one run over a declared grid |
-| Campaign: MIBiG 32 cutoff sweep | `campaigns/gcfcutoff-mibig-32-01/` | oracle 1.0, gate 21/0/5 |
+| Campaign: MIBiG 32 cutoff sweep | `campaigns/gcfcutoff-mibig-32-01/` | oracle 1.0, gate 22/0/5 |
 | Template: RiPP precursor audit | `src/npbench_c/templates/ripp_precursor/` | HMMER 3.4 + declared Pfam panel, elected coordinate convention |
-| Campaign: MIBiG RiPP precursors | `campaigns/ripp-precursor-mibig-4_0-01/` | oracle 1.0, gate 21/0/5 |
+| Campaign: MIBiG RiPP precursors | `campaigns/ripp-precursor-mibig-4_0-01/` | oracle 1.0, gate 22/0/5 |
 | Template: domain architecture | `src/npbench_c/templates/domain_architecture/` | HMMER 3.4 + declared 65-model Pfam panel, declared overlap resolution |
-| Campaign: MIBiG NRPS architectures | `campaigns/arch-nrps-mibig-4_0-01/` | oracle 1.0, gate 21/0/5 |
-| Campaign: MIBiG PKS architectures | `campaigns/arch-pks-mibig-4_0-01/` | oracle 1.0, gate 21/0/5, cis-AT vs trans-AT strata |
+| Campaign: MIBiG NRPS architectures | `campaigns/arch-nrps-mibig-4_0-01/` | oracle 1.0, gate 22/0/5 |
+| Campaign: MIBiG PKS architectures | `campaigns/arch-pks-mibig-4_0-01/` | oracle 1.0, gate 22/0/5, cis-AT vs trans-AT strata |
 | Template: gene calling | `src/npbench_c/templates/gene_calling/` | Prodigal 2.6.3, declared fragmentation rule, no external resource |
-| Campaign: S. coelicolor gene calls | `campaigns/genecall-scoelicolor-01/` | oracle 1.0, gate 21/0/5 |
+| Campaign: S. coelicolor gene calls | `campaigns/genecall-scoelicolor-01/` | oracle 1.0, gate 22/0/5 |
 | Template: frameshift response | `src/npbench_c/templates/frameshift_response/` | Prodigal 2.6.3 in the opposite mode, planted single-base deletion, coordinate lift past the cut |
-| Campaign: S. coelicolor frameshifts | `campaigns/frameshift-scoelicolor-01/` | oracle 1.0, gate 21/0/5, ladder samples the measured turnover band |
+| Campaign: S. coelicolor frameshifts | `campaigns/frameshift-scoelicolor-01/` | oracle 1.0, gate 22/0/5, ladder samples the measured turnover band |
 | External resources | `src/npbench_c/tools/resources.py` | one declaration for a pinned file read from the image, shared by 3 campaigns |
 | Tool memo | `src/npbench_c/tools/cache.py` | stub sweeps only; 29m32s to 3m44s |
 | Phase 1 image | `image/Dockerfile`, `image/environment.lock.json` | 8 tools pinned to `version=build`, 185-package closure hashed, antiSMASH databases pinned at 9.4 GB |
@@ -2268,7 +2268,7 @@ antiSMASH's module assembly. That is a different row.
 `arch-pks-mibig-4_0-01` completes T-L1-2's catalogued ×2 axis. It is the same
 template as the NRPS campaign and differs only in its declared rules file — the
 module family, the Pfam panel, the two reconciled domain types, the module
-pattern and the strata. Oracle 1.0 at depth 4, gate 21/0/5.
+pattern and the strata. Oracle 1.0 at depth 4, gate 22/0/5.
 
 **464 `pks` genes over 162 clusters**, 1,460,845 residues, median 2,347 aa.
 **5,954 domains, 276 distinct architectures**, 1 to 50 per gene.
@@ -2405,7 +2405,7 @@ implies.
 
 Pinned Prodigal 2.6.3 over the complete *Streptomyces coelicolor* A3(2)
 chromosome (AL645882.2, 8,667,507 bp, GC 0.721). Oracle 1.0 at depth 4, gate
-21/0/5. **7,738 calls** on the whole contig — 3,969 forward, 3,769 reverse —
+22/0/5. **7,738 calls** on the whole contig — 3,969 forward, 3,769 reverse —
 covering **88.5%** of the chromosome, median call 855 bp.
 
 **This is the first tool-running campaign here with no external resource to
@@ -2680,7 +2680,7 @@ the caller says about a gene that demonstrably is.
 
 `campaigns/frameshift-scoelicolor-01`: AL645882.2 again, 8,667,507 bp, Prodigal
 2.6.3, 7,758 baseline calls, 21 targets from 99 to 22,392 bp. Oracle 1.0 at depth
-4, gate 21/0/5. The build is 32 caller runs and takes 12m47s.
+4, gate 22/0/5. The build is 32 caller runs and takes 12m47s.
 
 ### The same tool, the opposite flag
 
@@ -2939,6 +2939,60 @@ Mass-balance R2 goes from 6 and 7 components to 3, kinetics R1 from 8 to 5, and
 what is left in those rungs is the work the table enables rather than the table:
 `all_formulas_parse`, the summed assembly formula, the assembly mass.
 
+### Check 22, and where an exemption has to live
+
+The scan is now the gate's twenty-second mechanical check,
+`cold_sandbox_withholds_small_answers`, running the same code as the project-wide
+test: `src/npbench_c/readiness/cold_sandbox.py`. It builds the real cold sandbox,
+as check 21 does, rather than reading `task.yaml` directly — the question is what
+an agent gets, not what a file says. Every campaign is at 22/0/5.
+
+The design question worth recording is where a declared collision can live.
+
+The first version put the exemptions in the test's source, which works but puts
+a per-campaign fact in a file nobody reads when auditing a campaign. The obvious
+fix is to declare them in `task.yaml`, next to `excluded_from_grading`, where the
+project puts every other declaration — and that is exactly wrong here. An
+exemption says which declared value a component's answer equals: "uv_gc_window
+collides with the declared 50-nt window length" states that `uv_gc_window` is 50.
+Declaring it in the sandbox would ship the disclosure the check exists to
+prevent.
+
+So they live in `audit/cold_sandbox_exemptions.json`, outside `campaigns/`, where
+no sandbox can reach them, and a test asserts both that the file is outside every
+sandbox and that none of its reasons has been copied into one. Eight declarations
+across five campaigns, each naming its collision:
+
+- four genuine coincidences — a GC-window violation count equal to the declared
+  window length, a repeat count equal to the declared k-mer length, two
+  corpus-level answers equal to heavy-atom counts in a shipped chemistry table,
+  and a miss count equal to an identity-band edge;
+- two deliberate groupings, both `environment` on the two Prodigal campaigns,
+  where the tool identity is graded as one claim and the declared mode names
+  inside it must be published. The composite also carries the caller's version,
+  which the sandbox does not state, so it is not obtainable by reading.
+
+Three things check 22 does **not** reach, stated in its docstring rather than
+left to be assumed, because check 21's own honesty about its threshold is what
+made this gap findable in the first place: a number inside a graded composite
+keyed by a label (a census cell's count near its own term — tried on paper and
+dropped, since small integers near published vocabulary collide constantly and
+there is no measured instance to calibrate against); a number spelled out in
+words, which nothing mechanical will ever find; and a value an agent can derive
+from the sandbox without doing the work, which is a free component with a
+different fix.
+
+A ninth exemption was declared and removed within the minute. `chemspace`'s
+`most_shared_informative_scaffold` collides under an unbounded scan — its
+InChIKey is in the shipped chemistry table, because that is where the scaffolds
+are — but the pair scan is bounded to terms the campaign declares as a closed
+vocabulary, and an InChIKey is not one, so the component never fires and the
+exemption was protecting nothing. The staleness check found it, which is twice
+that check has paid for itself: the first time, removing a leaked sentence from
+`bgcdetect` also removed the collision a neighbouring waiver was resting on. The
+reason it was dropped is recorded in the file, because the next person to widen
+the scan will be tempted to re-add it.
+
 ### The copies that were being graded
 
 The twenty hits that were not disclosures were copies. A graded component whose
@@ -2991,7 +3045,7 @@ Gold is byte-identical in all nine. Dropping a component changes `grading.json`
 and nothing else, which is the useful property of generating the spec from gold:
 `bgcdetect`'s gold came back at md5 `a1a0541…` for the third time today, through
 five antiSMASH invocations, and `gcfcutoff`'s through BiG-SCAPE. Every one is
-oracle 1.0 at depth 4 and gate 21/0/5.
+oracle 1.0 at depth 4 and gate 22/0/5.
 
 ### What the check looks like now
 
@@ -3009,7 +3063,7 @@ exempted component no longer collides — and it fired as soon as I removed the
 bgcdetect sentence, because `regions_without_a_locus` had been waived for
 matching the same `15`. A waiver nobody rechecks is a check nobody is getting.
 
-All nine touched campaigns are back at gate 21/0/5. The three whose grading spec
+All nine touched campaigns are back at gate 22/0/5. The three whose grading spec
 changed regenerate byte-identical gold, because dropping a component changes
 `grading.json` and nothing else. bgcdetect's regeneration was the one I nearly
 skipped, on the assumption that antiSMASH over a chromosome is an afternoon: its
@@ -3098,12 +3152,16 @@ budget note, which is there to be read rather than guessed at.
    empty with a test asserting it stays that way. See "The copies that were
    being graded" above for what they were and what each rung kept.
 
-11. **The categorical-leak check belongs in the readiness gate**, as check 22.
-   It lives in `tests/unit/test_cold_sandbox_prose.py` instead, because the gate
-   certifies a campaign by regenerating its gold and the antiSMASH campaigns cost
-   half an hour each; moving it in means a gate run over all 22 campaigns, which
-   is an afternoon rather than a question. Same guarantee either way, and the test
-   runs in a tenth of a second.
+11. ~~The categorical-leak check belongs in the readiness gate, as check 22.~~
+   **Done.** `cold_sandbox_withholds_small_answers` is the gate's twenty-second
+   mechanical check, so the gate now reports 22/0/5. The scan lives in
+   `src/npbench_c/readiness/cold_sandbox.py`, the gate and
+   `tests/unit/test_cold_sandbox_prose.py` run the same implementation, and the
+   test covers all 22 campaigns in two seconds where the gate covers one at a
+   time. The migration cost was an afternoon's worth of gate runs, as expected;
+   what made it affordable was discovering that a gate run costs minutes rather
+   than the hours assumed when the item was written.
+
 12. Construct-validity study: inter-rater agreement first, then expert-grader
    agreement with Gwet's AC1 / Krippendorff's alpha alongside kappa, gate on
    Spearman against the continuous rating. This is the one place humans are
