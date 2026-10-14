@@ -80,30 +80,6 @@
             "gold": "gold:naive_assembly_monoisotopic_mass",
             "abs_tol": 0.001
           }
-        },
-        {
-          "name": "formula_alanine",
-          "scorer": "exact",
-          "args": {
-            "pred": "pred:monomer_formulas.alanine",
-            "gold": "gold:monomer_formulas.alanine"
-          }
-        },
-        {
-          "name": "formula_phenylalanine",
-          "scorer": "exact",
-          "args": {
-            "pred": "pred:monomer_formulas.phenylalanine",
-            "gold": "gold:monomer_formulas.phenylalanine"
-          }
-        },
-        {
-          "name": "formula_tryptophan",
-          "scorer": "exact",
-          "args": {
-            "pred": "pred:monomer_formulas.tryptophan",
-            "gold": "gold:monomer_formulas.tryptophan"
-          }
         }
       ]
     },

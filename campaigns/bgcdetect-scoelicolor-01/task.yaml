@@ -28,8 +28,10 @@ license_notice:
     curated cluster boundaries from MIBiG 4.0
     (https://mibig.secondarymetabolites.org/), licensed CC BY 4.0.
   redistribution: >
-    inputs/ carries the complete GenBank record (6.8 MB gzipped) and a 15-row
-    extract of MIBiG's locus table for this accession. The antiSMASH detection
+    inputs/ carries the complete GenBank record (6.8 MB gzipped) and an extract
+    of MIBiG's locus table for this accession, one row per locus. How many rows
+    that is, is R3's `loci_total` and so is not stated here; an earlier version
+    of this notice stated it. The antiSMASH detection
     rule files are NOT redistributed: they are AGPL-3.0-or-later package data, so
     the campaign reads them from the pinned image and records their paths, the
     provider, the version and a fingerprint instead.
@@ -207,9 +209,10 @@ excluded_from_grading:
   - field: whether a called region is "really" a biosynthetic gene cluster
     reason: >
       Not decidable from detection output, and not what the campaign asks. Every
-      verdict here compares two interval sets. In particular the 15 regions with no
+      verdict here compares two interval sets. In particular the regions with no
       curated counterpart are not thereby false positives: MIBiG records what has
-      been characterised, which is not the same as what exists.
+      been characterised, which is not the same as what exists. How many such
+      regions there are is R3's own answer, so it is not stated here.
   - field: the full HTML output and the complete JSON
     reason: >
       The graded artifact is the declared projection -- per region the

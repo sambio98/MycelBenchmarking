@@ -51,9 +51,10 @@ scope_note: >
 
 catalog_deviation: >
   The catalogued R4 was "a low-confidence assay is excluded -- predict the new
-  ratio". It is not available on this target pair: every one of the 105 assays
-  behind these IC50 values scores 7, "Direct protein complex subunits assigned",
-  so excluding on confidence rejects nothing. The rule is still declared and still
+  ratio". It is not available on this target pair: every assay behind these IC50
+  values carries the same confidence score, 7, "Direct protein complex subunits
+  assigned", so excluding on confidence rejects nothing. How many assays that is,
+  is R1's `distinct_assays` and so is not stated here. The rule is still declared and still
   graded, because a rule that is a no-op on one instantiation is not a rule that
   can be left out of the contract -- but the counterfactual has to vary an axis
   that moves. R4 relaxes the admission rules that do: the censored-relation rule,
@@ -153,8 +154,10 @@ grading:
 excluded_from_grading:
   - field: the per-molecule ratios themselves
     reason: >
-      A dictionary of 173 floats would dominate the conjunctive product while
-      testing one computation repeatedly. The committed SET at the highest
+      A dictionary of one float per eligible molecule -- several dozen of them --
+      would dominate the conjunctive product while testing one computation
+      repeatedly. The count is R2's `eligible_molecules`, so it is in gold rather
+      than in this reason. The committed SET at the highest
       threshold, the counts at all three, and the extreme molecule under a
       declared tie-break carry the claim; a system that gets a ratio wrong shows
       up in one of those.

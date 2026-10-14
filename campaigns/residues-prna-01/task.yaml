@@ -197,7 +197,9 @@ notes_for_audit:
     what makes that visible, and the per-ligand confirmed_delta should be
     positive for that ligand and negative for L-tryptophan.
   - >
-    Position 79 carries four records at once -- Active site, Binding site for
-    7-chloro-L-tryptophan, an unevidenced Site, and a mutagenesis substitution.
-    It is the clearest test of the dedup rule, and of the rule that a position
-    is counted once per feature type.
+    One position in this record carries four features at once -- Active site,
+    Binding site for 7-chloro-L-tryptophan, an unevidenced Site, and a
+    mutagenesis substitution. It is the clearest test of the dedup rule, and of
+    the rule that a position is counted once per feature type. Which position it
+    is, is R3's `active_site_position`, so it is in gold rather than here; an
+    earlier version of this note named it.

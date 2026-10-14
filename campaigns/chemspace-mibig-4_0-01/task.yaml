@@ -207,10 +207,12 @@ excluded_from_grading:
       declared rule exists so it is not read as more than that.
   - field: a primary biosynthetic class per entry
     reason: >
-      456 active entries carry more than one class and MIBiG supplies no rule for
-      choosing between them. Per-class counts therefore sum above the corpus
+      Many active entries carry more than one class and MIBiG supplies no rule
+      for choosing between them. Per-class counts therefore sum above the corpus
       total, which the counting rules state so a correct answer cannot differ on
-      the convention.
+      the convention. How many such entries there are is R1's
+      `multi_class_entries` and so is not stated here; an earlier version of this
+      reason stated it.
 
 notes_for_audit:
   - >
@@ -222,10 +224,11 @@ notes_for_audit:
     filtered and unfiltered counts side by side for exactly that reason.
   - >
     Check that the declared cross-class rule and the naive one differ by a large
-    factor. They do, because 456 active entries carry more than one class, so under the
-    naive rule a single hybrid cluster makes its scaffold cross classes with
-    nothing to compare against. The build refuses to emit gold if the two rules
-    agree.
+    factor. They do, because many active entries carry more than one class, so
+    under the naive rule a single hybrid cluster makes its scaffold cross classes
+    with nothing to compare against. The build refuses to emit gold if the two
+    rules agree. The count of multi-class entries is R1's own answer and is in
+    gold rather than here.
   - >
     The two duplicate compound names in this release (BGC0002024 lists
     'nargenicin A1' twice, BGC0002072 lists 'linearmycin C' twice) are why the

@@ -576,7 +576,10 @@ redistributes nothing.
 **T-L2-5** **Built**: `campaigns/kinetics-brenda-ec1_1-01`. BRENDA 2026.1,
 EC subclass 1.1.- , 437 EC numbers and 35,188 kinetic records.
 R1 the per-field parse census, with BRENDA's -999 missing-value sentinel counted
-and excluded rather than averaged · R2 the triple inventory under the declared
+and excluded rather than averaged — **the release, the EC prefix and the
+unit-per-field table are reported and not graded**, a correction made later: all
+three are stated in the cold sandbox, so a component for one measured a copy
+rather than a reading of the corpus · R2 the triple inventory under the declared
 (EC, proteins, substrate, references) key · R3 the consistency verdict: compute
 kcat/Km from kcat and Km and band the ratio against the stored value · R4 the same
 check under three declared unit mistakes, with an identity control.
@@ -968,11 +971,17 @@ computes what the annotated modules *would* produce and quantifies the gap,
 which is well-posed; attributing the gap to named chemistry would be judgement
 and is excluded with its reason recorded in `task.yaml`.
 R1 ordered module route, each with monomer identity and a parsing formula ·
-R2 monomer formulas correct, naive assembly Σ monomers − (n−1)·H₂O correct per
-element, peptide-bond count and assembly monoisotopic mass correct · R3 the
+R2 naive assembly Σ monomers − (n−1)·H₂O correct per element, peptide-bond count
+and assembly monoisotopic mass correct · R3 the
 signed per-element residual **for every annotated congener** plus a mechanical
 verdict from a closed vocabulary · R4 for **each** single-module deletion, the
 resulting assembly formula and exact mass shift. All G1.
+
+The per-monomer formulas themselves are **not graded**, and that is a correction
+made later: they are published in the table below, so a component for one
+measured a copy out of the sandbox rather than a reading of the route. What using
+the table takes is graded either side of them — `all_formulas_parse` at R1, the
+summed assembly formula and mass at R2.
 
 Monomer formulas are resolved once at construction with RDKit and pinned into
 `reference/monomer_formulas.json` with their SMILES source, so the oracle needs

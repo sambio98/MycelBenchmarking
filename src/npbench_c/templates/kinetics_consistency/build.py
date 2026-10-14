@@ -106,10 +106,17 @@ def build_grading(campaign: pathlib.Path, gold: dict) -> dict:
                 "args": {"pred": f"pred:{name}", "gold": f"gold:{path or name}",
                          "abs_tol": abs_tol}}
 
+    # `release`, `ec_prefix` and `declared_units` are reported and NOT graded.
+    # The release and the prefix are this campaign's own definition -- task.yaml
+    # names both -- and the unit per field is published in
+    # reference/kinetic_units.json, which the campaign must ship so that a
+    # correct number in the wrong convention is not scored as an error. A
+    # component for a value the sandbox states measures a copy, not a reading of
+    # the corpus; what reading the corpus takes is graded either side of them.
     r1 = [{"name": "report_present", "scorer": "exact",
            "args": {"pred": "pred:present.report", "gold": 1}},
-          ex("release"), ex("ec_prefix"), ex("distinct_ec_numbers"),
-          ex("declared_units"), ex("records_by_field"), ex("parsed_by_field"),
+          ex("distinct_ec_numbers"),
+          ex("records_by_field"), ex("parsed_by_field"),
           ex("sentinel_and_unparsed")]
 
     r2 = [ex("triple_keys_total"), ex("completeness_counts"),

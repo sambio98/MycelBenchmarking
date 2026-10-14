@@ -141,11 +141,16 @@ split_constraint: >
   recomputing anything.
 
   What does differ, and is what this instantiation actually adds: every
-  unconstrained-violation count (E. coli 20/1/0/29/0/0 against RebH's
-  11/3/0/50/1/0, Streptomyces direct_repeat 23 against 15), the E. coli
-  non-binding set, and the flipped-constraint set (RebH also flips homopolymer).
-  So R3's six integer components and R4's flipped set remain real work while
-  R3's binding-constraint component does not.
+  unconstrained-violation count for both hosts, the E. coli non-binding set, and
+  the flipped-constraint set (RebH also flips homopolymer). So R3's six integer
+  components and R4's flipped set remain real work while R3's
+  binding-constraint component does not.
+
+  The counts themselves are not written here, in either instantiation. They are
+  what R3 and R4 grade, and an earlier version of this note printed all six of
+  R3's integers for both hosts plus R4's swapped direct-repeat count, in the same
+  sentence that claimed they remain real work. Where they differ, and by how
+  much, is in docs/npbench-c.md, which the sandbox never sees.
 
   If the private set needs a construct-design campaign, author a third
   instantiation whose binding constraint genuinely differs -- a protein or host

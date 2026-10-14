@@ -80,38 +80,6 @@
             "gold": "gold:naive_assembly_monoisotopic_mass",
             "abs_tol": 0.001
           }
-        },
-        {
-          "name": "formula_N5-formyl-N5-hydroxyornithine",
-          "scorer": "exact",
-          "args": {
-            "pred": "pred:monomer_formulas.N5-formyl-N5-hydroxyornithine",
-            "gold": "gold:monomer_formulas.N5-formyl-N5-hydroxyornithine"
-          }
-        },
-        {
-          "name": "formula_N5-hydroxyornithine",
-          "scorer": "exact",
-          "args": {
-            "pred": "pred:monomer_formulas.N5-hydroxyornithine",
-            "gold": "gold:monomer_formulas.N5-hydroxyornithine"
-          }
-        },
-        {
-          "name": "formula_aspartic_acid",
-          "scorer": "exact",
-          "args": {
-            "pred": "pred:monomer_formulas.aspartic acid",
-            "gold": "gold:monomer_formulas.aspartic acid"
-          }
-        },
-        {
-          "name": "formula_serine",
-          "scorer": "exact",
-          "args": {
-            "pred": "pred:monomer_formulas.serine",
-            "gold": "gold:monomer_formulas.serine"
-          }
         }
       ]
     },

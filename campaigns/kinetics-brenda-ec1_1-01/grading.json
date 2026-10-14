@@ -21,35 +21,11 @@
           }
         },
         {
-          "name": "release",
-          "scorer": "exact",
-          "args": {
-            "pred": "pred:release",
-            "gold": "gold:release"
-          }
-        },
-        {
-          "name": "ec_prefix",
-          "scorer": "exact",
-          "args": {
-            "pred": "pred:ec_prefix",
-            "gold": "gold:ec_prefix"
-          }
-        },
-        {
           "name": "distinct_ec_numbers",
           "scorer": "exact",
           "args": {
             "pred": "pred:distinct_ec_numbers",
             "gold": "gold:distinct_ec_numbers"
-          }
-        },
-        {
-          "name": "declared_units",
-          "scorer": "exact",
-          "args": {
-            "pred": "pred:declared_units",
-            "gold": "gold:declared_units"
           }
         },
         {

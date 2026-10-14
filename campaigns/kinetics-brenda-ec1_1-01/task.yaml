@@ -145,6 +145,15 @@ grading:
       computed over R2 upward.
 
 excluded_from_grading:
+  - field: release, ec_prefix and declared_units
+    reason: >
+      Echoes. The release and the EC prefix are this campaign's own definition
+      and task.yaml names both; the unit per field is published in
+      reference/kinetic_units.json, which has to be shipped so that a correct
+      number in the wrong convention is not scored as an error. Each was graded
+      at R1 until an audit of every graded scalar against the cold sandbox found
+      it readable straight out of the sandbox. Reported so a run records what it
+      read, and not graded.
   - field: band_examples
     reason: >
       Illustrative rows for a reader, chosen by sorted key rather than by any

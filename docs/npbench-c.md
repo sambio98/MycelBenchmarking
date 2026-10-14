@@ -23,7 +23,7 @@ scoring path.
 | Campaign: sevadicin | `campaigns/massbalance-nrps-sevadicin-01/` | oracle 1.0, gate 21/0/5 |
 | Internal sweep | `src/npbench_c/sweep/` | runner, stats, gates, stub fixtures |
 | Refusal contract | `tests/unit/test_build_refusals.py` | every one of 133 build refusals across 11 templates named by a test |
-| Categorical leak check | `tests/unit/test_cold_sandbox_prose.py` | no graded closed-vocabulary term stated against its own label in any cold sandbox |
+| Cold-sandbox prose checks | `tests/unit/test_cold_sandbox_prose.py` | no graded term stated against its label, and no graded scalar stated at all, in any cold sandbox; waivers checked for staleness |
 | Catalog | `docs/catalog.md` | 24 templates / 32 campaigns, grounded |
 | Provisioning | `docs/environment.md` | tools, DBs, sandbox contract |
 | Template: MIBiG release diff | `src/npbench_c/templates/mibig_diff/` | shared oracle |
@@ -2868,6 +2868,93 @@ in the sandbox. The numbers are in this file instead, which the sandbox never
 sees. The audit notes went the same way: they now say what to recompute and from
 where, rather than printing what it comes to.
 
+## Ten answers the sandbox was still handing over
+
+Writing the categorical check for the frameshift leak, I generalised it one step
+further than the leak needed: for every graded component whose gold value is a
+scalar, does that exact value appear, on a word boundary, anywhere the agent can
+read before computing? Twenty-five string hits and twenty-one numeric ones came
+back across sixteen campaigns. Triaged, five of the numeric hits are genuine
+coincidences and the rest split into ten disclosures and twenty free components.
+
+The project has been here before and fixed it: check 21 exists because seven of
+sixteen campaigns stated a graded answer in prose. What it does not do is reach
+small values. It requires an integer to carry four digits and a float four
+decimals, because a graded count of 2 occurs in any prose by coincidence, and
+its own docstring says plainly that this leaves small graded values unchecked.
+That is the gap, and these are what was in it.
+
+### The construct pair, which is the worst leak so far
+
+Both construct-design campaigns carried this sentence in their own `task.yaml`:
+
+> every unconstrained-violation count (E. coli 20/1/0/29/0/0 against RebH's
+> 11/3/0/50/1/0, Streptomyces direct_repeat 23 against 15) [...] So R3's six
+> integer components and R4's flipped set remain real work while R3's
+> binding-constraint component does not.
+
+The sentence states the answer and then asserts it is real work, in that order.
+`construct-ecoli-prna-01`'s R3 is the six E. coli counts — the same six integers
+as `20/1/0/29/0/0`, in a different order — and its R4 swapped direct-repeat count
+is the `23`. `construct-ecoli-rebh-01`'s are the other two groups in the same
+sentence. So each campaign disclosed six of R3's components and one of R4's, and
+each also disclosed the other campaign's, in a note whose purpose was release
+management: it was arguing that the two instantiations must not be split across
+the public and private sets. The argument is right. Printing the counts to make
+it was not necessary, and it is the same mechanism check 21 was built for — an
+explanation that needs the phenomenon quoting the measurement instead.
+
+The other four, each in a sentence that was true and useful:
+
+| campaign | component | stated as |
+|---|---|---|
+| `bgcdetect-scoelicolor-01` | `loci_total` | "a 15-row extract of MIBiG's locus table", and again as "the 15 regions with no curated counterpart" |
+| `chemspace-mibig-4_0-01` | `multi_class_entries` | "456 active entries carry more than one class", in an exclusion's reason, in an audit note, and a third time in `reference/space_rules.json` |
+| `mibig-gene-function-evidence-01` | `backed_Transport`, `unbacked_Transport` | "the starkest category in the backed census (23 backed against 153 unbacked)", in an audit note |
+| `residues-prna-01` | `active_site_position` | "Position 79 carries four records at once", in an audit note |
+| `selectivity-saureus-topoisomerase-01` | `distinct_assays`, `eligible_molecules` | "every one of the 105 assays", in a deviation note; "a dictionary of 173 floats", in an exclusion's reason |
+
+Every one is now phrased without its number, each saying where the number lives
+instead: in gold, which an auditor has and a system does not. The chemspace one
+needed fixing in the template's constants as well as the campaign's copy, or the
+next rebuild would have restored it.
+
+### Three of the free components, as the pattern for the rest
+
+The twenty remaining hits are a different defect. A graded component whose value
+is the campaign's own accession, EC number, snapshot release or declared cutoff
+discloses nothing an agent could not read off the task — that IS the task — but
+grading it measures a copy. The newer campaigns already exclude exactly these by
+name; the older ones grade them, which is drift rather than a decision.
+
+Three are fixed here, chosen because their reason is the most interesting one.
+Both mass-balance campaigns publish a per-monomer formula table and graded seven
+components straight out of it, and `kinetics` published its unit-per-field table
+and graded it back. In both cases the table has to stay: mass-balance is S0, the
+agent has no chemistry toolkit, and the table exists precisely so that an RDKit
+version bump cannot move a published score; the kinetics units exist so that a
+correct number in the wrong convention is not scored as an error. So the table
+stays and the component goes, which is the `mibig-diff` precedent exactly.
+Mass-balance R2 goes from 6 and 7 components to 3, kinetics R1 from 8 to 5, and
+what is left in those rungs is the work the table enables rather than the table:
+`all_formulas_parse`, the summed assembly formula, the assembly mass.
+
+### What the check looks like now
+
+`tests/unit/test_cold_sandbox_prose.py` holds both scans — the categorical one
+for a term stated against its label, and the scalar one above — and the scalar
+one is anchored on the component rather than on a digit count. That produces
+real coincidences, so each is listed with the collision named: a GC-window
+violation count that equals the declared 50-nt window length, a direct-repeat
+count that equals the declared 11-mer length, two corpus-level answers that
+equal heavy-atom counts in the shipped chemistry table, a histogram edge.
+
+Two further tests keep the waiver lists honest, and one of them earned its place
+inside a minute. `test_every_waiver_still_describes_a_real_collision` fails if an
+exempted component no longer collides — and it fired as soon as I removed the
+bgcdetect sentence, because `regions_without_a_locus` had been waived for
+matching the same `15`. A waiver nobody rechecks is a check nobody is getting.
+
 ## Open items
 
 1. **CAI table provenance.** The relative-adaptiveness values now live in
@@ -2941,28 +3028,32 @@ where, rather than printing what it comes to.
    either a definition and a gate check or removal, and fixing the other nine is
    the owner's taxonomy call rather than a silent edit. A declaration no check reads is the
    thing this project keeps finding in other people's data.
-10. **Eight graded components are readable straight out of `reference/`**, found
-   by the categorical-leak scan above and triaged out of it, because they are a
-   different defect: free components rather than prose leaks. Each sits in a
-   conjunctive rung beside components that are not free, so no rung becomes
-   passable for nothing, but the per-rung difficulty profile is flattered in
-   exactly the direction that flatters the benchmark.
-   - `massbalance-nrps-sevadicin-01` R2: `formula_alanine`,
-     `formula_phenylalanine`, `formula_tryptophan`.
-   - `massbalance-nrps-malleobactin-01` R2: the four `formula_*` components.
-   - `kinetics-brenda-ec1_1-01` R1: `declared_units`.
+10. **Twenty graded components restate the campaign's own definition.** What is
+   left of the audit below, after the ten disclosures were fixed: a graded value
+   that the sandbox has to state, because it is the campaign's own accession, EC
+   number, snapshot release, declared convention, invocation parameter or
+   published cutoff. No disclosure beyond the campaign's definition, and each
+   sits in a conjunctive rung beside components that are not free, so no rung
+   becomes passable for nothing — but the per-rung difficulty profile is
+   flattered in exactly the direction that flatters the benchmark, and the newer
+   campaigns already exclude these by name while the older ones grade them. The
+   list is in `SCALAR_FREE_COMPONENTS` in
+   `tests/unit/test_cold_sandbox_prose.py`, which is the work queue and is
+   checked for staleness, so it can only shrink by a deliberate edit:
+   `bgcdetect` (accession, coordinate_convention), `ecaudit` (ec_number,
+   release), `gcfcutoff` (baseline_cutoff, corpus_size, include_gbk),
+   `constraint-conflict` / `constraint-feasible` (witness_required), `pocket`
+   (accession, pdb_id, contact_cutoff), `residues` (accession, swap_structure),
+   `selectivity` (focal_target, reference_target, release), `transfer`
+   (ec_prefix, release, tie_break).
 
-   In every case the table is published for a stated reason — the mass-balance
-   formulas so that a system is not marked wrong because its RDKit counts
-   hydrogens differently, the units so that a correct number in the wrong
-   convention is not scored as an error — so the table has to stay and the
-   component has to go, which is the `mibig-diff` precedent exactly. The fix is
-   mechanical for all three (gold is pure computation): drop the component,
-   record the exclusion with its reason, rebuild, re-gate. Two scans that fired
-   on the same campaigns are **not** this defect and were triaged as such:
-   `chemspace-mibig-4_0-01`'s most-shared scaffold is an aggregate over a table
-   that necessarily contains the winner, and `pocket-rebh-01`'s focal ligand is
-   declared in `task.yaml` but is not among that rung's graded descriptors.
+   Three are already done, as the pattern for the rest: `kinetics`'s `release`,
+   `ec_prefix` and `declared_units` and both mass-balance campaigns' seven
+   `formula_*` components are now reported and not graded, with the exclusion
+   recorded and the campaigns rebuilt and re-gated at 21/0/5. R1 of kinetics
+   went from 8 components to 5 and mass-balance R2 from 6 and 7 to 3; every
+   remaining component in those rungs is work the sandbox does not answer.
+
 11. **The categorical-leak check belongs in the readiness gate**, as check 22.
    It lives in `tests/unit/test_cold_sandbox_prose.py` instead, because the gate
    certifies a campaign by regenerating its gold and the antiSMASH campaigns cost

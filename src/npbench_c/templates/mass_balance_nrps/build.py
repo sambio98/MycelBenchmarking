@@ -117,8 +117,15 @@ def build_grading(campaign: pathlib.Path, gold: dict) -> dict:
           ex("naive_assembly_formula", "naive_assembly_formula", "naive_assembly_formula"),
           tol("naive_assembly_mass", "naive_assembly_monoisotopic_mass",
               "naive_assembly_monoisotopic_mass")]
-    r2 += [ex(f"formula_{m.replace(' ', '_')}", f"monomer_formulas.{m}",
-              f"monomer_formulas.{m}") for m in sorted(gold["monomer_formulas"])]
+    # The per-monomer formulas are NOT graded, for the reason the compound list
+    # below is not. Every one of them is published in
+    # reference/monomer_formulas.json, which this campaign must ship: it is S0,
+    # the agent has no chemistry toolkit, and the table exists so that a toolkit
+    # version bump cannot move a published score. A component for a value the
+    # sandbox states is a free component, and grading the copy says nothing about
+    # whether the assembly was computed. What it takes to USE the table is graded
+    # either side of it -- `all_formulas_parse` at R1, and the summed assembly
+    # formula and mass here. See excluded_from_grading.
 
     # The compound list is NOT graded. It is a field of the shipped MIBiG entry
     # and every warm bundle hands it over, because R2 and R3 cannot be posed

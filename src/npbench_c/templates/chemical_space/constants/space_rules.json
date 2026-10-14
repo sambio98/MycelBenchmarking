@@ -31,7 +31,7 @@
   },
   "cross_class_rule": {
     "rule": "A scaffold crosses biosynthetic classes when at least two of the entries carrying it have DISJOINT class sets.",
-    "naive_alternative": "The obvious rule -- the union of the classes of a scaffold's entries contains more than one class name -- is also computed and reported, because it is what most analyses do and it is badly inflated: 456 ACTIVE entries in this release carry more than one class, so a single hybrid PKS/NRPS entry makes its scaffold 'cross classes' on its own without any two clusters sharing anything.",
+    "naive_alternative": "The obvious rule -- the union of the classes of a scaffold's entries contains more than one class name -- is also computed and reported, because it is what most analyses do and it is badly inflated, because many ACTIVE entries in this release carry more than one class (how many is this campaign's own R1 answer and is not stated here), so a single hybrid PKS/NRPS entry makes its scaffold 'cross classes' on its own without any two clusters sharing anything.",
     "class_field": "biosynthesis.classes[].class, a closed six-term vocabulary.",
     "class_vocabulary": [
       "NRPS",

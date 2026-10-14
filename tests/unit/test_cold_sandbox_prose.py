@@ -185,3 +185,167 @@ def test_the_scan_finds_a_planted_leak(tmp_path):
     (copy / "task.yaml").write_text(
         f"objective: the gene selected for {label} bases comes back {verdict}\n")
     assert any(f"verdict_by_length[{label}]" in hit for hit in _leaks(copy))
+
+# ===================================================================== scalars
+#
+# The second shape, and the one that cost the most. Check 21 searches for the
+# string form of every graded value and requires an integer to carry four digits
+# and a float four decimals, because a graded count of 2 occurs in any prose by
+# coincidence. That threshold is what let `15`, `456`, `105`, `173`, `79`, `23`,
+# `153`, `0.62`, `0.55` and `4.5` through -- ten graded answers in eight
+# campaigns, each in a sentence that was true, useful and well-intentioned.
+#
+# The fix is to anchor on the component rather than on the digit count: a graded
+# scalar is a leak if its exact value appears, on a word boundary, anywhere the
+# agent can read before computing. That produces real coincidences -- a window
+# size that equals a violation count, a histogram edge that equals a miss count
+# -- so each one is listed below with the reason it is a coincidence, and the
+# list is short enough to read.
+
+#: Graded scalars whose value appears in the sandbox by coincidence, not as a
+#: statement about that component. Each entry is "<campaign>:<component>" with
+#: the collision named, because an exemption nobody can check is worse than no
+#: check at all.
+SCALAR_COINCIDENCES = {
+    # The shipped chemistry table carries a heavy-atom count per record, and two
+    # of those integers equal these corpus-level answers.
+    "chemspace-mibig-4_0-01:connectivity_groups_with_multiple_compound_keys":
+        "matches compound_heavy_atoms=111 in the shipped chemistry table",
+    "chemspace-mibig-4_0-01:distinctions_lost_at_connectivity":
+        "matches scaffold_heavy_atoms=119 in the shipped chemistry table",
+    # The counting rules declare 50-nt GC windows and direct repeats as 11-mers;
+    # RebH's two violation counts happen to equal both parameters.
+    "construct-ecoli-rebh-01:uv_gc_window":
+        "matches the declared 50-nt window length in the counting rules",
+    "construct-ecoli-rebh-01:uv_direct_repeat":
+        "matches the declared 11-mer repeat length in the counting rules",
+    # The identity-band edges are declared as [70, 80], [80, 90] and so on.
+    "transfer-ec1_14-uniprot-01:queries_without_a_hit":
+        "matches a declared identity-band edge in the binning rule",
+}
+
+#: Graded scalars whose value is the campaign's own declared parameter, so the
+#: sandbox must state it and the component is a FREE COMPONENT rather than a
+#: disclosure. Recorded here, not waived: open item 10 tracks removing them, and
+#: this list is the work queue.
+SCALAR_FREE_COMPONENTS = {
+    "bgcdetect-scoelicolor-01:accession": "the input record's own accession",
+    "bgcdetect-scoelicolor-01:coordinate_convention": "a declared convention",
+    "constraint-conflict-ecoli-rebh-01:witness_required": "the declared GC floor",
+    "constraint-feasible-ecoli-rebh-01:witness_required": "the declared GC floor",
+    "ecaudit-fmn-dh-1_1_3_15-01:ec_number": "the campaign's own EC number",
+    "ecaudit-fmn-dh-1_1_3_15-01:release": "the declared snapshot",
+    "gcfcutoff-mibig-32-01:baseline_cutoff": "a declared invocation parameter",
+    "gcfcutoff-mibig-32-01:corpus_size": "stated in the campaign id",
+    "gcfcutoff-mibig-32-01:include_gbk": "a declared invocation parameter",
+    "pocket-rebh-01:accession": "the campaign's own accession",
+    "pocket-rebh-01:contact_cutoff": "the declared contact rule's cutoff",
+    "pocket-rebh-01:pdb_id": "the campaign's own structure",
+    "residues-prna-01:accession": "the campaign's own accession",
+    "residues-prna-01:swap_structure": "the declared swap structure",
+    "selectivity-saureus-topoisomerase-01:focal_target": "the campaign's own target",
+    "selectivity-saureus-topoisomerase-01:reference_target": "the campaign's own target",
+    "selectivity-saureus-topoisomerase-01:release": "the declared snapshot",
+    "transfer-ec1_14-uniprot-01:ec_prefix": "the campaign's own EC prefix",
+    "transfer-ec1_14-uniprot-01:release": "the declared snapshot",
+    "transfer-ec1_14-uniprot-01:tie_break": "a declared tie-break rule",
+}
+
+
+def _dig(gold: dict, path: str):
+    cursor = gold
+    for part in path.split("."):
+        if isinstance(cursor, dict) and part in cursor:
+            cursor = cursor[part]
+        else:
+            return None
+    return cursor
+
+
+def _graded_scalars(campaign: pathlib.Path):
+    """Every graded component whose gold value is a scalar, with that value."""
+    gold = json.loads((campaign / "gold" / "gold.json").read_text())
+    spec = json.loads((campaign / "grading.json").read_text())
+    for rung in spec["rungs"]:
+        for component in rung["components"]:
+            args = component.get("args") or {}
+            reference = args.get("gold")
+            if not isinstance(reference, str) or not reference.startswith("gold:"):
+                continue
+            value = _dig(gold, reference.split("gold:", 1)[1])
+            if isinstance(value, bool) or not isinstance(value, (int, float, str)):
+                continue
+            yield component["name"], value
+
+
+def _forms(value) -> set[str]:
+    if isinstance(value, float):
+        return {repr(value), str(value), f"{value:g}"}
+    return {str(value)}
+
+
+def _scalar_leaks(campaign: pathlib.Path) -> list[str]:
+    prose = _prose(campaign)
+    vocabulary = _vocabularies(campaign)
+    out = []
+    for name, value in _graded_scalars(campaign):
+        if isinstance(value, str):
+            # A vocabulary term has to be published; which term applies is the
+            # answer, and no label is paired with it here.
+            if len(value) < 3 or value in vocabulary:
+                continue
+        elif isinstance(value, int) and abs(value) < 10:
+            # A single digit matches anything. Check 21 skips these too, and for
+            # the same reason.
+            continue
+        elif isinstance(value, float) and value in (0.0, 1.0):
+            continue
+        for form in _forms(value):
+            if re.search(rf"(?<![\w.]){re.escape(form)}(?![\w.])", prose):
+                out.append(f"{name} = {value!r}")
+                break
+    return out
+
+
+@pytest.mark.parametrize("campaign", _campaigns(), ids=lambda c: c.name)
+def test_no_graded_scalar_is_stated_in_the_cold_sandbox(campaign):
+    waived = {key.split(":", 1)[1] for key in
+              (*SCALAR_COINCIDENCES, *SCALAR_FREE_COMPONENTS)
+              if key.startswith(campaign.name + ":")}
+    found = [hit for hit in _scalar_leaks(campaign)
+             if hit.split(" = ")[0] not in waived]
+    assert not found, (
+        f"{campaign.name}: the cold sandbox states {len(found)} graded value(s) "
+        "that check 21's digit threshold does not reach:\n"
+        + "\n".join(f"  {hit}" for hit in sorted(found))
+        + "\n\nEither remove the value from task.yaml/reference (the "
+          "measurement belongs in docs/), or, if the sandbox must state it, "
+          "stop grading it and add it to SCALAR_FREE_COMPONENTS with its reason."
+    )
+
+
+def test_every_waiver_still_describes_a_real_collision():
+    """A waiver list rots silently: an exempted component that no longer collides
+    is a check nobody is getting, and one whose campaign was fixed is noise."""
+    by_campaign = {c.name: c for c in _campaigns()}
+    stale = []
+    for key in (*SCALAR_COINCIDENCES, *SCALAR_FREE_COMPONENTS):
+        name, component = key.split(":", 1)
+        campaign = by_campaign.get(name)
+        if campaign is None:
+            continue
+        if component not in {n for n, _ in _graded_scalars(campaign)}:
+            stale.append(f"{key} (no such graded component)")
+            continue
+        if not any(hit.split(" = ")[0] == component
+                   for hit in _scalar_leaks(campaign)):
+            stale.append(f"{key} (no longer collides; drop the waiver)")
+    assert not stale, "stale waivers:\n" + "\n".join(f"  {s}" for s in stale)
+
+
+def test_the_free_component_queue_is_not_silently_growing():
+    """Open item 10's work queue, pinned. Twenty graded components restate the
+    campaign's own definition; the number may go DOWN as they are dropped from
+    grading, and must not go up without a deliberate edit here."""
+    assert len(SCALAR_FREE_COMPONENTS) <= 20
+

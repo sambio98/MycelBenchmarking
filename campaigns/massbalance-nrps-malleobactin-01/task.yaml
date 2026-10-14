@@ -121,6 +121,15 @@ grading:
       carried by the four residual vectors, which is what this figure reflects.
 
 excluded_from_grading:
+  - field: the per-monomer molecular formulas
+    reason: >
+      Published in reference/monomer_formulas.json, which this campaign must
+      ship: it is S0, the agent has no chemistry toolkit, and the table exists
+      so that a toolkit version bump cannot move a published score. Grading them
+      back measures a copy. They were graded at R2 until an audit of every
+      graded scalar against the cold sandbox found them stated there. What it
+      takes to USE the table is still graded either side of them:
+      all_formulas_parse at R1, and the summed assembly formula and mass at R2.
   - field: the enumerated compound list
     reason: >
       It is a field of the shipped entry, and every warm bundle hands it over

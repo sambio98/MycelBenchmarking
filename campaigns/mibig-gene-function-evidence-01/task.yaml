@@ -162,6 +162,8 @@ notes_for_audit:
     count is strictly below the backed count for several categories - if it were
     not, R3 would restate R2 and the build refuses to emit gold in that case.
   - >
-    Transport is the starkest category in the backed census (23 backed against
-    153 unbacked), which is worth a sanity look: transporters are frequently
-    assigned by sequence similarity alone.
+    Transport is the starkest category in the backed census, by a wide margin in
+    the unbacked direction, which is worth a sanity look: transporters are
+    frequently assigned by sequence similarity alone. Its two counts are R2's own
+    components, so they are in gold rather than here; an earlier version of this
+    note printed both.
