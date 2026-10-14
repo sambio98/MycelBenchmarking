@@ -225,31 +225,15 @@ SCALAR_COINCIDENCES = {
 }
 
 #: Graded scalars whose value is the campaign's own declared parameter, so the
-#: sandbox must state it and the component is a FREE COMPONENT rather than a
-#: disclosure. Recorded here, not waived: open item 10 tracks removing them, and
-#: this list is the work queue.
-SCALAR_FREE_COMPONENTS = {
-    "bgcdetect-scoelicolor-01:accession": "the input record's own accession",
-    "bgcdetect-scoelicolor-01:coordinate_convention": "a declared convention",
-    "constraint-conflict-ecoli-rebh-01:witness_required": "the declared GC floor",
-    "constraint-feasible-ecoli-rebh-01:witness_required": "the declared GC floor",
-    "ecaudit-fmn-dh-1_1_3_15-01:ec_number": "the campaign's own EC number",
-    "ecaudit-fmn-dh-1_1_3_15-01:release": "the declared snapshot",
-    "gcfcutoff-mibig-32-01:baseline_cutoff": "a declared invocation parameter",
-    "gcfcutoff-mibig-32-01:corpus_size": "stated in the campaign id",
-    "gcfcutoff-mibig-32-01:include_gbk": "a declared invocation parameter",
-    "pocket-rebh-01:accession": "the campaign's own accession",
-    "pocket-rebh-01:contact_cutoff": "the declared contact rule's cutoff",
-    "pocket-rebh-01:pdb_id": "the campaign's own structure",
-    "residues-prna-01:accession": "the campaign's own accession",
-    "residues-prna-01:swap_structure": "the declared swap structure",
-    "selectivity-saureus-topoisomerase-01:focal_target": "the campaign's own target",
-    "selectivity-saureus-topoisomerase-01:reference_target": "the campaign's own target",
-    "selectivity-saureus-topoisomerase-01:release": "the declared snapshot",
-    "transfer-ec1_14-uniprot-01:ec_prefix": "the campaign's own EC prefix",
-    "transfer-ec1_14-uniprot-01:release": "the declared snapshot",
-    "transfer-ec1_14-uniprot-01:tie_break": "a declared tie-break rule",
-}
+#: sandbox must state it and the component would be a FREE COMPONENT rather than
+#: a disclosure.
+#:
+#: The list is empty, and keeping it is the point: it held twenty entries across
+#: nine campaigns, every one of them dropped from grading with the exclusion
+#: recorded. An entry here is a component this project grades and should not, so
+#: the empty dict is the claim that none remain. Adding one is a deliberate act
+#: that has to survive `test_every_waiver_still_describes_a_real_collision`.
+SCALAR_FREE_COMPONENTS: dict[str, str] = {}
 
 
 def _dig(gold: dict, path: str):
@@ -343,9 +327,12 @@ def test_every_waiver_still_describes_a_real_collision():
     assert not stale, "stale waivers:\n" + "\n".join(f"  {s}" for s in stale)
 
 
-def test_the_free_component_queue_is_not_silently_growing():
-    """Open item 10's work queue, pinned. Twenty graded components restate the
-    campaign's own definition; the number may go DOWN as they are dropped from
-    grading, and must not go up without a deliberate edit here."""
-    assert len(SCALAR_FREE_COMPONENTS) <= 20
+def test_no_free_component_is_left_in_grading():
+    """What was open item 10, now closed and held closed. Twenty graded
+    components across nine campaigns restated the campaign's own definition --
+    an accession, an EC number, a snapshot release, a declared convention, an
+    invocation parameter, a published cutoff -- and every one has been dropped
+    from grading with its exclusion recorded. A new entry in the waiver list is
+    a component this project grades and should not."""
+    assert SCALAR_FREE_COMPONENTS == {}
 

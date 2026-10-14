@@ -21,14 +21,6 @@
           }
         },
         {
-          "name": "accession",
-          "scorer": "exact",
-          "args": {
-            "pred": "pred:accession",
-            "gold": "gold:accession"
-          }
-        },
-        {
           "name": "sequence_length",
           "scorer": "exact",
           "args": {
@@ -255,14 +247,6 @@
       "pass_threshold": 1.0,
       "chance_level": 0.001,
       "components": [
-        {
-          "name": "swap_structure",
-          "scorer": "exact",
-          "args": {
-            "pred": "pred:swap_structure",
-            "gold": "gold:structure_swap.structure"
-          }
-        },
         {
           "name": "swap_contact_positions",
           "scorer": "exact",

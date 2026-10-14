@@ -614,7 +614,9 @@ to 0.36%.
 | T-L3-5a | Gene-function evidence audit | verified | **BUILT** |
 
 **T-L3-1** antiSMASH detection and boundary calling. R1 region table, coordinate
-convention pinned · R2 boundaries match gold by overlap-F1 within measured
+convention pinned — **and pinned is not graded**: the convention and the
+accession are declared in `task.yaml`, so both are reported and excluded, a
+correction made after the cold-sandbox audit · R2 boundaries match gold by overlap-F1 within measured
 tolerance · R3 claim: cluster class and the boundary-defining gene, closed enum ·
 R4 a core biosynthetic gene is deleted — predict the new boundary and whether
 detection survives. **Pin antiSMASH version and ClusterBlast DB; never compare
@@ -683,7 +685,10 @@ rules — and the build refuses gold if it does not match. That is the licensing
 from T-L2-4's grounding, now used for the second time and for the reason it was
 written.
 
-**T-L3-2** BiG-SCAPE GCF membership as a function of cutoff. R1 distance matrix ·
+**T-L3-2** BiG-SCAPE GCF membership as a function of cutoff. R1 distance matrix
+— the corpus size, the baseline cutoff and the `--include-gbk` prefix are
+reported and not graded, being this campaign's own id and two declared invocation
+parameters; the declared cutoff GRID stays graded ·
 R2 matches gold · R3 claim: family membership at the declared cutoff · R4 the
 cutoff is changed — report the range over which membership flips, scored with
 `interval_score`. Absorbs the AN-5 robustness family. Pin BiG-SCAPE version,

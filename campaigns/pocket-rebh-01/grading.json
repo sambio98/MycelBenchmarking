@@ -21,22 +21,6 @@
           }
         },
         {
-          "name": "pdb_id",
-          "scorer": "exact",
-          "args": {
-            "pred": "pred:pdb_id",
-            "gold": "gold:pdb_id"
-          }
-        },
-        {
-          "name": "accession",
-          "scorer": "exact",
-          "args": {
-            "pred": "pred:accession",
-            "gold": "gold:accession"
-          }
-        },
-        {
           "name": "atom_inventory",
           "scorer": "exact",
           "args": {
@@ -104,15 +88,6 @@
       "pass_threshold": 1.0,
       "chance_level": 0.002,
       "components": [
-        {
-          "name": "contact_cutoff",
-          "scorer": "abs_tol_match",
-          "args": {
-            "pred": "pred:contact_cutoff_angstrom",
-            "gold": "gold:shells.contact_cutoff_angstrom",
-            "abs_tol": 0.001
-          }
-        },
         {
           "name": "contact_counts_by_copy",
           "scorer": "exact",

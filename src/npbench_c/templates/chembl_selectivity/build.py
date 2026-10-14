@@ -25,6 +25,12 @@ RATIO_TOLERANCE = 0.000001
 CENSUS_KEYS = ("release", "focal_target", "reference_target", "activities_total",
                "activities_of_declared_type", "distinct_assays",
                "assay_confidence_scores")
+#: Of those, the three that are reported and NOT graded. The release and both
+#: target identifiers are this campaign's own definition -- task.yaml names all
+#: three -- so a component for one measures a copy out of the cold sandbox. They
+#: stay in CENSUS_KEYS because R2's warm bundle hands over the whole census,
+#: which is R1's answer and includes them. See excluded_from_grading.
+CENSUS_ECHOES = ("release", "focal_target", "reference_target")
 ADMISSION_KEYS = ("admitted_by_target", "rejected_by_target", "aggregated_pairs",
                   "aggregated_by_target", "eligible_molecules")
 VERDICT_KEYS = ("focal_selective_counts", "reference_selective_counts",
@@ -117,7 +123,7 @@ def build_grading(campaign: pathlib.Path, gold: dict) -> dict:
 
     r1 = [{"name": "report_present", "scorer": "exact",
            "args": {"pred": "pred:present.report", "gold": 1}}] + \
-         [ex(k) for k in CENSUS_KEYS]
+         [ex(k) for k in CENSUS_KEYS if k not in CENSUS_ECHOES]
     r2 = [ex(k) for k in ADMISSION_KEYS]
     r3 = [ex("focal_selective_counts"), ex("reference_selective_counts"),
           {"name": "focal_selective_at_highest_threshold", "scorer": "set_exact",

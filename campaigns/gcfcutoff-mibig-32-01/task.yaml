@@ -200,6 +200,17 @@ grading:
       computed over R2 upward.
 
 excluded_from_grading:
+  - field: corpus_size, baseline_cutoff and include_gbk
+    reason: >
+      The corpus size is in this campaign's own id, and the other two are
+      declared invocation parameters. The declared cutoff GRID remains graded:
+      which cutoffs were run is a claim about the run rather than a copy of one
+      number. Each is readable straight out of the cold sandbox, so a component
+      for it measured a copy rather than a reading of the data. Each was graded
+      until an audit of every graded scalar against task.yaml and reference/
+      found it stated there; the newer campaigns in this project already
+      excluded the same shape by name, so grading them here was drift rather
+      than a decision. Reported so a run records what it read, and not graded.
   - field: the family labels BiG-SCAPE assigns
     reason: >
       FAM_00007 is a name, not a result. Two runs can agree completely on which

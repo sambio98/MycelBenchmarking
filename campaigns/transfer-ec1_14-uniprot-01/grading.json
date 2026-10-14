@@ -21,30 +21,6 @@
           }
         },
         {
-          "name": "release",
-          "scorer": "exact",
-          "args": {
-            "pred": "pred:release",
-            "gold": "gold:release"
-          }
-        },
-        {
-          "name": "ec_prefix",
-          "scorer": "exact",
-          "args": {
-            "pred": "pred:ec_prefix",
-            "gold": "gold:ec_prefix"
-          }
-        },
-        {
-          "name": "tie_break",
-          "scorer": "exact",
-          "args": {
-            "pred": "pred:tie_break",
-            "gold": "gold:tie_break"
-          }
-        },
-        {
           "name": "entries_total",
           "scorer": "exact",
           "args": {

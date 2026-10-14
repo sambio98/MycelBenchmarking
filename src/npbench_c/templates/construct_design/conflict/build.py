@@ -216,8 +216,10 @@ def build_grading(campaign: pathlib.Path, gold: dict) -> dict:
         {"name": "conflicting_pair", "scorer": "set_exact",
          "args": {"pred": "pred:conflicting_constraints",
                   "gold": "gold:conflicting_constraints"}},
-        tol("witness_required", "witness.required_gc_min",
-            "witness.required_gc_min"),
+        # `witness_required` is reported and NOT graded: it is this campaign's
+        # declared `gc_global_min`, which task.yaml states, so the component
+        # restates a parameter rather than measuring the witness. What the
+        # witness ACHIEVES is graded beside it. See excluded_from_grading.
         tol("witness_achievable", "witness.max_achievable_gc_under_forbidden_codons",
             "witness.max_achievable_gc_under_forbidden_codons"),
     ]

@@ -2939,6 +2939,60 @@ Mass-balance R2 goes from 6 and 7 components to 3, kinetics R1 from 8 to 5, and
 what is left in those rungs is the work the table enables rather than the table:
 `all_formulas_parse`, the summed assembly formula, the assembly mass.
 
+### The copies that were being graded
+
+The twenty hits that were not disclosures were copies. A graded component whose
+value is the campaign's own accession, EC number, snapshot release, declared
+convention, invocation parameter or published cutoff tells an auditor nothing
+about whether the work was done: the sandbox states it, so a system reports it
+back. Nothing is leaked that the task does not already say — that IS the task —
+and in a conjunctive rung a free component cannot make the rung passable for
+nothing. What it does is flatter the per-rung difficulty profile, which is the
+one direction that flatters the benchmark.
+
+The newer campaigns already handle these by name. Both Prodigal campaigns
+exclude the accession and the mode and grade a single `environment` claim that
+includes the tool version, which cannot be read out of the sandbox. The older
+campaigns graded them individually. That is drift rather than a decision, and
+all twenty are now dropped with the exclusion recorded:
+
+| campaign | dropped from grading | rungs after |
+|---|---|---|
+| `bgcdetect-scoelicolor-01` | `accession`, `coordinate_convention` | 10 / 2 / 6 / 1 |
+| `ecaudit-fmn-dh-1_1_3_15-01` | `release`, `ec_number` | 7 / 4 / 5 / 2 |
+| `gcfcutoff-mibig-32-01` | `corpus_size`, `baseline_cutoff`, `include_gbk` | 6 / 2 / 5 / 2 |
+| `constraint-conflict-ecoli-rebh-01` | `witness_required` | 4 / 5 / 4 / 14 |
+| `constraint-feasible-ecoli-rebh-01` | `witness_required` | 4 / 5 / 3 / 14 |
+| `pocket-rebh-01` | `pdb_id`, `accession`, `contact_cutoff` | 8 / 6 / 8 / 6 |
+| `residues-prna-01` | `accession`, `swap_structure` | 8 / 8 / 9 / 6 |
+| `selectivity-saureus-topoisomerase-01` | `release`, `focal_target`, `reference_target` | 5 / 5 / 5 / 4 |
+| `transfer-ec1_14-uniprot-01` | `release`, `ec_prefix`, `tie_break` | 7 / 4 / 4 / 2 |
+
+Three distinctions the work turned on, each of which could have gone wrong
+quietly:
+
+- **The grid is not the parameter.** `gcfcutoff` loses `baseline_cutoff`, which
+  is one declared number, and keeps `cutoffs`, the declared grid the run swept.
+  Which cutoffs were run is a claim about the run; which one is the baseline is a
+  copy of a line in the rules file.
+- **The witness's requirement is not its achievement.** The constraint pair's
+  `witness_required` is the campaign's own `gc_global_min` echoed back; what the
+  constructive witness actually achieves is a different component and stays
+  graded beside it. The same holds for `residues`: `swap_structure` names the
+  structure the R4 swap uses, which `task.yaml` declares, while everything the
+  swap does remains graded.
+- **Not graded is not withheld.** `selectivity`'s three echoes stay in
+  `CENSUS_KEYS`, because R2's warm bundle hands over the whole R1 census and
+  removing them from the tuple would change what an agent is given. What to
+  grade and what to hand over are separate decisions, and conflating them would
+  have made a warm bundle quietly smaller.
+
+Gold is byte-identical in all nine. Dropping a component changes `grading.json`
+and nothing else, which is the useful property of generating the spec from gold:
+`bgcdetect`'s gold came back at md5 `a1a0541…` for the third time today, through
+five antiSMASH invocations, and `gcfcutoff`'s through BiG-SCAPE. Every one is
+oracle 1.0 at depth 4 and gate 21/0/5.
+
 ### What the check looks like now
 
 `tests/unit/test_cold_sandbox_prose.py` holds both scans — the categorical one
@@ -3037,31 +3091,12 @@ budget note, which is there to be read rather than guessed at.
    either a definition and a gate check or removal, and fixing the other nine is
    the owner's taxonomy call rather than a silent edit. A declaration no check reads is the
    thing this project keeps finding in other people's data.
-10. **Twenty graded components restate the campaign's own definition.** What is
-   left of the audit below, after the ten disclosures were fixed: a graded value
-   that the sandbox has to state, because it is the campaign's own accession, EC
-   number, snapshot release, declared convention, invocation parameter or
-   published cutoff. No disclosure beyond the campaign's definition, and each
-   sits in a conjunctive rung beside components that are not free, so no rung
-   becomes passable for nothing — but the per-rung difficulty profile is
-   flattered in exactly the direction that flatters the benchmark, and the newer
-   campaigns already exclude these by name while the older ones grade them. The
-   list is in `SCALAR_FREE_COMPONENTS` in
-   `tests/unit/test_cold_sandbox_prose.py`, which is the work queue and is
-   checked for staleness, so it can only shrink by a deliberate edit:
-   `bgcdetect` (accession, coordinate_convention), `ecaudit` (ec_number,
-   release), `gcfcutoff` (baseline_cutoff, corpus_size, include_gbk),
-   `constraint-conflict` / `constraint-feasible` (witness_required), `pocket`
-   (accession, pdb_id, contact_cutoff), `residues` (accession, swap_structure),
-   `selectivity` (focal_target, reference_target, release), `transfer`
-   (ec_prefix, release, tie_break).
-
-   Three are already done, as the pattern for the rest: `kinetics`'s `release`,
-   `ec_prefix` and `declared_units` and both mass-balance campaigns' seven
-   `formula_*` components are now reported and not graded, with the exclusion
-   recorded and the campaigns rebuilt and re-gated at 21/0/5. R1 of kinetics
-   went from 8 components to 5 and mass-balance R2 from 6 and 7 to 3; every
-   remaining component in those rungs is work the sandbox does not answer.
+10. ~~Twenty graded components restate the campaign's own definition.~~
+   **Closed.** All twenty are dropped from grading across nine campaigns, each
+   with its exclusion recorded in the campaign's `task.yaml`, and
+   `SCALAR_FREE_COMPONENTS` in `tests/unit/test_cold_sandbox_prose.py` is now
+   empty with a test asserting it stays that way. See "The copies that were
+   being graded" above for what they were and what each rung kept.
 
 11. **The categorical-leak check belongs in the readiness gate**, as check 22.
    It lives in `tests/unit/test_cold_sandbox_prose.py` instead, because the gate

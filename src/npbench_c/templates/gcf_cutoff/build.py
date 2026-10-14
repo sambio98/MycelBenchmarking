@@ -136,8 +136,13 @@ def build_grading(campaign: pathlib.Path, gold: dict) -> dict:
 
     r1 = [{"name": "report_present", "scorer": "exact",
            "args": {"pred": "pred:present.report", "gold": 1}},
-          ex("corpus_size"), ex("designed_families"), ex("controls"),
-          ex("cutoffs"), ex("baseline_cutoff"), ex("include_gbk"),
+          # `corpus_size`, `baseline_cutoff` and `include_gbk` are reported and
+          # NOT graded: the corpus size is in this campaign's own id and the other
+          # two are declared invocation parameters, so all three are readable out
+          # of the cold sandbox. The declared cutoff GRID stays graded, because
+          # which cutoffs were run is a claim about the run rather than a copy of
+          # one number. See excluded_from_grading.
+          ex("designed_families"), ex("controls"), ex("cutoffs"),
           ex("class_census"), ex("environment")]
 
     r2 = [ex("baseline_partition"), ex("group_census")]

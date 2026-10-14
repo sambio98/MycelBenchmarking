@@ -135,15 +135,6 @@
           }
         },
         {
-          "name": "witness_required",
-          "scorer": "abs_tol_match",
-          "args": {
-            "pred": "pred:witness.required_gc_min",
-            "gold": "gold:witness.required_gc_min",
-            "abs_tol": 1e-06
-          }
-        },
-        {
           "name": "witness_achievable",
           "scorer": "abs_tol_match",
           "args": {

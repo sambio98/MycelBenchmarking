@@ -92,8 +92,9 @@ def build_grading(campaign: pathlib.Path, gold: dict) -> dict:
     r1 = [
         {"name": "report_present", "scorer": "exact",
          "args": {"pred": "pred:present.report", "gold": 1}},
-        ex("pdb_id", "pdb_id", "pdb_id"),
-        ex("accession", "accession", "accession"),
+        # `pdb_id` and `accession` are reported and NOT graded: task.yaml names
+        # the structure and the entry, so each is the campaign's own definition
+        # restated. See excluded_from_grading.
         ex("atom_inventory", "atom_inventory", "atom_inventory"),
         st("polymer_chains", "polymer_chains", "polymer_chains"),
         ex("ligand_copies", "ligand_copies", "ligand_copies"),
@@ -106,8 +107,9 @@ def build_grading(campaign: pathlib.Path, gold: dict) -> dict:
     ]
 
     r2 = [
-        tol("contact_cutoff", "contact_cutoff_angstrom",
-            "shells.contact_cutoff_angstrom"),
+        # `contact_cutoff` is reported and NOT graded: it is the cutoff the
+        # declared contact rule states, which reference/ must publish for the
+        # shells to be reproducible. See excluded_from_grading.
         ex("contact_counts_by_copy", "contact_counts_by_copy",
            "shells.contact_counts_by_copy"),
         ex("contacts_by_copy", "contacts_by_copy", "shells.contacts_by_copy"),

@@ -171,6 +171,17 @@ grading:
       nominal small number rather than an enumeration.
 
 excluded_from_grading:
+  - field: pdb_id, accession and contact_cutoff
+    reason: >
+      This file names the structure and the entry, and the cutoff is the one the
+      declared contact rule states, which reference/ must publish for the shells
+      to be reproducible. Each is readable straight out of the cold sandbox, so
+      a component for it measured a copy rather than a reading of the data. Each
+      was graded until an audit of every graded scalar against task.yaml and
+      reference/ found it stated there; the newer campaigns in this project
+      already excluded the same shape by name, so grading them here was drift
+      rather than a decision. Reported so a run records what it read, and not
+      graded.
   - field: the full per-contact distance map
     reason: >
       A distance is a square root of a sum, so its last reported decimal can

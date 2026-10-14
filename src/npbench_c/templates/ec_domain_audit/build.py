@@ -122,7 +122,10 @@ def build_grading(campaign: pathlib.Path, gold: dict) -> dict:
 
     r1 = [{"name": "report_present", "scorer": "exact",
            "args": {"pred": "pred:present.report", "gold": 1}},
-          ex("release"), ex("ec_number"), ex("canonical_model"), ex("threshold"),
+          # `release` and `ec_number` are reported and NOT graded: task.yaml
+          # names the snapshot and the EC number is what the campaign IS, so
+          # both are readable out of the cold sandbox. See excluded_from_grading.
+          ex("canonical_model"), ex("threshold"),
           ex("sequences_total"), ex("sequences_by_section"),
           ex("model_panel_size"), ex("environment")]
 

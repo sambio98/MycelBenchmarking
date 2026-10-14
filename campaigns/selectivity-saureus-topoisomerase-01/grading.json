@@ -21,30 +21,6 @@
           }
         },
         {
-          "name": "release",
-          "scorer": "exact",
-          "args": {
-            "pred": "pred:release",
-            "gold": "gold:release"
-          }
-        },
-        {
-          "name": "focal_target",
-          "scorer": "exact",
-          "args": {
-            "pred": "pred:focal_target",
-            "gold": "gold:focal_target"
-          }
-        },
-        {
-          "name": "reference_target",
-          "scorer": "exact",
-          "args": {
-            "pred": "pred:reference_target",
-            "gold": "gold:reference_target"
-          }
-        },
-        {
           "name": "activities_total",
           "scorer": "exact",
           "args": {

@@ -21,22 +21,6 @@
           }
         },
         {
-          "name": "release",
-          "scorer": "exact",
-          "args": {
-            "pred": "pred:release",
-            "gold": "gold:release"
-          }
-        },
-        {
-          "name": "ec_number",
-          "scorer": "exact",
-          "args": {
-            "pred": "pred:ec_number",
-            "gold": "gold:ec_number"
-          }
-        },
-        {
           "name": "canonical_model",
           "scorer": "exact",
           "args": {

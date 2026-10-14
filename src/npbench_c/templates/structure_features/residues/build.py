@@ -112,7 +112,8 @@ def build_grading(campaign: pathlib.Path, gold: dict) -> dict:
     r1 = [
         {"name": "report_present", "scorer": "exact",
          "args": {"pred": "pred:present.report", "gold": 1}},
-        ex("accession", "accession", "accession"),
+        # `accession` is reported and NOT graded: task.yaml names the entry.
+        # See excluded_from_grading.
         ex("sequence_length", "sequence_length", "sequence_length"),
         ex("functional_record_counts", "functional_record_counts",
            "functional_record_counts"),
@@ -159,7 +160,9 @@ def build_grading(campaign: pathlib.Path, gold: dict) -> dict:
     ]
 
     r4 = [
-        ex("swap_structure", "swap_structure", "structure_swap.structure"),
+        # `swap_structure` is reported and NOT graded: task.yaml declares which
+        # structure the R4 swap uses, so naming it back is a copy. What the swap
+        # DOES is graded in the components below. See excluded_from_grading.
         # The alternate entry's numbering offsets are NOT graded: both entries of
         # this protein carry the same offsets, so the component would restate
         # R3's and the warm R4 bundle would hand it over. It stays in the report

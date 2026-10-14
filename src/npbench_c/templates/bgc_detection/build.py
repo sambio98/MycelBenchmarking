@@ -154,7 +154,12 @@ def build_grading(campaign: pathlib.Path, gold: dict) -> dict:
     # warm-bundle check caught the first of them.
     r1 = [{"name": "report_present", "scorer": "exact",
            "args": {"pred": "pred:present.report", "gold": 1}},
-          ex("accession"), ex("record_length"), ex("coordinate_convention"),
+          # `accession` and `coordinate_convention` are reported and NOT graded:
+          # the first is the input record's own identifier and the second is a
+          # convention this campaign declares, so both are readable out of the
+          # cold sandbox and a component for either measures a copy. What reading
+          # the record takes is graded around them. See excluded_from_grading.
+          ex("record_length"),
           ex("search_flags"), ex("regions"), ex("distinct_products"),
           ex("product_census"), ex("contig_edge_regions"), ex("region_bases"),
           ex("fraction_of_record"), ex("environment")]

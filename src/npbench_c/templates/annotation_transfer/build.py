@@ -124,7 +124,12 @@ def build_grading(campaign: pathlib.Path, gold: dict) -> dict:
 
     r1 = [{"name": "report_present", "scorer": "exact",
            "args": {"pred": "pred:present.report", "gold": 1}},
-          ex("release"), ex("ec_prefix"), ex("tie_break"), ex("entries_total"),
+          # `release`, `ec_prefix` and `tie_break` are reported and NOT graded:
+          # task.yaml names the snapshot and the prefix, and the tie-break is a
+          # rule this campaign declares so that two correct answers cannot differ
+          # on it. All three are readable out of the cold sandbox.
+          # See excluded_from_grading.
+          ex("entries_total"),
           ex("distinct_ec_codes"), ex("ec_codes_per_entry"),
           ex("partial_ec_mentions"), ex("entries_with_multiple_ec"),
           ex("diamond_version")]

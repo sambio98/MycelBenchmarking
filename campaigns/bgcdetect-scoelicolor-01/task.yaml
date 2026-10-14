@@ -199,6 +199,17 @@ grading:
       clears it, and the capped floor is computed over R2 upward.
 
 excluded_from_grading:
+  - field: accession and coordinate_convention
+    reason: >
+      The accession is the input record's own identifier and the coordinate
+      convention is declared in this file so that two correct answers cannot
+      differ on it. Each is readable straight out of the cold sandbox, so a
+      component for it measured a copy rather than a reading of the data. Each
+      was graded until an audit of every graded scalar against task.yaml and
+      reference/ found it stated there; the newer campaigns in this project
+      already excluded the same shape by name, so grading them here was drift
+      rather than a decision. Reported so a run records what it read, and not
+      graded.
   - field: the boundary-defining gene
     reason: >
       Not well posed under antiSMASH 8. A region's boundary is set by a

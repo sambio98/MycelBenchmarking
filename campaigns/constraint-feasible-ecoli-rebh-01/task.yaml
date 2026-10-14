@@ -163,6 +163,17 @@ grading:
 control_pair_with: constraint-conflict-ecoli-rebh-01
 
 excluded_from_grading:
+  - field: witness_required
+    reason: >
+      It is this campaign's declared gc_global_min, which this file states, so
+      the component restated a parameter instead of measuring the witness. What
+      the witness ACHIEVES is still graded beside it. Each is readable straight
+      out of the cold sandbox, so a component for it measured a copy rather than
+      a reading of the data. Each was graded until an audit of every graded
+      scalar against task.yaml and reference/ found it stated there; the newer
+      campaigns in this project already excluded the same shape by name, so
+      grading them here was drift rather than a decision. Reported so a run
+      records what it read, and not graded.
   - field: the supplied design, if any
     reason: >
       Many sequences satisfy this set, so comparing one would grade our

@@ -21,27 +21,11 @@
           }
         },
         {
-          "name": "accession",
-          "scorer": "exact",
-          "args": {
-            "pred": "pred:accession",
-            "gold": "gold:accession"
-          }
-        },
-        {
           "name": "record_length",
           "scorer": "exact",
           "args": {
             "pred": "pred:record_length",
             "gold": "gold:record_length"
-          }
-        },
-        {
-          "name": "coordinate_convention",
-          "scorer": "exact",
-          "args": {
-            "pred": "pred:coordinate_convention",
-            "gold": "gold:coordinate_convention"
           }
         },
         {

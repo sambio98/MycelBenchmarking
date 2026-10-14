@@ -21,14 +21,6 @@
           }
         },
         {
-          "name": "corpus_size",
-          "scorer": "exact",
-          "args": {
-            "pred": "pred:corpus_size",
-            "gold": "gold:corpus_size"
-          }
-        },
-        {
           "name": "designed_families",
           "scorer": "exact",
           "args": {
@@ -50,22 +42,6 @@
           "args": {
             "pred": "pred:cutoffs",
             "gold": "gold:cutoffs"
-          }
-        },
-        {
-          "name": "baseline_cutoff",
-          "scorer": "exact",
-          "args": {
-            "pred": "pred:baseline_cutoff",
-            "gold": "gold:baseline_cutoff"
-          }
-        },
-        {
-          "name": "include_gbk",
-          "scorer": "exact",
-          "args": {
-            "pred": "pred:include_gbk",
-            "gold": "gold:include_gbk"
           }
         },
         {
