@@ -106,7 +106,7 @@ ClusterBlast DB ↔ MIBiG version ↔ pyhmmer move together.
 | **HMMER** | L1-2, L2-1, L3-4 | pin version, fixed `--cpu` |
 | **BLAST+** | L1-3, L2-2 | pin version, fixed `-num_threads` |
 | **DIAMOND** | L1-3, L2-3 | **≥ 2.2.7**, fixed `--threads`, explicit `--max-target-seqs` (it changes which hits survive). **Never `--no-reorder`** — measured, that flag is what breaks determinism, not what provides it (see below) |
-| **MMseqs2** | L2-3 | pin post-fix build, always `createindex`, fixed `--threads`, explicit `--max-seqs` (issue #277: results differ by core count), **plus a declared canonical line order** — no flag fixes its multithreaded output order |
+| **MMseqs2** | L2-3 | pin post-fix build, always `createindex`, fixed `--threads`, explicit `--max-seqs` (issue #277: results differ by core count), **plus a declared canonical line order** — no flag fixes its multithreaded output order. The built campaign declares `--max-seqs` ABOVE its corpus size on purpose: a cap below it makes every hit count a function of the cap rather than of the search, which is the same defect as an undeclared default |
 | **Prodigal** | L1-1, L1-4 | pin version **and mode** (single vs meta changes calls); Prodigal-GV is a different tool. **The two built campaigns pin opposite modes, each for a measurement**: L1-1 pins `single`, whose retraining on its own input is that campaign's finding; L1-4 pins `meta`, because the same retraining moves 43-57 calls from one deleted base and would swamp a signature of one call lost and two gained. The mode is not a house convention, it is a per-campaign measurement |
 | **antiSMASH** | L3-1, L3-5 | pin the exact version **and** the database release — they are one pin. Fixed `--cpus`. **Annotated input only** (GenBank/EMBL, never FASTA), or the gene caller's determinism is folded into antiSMASH's. Grade a declared **projection** of the JSON, never the HTML and never the whole JSON. **Never compare across versions** — 58 rules at v5, 88 at v7.1, **103 at 8.0.4** |
 | **BiG-SCAPE** | L3-2 | pin the version **and `sqlalchemy < 2.1`** — the recipe's own bound is wrong and 2.0.3 crashes on 2.1 before reading an input. Pin the antiSMASH version that produced the inputs. Fixed `--cores`, explicit `--gcf-cutoffs`, explicit `--include-gbk` when inputs are not named `*.region*.gbk`. **Never `--mibig-version`** on a gold path: it downloads a reference set at run time |
@@ -279,7 +279,7 @@ and the right ones to author first.
 | T-L1-4 frameshift response | INSDC AL645882.2 bases (shipped), no database | Prodigal 2.6.3 | **S1, BUILT** |
 | T-L2-1 EC misannotation | UniProt 2026_03 (shipped), Pfam 35.0 (image) | HMMER 3.4 | **S1, BUILT** |
 | T-L2-2 catalytic residues | PDB, UniProt | — (stdlib only) | **S0** |
-| T-L2-3 remote homology | UniProt subset | MMseqs2/DIAMOND | S1 |
+| T-L2-3 remote homology | UniProt 2026_03 IPR036188 reviewed set + InterPro 110.0 labels (both shipped) | MMseqs2 18.8cc5c | **S1, BUILT** |
 | T-L2-4 A-domain specificity | *retired on grounding — see `docs/catalog.md`* | — | — |
 | T-L2-5 kinetics consistency | BRENDA 2026.1 (shipped subset) | — (stdlib only) | **S0** |
 | T-L3-1 BGC detection | antiSMASH DB + rule files (image), GenBank + MIBiG (shipped) | antiSMASH 8.0.4 | **S2, BUILT** |

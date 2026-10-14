@@ -22,7 +22,7 @@ scoring path.
 | Campaign: malleobactin | `campaigns/massbalance-nrps-malleobactin-01/` | oracle 1.0, gate 22/0/5 |
 | Campaign: sevadicin | `campaigns/massbalance-nrps-sevadicin-01/` | oracle 1.0, gate 22/0/5 |
 | Internal sweep | `src/npbench_c/sweep/` | runner, stats, gates, stub fixtures |
-| Refusal contract | `tests/unit/test_build_refusals.py` | every one of 133 build refusals across 11 templates named by a test |
+| Refusal contract | `tests/unit/test_build_refusals.py` | every one of 149 build refusals across 12 templates named by a test |
 | Cold-sandbox scan | `src/npbench_c/readiness/cold_sandbox.py` | gate check 22 and a project-wide test on one implementation; declared collisions in `audit/`, outside every sandbox, checked for staleness |
 | Catalog | `docs/catalog.md` | 24 templates / 32 campaigns, grounded |
 | Provisioning | `docs/environment.md` | tools, DBs, sandbox contract |
@@ -55,6 +55,8 @@ scoring path.
 | Campaign: MIBiG PKS architectures | `campaigns/arch-pks-mibig-4_0-01/` | oracle 1.0, gate 22/0/5, cis-AT vs trans-AT strata |
 | Template: gene calling | `src/npbench_c/templates/gene_calling/` | Prodigal 2.6.3, declared fragmentation rule, no external resource |
 | Campaign: S. coelicolor gene calls | `campaigns/genecall-scoelicolor-01/` | oracle 1.0, gate 22/0/5 |
+| Template: remote homology | `src/npbench_c/templates/remote_homology/` | MMseqs2 18.8cc5c over one superfamily, InterPro 110.0 as the label, declared shuffle ladder |
+| Campaign: IPR036188 twilight zone | `campaigns/homology-twilight-ipr036188-01/` | oracle 1.0, gate 22/0/5, recovery from 5% to 97% across five queries |
 | Template: frameshift response | `src/npbench_c/templates/frameshift_response/` | Prodigal 2.6.3 in the opposite mode, planted single-base deletion, coordinate lift past the cut |
 | Campaign: S. coelicolor frameshifts | `campaigns/frameshift-scoelicolor-01/` | oracle 1.0, gate 22/0/5, ladder samples the measured turnover band |
 | External resources | `src/npbench_c/tools/resources.py` | one declaration for a pinned file read from the image, shared by 3 campaigns |
@@ -3072,6 +3074,148 @@ the whole gate run came back in minutes with gold byte-identical. The lesson is
 smaller than the leak but worth keeping — the cost of a check is in the campaign's
 budget note, which is there to be read rather than guessed at.
 
+## Campaign 23: grading the search, not the homology
+
+T-L2-3 is the remote-homology twilight zone, and its catalogued R3 is
+"homologous or not per candidate, with the evidence class". The first half has no
+oracle. At thirty per cent identity two proteins may share an ancestor or a fold,
+the resources disagree, the thresholds are conventions, and a system asked to
+decide is being asked to agree with whoever curated the answer. Same shape as
+T-L1-4's pseudogene call, and the same resolution: don't ask it.
+
+What replaces it is a measurement of the search. Take InterPro's own published
+assertion — two proteins carry the same `family` entry, or only the same
+`homologous_superfamily` entry — and grade what a pinned pairwise searcher
+reports against it, band by band. The claim is never about homology. It is about
+where a pairwise searcher stops seeing a relationship a profile-based resource
+asserts, and what it reports instead.
+
+`campaigns/homology-twilight-ipr036188-01`: every reviewed UniProtKB entry
+(release 2026_03) cross-referencing the InterPro homologous superfamily
+IPR036188, which is 4,105 sequences; labels from InterPro 110.0; MMseqs2
+18.8cc5c at sensitivity 4.0. Oracle 1.0 at depth 4, gate 22/0/5, gold
+byte-identical on regeneration, stub sweep 5/5 with depth separation
+[1, 2, 3, 4]. Four search runs, each rebuilding and reindexing the corpus.
+
+### Why the corpus is one superfamily
+
+Because it makes the question unambiguous. Every pair in the corpus is a pair
+InterPro already places in one homologous superfamily, so the campaign never has
+to claim that two members are unrelated — a claim nothing published supports. The
+question is only ever whether the search can see a relationship asserted at
+family level.
+
+That also fixes the vocabulary's third value. A pair sharing no entry is
+`unclassified_pair`, not "non-homologous": InterPro records what has been
+classified, which is not the same as what is related. The distinction is the same
+one `bgcdetect` needed for regions with no curated counterpart, and it is
+excluded from grading by name.
+
+### The grounding, which decided the design
+
+An all-vs-all run over the corpus, 1,045,338 hits in 7m28s single-threaded,
+against the label:
+
+| | |
+|---|---|
+| pairs InterPro places in one family | 590,116 |
+| of those, the search misses at s=4.0 | **89,353** (15.1%) |
+| pairs the search finds that InterPro does not call same-family | 43,319 |
+| in the 20–30% identity band: same-family vs superfamily-only | 64,474 vs 29,801 |
+
+The last row is the campaign's name. In that band the two labels occur in
+comparable numbers, so identity alone cannot separate them — which is what makes
+it a twilight zone rather than a threshold.
+
+The shipped campaign is five declared queries rather than all-vs-all, and the
+spread across them is the finding:
+
+| query | declared family | hits | asserted relatives | found | recovery |
+|---|---|---|---|---|---|
+| A0A084GDU5 | IPR050097 | 18 | 312 | 17 | **5.4%** |
+| A1AIE2 | IPR001100 | 188 | 242 | 159 | 65.7% |
+| A0LDC6 | IPR004417 | 684 | 887 | 684 | 77.1% |
+| A0AI79 | IPR002218 | 771 | 887 | 771 | 86.9% |
+| A0AMD1 | IPR004416 | 856 | 887 | 856 | **96.5%** |
+
+One searcher, one sensitivity, one corpus, and recovery runs from five per cent
+to ninety-seven. That is the whole campaign in one column, and it is why the rung
+grades a per-query census rather than a single rate.
+
+### Two numbers that look like one
+
+`family_members` and `same_family_asserted` differ on every declared query, in
+both directions: 238 against 242, 888 against 887, 630 against 887. The first is
+the declared family's size; the second counts every corpus member sharing ANY
+family with the query, and a protein commonly carries several. Reading one for
+the other makes the recovery rate look wrong, and "fixing" either to match would
+be the bug, so both the output contract and a test say so.
+
+A related limit, recorded rather than fixed: three of the five queries assert the
+same relative count, because all three carry IPR002218 and InterPro families are
+not a partition. The rows are still per query — different proteins, different hit
+lists — but they are not independent samples, and a reading that treated them as
+such would overstate what five queries show.
+
+### The catalogued R4 was degenerate, measurably
+
+The catalogue asked for "the query region carrying the shared motif" to be
+shuffled. Measured, an InterPro family match on these proteins covers almost the
+whole sequence — 7..482 of 518 on the halogenase this project uses elsewhere — so
+that perturbation is a whole-sequence shuffle and every hit dies. One answer, per
+query.
+
+So R4 is a ladder of declared window lengths centred on the query's midpoint,
+with a zero-width control, and the measured response is better than the
+catalogued one in two ways. It is not uniform: `A0AI79` and `A0LDC6` lose nothing
+at 60 or 120 residues and then lose 497 and 423 hits at 240, while `A0AMD1`
+degrades from 60 upward. And it is ordered. **In all twenty cells the loss rate
+falls from the distant band to the close one** — a local shuffle costs the
+weakest hits first, at 100% of the under-25% band before it touches a third of
+the over-35% band.
+
+The rate is what makes that sayable. The bands differ in size by two orders of
+magnitude on some queries (`A0AMD1` has 5 hits under 25% and 794 over 35%), so
+the absolute counts say the opposite of the rates: at window 60 it loses 4 of the
+weak band and 53 of the strong one. Gold reports the baseline band sizes beside
+every rate for that reason, and a band with no baseline hit carries a null rather
+than a zero — having nothing to lose is not the same claim as losing nothing.
+
+### The probe is the self-hit
+
+Every query is a member of the corpus it is searched against, so every query
+returns itself at 100% identity. That hit is the query, not a finding. Keeping it
+inflates each per-query hit count by exactly one, adds one to the top identity
+band, and — since a protein shares every one of its own families with itself —
+adds one same-family hit and one detected relative.
+
+The symptom is an off-by-one that is internally consistent everywhere: the
+recovery rate moves by a fraction of a per cent, the census keeps its shape,
+every arithmetic identity in the report still closes, and nothing looks wrong on
+its own.
+
+There are two distinguishable places to make that mistake, and the first version
+of the probe picked the wrong one. Keeping the self-hit in the HIT COUNTS fails
+R1; keeping it in the LABEL JOIN leaves the counts right and fails R2. I built
+the R1 version first, and the stub sweep rejected it — not on the campaign, on
+the fixture:
+
+    [ FAIL ] r1_clear_rate   R1 pass@1 for generic tooled systems = 0.75;
+                             minimum 0.8
+
+That gate exists to catch a campaign whose first rung is unclearable, on the
+grounds that such a campaign measures environment setup rather than science. The
+stub set is a fixture, not a population, so one stub built to fail R1 drags the
+measured rate below the floor and makes the gate report a fixture artefact as a
+campaign defect. Every other campaign here has its probe above R1 for the same
+reason, which I had not noticed was a convention until this one broke it.
+
+So the fixture does the label-join version and clears R1. The hit-count version
+is measured and kept — there is a test pinning the off-by-one, and it is a real
+error a real system could make — it just is not what the harness fixture is for.
+Worth recording as the general point: a competence probe has to fail *above* the
+rung the harness uses to decide whether the campaign is runnable at all.
+
 ## Open items
 
 1. **CAI table provenance.** The relative-adaptiveness values now live in
@@ -3134,7 +3278,7 @@ budget note, which is there to be read rather than guessed at.
    real agents take per run, measurable only once item 3 supplies the `SystemSpec`
    entries.
 9. **`structural_elements` is decorative and nothing validates it.** Nine of the
-   twenty-two built campaigns declare `planted` and several of them plant nothing —
+   twenty-three built campaigns declare `planted` and several of them plant nothing —
    `mibig-diff-3_1-to-4_0-01`'s own notes say its sharpest case is "supplied by the
    corpus rather than planted". The campaigns built since declare only what they
    have (`verification, counterfactual, control`), with one exception that earns

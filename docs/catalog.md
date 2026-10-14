@@ -364,17 +364,17 @@ row, and fails R3 by two rows out of twenty-one.
   `verdict_is_monotone_in_length` is False**. The build now refuses gold if the
   list comes out contiguous.
 
-## L2 — Enzyme & function (5 templates, 7 catalogued campaigns, **4 reachable**)
+## L2 — Enzyme & function (5 templates, 7 catalogued campaigns, **5 reachable**)
 
 T-L2-4 is retired on grounding and T-L2-1's second instantiation is unresolved,
-so this layer now offers 4 campaigns rather than the catalogued 7. Both
-reductions are measured below.
+so this layer now offers 5 campaigns rather than the catalogued 7. Both
+reductions are measured below, and all 5 are built.
 
 | # | Template | Data | Build |
 |---|---|---|---|
 | T-L2-1 | EC misannotation triage (EC 1.1.3.15) | verified | **BUILT** (first S1) |
 | T-L2-2 | Catalytic residue identification | verified | **BUILT** |
-| T-L2-3 | Remote homology twilight zone | probe | image |
+| T-L2-3 | Remote homology twilight zone | verified | **BUILT** (S1) |
 | T-L2-4 ×2 | A-domain substrate specificity | **thin / vocabulary-bound** | re-tiered, see below |
 | T-L2-5 | Kinetics consistency (re-scoped) | verified | **BUILT** |
 
@@ -492,6 +492,60 @@ R1 hit table · R2 matches gold · R3 claim: homologous or not per candidate,
 with the evidence class · R4 the query region carrying the shared motif is
 shuffled — predict which hits survive. Needs the thread-pinned MMseqs2 build
 (issue #277: results differ by core count), so `build: image`.
+
+**Built**: `campaigns/homology-twilight-ipr036188-01`. Every reviewed UniProtKB
+entry (2026_03) cross-referencing the InterPro homologous superfamily IPR036188 —
+**4,105 sequences** — with labels from **InterPro 110.0** and MMseqs2 18.8cc5c at
+sensitivity 4.0. Oracle 1.0 at depth 4, gate 22/0/5. Four search runs, each
+rebuilding and reindexing the corpus.
+
+**The catalogued R3 is excluded by name**, for the reason T-L1-4's pseudogene
+call was: "homologous or not" has no oracle at these identities, and scoring a
+system against a curator's reading is the human judgement this benchmark keeps
+out of grading. What replaces it grades the SEARCH against InterPro's own
+published assertion, band by band — and the vocabulary's third value is
+`unclassified_pair`, not "non-homologous", because InterPro records what has been
+classified rather than what is related.
+
+**Why one superfamily.** Every pair in the corpus is already a pair InterPro
+places in one homologous superfamily, so the campaign never claims two members
+are unrelated. The question is only whether the search sees a relationship
+asserted at family level.
+
+**Grounded all-vs-all before anything was written**: 1,045,338 hits in 7m28s,
+against which InterPro places **590,116 pairs in one family and the search misses
+89,353 of them** (15.1%), while finding 43,319 pairs it does not call same-family.
+In the 20–30% band the two labels occur in comparable numbers — 64,474 against
+29,801 — which is the twilight zone the row is named for.
+
+**The finding is the spread.** One searcher, one sensitivity, five declared
+queries, and recovery runs from **5.4%** (A0A084GDU5, 17 of 312 asserted
+relatives) to **96.5%** (A0AMD1, 856 of 887). That is why the rung grades a
+per-query census rather than a rate.
+
+**Deviations.** Two, each forced by a measurement.
+
+- **R3 is not "homologous or not".** No oracle; see above.
+- **R4 is a window ladder, not the shared-motif shuffle.** Measured, an InterPro
+  family match on these proteins covers almost the whole sequence (7..482 of 518
+  on the halogenase used elsewhere here), so the catalogued perturbation is a
+  whole-sequence shuffle that kills every hit — one answer per query. The ladder
+  of declared windows with a zero-width control replaces it, and the response is
+  both non-uniform (two queries lose nothing at 60 and 120 residues then lose 497
+  and 423 hits at 240) and **ordered: in all twenty cells the loss rate falls
+  from the distant identity band to the close one**. A local shuffle costs the
+  weakest hits first. The absolute counts say the opposite, because the bands
+  differ in size by two orders of magnitude, so gold reports the baseline band
+  size beside every rate and a band with nothing to lose carries a null rather
+  than a zero.
+
+**The probe is the self-hit.** Every query is a corpus member, so it returns
+itself at 100% identity; keeping that hit shifts every count by exactly one and
+stays internally consistent. Two places to get it wrong: in the hit counts (fails
+R1) or in the label join (fails R2). The fixture does the second, because the
+first version measured `r1_clear_rate` at 0.75 against the harness's 0.8 floor —
+a probe built to fail R1 drags the fixture-based rate below the gate that exists
+to catch unclearable first rungs. The R1 variant is kept as a test.
 
 **T-L2-4** NRPS A-domain substrate specificity. **Verified**: 2,879 modules carry
 a substrate with SMILES and a `proteinogenic` flag. R1 per-module specificity
