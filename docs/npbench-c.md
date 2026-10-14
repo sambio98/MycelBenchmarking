@@ -2955,6 +2955,15 @@ exempted component no longer collides — and it fired as soon as I removed the
 bgcdetect sentence, because `regions_without_a_locus` had been waived for
 matching the same `15`. A waiver nobody rechecks is a check nobody is getting.
 
+All nine touched campaigns are back at gate 21/0/5. The three whose grading spec
+changed regenerate byte-identical gold, because dropping a component changes
+`grading.json` and nothing else. bgcdetect's regeneration was the one I nearly
+skipped, on the assumption that antiSMASH over a chromosome is an afternoon: its
+own measured budget says five invocations at about seventy-five seconds each, and
+the whole gate run came back in minutes with gold byte-identical. The lesson is
+smaller than the leak but worth keeping — the cost of a check is in the campaign's
+budget note, which is there to be read rather than guessed at.
+
 ## Open items
 
 1. **CAI table provenance.** The relative-adaptiveness values now live in
