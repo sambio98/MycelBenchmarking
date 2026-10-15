@@ -17,8 +17,10 @@
 # antiSMASH is here, and its pin is really a PAIR: this binary plus the database
 # release downloaded in its own layer below. Both determine which regions come
 # out, so neither alone identifies a result. BiG-SCAPE is here too and reuses
-# antiSMASH's Pfam library rather than fetching its own. matchms is still absent,
-# for a recorded reason; see environment.lock.json.
+# antiSMASH's Pfam library rather than fetching its own.
+#
+# matchms is requested below and is this image's first LIBRARY pin rather than a
+# binary. That distinction is load-bearing: see the comment on the create step.
 #
 # STATUS: this file has not been built end to end. The build host available while
 # it was written had the Docker CLI but no daemon. What HAS been run is every step
@@ -77,6 +79,19 @@ RUN curl -sSL \
 # then raises ObjectNotExecutableError before reading a single input file.
 # Measured by running it, not read off a changelog.
 #
+# matchms is the odd one in this list and the reasons are measured rather than
+# stylistic. The version is 0.30.2 because that is the version the MS2 fixture
+# grounding ran against -- bioconda carries it as a noarch build, so the spec is
+# exact like every other line here, and pinning a later one would mean re-running
+# the tolerance measurement rather than inheriting it. It is a LIBRARY, so it has
+# no binary to invoke and no --version to read: a campaign reaches it by running
+# this prefix's python3.11 as a subprocess, which is why PATH above keeps the
+# prefix last and `python3` the system interpreter. Importing matchms into the
+# campaign runtime instead would put numpy, scipy and numba inside a grading core
+# that is stdlib-only by design. And its m/z tolerance is part of gold rather
+# than a comparison detail -- 20 of 150 per-query verdicts move across the
+# plausible range -- so a campaign pins one value and grades the sweep.
+#
 # FastTreeMP is deleted immediately after: it arrives inside the fasttree package
 # that antiSMASH and BiG-SCAPE both depend on, and it is banned outright because
 # thread order affects the neighbour-joining heuristic, so it can never sit on a
@@ -94,6 +109,7 @@ RUN micromamba create -y -p "${TOOL_PREFIX}" --no-rc \
       'antismash=8.0.4=pyhdfd78af_1' \
       'bigscape=2.0.3=pyhdfd78af_0' \
       'sqlalchemy=2.0.54=py311h194be0f_1' \
+      'matchms=0.30.2=pyhdfd78af_1' \
  && micromamba clean -a -y \
  && rm -f "${TOOL_PREFIX}/bin/FastTreeMP"
 

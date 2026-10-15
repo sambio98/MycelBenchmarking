@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import json
 import pathlib
+import re
 import shutil
 
 import pytest
@@ -32,7 +33,9 @@ from npbench_c.tools.invariance import (
 )
 from npbench_c.tools.registry import (
     BANNED_BINARIES,
+    MATCHMS,
     NOT_IN_IMAGE,
+    PENDING_TOOLS,
     REPEATS,
     THREAD_COUNTS,
     TOOLS,
@@ -157,6 +160,79 @@ def test_the_absences_are_declared_rather_than_implied():
         assert len(reason) > 60
     installed = {tool.name for tool in TOOLS}
     assert not (installed & set(NOT_IN_IMAGE))
+
+
+def test_a_pending_pin_is_decided_but_not_claimed_as_installed():
+    """matchms is the first pin that is settled and not yet in the image, and the
+    distinction has to survive in code rather than in a note.
+
+    It stays out of TOOLS because `--verify` exists to catch a pin that DRIFTED
+    in the built image: every row it checks is a row the image is supposed to
+    have, so a knowingly-absent row would turn a drift check into an intent list
+    and make its own MISS the normal state. PENDING_TOOLS is where a decided pin
+    waits for the rebuild that installs it.
+    """
+    pending = {tool.name for tool in PENDING_TOOLS}
+    installed = {tool.name for tool in TOOLS}
+    assert pending == {"matchms"}
+    assert not (pending & installed)
+    # And it is still a declared absence, because the built image lacks it.
+    assert pending <= set(NOT_IN_IMAGE)
+    assert "pyhdfd78af_1" in (ROOT / "image" / "Dockerfile").read_text()
+
+
+def test_the_pending_pin_names_the_version_the_grounding_measured():
+    """0.30.2 rather than the newest on bioconda. A similarity implementation can
+    change between minor versions, so inheriting the tolerance measurement means
+    pinning the version it was measured on."""
+    assert MATCHMS.pinned_version == "0.30.2"
+    dockerfile = (ROOT / "image" / "Dockerfile").read_text()
+    assert f"matchms={MATCHMS.pinned_version}=" in dockerfile
+    lock = json.loads(LOCK.read_text())
+    note = lock["not_in_this_image"]["matchms"]
+    assert MATCHMS.pinned_version in note
+    # The lock must say out loud that its closure predates the request, or the
+    # next reader takes 185 packages for the whole story.
+    assert "REGENERATE" in note.upper()
+    assert not any(p["name"] == "matchms" for p in lock["packages"])
+
+
+def test_a_library_pin_is_invoked_rather_than_imported():
+    """Every pin before this one was a binary. A library imported into the
+    campaign runtime would put numpy, scipy and numba inside a grading core this
+    project keeps stdlib-only, so a library pin is still INVOKED -- as a
+    subprocess of the prefix interpreter, which the image's PATH deliberately
+    does not make `python3`."""
+    assert MATCHMS.is_library
+    assert MATCHMS.module == "matchms"
+    assert MATCHMS.binary.startswith("python")
+    assert any("never import it" in control for control in MATCHMS.controls)
+    assert any("prefix interpreter" in control for control in MATCHMS.controls)
+    # Nothing in the grading path may import it either.
+    grading = (ROOT / "src" / "npbench_c" / "grading").rglob("*.py")
+    for path in grading:
+        assert "matchms" not in path.read_text(), path
+
+
+def test_the_library_probe_reads_a_version_the_same_way_a_binary_does():
+    """The probe has to work, not merely be declared. Skipped where matchms is
+    absent, which includes the current image -- that is the point of the pin
+    being pending."""
+    found = MATCHMS.installed_version()
+    if found is None:
+        pytest.skip("matchms not importable by the probe interpreter here")
+    assert re.match(r"\d+\.\d+\.\d+", found)
+
+
+def test_the_pending_pin_carries_the_tolerance_control():
+    """The measured finding that makes this tool different from the binaries: the
+    m/z tolerance is part of gold's definition rather than a comparison detail,
+    because the aggregate rate hides per-query movement."""
+    controls = " ".join(MATCHMS.controls)
+    assert "tolerance is part of gold" in controls
+    assert "20 of 150" in controls
+    assert "numpy" in controls and "scipy" in controls
+    assert MATCHMS.needed_by == ("T-L4-1", "T-L4-2")
 
 
 def test_a_ban_is_enforced_rather_than_written_down():

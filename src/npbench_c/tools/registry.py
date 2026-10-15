@@ -156,18 +156,55 @@ class Tool:
     #: the threshold are measured by the suite but skipped by the default test
     #: run, with the reason named rather than the measurement quietly dropped.
     slow: bool = False
+    #: An importable module name, for a pin that is a LIBRARY rather than a
+    #: binary. Every tool here was a binary until matchms, and the difference is
+    #: not cosmetic: a binary is invoked, while a library is imported, and
+    #: importing one into the campaign runtime would put numpy, scipy and numba
+    #: inside a grading core this project keeps stdlib-only on purpose. So a
+    #: library pin is still invoked -- as a subprocess of the PREFIX interpreter,
+    #: which the image's PATH deliberately does not make `python3` -- and this
+    #: field is how its version is probed.
+    module: str | None = None
 
     @property
     def thread_counts(self) -> tuple[int, ...]:
         return THREAD_COUNTS if self.thread_flag else (1,)
 
+    @property
+    def is_library(self) -> bool:
+        return self.module is not None
+
     def installed_version(self, prefix: str | None = None) -> str | None:
+        if self.module is not None:
+            return self._module_version(prefix)
         binary = f"{prefix}/{self.binary}" if prefix else self.binary
         if shutil.which(binary) is None:
             return None
         try:
             result = subprocess.run([binary, *self.version_argv],
                                     capture_output=True, text=True, timeout=120)
+        except (OSError, subprocess.TimeoutExpired):
+            return None
+        match = re.search(self.version_pattern,
+                          (result.stdout or "") + "\n" + (result.stderr or ""))
+        return match.group(1) if match else None
+
+    def _module_version(self, prefix: str | None = None) -> str | None:
+        """The version a library pin reports, via the interpreter that has it.
+
+        `self.binary` names that interpreter, so the probe is the same shape as
+        a binary tool's: run something, read a version out of its output. It is
+        NOT an in-process import, because the point of pinning a library this way
+        is that it stays out of the grading core's address space.
+        """
+        interpreter = f"{prefix}/{self.binary}" if prefix else self.binary
+        if shutil.which(interpreter) is None:
+            return None
+        try:
+            result = subprocess.run(
+                [interpreter, "-c",
+                 f"import {self.module} as m; print(m.__version__)"],
+                capture_output=True, text=True, timeout=120)
         except (OSError, subprocess.TimeoutExpired):
             return None
         match = re.search(self.version_pattern,
@@ -516,16 +553,75 @@ TOOLS: tuple[Tool, ...] = (ANTISMASH, BIGSCAPE, BLAST, DIAMOND, HMMER,
                            MAFFT, MMSEQS2, PRODIGAL)
 BY_NAME = {tool.name: tool for tool in TOOLS}
 
+#: The first LIBRARY pin, and not yet in the image.
+#:
+#: It sits in PENDING_TOOLS rather than TOOLS on purpose. `--verify` exists to
+#: catch a pin that DRIFTED in the built image, so every row it checks has to be
+#: a row the image is supposed to have; putting a knowingly-absent tool in there
+#: would turn a drift check into an intent list and make its own MISS the normal
+#: state. The pin, the controls and the probe all live here and are tested; the
+#: row moves into TOOLS in the same change that rebuilds the image.
+#:
+#: The version is the one the fixture grounding actually measured. bioconda
+#: carries it as a noarch build, so the Dockerfile spec is exact like the others.
+MATCHMS = Tool(
+    name="matchms",
+    # The PREFIX interpreter, not the system one. The image's PATH puts the tool
+    # prefix last so that `python3` stays the system interpreter the stdlib-only
+    # grading core runs on, which means a campaign reaches matchms by invoking
+    # this interpreter as a subprocess -- the same shape as any other tool call.
+    binary="python3.11",
+    pinned_version="0.30.2",
+    module="matchms",
+    needed_by=("T-L4-1", "T-L4-2"),
+    version_argv=(),
+    version_pattern=r"(\d+\.\d+\.\d+)",
+    thread_flag=None,
+    controls=(
+        "pin the version AND the m/z tolerance: the tolerance is part of gold's "
+        "definition, not a parameter of the comparison. Measured on a MassBank "
+        "2026.03.1 fixture, 20 of 150 per-query top-1 verdicts move across "
+        "tolerances 0.005 to 0.1 while the aggregate rate moves only 0.807 to "
+        "0.760, so a campaign pins one tolerance and grades the sweep as an axis",
+        "pin numpy and scipy alongside it: the scores are floats, and float "
+        "reproducibility is what makes a similarity score gold rather than an "
+        "estimate. The grounding ran against numpy 2.2.6 and scipy 1.16.3",
+        "never import it into the campaign runtime -- invoke the prefix "
+        "interpreter as a subprocess. An in-process import would put numpy, "
+        "scipy and numba inside a grading core that is stdlib-only by design",
+        "declare every filter parameter. matchms normalises, filters and "
+        "harmonises metadata by default, and each default that runs unrecorded "
+        "is a parameter of gold nobody declared",
+        "measured deterministic: repeat runs and a shuffled library order give "
+        "bit-identical score multisets at matchms 0.30.2 / numpy 2.2.6, so this "
+        "tool needs no canonicalisation for the scores themselves -- the "
+        "REPORTED ORDER of equal scores is a separate question a campaign fixes "
+        "by sorting its own output, as the MMseqs2 contract does",
+    ),
+    invocations=(),
+)
+
+#: Pins that are decided and measured but whose image layer has not been built.
+#: Named here so "we know what to install and have not yet" is a recorded state
+#: rather than a gap between a note and a Dockerfile line.
+PENDING_TOOLS: tuple[Tool, ...] = (MATCHMS,)
+
 #: Declared absences. Named here so "the image does not have it" is a recorded
 #: decision rather than something an auditor has to infer from a missing row.
 NOT_IN_IMAGE = {
     "iqtree": "Not needed by any catalogued template. If it ever is: always "
               "--seed, always fixed -T N, never AUTO, and a single-gene ML tree "
               "is not admissible as gold.",
-    "matchms": "Needed by T-L4-1 and T-L4-2. Pip-installable, but what those rows "
-               "need first is an MS2 fixture set from MassBank with its own "
-               "grounding pass: for a spectral match the invariance question "
-               "becomes a tolerance question, and that is a different suite.",
+    "matchms": "Needed by T-L4-1 and T-L4-2, and no longer waiting on grounding: "
+               "the MassBank 2026.03.1 fixture pass is done and the tolerance "
+               "question has a measured answer, so the pin is decided and lives "
+               "in PENDING_TOOLS as MATCHMS, with the Dockerfile requesting "
+               "matchms=0.30.2=pyhdfd78af_1 from bioconda. What is left is a "
+               "rebuild: until the image carries it, `--verify` would report a "
+               "MISS on a row the image was never built with, which is why the "
+               "pin is pending rather than registered. It is also this project's "
+               "first LIBRARY pin rather than a binary, so it is invoked through "
+               "the prefix interpreter and never imported into the grading core.",
 }
 #: FastTreeMP is absent too, but it is a BAN rather than a deferral: see
 #: BANNED_BINARIES, which is checked rather than merely written down.
