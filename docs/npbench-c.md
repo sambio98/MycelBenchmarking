@@ -3308,6 +3308,89 @@ the fixture question is answered, the pin is measured, and the image needs the
 three lines recorded in `image/environment.lock.json` before the row can be
 built.
 
+## T-L6-3 grounds out: a capped budget whose answer is mostly luck
+
+The last unbuilt row with no provisioning blocker, and the reason it does not
+survive is measurable rather than aesthetic.
+
+**Candidate prioritisation under a hard container query cap.** R1 a ranked table,
+R2 the ranking matching gold by Spearman within tolerance, R3 the top candidate
+and the discriminating criterion, R4 the budget halved. The appeal is obvious: it
+is the only catalogued row where the *resource limit* is the subject, and the
+note that the budget is a container limit rather than a counted metric is a good
+instinct — a system with coarser tool granularity should not be penalised for it.
+
+Two problems, and the first was visible without measuring anything.
+
+**R3 is a judgement or a copy, with nothing in between.** "The discriminating
+criterion" is either declared by the campaign, in which case naming it back is a
+copy out of the sandbox and check 22 would catch it, or it is left to the system,
+in which case there is no oracle and it is the human judgement this benchmark
+excludes from grading. Every other row that hit this fork had a third option —
+the frameshift campaign replaced "which locus is a pseudogene" with what the
+caller reports, the homology campaign replaced "homologous or not" with what the
+search finds. Here the third option would be "the criterion the declared rule
+used", which is the copy again.
+
+**And R2 has no reachable oracle, which is the measurement.** The row needs the
+cap to bind: if the budget is loose enough to measure every candidate, the task
+collapses to sorting a table, which is arithmetic several built campaigns already
+do. If it binds, gold is the best selection under full information, and the
+question is whether a system can get there from what it can see for free.
+
+Measured on the homology corpus, where the all-vs-all run is already paid for:
+4,105 candidates, 3,776 of them with at least ten asserted relatives. The
+EXPENSIVE quantity is what a search tells you — the fraction of a protein's
+asserted relatives it recovers — at one query per candidate. The FREE features are
+in the shipped label table.
+
+| free feature | Spearman against the expensive quantity |
+|---|---|
+| sequence length | +0.239 |
+| number of InterPro entries | +0.028 |
+| largest declared family | +0.022 |
+| asserted relatives | +0.023 |
+
+There is no signal to prioritise on. One feature reaches 0.24 and the rest are
+indistinguishable from noise, so a ranking by the expensive quantity cannot be
+predicted from anything free — which is exactly the case where a capped budget
+decides the answer and no system can reach it except by luck.
+
+The selection version makes the problem concrete and adds the finding that
+settles it:
+
+| cap | best possible | best free ranking | random choice |
+|---|---|---|---|
+| k=10 | 10.0 | 10.0 (100%) | 7.7 (**77%**) |
+| k=25 | 25.0 | 22.5 (90%) | 19.0 (**76%**) |
+| k=50 | 50.0 | 44.8 (90%) | 38.0 (**76%**) |
+
+**Random choice captures three quarters of the ceiling.** The whole measurable
+band between guessing and the best informed strategy is about fourteen points,
+and the strategy that achieves it ranks by a feature correlating at +0.022 — it
+is not informed, it is lucky in a way that does not generalise. The 100% at k=10
+is worse than it looks: thousands of candidates sit at recovery 1.0, so hitting a
+ten-candidate ceiling is arithmetic, not skill.
+
+That is a chance floor nowhere near this project's own limit. The readiness gate
+requires `chance_floor <= 0.10` and computes it; a rung where guessing scores 76%
+of the attainable value cannot pass it under any tolerance-based scorer. So the
+row would be rejected by a check that already exists — and it is better to know
+that from a measurement now than from a gate failure after a template is written.
+
+**Retired on grounding**, the third row to go that way after T-L2-4 and T-L5-2.
+The pattern across all three is worth naming: each died where its R2 or R3 needed
+an answer that is either stated by the campaign or known to nobody. That is the
+same fork the surviving campaigns resolved by grading what a pinned tool reports
+rather than what is true, and the rows that ground out are the ones where no tool
+output stands in for the claim.
+
+If the budget idea is worth keeping, the version that would work is not this row:
+cap a resource whose optimal use is *computable in advance* from the shipped
+inputs, so gold is a declared optimum rather than a full-information one, and
+grade the plan rather than the outcome. That is a different campaign and it needs
+its own grounding.
+
 ## Open items
 
 1. **CAI table provenance.** The relative-adaptiveness values now live in
@@ -3344,12 +3427,17 @@ built.
    on-theme data (counts above); the owner picks between HIV-1 RT with the theme
    drift, a re-scoped census ladder, and waiting for a release that fills the
    bacterial variant values. Nothing is blocked on licensing.
-7. **Two L2/L5 rows are retired on measurement, so the catalogue's 32-campaign
-   target is now 30 at most.** T-L5-2 and T-L2-4 both ground out. The count in this
-   file's header and in `docs/catalog.md` is the *catalogued* target and has not
-   been restated downward, because the replacement question is the owner's call:
-   re-scope those rows, or accept a smaller benchmark. Twenty-one campaigns
-   are built. This should be settled before the audit packet quotes a number.
+7. **Three rows are retired on measurement, so the reachable count is 26.**
+   T-L2-4 (×2), T-L5-2 and now T-L6-3 all ground out, each with its numbers
+   recorded above. Against that: **23 campaigns are built**, and T-L4-1 (×2) and
+   T-L4-2 are buildable as soon as the image carries matchms, which makes **26
+   reachable** — 27 if T-L5-2 is re-scoped rather than dropped. The headline
+   "32 campaigns from 24 templates" in this file and in `docs/catalog.md` is the
+   *catalogued* target and still has not been restated downward, because two
+   things are the owner's call: whether to re-scope the retired rows, and how to
+   count T-L3-5a, which is a built replacement for a re-tiered row rather than a
+   catalogued campaign of its own. The arithmetic is settled; the number to
+   publish is not. This must be decided before the audit packet quotes one.
 8. **Sweep cost: the tool memo covers the tool, not the work around it.**
    `npbench_c.tools.cache` memoises tool output for stub systems in tooled mode
    only, which took the EC-audit sweep from 29m32s to **3m44s** with identical

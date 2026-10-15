@@ -1230,13 +1230,13 @@ comparable. Solvent-accessible surface area and any druggability score are
 excluded for the same reason, recorded in the campaign's
 `excluded_from_grading`.
 
-## L6 — Translation & design (3 templates, 4 campaigns)
+## L6 — Translation & design (3 templates, 4 campaigns, **all 4 built**)
 
 | # | Template | Data | Build |
 |---|---|---|---|
 | T-L6-1 ×2 | Construct & sequence design | verified | **BUILT** |
 | T-L6-2 ×2 | Multi-constraint conflict + feasible control | verified | **BUILT** |
-| T-L6-3 | Prioritisation under budget | likely | image |
+| T-L6-3 | Prioritisation under budget | **no gradable signal** | retired, see below |
 
 **T-L6-1** **Built**: `campaigns/construct-ecoli-rebh-01`. Oracle 1.0 on all
 four rungs, measured discrimination 1/2/3/3/4, binding constraint flips between
@@ -1299,6 +1299,39 @@ R1 ranked table · R2 ranking matches gold by Spearman within tolerance ·
 R3 claim: the top candidate and the discriminating criterion · R4 the budget is
 halved — predict the new top-k. Budget is a hard container limit, not a counted
 metric, so a system with coarser tool granularity is not differently penalised.
+
+**Retired on grounding.** Two reasons, one structural and one measured.
+
+**R3 is a judgement or a copy with nothing between.** "The discriminating
+criterion" is either declared by the campaign — in which case naming it back is a
+copy out of the cold sandbox, which gate check 22 now catches — or left to the
+system, in which case it has no oracle. Every other row that hit this fork had a
+third option: grade what a pinned tool *reports* instead of what is true. Here
+that third option is "the criterion the declared rule used", which is the copy
+again.
+
+**R2 has no reachable oracle.** The row needs the cap to bind — a budget loose
+enough to measure everything collapses the task to sorting a table, which several
+built campaigns already do as arithmetic. Measured on the homology corpus (3,776
+candidates, the all-vs-all already paid for), the expensive quantity a query buys
+is uncorrelated with everything free: Spearman **+0.239** for sequence length and
+**+0.03 or less** for InterPro entry count, largest family size and asserted
+relatives. So a ranking by the expensive quantity cannot be predicted from free
+features, and gold under a binding cap is reachable only by luck.
+
+How much luck: with a cap of 50, the best possible selection scores 50.0, the
+best free-feature ranking 44.8 — and **random choice 38.0, three quarters of the
+ceiling**. The entire band between guessing and the best informed strategy is
+~14 points, and the strategy achieving it ranks on a feature correlating at
++0.022. The readiness gate requires `chance_floor ≤ 0.10` and computes it; a rung
+where guessing captures 76% of attainable value cannot pass that check under any
+tolerance-based scorer. The row would be rejected by machinery that already
+exists.
+
+**If the budget idea is worth keeping**, the version that works caps a resource
+whose optimal use is computable *in advance* from the shipped inputs — gold as a
+declared optimum rather than a full-information one, grading the plan rather than
+the outcome. That is a different campaign and needs its own grounding.
 
 ---
 
