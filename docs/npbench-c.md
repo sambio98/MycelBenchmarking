@@ -3216,6 +3216,98 @@ error a real system could make — it just is not what the harness fixture is fo
 Worth recording as the general point: a competence probe has to fail *above* the
 rung the harness uses to decide whether the campaign is runnable at all.
 
+## The MS2 fixture grounding, and what it says about the tolerance
+
+Open item 4 has stood since the image was built: T-L4-1 and T-L4-2 need matchms,
+which is pip-installable, but the lock file records that those rows need "an MS2
+fixture set from MassBank with its own grounding pass first: for a spectral match
+the invariance question becomes a tolerance question." This is that pass. No
+campaign is built from it yet, and the reason is at the end.
+
+### The corpus
+
+MassBank's data repository at release **2026.03.1**, which is the release the
+catalogue names, cloned shallow: 141,017 records, 817 MB, CC BY. Each record
+carries an accession, an InChIKey, a formula, the precursor m/z, the instrument
+type, the ion mode and a peak list, which is everything a dereplication fixture
+needs and all of it published metadata rather than anyone's judgement.
+
+One false start worth recording, because it is the kind of definition that looks
+right and is not. The catalogue asks for "authentic-standard libraries only", and
+MassBank records carry a `CONFIDENCE` comment whose Level 1 value means exactly
+that — *Parent Substance with Reference Standard*. Across 141,017 records, **95
+carry it**. It is one contributor's convention, not a corpus-wide field, so it
+cannot define the fixture. What can is the structure of the corpus itself:
+
+| | |
+|---|---|
+| MS2 records with an InChIKey, a precursor and ≥5 peaks | 86,735 |
+| distinct compounds (InChIKey first block) | 9,182 |
+| compounds with ≥2 spectra | 7,249 |
+| compounds spanning ≥2 instrument types **and** ≥2 contributors | **2,394** |
+
+That last row is the fixture. Dereplication is only gradeable when the query
+compound is in the reference library via a *different* spectrum, and it is only
+non-trivial when that spectrum comes from another instrument in another lab. So
+the declared split is: one spectrum per compound as the query, taken from the
+lexicographically first contributor, and every spectrum from any other
+contributor as the library.
+
+A second false start, caught by its own output: my first metadata extraction
+matched `ION_MODE` as a substring and so counted `FRAGMENTATION_MODE` lines too,
+which reported CID and HCD as ion modes — 39,818 and 39,097 of them. Polarity
+cannot be mixed in a reference library, so the fixture would have been built on a
+field that was a third fragmentation modes. The corrected pass gives 99,249
+positive and 41,768 negative.
+
+### The tolerance question, measured
+
+matchms 0.30.2 with numpy 2.2.6, `CosineGreedy`, 150 queries against 2,034
+library spectra, positive mode only:
+
+| m/z tolerance | top-1 correct | rate | mean top score |
+|---|---|---|---|
+| 0.005 | 120 | 0.800 | 0.7563 |
+| 0.01 | 121 | **0.807** | 0.7747 |
+| 0.02 | 119 | 0.793 | 0.7803 |
+| 0.05 | 115 | 0.767 | 0.8001 |
+| 0.1 | 114 | 0.760 | **0.8239** |
+
+Two things in that table, and the second is the one that matters.
+
+**Accuracy and score move in opposite directions.** Loosening the tolerance
+raises the mean top score monotonically and lowers the top-1 rate. A loose
+tolerance makes everything look more similar, including the wrong things, so a
+system reporting a higher similarity is not reporting a better identification.
+That is a rung's worth of content on its own.
+
+**The aggregate is stable and the per-query answer is not.** The rate moves by
+less than five points across a twentyfold range of tolerance, which would suggest
+pinning any value in it. But per query: **20 of 150 verdicts change somewhere**
+across the sweep — 3 between 0.01 and 0.005, 4 at 0.02, 10 at 0.05, 17 at 0.1.
+Thirteen per cent of the gold answers depend on a parameter whose aggregate
+effect is invisible.
+
+So the lock file's phrasing was right and the answer is not the comfortable one.
+The tool itself is deterministic: repeated runs and a shuffled library order give
+bit-identical score multisets (checked by digest, matchms 0.30.2 / numpy 2.2.6).
+What is not invariant is the ANSWER, and the parameter it depends on is the
+tolerance. A campaign here must pin the tolerance as part of gold's definition
+and grade the sweep as an axis rather than picking one setting and calling the
+rest a detail — the same shape as the GCF-cutoff campaign, where the cutoff grid
+is the claim and the baseline cutoff is not graded at all.
+
+### Why no campaign yet
+
+Because gold has to come from the pinned image, and matchms is deliberately not
+in it. I installed matchms 0.30.2 in this container to run the grounding, which
+is fine for a measurement whose version only needs recording — but a campaign
+built that way would produce gold no other container could reproduce, and the
+gate's determinism check would pass here and nowhere else. The honest state is:
+the fixture question is answered, the pin is measured, and the image needs the
+three lines recorded in `image/environment.lock.json` before the row can be
+built.
+
 ## Open items
 
 1. **CAI table provenance.** The relative-adaptiveness values now live in
@@ -3232,12 +3324,18 @@ rung the harness uses to decide whether the campaign is runnable at all.
 3. Real systems for the sweep. The harness is built and self-tested; it needs
    `SystemSpec` entries for the actual agents (bash-only, general biomedical,
    tool-equipped) before the five checks can go green.
-4. **matchms fixtures.** The last provisioning gap, for T-L4-1 and T-L4-2. The
-   tools are pip-installable; what the rows need first is an MS² fixture set from
-   MassBank with its own grounding pass, because for a spectral match the
-   invariance question becomes a tolerance question and that is a different suite
-   from this one. (This item appeared twice in earlier revisions, as 5 and 6; the
-   duplicate is merged here.)
+4. **matchms in the image** — the fixture half of this item is now done. The
+   grounding pass is above: the MassBank 2026.03.1 fixture is characterised, the
+   query/library split is a declared rule over 2,394 compounds spanning two
+   instruments and two contributors, and the tolerance question has a measured
+   answer (deterministic tool, 20 of 150 per-query verdicts moving across the
+   sweep, so the tolerance is part of gold and the sweep is a graded axis). What
+   remains is provisioning, not grounding: add `matchms==0.30.2` to the image with
+   numpy and scipy pinned alongside, per `image/environment.lock.json`. Until then
+   gold for these rows would come from a container that is not the image, and the
+   determinism check cannot catch that because it re-runs in the same container.
+   (This item appeared twice in earlier revisions, as 5 and 6; the duplicate is
+   merged here.)
 5. **Reprocess the MIBiG reference set with the pinned antiSMASH**, or declare
    that a T-L3-2 campaign takes both sides from the published `as8b1` set. As
    shipped, the reference clusters were processed with antiSMASH 8.0 beta 1 and

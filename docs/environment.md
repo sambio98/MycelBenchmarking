@@ -111,7 +111,7 @@ ClusterBlast DB ↔ MIBiG version ↔ pyhmmer move together.
 | **antiSMASH** | L3-1, L3-5 | pin the exact version **and** the database release — they are one pin. Fixed `--cpus`. **Annotated input only** (GenBank/EMBL, never FASTA), or the gene caller's determinism is folded into antiSMASH's. Grade a declared **projection** of the JSON, never the HTML and never the whole JSON. **Never compare across versions** — 58 rules at v5, 88 at v7.1, **103 at 8.0.4** |
 | **BiG-SCAPE** | L3-2 | pin the version **and `sqlalchemy < 2.1`** — the recipe's own bound is wrong and 2.0.3 crashes on 2.1 before reading an input. Pin the antiSMASH version that produced the inputs. Fixed `--cores`, explicit `--gcf-cutoffs`, explicit `--include-gbk` when inputs are not named `*.region*.gbk`. **Never `--mibig-version`** on a gold path: it downloads a reference set at run time |
 | **MAFFT** | L2-3 | pin major version, prefer deterministic modes |
-| **matchms / pyOpenMS** | L4-1, L4-2 | pin versions, record every filter parameter |
+| **matchms / pyOpenMS** | L4-1, L4-2 | pin versions, record every filter parameter — **and pin the m/z tolerance as part of gold**: measured on a MassBank 2026.03.1 fixture, matchms 0.30.2 is deterministic (repeat runs and shuffled library order give bit-identical score multisets) but 20 of 150 per-query top-1 verdicts move across tolerances 0.005–0.1, while the aggregate rate moves only 0.807→0.760. Pin numpy and scipy with it: the scores are floats. Still absent from the image |
 | **FastTree** | — | **FastTreeMP is banned from the image** (thread order affects the NJ heuristic) |
 | **IQ-TREE** | — | if ever used: always `--seed`, always fixed `-T N`, never `AUTO`. **Single-gene ML trees are not admissible as gold** |
 

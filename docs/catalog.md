@@ -996,8 +996,8 @@ and every variant moves the total (595 / 749 / 636 / 640 against 620); the build
 
 | # | Template | Data | Build |
 |---|---|---|---|
-| T-L4-1 ×2 | MS² dereplication vs reference standards | likely | image |
-| T-L4-2 | Molecular networking, mis-seeded annotation | likely | image |
+| T-L4-1 ×2 | MS² dereplication vs reference standards | **verified** | image (matchms) |
+| T-L4-2 | Molecular networking, mis-seeded annotation | **verified** | image (matchms) |
 | T-L4-3 ×2 | Mass balance & route validation (NRPS) | verified | **BUILT** |
 | T-L4-4 | Chemical space / scaffold analysis | verified | **BUILT** |
 
@@ -1011,6 +1011,33 @@ level per annotation and the discriminating fragment · R4 an adduct shift is
 applied — predict which annotations survive. Perturbation:
 `adduct_misassignment`. **The nearest-neighbour suspect library is a distractor,
 never gold** — it is propagated by construction.
+
+**Data now verified, build still `image`.** The fixture grounding pass is done and
+recorded in `docs/npbench-c.md`. MassBank **2026.03.1** (141,017 records, CC BY)
+holds **2,394 compounds whose MS² spectra span at least two instrument types and
+two contributors** — the declared query/library split takes one spectrum per
+compound from the lexicographically first contributor as the query and every
+spectrum from other contributors as the library, so the right answer is in the
+library but from another lab.
+
+**`CONFIDENCE` Level 1 cannot define "authentic standard".** The field exists and
+means exactly that, and **95 of 141,017 records carry it** — one contributor's
+convention, not a corpus-wide field. The corpus structure above defines the
+fixture instead.
+
+**The tolerance is part of gold, not a detail.** Measured with matchms 0.30.2 on
+150 queries against 2,034 library spectra: top-1 rate 0.807 at 0.01 Da falling to
+0.760 at 0.1, while the mean top score *rises* 0.756 → 0.824 — a looser tolerance
+makes everything look more similar, including the wrong things. The tool is
+deterministic (repeat runs and shuffled library order give bit-identical score
+multisets), but **20 of 150 per-query verdicts change somewhere across the
+sweep**, so the sweep is a graded axis as the GCF-cutoff grid is, and no single
+setting can be called the answer.
+
+**What blocks the build**: matchms is not in the pinned image, so gold built here
+would be gold no other container could reproduce. `image/environment.lock.json`
+now carries the pin to add (matchms 0.30.2 with numpy and scipy pinned alongside,
+since the scores are floats).
 
 **T-L4-2** Molecular networking with one planted library-backed-looking but
 unconfirmed annotation. R1 network edge table · R2 matches gold · R3 claim:
