@@ -1,0 +1,71 @@
+{
+  "description": "How MIBiG 3.1 fields correspond to MIBiG 4.0 fields, and how each is normalised before comparison. MIBiG 4.0 restructured the schema entirely -- 3.1 nests everything under a 'cluster' object, 4.0 is flat -- so a raw field-by-field diff reports almost everything as changed. Reconciling the two requires this mapping plus the normalisation rules.",
+  "source_release": "3.1",
+  "target_release": "4.0",
+  "fields": {
+    "organism": {
+      "source_path": "cluster.organism_name",
+      "target_path": "taxonomy.name",
+      "kind": "scalar",
+      "normalisation": "none"
+    },
+    "ncbi_tax_id": {
+      "source_path": "cluster.ncbi_tax_id",
+      "target_path": "taxonomy.ncbiTaxId",
+      "kind": "scalar",
+      "normalisation": "string",
+      "normalisation_note": "3.1 stores the taxon id as a JSON string, 4.0 as a JSON integer. Compared raw, every shared entry looks changed; compared as strings, only the genuine corrections remain. This is the clearest representation-versus-substance case in the corpus."
+    },
+    "locus_accession": {
+      "source_path": "cluster.loci.accession",
+      "target_path": "loci[].accession",
+      "kind": "scalar_in_set",
+      "normalisation": "none",
+      "normalisation_note": "3.1 has a single loci object, 4.0 a list. The source value counts as present if it appears among the target accessions."
+    },
+    "compound_names": {
+      "source_path": "cluster.compounds[].compound",
+      "target_path": "compounds[].name",
+      "kind": "set",
+      "normalisation": "none"
+    },
+    "compound_formulas": {
+      "source_path": "cluster.compounds[].molecular_formula",
+      "target_path": "compounds[].formula",
+      "kind": "set",
+      "normalisation": "none"
+    },
+    "biosynthetic_class": {
+      "source_path": "cluster.biosyn_class",
+      "target_path": "biosynthesis.classes[].class",
+      "kind": "set",
+      "normalisation": "class_vocabulary",
+      "normalisation_note": "The two releases use different class vocabularies, so raw sets never agree. Apply class_mapping.json; a source term with no target counterpart is reported as no_counterpart_in_target."
+    }
+  },
+  "verdict_vocabulary": [
+    "unchanged",
+    "representation_only",
+    "substantive_change",
+    "absent_in_source",
+    "absent_in_target",
+    "no_counterpart_in_target"
+  ],
+  "verdict_rules": {
+    "unchanged": "the raw JSON values are equal",
+    "representation_only": "the raw values differ but are equal after the field's declared normalisation",
+    "substantive_change": "the values differ after normalisation and both are present",
+    "absent_in_source": "the source release has no value for this field",
+    "absent_in_target": "the target release has no value for this field",
+    "no_counterpart_in_target": "a source vocabulary term has no counterpart in the target vocabulary"
+  },
+  "verdict_precedence": [
+    "no_counterpart_in_target",
+    "absent_in_source",
+    "absent_in_target",
+    "unchanged",
+    "representation_only",
+    "substantive_change"
+  ],
+  "verdict_precedence_note": "Evaluated in this order; the first matching rule applies. Published because a field could otherwise be argued into more than one class -- an absent source value is also trivially 'changed', and a retired vocabulary term is also a substantive change."
+}

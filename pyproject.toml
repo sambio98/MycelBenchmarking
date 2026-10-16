@@ -17,9 +17,14 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = ["pytest"]
+# NPBench-C's grading core is stdlib-only by design: a numpy or pandas version
+# bump must never be able to move a published score. PyYAML is used only by the
+# readiness gate, which is outside the scoring path.
+npbench = ["pyyaml"]
 
 [project.scripts]
 biomni-benchmark = "biomni_benchmark.cli:main"
+npbench-c-readiness = "npbench_c.readiness.gate:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

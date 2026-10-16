@@ -1,0 +1,302 @@
+campaign_id: ripp-precursor-mibig-4_0-01
+template_id: ripp-precursor-audit
+track: EX
+family: cross_database_reconciliation
+layer: L3_cluster_and_pathway
+np_class: ripp
+version: 1.0.0
+horizon_tier: T-short
+license_class: open
+grader_version: "2.0.0+9fc95658"
+grading_spec_version: "1.0.0"
+min_tool_surface: S1
+tool_surface_note: >
+  Needs HMMER and the Pfam library it scans against, which the campaign reads
+  from the image rather than shipping. R1 reports the tool identity, so the
+  no-tool ablation fails the first rung; R3 and R4 need the scans themselves.
+  The declared panel keeps both scans to seconds, and S0 can answer no rung.
+
+license_notice:
+  source: >
+    MIBiG 4.0 annotation records, and the antiSMASH-processed reference records
+    for every entry of the declared biosynthetic class
+  license: CC BY 4.0
+  attribution: >
+    MIBiG 4.0 (https://mibig.secondarymetabolites.org/) and the MIBiG
+    antiSMASH-processed reference set
+    (https://dl.secondarymetabolites.org/mibig/), both licensed CC BY 4.0.
+  redistribution: >
+    inputs/ carries both archives with their contents unchanged, and
+    inputs/provenance.json records the selection rule and the fingerprints.
+    CC BY 4.0 requires attribution and nothing further. The Pfam library is NOT
+    redistributed: it is read from the pinned image at a declared path with a
+    recorded sha256.
+
+objective: >
+  A ribosomally synthesised peptide is made from a precursor protein that carries
+  a leader, a core, and sometimes a follower; the core is the part that becomes
+  the product. MIBiG records, per precursor, the gene, the core peptide's
+  sequence, and for some entries a leader cleavage location. The precursor's own
+  translation is in the antiSMASH-processed record for the same cluster. Select
+  the precursors that can be audited, locate each declared core in its declared
+  translation, establish from the data which reading of the cleavage coordinate
+  the annotation actually uses, scan the precursors with a pinned domain panel
+  and place each hit relative to the boundary you measured -- then report how all
+  of that moves when the field is read under a different declared policy and when
+  each leader is removed.
+
+method_guidance: partial
+
+scope_note: >
+  Gold is exact computation over two shipped resources plus two runs of a pinned
+  tool, tier G1. No rung asks what a leader or a core "is": every verdict is a
+  property of two strings, of two integers, or of a tool's own output.
+
+  Five things are load-bearing.
+
+  The core_sequence field arrives in several different JSON shapes, and a reader
+  that assumes one of them mis-parses the others. One of those shapes is the
+  printed form of a list -- brackets and quotes inside the string -- which is not
+  a peptide. So the ingestion policy is DECLARED, the baseline is the
+  conservative reading, and repairing that shape is a counterfactual rather than
+  a default.
+
+  Case is a normalisation and not a validity question. Some cores are recorded in
+  a different case from the translations. Folding case cannot invent a match that
+  is not there; a character that is not an amino-acid letter in any case is a
+  malformed core. Conflating the two reports a case difference as a data defect.
+
+  The coordinate convention is ELECTED, not assumed. Nothing in the annotation
+  states whether leader_cleavage_location is 0-based or 1-based, or whether
+  `from` or `to` marks the core's first residue. All four readings are scored
+  against the core's measured position and the best-agreeing one wins, with the
+  tie-break order declared. Assuming a convention would make every coordinate
+  verdict a restatement of the assumption.
+
+  Where a core has no single position, the derived coordinates are null and the
+  record says so. That is an answer -- the annotation cannot be reconciled -- and
+  not a gap to fill with the nearest match.
+
+  And a domain model is evidence about the precursor, not about the boundary.
+  Whether any declared family's envelope marks where the leader ends is measured
+  rather than assumed, and the leader-deletion counterfactual asks the tool
+  directly which side of the boundary its own signal lives on.
+
+catalog_deviation: >
+  The catalogued R3 was "the core peptide sequence and the cleavage motif" and
+  the catalogued R4 was "the leader is altered -- predict the new core". Neither
+  is built, and both refusals are about gradability rather than cost.
+
+  The core peptide sequence is a MIBiG field. Grading it would grade
+  transcription, and the campaign has to ship the field for any of the rest to be
+  solvable, so it would also be a free component. What IS a claim about that
+  field is whether it is consistent with the translation and the coordinate that
+  accompany it, which is what R2 and R3 grade instead. The "cleavage motif" is
+  not in MIBiG at all; the nearest computable thing is the domain envelope
+  relative to the measured boundary, which R3 grades.
+
+  Predicting the core of an altered leader has no oracle. No pinned tool computes
+  it, the answer is a wet-lab fact about a peptide nobody has made, and scoring a
+  prediction against a curator's intuition is the human judgement this benchmark
+  excludes from grading entirely. R4 keeps the counterfactual's intent -- what
+  does the leader carry -- and makes it measurable: remove each declared leader
+  and report which domain calls survive. The tool answers; nothing is predicted.
+
+  The catalogued tool surface stands. HMMER earns S1 here: it is what R3's domain
+  evidence and R4's deletion outcome are made of, and the first rung pins which
+  HMMER and which Pfam produced them.
+
+template_params:
+  annotations_input: inputs/mibig_json_4.0.tar.gz
+  reference_records_input: inputs/mibig_antismash_ribosomal.tar.gz
+
+output_contract:
+  precursor_report.json:
+    mibig_release / biosynthetic_class / baseline_policy / threshold / panel_size: >
+      Reported for the record and NOT graded: each is fixed by the campaign's own
+      declaration, so grading it would add weight to a conjunctive product and no
+      information.
+    hmmer_version / pfam_version / pfam_sha256: >
+      What produced the domain calls. A domain verdict is only as pinned as the
+      tool and the library behind it.
+    selection_census: >
+      How the corpus was arrived at: entries of the class, entries naming both a
+      precursor gene and a core sequence, entries the status rule removes,
+      entries with no reference record, reference records shipped, precursor
+      records named, records whose gene is not in its record, and the entries and
+      records that survive.
+    core_sequence_shape_census / core_sequence_case_census: >
+      The JSON shapes and the letter cases the field arrives in over the corpus,
+      against the declared vocabularies. Shapes and cases with no members are
+      omitted.
+    records_declaring_a_cleavage_location: >
+      How many corpus records carry a leader_cleavage_location at all.
+    ripp_type_census / status_census: >
+      Per RiPP type and per entry status, how many corpus records. Open-ended:
+      the keys are whichever terms the selected entries carry, and an unstated
+      ripp_type is reported as "(unstated)".
+    precursor_length_summary: >
+      Count, minimum, median and maximum translation length over the corpus.
+    localisation_table: >
+      Per corpus record, in (cluster, gene) order: how many cores the policy
+      read, the first core's length, its occurrences in the translation, its
+      0-based start, the leader and follower lengths that follow from it, and the
+      declared verdict. The last four are null wherever the core has no single
+      position.
+    localisation_census / leader_length_summary: >
+      The count per declared verdict, and count/min/median/max over the leader
+      lengths that could be derived.
+    convention_tally / elected_convention: >
+      Per declared reading of the cleavage coordinate, how many declaring records
+      it agrees with, disagrees with, and cannot be checked against; and the
+      reading that agrees with the most, tie-broken by the declared order.
+    cleavage_table: >
+      Per declaring record, in (cluster, gene) order: the declared bounds, the
+      core start the elected reading implies, the start measured from the
+      translation, and the verdict.
+    domain_table / panel_census / records_with_a_panel_hit: >
+      Every panel hit on the corpus as shipped, with its envelope, where that
+      envelope sits relative to the measured boundary, and the signed offset
+      between the envelope's end and the leader's length; plus the count per
+      declared model and the number of records carrying any hit.
+    boundary_relation_census / boundary_offset_summary: >
+      The count per declared relation, and count/min/median/max over the offsets
+      plus how many are exactly zero -- a model whose envelope stops precisely
+      where the leader does.
+    policy_sweep: >
+      Per declared ingestion policy: the localisation census, how many cores were
+      located, and how many cores the policy read in total.
+    deletion_table / deletion_census: >
+      Each record's declared leader removed and the panel re-run: the models
+      before, the models after, and the declared outcome. The table carries the
+      records whose outcome is neither the negative control nor inapplicable; the
+      census counts every record.
+
+constraints:
+  reference_dir: reference
+  pinned_tables:
+    - reference/precursor_rules.json   # selection, policies, vocabularies, panel
+  external_resources:
+    - name: pfam_a_hmm
+      declared_in: reference/precursor_rules.json
+      reason: >
+        1.5 GB, read from the pinned image rather than shipped and fetched from
+        with hmmfetch. Pfam is CC0, so this is a size decision and not a licence
+        one; the campaign records the path, the provider, the version and a
+        sha256, and the build refuses to emit gold on a mismatch.
+
+snapshots_required:
+  shipped: [mibig@4.0, mibig_antismash@4.0_as8b1]
+  fetched: []
+  image: [hmmer@3.4, pfam@35.0]
+
+budgets:
+  wall_clock_minutes: 25
+  cpu: 2
+  memory_gb: 4
+  network: off
+  budget_note: >
+    Two hmmsearch runs of the declared panel over a corpus of very short
+    sequences, which is seconds. The budget is for the agent reading a 3,000-entry
+    annotation set and several hundred GenBank records and doing the string work
+    itself.
+
+rungs:
+  - {rung_id: r1, ordinal: 1, name: execute,        gold_tier: G1, warm_start_bundle: null}
+  - {rung_id: r2, ordinal: 2, name: correct,        gold_tier: G1, warm_start_bundle: gold/warm/r2}
+  - {rung_id: r3, ordinal: 3, name: commit,         gold_tier: G1, warm_start_bundle: gold/warm/r3}
+  - {rung_id: r4, ordinal: 4, name: counterfactual, gold_tier: G1, warm_start_bundle: gold/warm/r4}
+
+# Nothing is planted. The negative control at R4 is every corpus record the panel
+# does not recognise, which the corpus supplies on its own; the verification is
+# the core's position measured against the declared coordinate.
+structural_elements: [verification, counterfactual, control]
+
+harness:
+  gold_command: ["python3", "-m", "npbench_c.templates.ripp_precursor.build", "{campaign}"]
+  solve_command: ["python3", "-m", "npbench_c.templates.ripp_precursor.solve", "{campaign}", "{submission}"]
+  measure_command: ["python3", "-m", "npbench_c.templates.ripp_precursor.measure", "{campaign}", "{submission}", "{measurement}"]
+  stub_module: npbench_c.sweep.stubs.stub_ripp
+  stub_args: []
+  stub_levels:
+    - {name: stub-reader,      level: reader, timeout_s: 1800}
+    - {name: stub-localise,    level: localise, reference: true, timeout_s: 1800}
+    - {name: stub-evidence,    level: evidence, timeout_s: 1800}
+    - {name: stub-complete,    level: complete, timeout_s: 1800}
+    - {name: stub-firstshape,  level: firstshape, timeout_s: 1800}
+    - {name: stub-noncompute,  level: noncompute, mode: no_tool, timeout_s: 600}
+
+grading:
+  chance_levels: {r1: 1.0, r2: 0.001, r3: 0.001, r4: 0.001}
+  chance_level_notes:
+    r1: >
+      Nominal rather than measured. The selection census and the tool identity
+      cannot be guessed, so the no-tool ablation fails R1 outright; the level
+      stays at 1.0 because any system that reads the inputs and runs the tool
+      clears it, and the capped floor is computed over R2 upward.
+
+excluded_from_grading:
+  - field: the core peptide sequence itself
+    reason: >
+      A MIBiG field, and one the campaign must ship for anything else to be
+      solvable, so grading it would grade transcription from the input. It is a
+      free component twice over: its value is fixed by the annotation set, and
+      the annotation set is in inputs/. What is graded is whether it is
+      consistent with the translation and the coordinate that accompany it.
+  - field: mibig_release, biosynthetic_class, baseline_policy, threshold, panel_size
+    reason: >
+      Each is an echo of a declared file -- the release from the input
+      provenance, the rest from the pinned rules table. Reported so a run records
+      what it was, and not graded: nothing in the world would have to change for
+      the value to change, only the campaign's own declaration.
+  - field: which residues of a core are post-translationally modified
+    reason: >
+      MIBiG records crosslinks for a minority of precursors, with a coordinate
+      convention of their own and a type vocabulary that includes "other". The
+      campaign does not grade them: establishing a second undocumented
+      convention on a tenth of the corpus would be a thinner version of the audit
+      this one already does, and reading the field without establishing it would
+      be exactly the mistake the campaign exists to measure.
+  - field: whether a Pfam family "is" a leader-peptide family
+    reason: >
+      Not decidable from a hit, and not what the campaign asks. The envelope's
+      position relative to the measured boundary is computed, and the deletion
+      counterfactual measures which side the signal depends on. Either can be
+      reported without claiming anything about what the family is for.
+  - field: the follower peptide as a declared feature
+    reason: >
+      follower_cleavage_location is present on a handful of precursors across the
+      whole class -- too few to carry a rung, and reporting a follower length
+      derived from the core's position (which the campaign does) is a different
+      claim from reconciling a declared follower coordinate (which it does not).
+
+notes_for_audit:
+  - >
+    Check the convention tally first. The campaign's central claim is that the
+    cleavage coordinate's meaning is recoverable from the data, which requires
+    one reading to win clearly. The build refuses to emit gold if no reading
+    agrees with anything, if the top two tie -- which would make the elected
+    convention a tie-break rather than a finding -- or if no reading disagrees
+    anywhere, which would mean the readings cannot be told apart on this corpus.
+  - >
+    Then check that the localisation vocabulary is actually populated and that
+    some record is NOT cleanly located. A corpus where every declared core sits
+    unambiguously in its translation would make R2 a formality and would leave
+    the null-coordinate path in R3 untested. The build refuses gold in both
+    directions.
+  - >
+    Then check the three clauses of the selection rule. Each has to remove
+    something here -- the status rule, the reference-record rule, and the
+    gene-resolution step -- or the rule was inherited from another instantiation
+    rather than exercised. The build refuses gold if the first two remove nothing.
+  - >
+    The reference records shipped are those for EVERY entry of the class, not the
+    subset the audit uses. That is deliberate: shipping only the entries that pass
+    the reference clause would make the count of those that do not readable off a
+    directory listing instead of computed from the two resources.
+  - >
+    At R4, check that some panel call is retained and some is lost. If every call
+    went with its leader, "the signal is in the leader" would be a free answer
+    and the rung would distinguish no record; if none did, the deletion would show
+    nothing. The build refuses gold in both directions, and also if no record in
+    the corpus lacks a panel hit, which is the rung's negative control.

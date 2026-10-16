@@ -1,0 +1,36 @@
+{
+  "baseline_cutoff": "0.3",
+  "bigscape_version": "BiG-SCAPE 2.0.3",
+  "class_census": {
+    "NRPS.PKS": 5,
+    "PKS": 4,
+    "other": 11
+  },
+  "controls": [
+    "BGC0000026",
+    "BGC0000605",
+    "BGC0001082",
+    "BGC0001483",
+    "BGC0002197"
+  ],
+  "corpus_size": 32,
+  "cutoffs": [
+    "0.1",
+    "0.2",
+    "0.3",
+    "0.4",
+    "0.5",
+    "0.6",
+    "0.7",
+    "0.8"
+  ],
+  "designed_families": {
+    "Aflatoxin B1": 5,
+    "ectoine": 10,
+    "kanamycin": 5,
+    "ochratoxin A": 7
+  },
+  "include_gbk": "BGC",
+  "pfam_sha256": "8d3e2ffa785f91ee0e24a3994d2dcfff6f382e3cf663784a47688e7d95297fee",
+  "pfam_version": "Pfam 35.0"
+}

@@ -1,0 +1,113 @@
+{
+  "admissible_by_function": {
+    "Activation / processing": 20,
+    "Precursor biosynthesis": 84,
+    "Regulation": 63,
+    "Resistance/immunity": 5,
+    "Scaffold biosynthesis": 225,
+    "Tailoring": 204,
+    "Transport": 19
+  },
+  "backed_by_function": {
+    "Activation / processing": 32,
+    "Precursor biosynthesis": 134,
+    "Regulation": 82,
+    "Resistance/immunity": 21,
+    "Scaffold biosynthesis": 355,
+    "Tailoring": 303,
+    "Transport": 23
+  },
+  "backed_minus_admissible": {
+    "Activation / processing": 12,
+    "Precursor biosynthesis": 50,
+    "Regulation": 19,
+    "Resistance/immunity": 16,
+    "Scaffold biosynthesis": 130,
+    "Tailoring": 99,
+    "Transport": 4
+  },
+  "corpus_entries": 3013,
+  "entries_with_annotations": 272,
+  "focal_admissible_entries": [
+    "BGC0000210",
+    "BGC0000544",
+    "BGC0000834",
+    "BGC0000845",
+    "BGC0001099"
+  ],
+  "function_evidence_method_totals": {
+    "Activity assay": 272,
+    "Heterologous expression": 44,
+    "Knock-out": 627,
+    "Other in vivo study": 159
+  },
+  "function_vocabulary": [
+    "Activation / processing",
+    "Precursor biosynthesis",
+    "Regulation",
+    "Resistance/immunity",
+    "Scaffold biosynthesis",
+    "Tailoring",
+    "Transport"
+  ],
+  "policy_variants": {
+    "v1_knockout_only": {
+      "admissible_by_function": {
+        "Activation / processing": 20,
+        "Precursor biosynthesis": 83,
+        "Regulation": 62,
+        "Resistance/immunity": 4,
+        "Scaffold biosynthesis": 213,
+        "Tailoring": 194,
+        "Transport": 19
+      },
+      "total": 595
+    },
+    "v2_plus_activity_assay": {
+      "admissible_by_function": {
+        "Activation / processing": 27,
+        "Precursor biosynthesis": 113,
+        "Regulation": 66,
+        "Resistance/immunity": 9,
+        "Scaffold biosynthesis": 271,
+        "Tailoring": 244,
+        "Transport": 19
+      },
+      "total": 749
+    },
+    "v3_any_locus_evidence": {
+      "admissible_by_function": {
+        "Activation / processing": 20,
+        "Precursor biosynthesis": 85,
+        "Regulation": 67,
+        "Resistance/immunity": 9,
+        "Scaffold biosynthesis": 227,
+        "Tailoring": 207,
+        "Transport": 21
+      },
+      "total": 636
+    },
+    "v4_include_inactive": {
+      "admissible_by_function": {
+        "Activation / processing": 20,
+        "Precursor biosynthesis": 89,
+        "Regulation": 63,
+        "Resistance/immunity": 5,
+        "Scaffold biosynthesis": 235,
+        "Tailoring": 209,
+        "Transport": 19
+      },
+      "total": 640
+    }
+  },
+  "total_function_annotations": 2566,
+  "unbacked_by_function": {
+    "Activation / processing": 51,
+    "Precursor biosynthesis": 269,
+    "Regulation": 151,
+    "Resistance/immunity": 22,
+    "Scaffold biosynthesis": 636,
+    "Tailoring": 334,
+    "Transport": 153
+  }
+}

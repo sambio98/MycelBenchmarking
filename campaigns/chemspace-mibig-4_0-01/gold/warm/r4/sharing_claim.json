@@ -1,0 +1,91 @@
+{
+  "cross_class_informative_entries": {
+    "CYGWYEFFBAGUPZ-OTPRBGIMSA-N": [
+      "BGC0001241",
+      "BGC0002232"
+    ],
+    "FCJSHPDYVMKCHI-UHFFFAOYSA-N": [
+      "BGC0000889",
+      "BGC0002596"
+    ],
+    "HRARFUAJPZJVGM-DCYDZRBTSA-N": [
+      "BGC0000214",
+      "BGC0000650"
+    ],
+    "JLOHZVKGDNGBGQ-JCPCAWANSA-N": [
+      "BGC0000968",
+      "BGC0002539"
+    ],
+    "PCNDJXKNXGMECE-UHFFFAOYSA-N": [
+      "BGC0000934",
+      "BGC0001080",
+      "BGC0001221",
+      "BGC0001869",
+      "BGC0002002",
+      "BGC0002561"
+    ],
+    "RFIYSAKEERPDNO-QHKXXMBBSA-N": [
+      "BGC0000818",
+      "BGC0001084",
+      "BGC0002254"
+    ],
+    "SIKJAQJRHWYJAI-UHFFFAOYSA-N": [
+      "BGC0000189",
+      "BGC0000668",
+      "BGC0001679",
+      "BGC0002128"
+    ],
+    "SMWDFEZZVXVKRB-UHFFFAOYSA-N": [
+      "BGC0000922",
+      "BGC0000925"
+    ],
+    "UCJPVBZVRSAKES-CUTNOYOOSA-N": [
+      "BGC0000026",
+      "BGC0000215"
+    ],
+    "UMEFRYIIYVJUHV-JOLUAVQFSA-N": [
+      "BGC0000348",
+      "BGC0001241"
+    ],
+    "USIUVYZYUHIAEV-UHFFFAOYSA-N": [
+      "BGC0000121",
+      "BGC0001490"
+    ],
+    "WFWVIOSJXLAMAS-SECBINFHSA-N": [
+      "BGC0001735",
+      "BGC0002039",
+      "BGC0002040",
+      "BGC0002435",
+      "BGC0002462"
+    ],
+    "XCLJYZGUWUWPFP-MFAVDMRSSA-N": [
+      "BGC0002199",
+      "BGC0002266",
+      "BGC0002731"
+    ],
+    "YSMAWFSARRKBQP-UHFFFAOYSA-N": [
+      "BGC0000894",
+      "BGC0001338"
+    ]
+  },
+  "cross_class_scaffolds": {
+    "all": 36,
+    "informative": 14,
+    "naive_all": 115,
+    "naive_informative": 61
+  },
+  "informative_records": 2359,
+  "informative_rule": {
+    "min_heavy_atom_coverage": 0.5,
+    "min_ring_count": 2
+  },
+  "informative_scaffold_keys": 1545,
+  "most_shared_informative_scaffold": {
+    "entries": 9,
+    "scaffold_inchikey": "JWDRHQXTBLCHPC-YIGSFPITSA-N"
+  },
+  "shared_scaffolds": {
+    "all": 279,
+    "informative": 190
+  }
+}

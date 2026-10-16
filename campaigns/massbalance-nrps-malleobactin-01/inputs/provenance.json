@@ -1,0 +1,16 @@
+{
+  "accession": "BGC0000386",
+  "admission": {
+    "loci_evidence": [
+      "Knock-out studies"
+    ],
+    "note": "Admitted on loci[].evidence containing a strong link method. compounds[].evidence is a different axis (how the structure was determined) and is not the admission criterion. quality is not used: 2710/3013 MIBiG 4.0 entries are 'questionable', which tracks completeness rather than scientific doubt.",
+    "status": "active"
+  },
+  "license": "CC BY 4.0",
+  "retrieved": "2026-10-01",
+  "sha256_entry": "d695bbe8743228a77c5728bfeae76a7e52b32d3a3c9b7fa8bc7e1cc9ddf8bea7",
+  "source": "MIBiG",
+  "url": "https://dl.secondarymetabolites.org/mibig/mibig_json_4.0.tar.gz",
+  "version": "4.0"
+}

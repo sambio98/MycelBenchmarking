@@ -1,0 +1,36 @@
+{
+  "classified_verdict_counts": {
+    "biosynthetic_class": {
+      "no_counterpart_in_target": 73,
+      "representation_only": 2353,
+      "substantive_change": 16
+    },
+    "compound_formulas": {
+      "absent_in_source": 1015,
+      "absent_in_target": 6,
+      "representation_only": 2,
+      "substantive_change": 39,
+      "unchanged": 1380
+    },
+    "compound_names": {
+      "representation_only": 1,
+      "substantive_change": 152,
+      "unchanged": 2289
+    },
+    "locus_accession": {
+      "unchanged": 2442
+    },
+    "ncbi_tax_id": {
+      "representation_only": 2434,
+      "substantive_change": 8
+    },
+    "organism": {
+      "substantive_change": 8,
+      "unchanged": 2434
+    }
+  },
+  "perturbation_base": "BGC0000001",
+  "retired_class_terms": [
+    "Alkaloid"
+  ]
+}

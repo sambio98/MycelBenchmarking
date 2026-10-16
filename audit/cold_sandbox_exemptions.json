@@ -1,0 +1,40 @@
+{
+  "_dropped_on_write": [
+    "chemspace's most_shared_informative_scaffold was declared here first and removed immediately: the pair scan is bounded to terms the campaign declares as a closed vocabulary, and an InChIKey is not one, so that component never collides and the exemption was a check nobody was getting. The staleness test found it. Recorded because the next person to widen the scan will be tempted to re-add it.",
+    "construct-ecoli-rebh-01's uv_gc_window and uv_direct_repeat exemptions were dropped when the codon tables were re-derived from their source records. Both were genuine coincidences against the declared window and k-mer lengths, and both stopped colliding the moment the weights changed the unconstrained optimum -- which is the point of the staleness half of check 22: an exemption outlives the number it was written for, and the next reader takes it for a standing allowance. The gate failed this campaign until they were removed."
+  ],
+  "_note": "Declared exemptions for the readiness gate's check 22, cold_sandbox_withholds_small_answers.",
+  "_what_the_gate_checks": "That every hit is declared here with a reason, AND that every declaration still collides. A stale exemption is a check nobody is getting: this project had one within a minute of writing the first waiver list, resting on a number that had just been removed from the prose.",
+  "_what_the_gate_does_not_check": "Whether a reason is legitimate. That is an audit question, which is why each reason is written to be read rather than parsed.",
+  "_why_this_file_is_not_in_a_campaign": "An exemption names a graded component and says which declared value its answer collides with -- 'uv_gc_window equals the declared 50-nt window length' states the answer. Putting that in task.yaml or reference/ would ship the disclosure the check exists to prevent, so the exemptions live outside campaigns/ where no sandbox can reach them. The gate and tests/unit/test_cold_sandbox_prose.py read this one file.",
+  "exemptions": {
+    "chemspace-mibig-4_0-01": [
+      {
+        "component": "connectivity_groups_with_multiple_compound_keys",
+        "reason": "Coincidence. Its value equals a compound_heavy_atoms entry in the shipped chemistry table, which the campaign must publish to be solvable. No sentence in the sandbox states this component's value."
+      },
+      {
+        "component": "distinctions_lost_at_connectivity",
+        "reason": "Coincidence. Its value equals a scaffold_heavy_atoms entry in the same shipped table."
+      }
+    ],
+    "frameshift-scoelicolor-01": [
+      {
+        "component": "environment",
+        "reason": "Deliberate grouping, not a coincidence. The tool identity is graded as ONE claim -- which caller, which version, which mode, which flags -- and the rules file must publish the mode names, so the mode inside the composite collides. The composite is not obtainable from the sandbox: the caller's version is in it and nothing in the sandbox states it."
+      }
+    ],
+    "genecall-scoelicolor-01": [
+      {
+        "component": "environment",
+        "reason": "Deliberate grouping, as for the frameshift campaign on this same chromosome. The declared mode names are published because the campaign's finding is about the mode; the composite also carries the caller version, which the sandbox does not state."
+      }
+    ],
+    "transfer-ec1_14-uniprot-01": [
+      {
+        "component": "queries_without_a_hit",
+        "reason": "Coincidence. Its value equals an edge of the declared identity-binning grid, which the sandbox must state for the bands to be reproducible."
+      }
+    ]
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "modules": [
+    {
+      "formula": "C9H11NO2",
+      "module": 1,
+      "monomer": "phenylalanine"
+    },
+    {
+      "formula": "C3H7NO2",
+      "module": 2,
+      "monomer": "alanine"
+    },
+    {
+      "formula": "C11H12N2O2",
+      "module": 3,
+      "monomer": "tryptophan"
+    }
+  ],
+  "naive_assembly_formula": "C23H26N4O4",
+  "naive_assembly_monoisotopic_mass": 422.1954,
+  "peptide_bonds": 2,
+  "per_compound": {
+    "sevadicin": {
+      "residual": {},
+      "verdict": "balanced"
+    }
+  },
+  "single_module_deletions": {
+    "1": {
+      "formula": "C14H17N3O3",
+      "mass_shift": -147.0684
+    },
+    "2": {
+      "formula": "C20H21N3O3",
+      "mass_shift": -71.0371
+    },
+    "3": {
+      "formula": "C12H16N2O3",
+      "mass_shift": -186.0793
+    }
+  }
+}

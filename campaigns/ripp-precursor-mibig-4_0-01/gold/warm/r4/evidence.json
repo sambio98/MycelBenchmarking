@@ -1,0 +1,431 @@
+{
+  "boundary_offset_summary": {
+    "count": 10,
+    "exactly_at_the_boundary": 0,
+    "max": 30,
+    "median": 19.0,
+    "min": -21
+  },
+  "boundary_relation_census": {
+    "core_not_located": 2,
+    "core_only": 0,
+    "leader_only": 2,
+    "spans_boundary": 8
+  },
+  "cleavage_table": [
+    {
+      "bgc": "BGC0000468",
+      "declared_from": 0,
+      "declared_to": 1,
+      "derived_core_start": 1,
+      "gene": "CCM09443.1",
+      "implied_core_start": 1,
+      "verdict": "agrees"
+    },
+    {
+      "bgc": "BGC0000469",
+      "declared_from": 0,
+      "declared_to": 1,
+      "derived_core_start": 1,
+      "gene": "AFV25481.1",
+      "implied_core_start": 1,
+      "verdict": "agrees"
+    },
+    {
+      "bgc": "BGC0000470",
+      "declared_from": 0,
+      "declared_to": 1,
+      "derived_core_start": 1,
+      "gene": "AFU90404.1",
+      "implied_core_start": 1,
+      "verdict": "agrees"
+    },
+    {
+      "bgc": "BGC0000477",
+      "declared_from": 39,
+      "declared_to": 40,
+      "derived_core_start": 40,
+      "gene": "ACA04491.1",
+      "implied_core_start": 40,
+      "verdict": "agrees"
+    },
+    {
+      "bgc": "BGC0000479",
+      "declared_from": 33,
+      "declared_to": 34,
+      "derived_core_start": 34,
+      "gene": "AED99431.1",
+      "implied_core_start": 34,
+      "verdict": "agrees"
+    },
+    {
+      "bgc": "BGC0000479",
+      "declared_from": 33,
+      "declared_to": 34,
+      "derived_core_start": 34,
+      "gene": "AED99432.1",
+      "implied_core_start": 34,
+      "verdict": "agrees"
+    },
+    {
+      "bgc": "BGC0000480",
+      "declared_from": 41,
+      "declared_to": 42,
+      "derived_core_start": null,
+      "gene": "ACA04484.1",
+      "implied_core_start": 42,
+      "verdict": "underivable"
+    },
+    {
+      "bgc": "BGC0000503",
+      "declared_from": 58,
+      "declared_to": 59,
+      "derived_core_start": 59,
+      "gene": "cinA",
+      "implied_core_start": 59,
+      "verdict": "agrees"
+    },
+    {
+      "bgc": "BGC0000517",
+      "declared_from": 40,
+      "declared_to": 41,
+      "derived_core_start": 41,
+      "gene": "BAB04173.1",
+      "implied_core_start": 41,
+      "verdict": "agrees"
+    },
+    {
+      "bgc": "BGC0000535",
+      "declared_from": 22,
+      "declared_to": 23,
+      "derived_core_start": 23,
+      "gene": "ADJ56352.1",
+      "implied_core_start": 23,
+      "verdict": "agrees"
+    },
+    {
+      "bgc": "BGC0000553",
+      "declared_from": 20,
+      "declared_to": 21,
+      "derived_core_start": 21,
+      "gene": "SSGG_RS09925",
+      "implied_core_start": 21,
+      "verdict": "agrees"
+    },
+    {
+      "bgc": "BGC0000563",
+      "declared_from": 28,
+      "declared_to": 29,
+      "derived_core_start": 29,
+      "gene": "AEA03263.1",
+      "implied_core_start": 29,
+      "verdict": "agrees"
+    },
+    {
+      "bgc": "BGC0000566",
+      "declared_from": 22,
+      "declared_to": 23,
+      "derived_core_start": 23,
+      "gene": "SPy_0738",
+      "implied_core_start": 23,
+      "verdict": "agrees"
+    },
+    {
+      "bgc": "BGC0000582",
+      "declared_from": 41,
+      "declared_to": 42,
+      "derived_core_start": 42,
+      "gene": "ADR72962.1",
+      "implied_core_start": 42,
+      "verdict": "agrees"
+    },
+    {
+      "bgc": "BGC0001157",
+      "declared_from": 0,
+      "declared_to": 1,
+      "derived_core_start": 1,
+      "gene": "CBG72694.1",
+      "implied_core_start": 1,
+      "verdict": "agrees"
+    },
+    {
+      "bgc": "BGC0001229",
+      "declared_from": 26,
+      "declared_to": 27,
+      "derived_core_start": 27,
+      "gene": "SBI_06989",
+      "implied_core_start": 27,
+      "verdict": "agrees"
+    },
+    {
+      "bgc": "BGC0001229",
+      "declared_from": 27,
+      "declared_to": 28,
+      "derived_core_start": 28,
+      "gene": "SBI_06990",
+      "implied_core_start": 28,
+      "verdict": "agrees"
+    },
+    {
+      "bgc": "BGC0001356",
+      "declared_from": 18,
+      "declared_to": 19,
+      "derived_core_start": 19,
+      "gene": "padeA",
+      "implied_core_start": 19,
+      "verdict": "agrees"
+    },
+    {
+      "bgc": "BGC0001474",
+      "declared_from": 42,
+      "declared_to": 43,
+      "derived_core_start": 43,
+      "gene": "PYC80213.1",
+      "implied_core_start": 43,
+      "verdict": "agrees"
+    },
+    {
+      "bgc": "BGC0002084",
+      "declared_from": 1,
+      "declared_to": 2,
+      "derived_core_start": 2,
+      "gene": "bytA",
+      "implied_core_start": 2,
+      "verdict": "agrees"
+    },
+    {
+      "bgc": "BGC0002099",
+      "declared_from": 1,
+      "declared_to": 2,
+      "derived_core_start": 2,
+      "gene": "bytA",
+      "implied_core_start": 2,
+      "verdict": "agrees"
+    },
+    {
+      "bgc": "BGC0002750",
+      "declared_from": 19,
+      "declared_to": 20,
+      "derived_core_start": 20,
+      "gene": "trpA",
+      "implied_core_start": 20,
+      "verdict": "agrees"
+    },
+    {
+      "bgc": "BGC0002751",
+      "declared_from": 16,
+      "declared_to": 17,
+      "derived_core_start": 17,
+      "gene": "amyA",
+      "implied_core_start": 17,
+      "verdict": "agrees"
+    },
+    {
+      "bgc": "BGC0002825",
+      "declared_from": 22,
+      "declared_to": 23,
+      "derived_core_start": 23,
+      "gene": "NopA",
+      "implied_core_start": 23,
+      "verdict": "agrees"
+    },
+    {
+      "bgc": "BGC0002899",
+      "declared_from": 25,
+      "declared_to": 25,
+      "derived_core_start": 25,
+      "gene": "ANC17028.1",
+      "implied_core_start": 25,
+      "verdict": "agrees"
+    },
+    {
+      "bgc": "BGC0002909",
+      "declared_from": 17,
+      "declared_to": 17,
+      "derived_core_start": 17,
+      "gene": "SDS17589.1",
+      "implied_core_start": 17,
+      "verdict": "agrees"
+    },
+    {
+      "bgc": "BGC0002909",
+      "declared_from": 19,
+      "declared_to": 19,
+      "derived_core_start": 19,
+      "gene": "SDS17633.1",
+      "implied_core_start": 19,
+      "verdict": "agrees"
+    },
+    {
+      "bgc": "BGC0002909",
+      "declared_from": 20,
+      "declared_to": 20,
+      "derived_core_start": 20,
+      "gene": "SDS17660.1",
+      "implied_core_start": 20,
+      "verdict": "agrees"
+    },
+    {
+      "bgc": "BGC0002986",
+      "declared_from": 21,
+      "declared_to": 21,
+      "derived_core_start": null,
+      "gene": "BBD82040.1",
+      "implied_core_start": 21,
+      "verdict": "underivable"
+    },
+    {
+      "bgc": "BGC0003015",
+      "declared_from": 27,
+      "declared_to": 27,
+      "derived_core_start": null,
+      "gene": "CUI65249.1",
+      "implied_core_start": 27,
+      "verdict": "underivable"
+    }
+  ],
+  "convention_tally": {
+    "from_as_0based_core_start": {
+      "agrees": 4,
+      "disagrees": 23,
+      "underivable": 3
+    },
+    "from_as_1based_core_start": {
+      "agrees": 0,
+      "disagrees": 27,
+      "underivable": 3
+    },
+    "to_as_0based_core_start": {
+      "agrees": 27,
+      "disagrees": 0,
+      "underivable": 3
+    },
+    "to_as_1based_core_start": {
+      "agrees": 0,
+      "disagrees": 27,
+      "underivable": 3
+    }
+  },
+  "domain_table": [
+    {
+      "bgc": "BGC0000477",
+      "boundary_offset": 26,
+      "env_from": 1,
+      "env_to": 66,
+      "gene": "ACA04491.1",
+      "model": "DUF5837",
+      "relation": "spans_boundary"
+    },
+    {
+      "bgc": "BGC0000479",
+      "boundary_offset": 16,
+      "env_from": 1,
+      "env_to": 50,
+      "gene": "AED99431.1",
+      "model": "DUF5840",
+      "relation": "spans_boundary"
+    },
+    {
+      "bgc": "BGC0000479",
+      "boundary_offset": 14,
+      "env_from": 1,
+      "env_to": 48,
+      "gene": "AED99432.1",
+      "model": "DUF5840",
+      "relation": "spans_boundary"
+    },
+    {
+      "bgc": "BGC0000480",
+      "boundary_offset": null,
+      "env_from": 1,
+      "env_to": 93,
+      "gene": "ACA04484.1",
+      "model": "DUF5837",
+      "relation": "core_not_located"
+    },
+    {
+      "bgc": "BGC0000503",
+      "boundary_offset": 19,
+      "env_from": 1,
+      "env_to": 78,
+      "gene": "cinA",
+      "model": "DUF5973",
+      "relation": "spans_boundary"
+    },
+    {
+      "bgc": "BGC0000517",
+      "boundary_offset": 28,
+      "env_from": 39,
+      "env_to": 69,
+      "gene": "BAB04173.1",
+      "model": "Lantibiotic_a",
+      "relation": "spans_boundary"
+    },
+    {
+      "bgc": "BGC0000535",
+      "boundary_offset": 19,
+      "env_from": 2,
+      "env_to": 42,
+      "gene": "ADJ56352.1",
+      "model": "Gallidermin",
+      "relation": "spans_boundary"
+    },
+    {
+      "bgc": "BGC0000553",
+      "boundary_offset": 21,
+      "env_from": 1,
+      "env_to": 42,
+      "gene": "SSGG_RS09925",
+      "model": "RamS",
+      "relation": "spans_boundary"
+    },
+    {
+      "bgc": "BGC0001155",
+      "boundary_offset": null,
+      "env_from": 22,
+      "env_to": 51,
+      "gene": "AGY49587.1",
+      "model": "Thiopep_pre",
+      "relation": "core_not_located"
+    },
+    {
+      "bgc": "BGC0002110",
+      "boundary_offset": 30,
+      "env_from": 23,
+      "env_to": 55,
+      "gene": "QKV49893.1",
+      "model": "Lantibiotic_a",
+      "relation": "spans_boundary"
+    },
+    {
+      "bgc": "BGC0002897",
+      "boundary_offset": -21,
+      "env_from": 1,
+      "env_to": 47,
+      "gene": "WP_027359228.1",
+      "model": "Nif11",
+      "relation": "leader_only"
+    },
+    {
+      "bgc": "BGC0002897",
+      "boundary_offset": -21,
+      "env_from": 1,
+      "env_to": 47,
+      "gene": "WP_051284026.1",
+      "model": "Nif11",
+      "relation": "leader_only"
+    }
+  ],
+  "elected_convention": "to_as_0based_core_start",
+  "panel_census": {
+    "DUF5837": 2,
+    "DUF5840": 2,
+    "DUF5973": 1,
+    "Gallidermin": 1,
+    "Lantibiotic_a": 2,
+    "Nif11": 2,
+    "RamS": 1,
+    "Thiopep_pre": 1
+  },
+  "records_with_a_panel_hit": 12
+}

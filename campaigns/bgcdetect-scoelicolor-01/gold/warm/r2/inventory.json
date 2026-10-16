@@ -1,0 +1,39 @@
+{
+  "accession": "AL645882.2",
+  "antismash_version": "antiSMASH 8.0.4",
+  "contig_edge_regions": 0,
+  "coordinate_convention": "0-based half-open",
+  "detection_rule_fingerprint": "04add3eb0e86a816",
+  "distinct_products": 22,
+  "fraction_of_record": 0.130255,
+  "product_census": {
+    "NI-siderophore": 3,
+    "NRP-metallophore": 2,
+    "NRPS": 4,
+    "NRPS-like": 1,
+    "PKS-like": 1,
+    "RiPP-like": 2,
+    "T1PKS": 4,
+    "T2PKS": 2,
+    "T3PKS": 3,
+    "butyrolactone": 1,
+    "ectoine": 1,
+    "hglE-KS": 1,
+    "hydrogen-cyanide": 1,
+    "indole": 1,
+    "lanthipeptide-class-i": 2,
+    "lanthipeptide-class-iii": 1,
+    "melanin": 1,
+    "other": 1,
+    "prodigiosin": 1,
+    "terpene": 5,
+    "terpene-precursor": 2,
+    "thioamide-NRP": 1
+  },
+  "record_length": 8667507,
+  "region_bases": 1128988,
+  "regions": 29,
+  "search_flags": [
+    "--minimal"
+  ]
+}

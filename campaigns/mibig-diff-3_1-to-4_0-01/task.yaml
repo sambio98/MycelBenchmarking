@@ -1,0 +1,176 @@
+campaign_id: mibig-diff-3_1-to-4_0-01
+template_id: mibig-release-diff
+track: EX
+family: cross_database_reconciliation
+layer: L3_cluster_and_pathway
+np_class: mixed
+version: 1.0.0
+horizon_tier: T-short
+license_class: open
+grader_version: "2.0.0+9fc95658"
+grading_spec_version: "1.0.0"
+min_tool_surface: S0
+
+objective: >
+  MIBiG 3.1 and MIBiG 4.0 are consecutive releases of the same curated BGC
+  repository, but 4.0 restructured the schema: 3.1 nests everything under a
+  "cluster" object while 4.0 is flat. Reconcile the two releases on the declared
+  field mapping. Report the entry-set differences, how many shared entries
+  differ per field before any normalisation, how many differ after it, and what
+  each declared perturbation of a source record does to its reconciliation
+  verdict.
+
+method_guidance: partial
+
+scope_note: >
+  A raw field-by-field diff of these two releases is true and useless: the
+  schema migration makes almost every field of almost every entry differ. What
+  this campaign asks for is the separation of a change in REPRESENTATION from a
+  change in SUBSTANCE, on a published field mapping with published normalisation
+  rules and a published precedence over the verdict classes.
+
+  The sharpest case is in the corpus rather than planted by us: 3.1 stores the
+  NCBI taxon id as a JSON string and 4.0 as a JSON integer. Compared raw, EVERY
+  shared entry looks re-annotated; compared as strings, a handful of genuine
+  corrections remain. R2 asks for the raw counts and R3 for the classified ones,
+  so a system that never normalises can clear R2 and will fail R3. The counts
+  themselves are what the two rungs grade, so they are not printed here.
+
+template_params:
+  source_release: "3.1"
+  target_release: "4.0"
+  source_archive: inputs/mibig_json_3.1.tar.gz
+  target_archive: inputs/mibig_json_4.0.tar.gz
+  perturbation_base: BGC0000001
+  # Declared operations rather than hand-edited files, so each case is
+  # regenerable and its expected verdict is computed by the oracle rather than
+  # asserted by an author.
+  perturbations:
+    p1_taxid_type_only:  {operation: taxid_to_int,            field: ncbi_tax_id}
+    p2_taxid_value:      {operation: taxid_to_other_value,    field: ncbi_tax_id}
+    p3_formula_altered:  {operation: first_formula_altered,   field: compound_formulas}
+    p4_class_retired:    {operation: class_to_retired_term,   field: biosynthetic_class}
+    p5_organism_removed: {operation: organism_removed,        field: organism}
+
+output_contract:
+  diff_report.json:
+    source_entries / target_entries: >
+      Count of BGC records in each release archive.
+    fields: The declared field names from reference/field_mapping.json.
+    only_in_source / only_in_target / shared_entries: >
+      Accession-set differences between the two releases.
+    shared_status_in_target: >
+      For shared entries, a map from the 4.0 "status" value to its count.
+      Classes with a zero count may be omitted.
+    raw_difference_counts: >
+      Per field, how many shared entries differ when the mapped values are
+      compared with NO normalisation. This is what a direct JSON comparison
+      reports.
+    classified_verdict_counts: >
+      Per field, a map from verdict class to count, after applying the field's
+      declared normalisation and the declared verdict precedence. Classes with a
+      zero count may be omitted.
+    retired_class_terms: >
+      Source-vocabulary class terms with no counterpart in the target vocabulary.
+    perturbations: >
+      Keyed by case name, each with the "verdict" for that case's field after
+      the declared operation is applied to the base record's source version.
+
+constraints:
+  reference_dir: reference
+  pinned_tables:
+    - reference/field_mapping.json   # paths, normalisation rules, verdict vocabulary and precedence
+    - reference/class_mapping.json   # 3.1 to 4.0 biosynthetic-class vocabulary
+
+snapshots_required:
+  shipped: [mibig@3.1, mibig@4.0]
+  fetched: []
+  inputs_pinned:
+    - source: MIBiG
+      releases: ["3.1", "4.0"]
+      license: CC BY 4.0
+      note: Shipped as release tarballs; 32 MB uncompressed, 1.8 MB compressed.
+
+budgets:
+  wall_clock_minutes: 25
+  cpu: 2
+  memory_gb: 4
+  network: off
+
+rungs:
+  - {rung_id: r1, ordinal: 1, name: execute,        gold_tier: G1, warm_start_bundle: null}
+  - {rung_id: r2, ordinal: 2, name: correct,        gold_tier: G1, warm_start_bundle: gold/warm/r2}
+  - {rung_id: r3, ordinal: 3, name: commit,         gold_tier: G1, warm_start_bundle: gold/warm/r3}
+  - {rung_id: r4, ordinal: 4, name: counterfactual, gold_tier: G1, warm_start_bundle: gold/warm/r4}
+
+structural_elements: [verification, counterfactual, planted, recovery]
+
+harness:
+  gold_command: ["python3", "-m", "npbench_c.templates.mibig_diff.build", "{campaign}"]
+  solve_command: ["python3", "-m", "npbench_c.templates.mibig_diff.solve", "{campaign}", "{submission}"]
+  measure_command: ["python3", "-m", "npbench_c.templates.mibig_diff.measure", "{campaign}", "{submission}", "{measurement}"]
+  stub_module: npbench_c.sweep.stubs.stub_mibig_diff
+  stub_args: []
+  stub_levels:
+    - {name: stub-naive,       level: naive}
+    - {name: stub-rawdiff,     level: rawdiff}
+    - {name: stub-analyst,     level: analyst, reference: true}
+    - {name: stub-complete,    level: complete}
+    # nonormalise is a competence probe, not an ablation: it does the work and
+    # fails only at R3. The leakage ablation must withhold computation itself,
+    # which for an S0 campaign is the only thing there is to withhold.
+    - {name: stub-nonormalise, level: nonormalise}
+    - {name: stub-noncompute,  level: noncompute, mode: no_tool}
+
+grading:
+  chance_levels: {r1: 1.0, r2: 0.005, r3: 0.001, r4: 0.002}
+  chance_level_notes:
+    r1: >
+      R1 asks that both archives be opened and counted. Unlike the other S0
+      campaigns built so far, that is NOT free: the entry counts cannot be
+      guessed, so the no-computation ablation fails R1 outright and the chance
+      level here is nominal rather than measured at 1.0. Retained at 1.0 because
+      any system that reads the inputs clears it, and the discriminating floor
+      is computed over R2 upward regardless.
+    r4: >
+      Five verdicts from a six-member vocabulary would be 1/7776 if guessed
+      independently, but a system that has understood the normalisation gets all
+      five and one that has not gets p1 wrong at minimum, so the cases are
+      correlated rather than independent. This figure reflects that.
+
+excluded_from_grading:
+  - field: retired_class_terms
+    reason: >
+      Not graded, though still reported. The declared class mapping in
+      reference/class_mapping.json must publish which source terms have no
+      counterpart in the target -- that is what makes the campaign solvable at all
+      -- so reporting them back is reading the shipped table rather than
+      classifying anything. The verdict counts per field carry the R3 claim. This
+      is the free-component defect the readiness gate's cold-sandbox check now
+      catches mechanically.
+
+  - field: per-entry accession lists for each verdict class
+    reason: >
+      The lists are long and the counts carry the same information, so grading
+      them would multiply components without adding signal. The oracle computes
+      them and the audit packet can show them.
+  - field: which 4.0 classes each retired Alkaloid entry was reassigned to
+    reason: >
+      That is a lookup in 4.0 rather than a reconciliation inference, and 73 of
+      the 76 Alkaloid entries persist with varied reassignments. Graded content
+      would be transcription.
+
+notes_for_audit:
+  - >
+    The taxon-id case is the campaign's centre and is worth checking first: 3.1
+    stores ncbi_tax_id as a JSON string and 4.0 stores ncbiTaxId as a JSON
+    integer, so the raw difference count equals the shared-entry count and the
+    classified count is tiny. Both numbers are graded and live in gold.
+  - >
+    The 8 taxon-id corrections and the 8 organism-name corrections are nearly
+    disjoint sets, overlapping only in BGC0002347, so they are independent
+    curation events rather than one change seen twice.
+  - >
+    3.1 carries an Alkaloid class that 4.0 does not. 73 of its 76 entries
+    persist into 4.0 reclassified, which is why the verdict precedence puts
+    no_counterpart_in_target ahead of substantive_change.

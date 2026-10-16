@@ -1,0 +1,17 @@
+{
+  "attribution": "UniProt Consortium, UniProtKB release 2026_03 (https://www.uniprot.org/), CC BY 4.0",
+  "entries": 4632,
+  "files": {
+    "annotations": "ec_1_14_reviewed_annotations_2026_03.json.gz",
+    "sequences": "ec_1_14_reviewed_uniprot_2026_03.fasta.gz"
+  },
+  "license": "CC BY 4.0",
+  "note": "The whole reviewed set for the prefix, no sampling. FASTA headers are reduced to bare accessions so the hit table needs no re-parsing; nothing else is altered. Queries and reference are the same file, and the self hit is excluded by a declared rule.",
+  "query": "ec:1.14.* AND reviewed:true",
+  "release": "2026_03",
+  "sha256": {
+    "ec_1_14_reviewed_annotations_2026_03.json.gz": "a7c927634313f2588e9b6c0d26b1850bdbc2a036709517c65b7bcdfba365fae7",
+    "ec_1_14_reviewed_uniprot_2026_03.fasta.gz": "2b38344fa13483cd5c7bc981c70b9a2652b32cd07faddb8f4d6eda2ff0fd8447"
+  },
+  "source": "UniProtKB REST"
+}

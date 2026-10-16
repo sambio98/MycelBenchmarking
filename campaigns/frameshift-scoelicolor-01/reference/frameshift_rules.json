@@ -1,0 +1,84 @@
+{
+  "frameshift": {
+    "modes": [
+      "single",
+      "meta"
+    ],
+    "baseline_mode": "meta",
+    "noise_mode": "single",
+    "mode_flags": {
+      "single": [
+        "-p",
+        "single"
+      ],
+      "meta": [
+        "-p",
+        "meta"
+      ]
+    },
+    "mode_note": "The baseline is META, and the reason is a measurement rather than a convention. Prodigal's single mode TRAINS on the input it is given, so deleting one base out of 8.7 megabases perturbs calls across the whole chromosome: measured here, eleven to twenty-seven calls move from a single-base edit. The planted frameshift's own signature is one call lost and two gained, which is not recoverable inside that. Meta mode scores against pre-trained models and the same deletion changes only the calls it should. The companion gene-calling campaign pins SINGLE mode on this same chromosome, because there the retraining is the finding; here it is the noise, and the noise arm below measures it rather than asserting it.",
+    "fixed_flags": [
+      "-f",
+      "gff",
+      "-q"
+    ],
+    "fixed_flags_note": "GFF output and quiet, matching the gene-calling campaign so the two are comparable. No other flag is passed: the closed-ends and translation-table options would change what a truncated ORF means, which is the campaign's subject.",
+    "target_lengths": [
+      100,
+      150,
+      170,
+      180,
+      190,
+      200,
+      210,
+      220,
+      230,
+      240,
+      250,
+      260,
+      270,
+      280,
+      300,
+      450,
+      700,
+      1200,
+      3000,
+      10000,
+      20000
+    ],
+    "target_lengths_note": "The declared target ladder, as gene LENGTHS rather than coordinates, so the rule reads the same for any contig. For each length the campaign takes the baseline call whose own length is closest to it, ties broken by the lower start. Two parts, and the shape is a measurement rather than a convention. The wide anchors (100, 150, then 300 up to 20000) span more than two orders of magnitude, because whether a broken gene splits, survives as one ORF or disappears depends in part on how much room each half has. The dense band -- every ten bases from 170 to 280 -- is where this caller's recovery of a broken gene was measured to turn over on this chromosome: a ladder of round numbers steps over that band, and its verdict list then reads as a clean threshold, which makes the per-length list recoverable from two cut points. The band is declared at a uniform step and not as chosen lengths, so no length in the turnover region is selected over another.",
+    "indel_fraction": 0.5,
+    "indel_fraction_note": "Where inside the target the single base is deleted, as a fraction of the gene so the rule reads the same for a 100 bp gene and a 20 kb one. The midpoint, which gives each half the most room and so is the fraction most likely to produce a split -- the campaign's claim is about what the caller can recover, so the baseline is the kindest case and the offset sweep varies it.",
+    "offset_fractions": [
+      0.05,
+      0.25,
+      0.5,
+      0.75,
+      0.95
+    ],
+    "offset_target_length": 20000,
+    "offset_note": "The R4 axis: one declared target with the indel walked across it. The baseline fraction is on the grid so the sweep shares a point with the rest of the campaign. Measured, the VERDICT does not change as the indel moves -- what changes is where the gene splits, and it tracks the indel -- so the sweep grades the split point rather than the verdict. The catalogued R4 asked for the new pseudogene CALL; the data says the call is the same and the coordinates are not.",
+    "noise_target_lengths": [
+      150,
+      450,
+      3000,
+      20000
+    ],
+    "noise_note": "A subset of the targets, re-run under the retraining mode. Four rather than the whole ladder because the point is a ratio and it does not need every target to make it: the arm reports, per target, how many moved calls the target itself explains and how many moved elsewhere. One from each part of the ladder -- below the turnover band, just above it, and the two longest genes -- so a ratio that depended on gene length would show.",
+    "verdicts": [
+      "unchanged",
+      "split_into_two",
+      "truncated_to_one",
+      "abolished"
+    ],
+    "verdicts_note": "Closed, and classified by OVERLAP with the target's own span rather than inside a window: a frameshifted gene can produce an ORF running past where the original ended, and any fixed window would misclassify it. unchanged means the caller reported the target's exact coordinates anyway, which a frameshift should not allow and which the campaign therefore reports rather than excludes. split_into_two is two or more new overlapping calls, truncated_to_one is exactly one, abolished is none.",
+    "call_columns": [
+      "start",
+      "end",
+      "strand",
+      "partial"
+    ],
+    "call_columns_note": "The declared projection of a call. The caller's confidence and component scores are dropped for the reason the gene-calling campaign gives: a float's last digits are not what a call is.",
+    "turnover_band_provenance": "The band was measured before the ladder was declared, under the pinned caller and mode, by walking the same experiment across it at a ten-base step. What the verdicts in it are is not recorded here and is not recorded anywhere in the sandbox: that is what the campaign grades. What is recorded is the reason the band is dense -- the turnover is inside it -- and the fact that the campaign reports whether the ladder is monotone and requires neither answer."
+  }
+}

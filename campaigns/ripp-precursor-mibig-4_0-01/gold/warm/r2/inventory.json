@@ -1,0 +1,57 @@
+{
+  "baseline_policy": "p1_case_folded",
+  "biosynthetic_class": "ribosomal",
+  "core_sequence_case_census": {
+    "lower": 7,
+    "upper": 60
+  },
+  "core_sequence_shape_census": {
+    "bare_string": 28,
+    "list_of_one": 35,
+    "list_of_several": 2,
+    "printed_list_in_a_string": 2
+  },
+  "hmmer_version": "HMMER 3.4 (Aug 2023); http://hmmer.org/",
+  "mibig_release": "4.0",
+  "panel_size": 8,
+  "pfam_sha256": "8d3e2ffa785f91ee0e24a3994d2dcfff6f382e3cf663784a47688e7d95297fee",
+  "pfam_version": "Pfam 35.0",
+  "precursor_length_summary": {
+    "count": 67,
+    "max": 114,
+    "median": 49.0,
+    "min": 5
+  },
+  "records_declaring_a_cleavage_location": 30,
+  "ripp_type_census": {
+    "(unstated)": 7,
+    "Bottromycin": 4,
+    "Cyanobactin": 2,
+    "Glycocin": 3,
+    "Graspetide": 2,
+    "LAP": 2,
+    "Lanthipeptide": 22,
+    "Lasso peptide": 12,
+    "Linaridin": 1,
+    "Thioamidide": 3,
+    "Thiopeptide": 3,
+    "other": 6
+  },
+  "selection_census": {
+    "corpus_entries": 54,
+    "corpus_records": 67,
+    "entries_absent_from_reference_set": 46,
+    "entries_excluded_by_both": 46,
+    "entries_excluded_by_status": 46,
+    "entries_in_class": 447,
+    "entries_with_a_named_precursor": 100,
+    "records_named": 121,
+    "records_with_an_unresolved_gene": 0,
+    "reference_records_shipped": 363
+  },
+  "status_census": {
+    "active": 48,
+    "pending": 19
+  },
+  "threshold": "--cut_ga"
+}

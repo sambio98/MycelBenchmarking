@@ -1,0 +1,22 @@
+{
+  "annotations": {
+    "attribution": "MIBiG 4.0 (https://mibig.secondarymetabolites.org/), licensed CC BY 4.0",
+    "file": "mibig_json_4.0.tar.gz",
+    "license": "CC BY 4.0",
+    "note": "Shipped whole and unfiltered. The module-type selection is part of the task, so filtering the set here would answer the first rung in the input.",
+    "sha256": "986f1a69fb5eeb84fd7c0175ae921304c22fd5f8ed04c96d8c1c0c95a145837b",
+    "source": "MIBiG"
+  },
+  "proteins": {
+    "archive_sha256": "cf7e27514197983c814fbe2b6ade68e723311d10e2f12b2583447192ad6d3310",
+    "attribution": "MIBiG antiSMASH-processed reference set (https://dl.secondarymetabolites.org/mibig/mibig_antismash_4.0_gbk_as8b1.tar.bz2), licensed CC BY 4.0",
+    "extraction_rule": "the CDS translation of every gene named by any curated module in the annotation set, taken unchanged from that cluster's processed record and named <cluster>|<gene>; no module type, status or domain content enters the rule",
+    "file": "module_gene_proteins.faa.gz",
+    "license": "CC BY 4.0",
+    "note": "Translations only. The processed GenBank records are forty megabytes to deliver five, and pulling a CDS translation out of one is mechanical, so the rule is published and the FASTA travels. The records are NOT re-run through the image's antiSMASH: this campaign never compares output from two antiSMASH versions.",
+    "sha256": "4ec0399b361dadad0cd2111f8ea5aac5ea1954e445c7749dbec98a7bb3352169",
+    "source": "MIBiG antiSMASH-processed reference set",
+    "url": "https://dl.secondarymetabolites.org/mibig/mibig_antismash_4.0_gbk_as8b1.tar.bz2"
+  },
+  "release": "4.0"
+}

@@ -1,0 +1,35 @@
+{
+  "band_verdicts": {
+    "A0A084GDU5": {
+      "25_to_35": "separable",
+      "over_35": "overlapping",
+      "under_25": "separable"
+    },
+    "A0AI79": {
+      "25_to_35": "separable",
+      "over_35": "separable",
+      "under_25": "separable"
+    },
+    "A0AMD1": {
+      "25_to_35": "separable",
+      "over_35": "separable",
+      "under_25": "separable"
+    },
+    "A0LDC6": {
+      "25_to_35": "separable",
+      "over_35": "separable",
+      "under_25": "separable"
+    },
+    "A1AIE2": {
+      "25_to_35": "overlapping",
+      "over_35": "overlapping",
+      "under_25": "overlapping"
+    }
+  },
+  "verdict_census": {
+    "overlapping": 4,
+    "search_only": 0,
+    "separable": 11,
+    "unresolved": 0
+  }
+}
