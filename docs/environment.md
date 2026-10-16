@@ -187,6 +187,16 @@ Withheld, and audited on every sandbox build: `gold/`, `oracle/`,
 `grading.json`, `oracle_submission/`, `internal_sweep.json`. A violation raises
 `GoldLeak` rather than warning.
 
+**The same list, enforced again at release time.** `npbench_c.release.package`
+builds the shippable tree and audits it after assembly, so anything added later
+is still caught. It excludes three further trees that a sandbox never had to
+think about: `docs/`, because this project's measurements live there on the
+grounds that the sandbox never sees them — true of a sandbox, fatal in a release;
+`src/`, because each template's `analyse.py` and `build.py` are the oracle; and
+`tests/`. It also refuses to publish a campaign that states no licence or
+attribution, which is how the one campaign missing a provenance record was
+found.
+
 **Warm-start runs** additionally receive a **pre-rendered bundle**
 (`gold/warm/<rung>/`) holding only the earlier rungs' deliverables — never a
 whole gold file, because copying `gold.json` to supply "the previous answer"

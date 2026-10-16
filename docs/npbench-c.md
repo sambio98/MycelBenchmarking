@@ -23,6 +23,7 @@ scoring path.
 | Campaign: sevadicin | `campaigns/massbalance-nrps-sevadicin-01/` | oracle 1.0, gate 22/0/5 |
 | Internal sweep | `src/npbench_c/sweep/` | runner, stats, gates, stub fixtures |
 | Refusal contract | `tests/unit/test_build_refusals.py` | every one of 149 build refusals across 12 templates named by a test |
+| Release packager | `src/npbench_c/release/package.py` | builds the shippable tree; refuses gold, the oracle, `docs/`, the grading spec or any graded answer; assembles attribution |
 | Cold-sandbox scan | `src/npbench_c/readiness/cold_sandbox.py` | gate check 22 and a project-wide test on one implementation; declared collisions in `audit/`, outside every sandbox, checked for staleness |
 | Catalog | `docs/catalog.md` | 24 templates / 32 campaigns, grounded |
 | Provisioning | `docs/environment.md` | tools, DBs, sandbox contract |
@@ -3391,6 +3392,83 @@ inputs, so gold is a declared optimum rather than a full-information one, and
 grade the plan rather than the outcome. That is a different campaign and it needs
 its own grounding.
 
+## The release packager, and three readings of my own check
+
+Open item 2 has said since Phase 1 that "release packaging must exclude `gold/`,
+`oracle/` and `oracle_submission/`", and nothing existed to do it. The exclusion
+list was a sentence in a document, which is the shape of defect this project
+keeps finding in other people's declarations.
+
+`src/npbench_c/release/package.py` builds the tree and refuses to build one that
+carries the answers. It is the other side of `build_sandbox`: that assembles what
+one system sees for one campaign and audits it, this assembles what leaves the
+building, and a release that ships gold hands over every answer at once and
+cannot take it back.
+
+Three exclusions are less obvious than `gold/`, and two of them now have tests
+whose job is to prove the exclusion is load-bearing rather than tidy.
+
+**`docs/` is the sharpest one, and it is this file.** The project's own rule for a
+measurement that motivated a design decision is that it belongs in `docs/`,
+"which the sandbox never sees" — which is true of a sandbox and false of a
+release that shipped `docs/`. Everything I have written here all session, the
+verdict censuses and recovery rates and call counts, is the answer key. A test
+asserts that `docs/*.md` really does state five or more graded four-digit values,
+so if anyone later argues the exclusion is paranoid, the measurement answers.
+
+**`src/` is the second.** Each template's `analyse.py` and `build.py` ARE the
+oracle: they compute gold from the shipped inputs. A participant given the source
+can regenerate every answer, tool runs included. No source ships at all, and the
+test asserts the release contains no `.py` file.
+
+**`grading.json` is the third**, and it is not an answer — it is a map of where
+the marks are: which fields are graded, under which scorer, at what tolerance.
+Organiser material. The manifest is checked for the same reason not to carry a
+digest of gold: a digest is not gold, but it lets a system confirm a guess, which
+is the same thing one bit at a time.
+
+### The attribution check, and what it took to get right
+
+A release that cannot attribute its data cannot ship — several inputs here are
+CC BY, where attribution is a condition rather than a courtesy. So the packager
+assembles `ATTRIBUTION.md` from each campaign's own statements and refuses if a
+campaign states none.
+
+I got that check wrong twice before it was right, in both directions.
+
+**Too loose.** The first version accepted any key whose name contained "source",
+and `construct-ecoli-prna-01` passed on the strength of `"source": "PubMed"`
+inside an evidence record — a field about where a claim came from, not about what
+may be redistributed. A rule that accepts that accepts almost any JSON.
+
+**Then too shallow.** Tightening it to licence-naming keys only, read at the top
+level, reported `pocket-rebh-01` and `residues-prna-01` as unattributed. Both are
+properly attributed; they state their licences inside `annotation_source` and
+`structure_sources`, two levels down. A licence nested in a provenance record is
+still a licence, so the check walks the document.
+
+With both fixed, the real answer is one campaign, not twelve and not three:
+**`construct-ecoli-rebh-01` shipped UniProtKB data with no provenance file at
+all**, while the second instantiation of the same template shipped one. The pair
+diverged and nothing compared them. Fixed by adding the record, with the values
+computed from the shipped FASTA rather than copied from its sibling — 530
+residues, `sha256_sequence` 2853460230442a06, Q8KHZ8, CC BY 4.0 — and the
+campaign re-gated at 22/0/5 with gold byte-identical, since adding a provenance
+file changes the sandbox but no computation.
+
+Both of my wrong readings are now tests rather than anecdotes: one asserting that
+a `source` field is not a licence, one asserting that a nested licence counts.
+
+### What the release is
+
+23 campaigns, 161 files, 36 MB: per campaign the `inputs/`, the `reference/`
+tables, `task.yaml` and an empty `submission/`, byte-identical to the build repo
+— a release is a copy, not a rendering, because anything that transformed a
+pinned table in transit would make the shipped campaign a different campaign from
+the one the gate passed. Plus a manifest with a digest per file and the grader
+version, an attribution file, and a README that says what is deliberately absent
+so nobody hunts for it.
+
 ## Open items
 
 1. **CAI table provenance.** The relative-adaptiveness values now live in
@@ -3401,9 +3479,14 @@ its own grounding.
    ribosomal-protein gene set — with a hash, before the audit packet ships. Gold
    does not depend on them being *the* correct measurement, only on their being
    frozen, hashed and published; but an auditor will and should ask.
-2. **Release packaging must exclude `gold/`, `oracle/` and `oracle_submission/`.**
-   They are committed here because this is the build repo. Gold is never
-   published for either split.
+2. ~~Release packaging must exclude `gold/`, `oracle/` and
+   `oracle_submission/`.~~ **Done**, and it is a program rather than a sentence:
+   `npbench_c.release.package` builds the tree, refuses one that carries gold,
+   the oracle, the grading spec, `docs/` or any graded answer (re-running the
+   gate's check-22 scan against what would ship), and assembles the attribution
+   from each campaign's own statements. See the section above for the three
+   exclusions that are less obvious than `gold/` and for the one campaign whose
+   missing licence record it found.
 3. Real systems for the sweep. The harness is built and self-tested; it needs
    `SystemSpec` entries for the actual agents (bash-only, general biomedical,
    tool-equipped) before the five checks can go green.
