@@ -200,3 +200,13 @@ notes_for_audit:
     gold/gold.json under constructive_witness with its GC fraction and violation
     counts. It is not graded; it is there so an auditor can confirm a satisfying
     design really exists rather than taking the verdict on trust.
+  - >
+    This campaign reads reference/codon_tables.json for which codons encode
+    which residue and what GC each can reach, and never reads the weights:
+    the relative-adaptiveness values do not enter its gold. Measured when
+    the tables were re-derived from their source records -- all 62 gold keys
+    of the conflict half and all 71 of the feasible half were byte-identical
+    before and after, while the two construct campaigns on the same tables
+    moved 20 and 17 keys. The tables' provenance is in
+    reference/codon_tables.json; the arithmetic behind them is in
+    audit/codon_table_provenance.json.

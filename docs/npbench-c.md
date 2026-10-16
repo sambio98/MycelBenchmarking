@@ -172,11 +172,20 @@ the science tolerates is redesigned, never given a wider tolerance. That fired
 here. Running four legitimate optimiser policies:
 
 - **binding constraint: stable** across all four policies, both hosts → graded
-- **`binding_cost`: spread 0.0356** for gc_window, wider than the
-  between-constraint signal for four of six constraints → **not graded**
-- **`cai_full`: spread 0.0528** across policies → graded as a **floor**
-  (0.902 E. coli, 0.929 *Streptomyces*), set below the worst legitimate policy,
-  so a different valid optimiser is never penalised
+- **`binding_cost`**: the cross-optimiser spread is wider than the gap from that
+  constraint's mean cost to the nearest other constraint's, for 4 of 6
+  constraints in RebH's E. coli host (widest 0.035363, on gc_window — the
+  constraint that binds) and 1 of 6 in its *Streptomyces* host (0.084266, on
+  direct_repeat, which also binds). PrnA: 2 of 6 and 1 of 6. → **not graded**
+- **`cai_full`**: the four policies disagree by 0.068207 / 0.084266 (RebH, two
+  hosts) and 0.072642 / 0.108103 (PrnA), all wider than the 0.025 floor margin →
+  graded as a **floor** (RebH 0.888 E. coli, 0.880 *Streptomyces*; PrnA 0.883
+  and 0.848), each set that margin below the worst legitimate policy, so a
+  different valid optimiser is never penalised
+
+The spreads above are wider than the ones this section first reported, because
+the codon tables they are measured over were re-derived from pinned genome
+records rather than asserted — see **Where the codon tables come from** below.
 
 Both exclusions are recorded in `task.yaml` with the measurement that justified
 them. A reviewer can check the reasoning without rerunning anything.
@@ -192,7 +201,7 @@ A campaign is ready when `npbench_c.readiness.gate` returns all-pass — not whe
 someone believes it is. Checks requiring internal agent runs report **PENDING**,
 never PASS: the gate does not launder an unmeasured property into a green tick.
 
-Current state, every campaign: **21 pass / 0 fail / 5 pending**.
+Current state, every campaign: **22 pass / 0 fail / 5 pending**.
 
 The five pending checks (monotonicity, R1 clear rate, no-tool leakage,
 difficulty gate, discrimination) are satisfied by an `internal_sweep.json` from
@@ -3469,16 +3478,172 @@ the one the gate passed. Plus a manifest with a digest per file and the grader
 version, an attribution file, and a README that says what is deliberately absent
 so nobody hunts for it.
 
+## Where the codon tables come from
+
+Item 1 of the open list, closed. The construct-design campaigns grade a CAI floor
+and six violation counts over a 64-codon relative-adaptiveness table per host,
+and until now those tables were *representative values for highly-expressed
+genes*: no release, no gene set, nothing an auditor could recompute. The JSON
+said so, which is better than pretending otherwise, and the honest options were
+to cite a source or to derive one.
+
+Citing was not available. The shipped values are rounded to two decimals and
+match no release I can verify; asserting a citation I cannot check would be worse
+than the gap. So the tables are now derived, by a rule declared in
+`constants/codon_table_sources.json` and run by
+`npbench_c.templates.construct_design.prepare_tables`:
+
+> Every CDS feature of a pinned INSDC record whose `/product` names a ribosomal
+> protein, that is not `/pseudo`, whose location is one contiguous range, whose
+> `/codon_start` is 1 and `/transl_table` is 11, whose bases are a whole number
+> of ACGT codons ending in exactly one stop, and whose translation under the
+> standard code equals the record's own `/translation`. Relative adaptiveness is
+> count ÷ the most-used codon of the synonymous family, over all codons of those
+> genes including each terminal stop, with an unobserved codon given 0.5
+> observations first (Sharp & Li 1987).
+
+Ribosomal proteins rather than a genome-wide table, because CAI wants a reference
+set under translational selection and a genome-wide count measures mutational
+bias as much as selection — which is the thing the weights are supposed to
+separate. They are also the one set every host annotates under a name a regex can
+match, and the regex had to stretch: *S. coelicolor* writes "putative 50S
+ribosomal protein L28", BL21 writes "30S ribosomal subunit protein S12", and
+both spellings had to match while "ribosomal protein S12 methylthiotransferase"
+and "50S ribosomal protein L16 arginine hydroxylase" had to miss. What it
+selects: **54 genes / 7,159 codons for `CP001509.3`** (E. coli BL21(DE3) — the
+host the campaigns actually name, not K-12) and **60 genes / 7,912 codons for
+`AL645882.2`** (*S. coelicolor* A3(2), the record already shipped as the BGC
+detection campaign's input, so that host's table is recomputable from the
+repository alone; the BL21 record is committed under `audit/records/` for the
+same reason).
+
+Two cross-checks fell out. The 54 BL21 genes are exactly the 54 CDS features
+carrying an `rps*`/`rpl*`/`rpm*` gene name, which the rule never looks at. And
+the derived E. coli table looks like a highly-expressed table rather than a
+genome-average one — GCC drops from 0.72 to 0.188, CTG stays at 1.0 with CTC at
+0.030 — which is what the reference set is for.
+
+**What is pinned is the derived set, not the file.** The manifest records each
+record's SHA-256 but does not enforce it: the same accession from another INSDC
+mirror is a different byte stream and the same biology, and a refusal on the
+transport encoding would fire on a correct re-run and teach the next person to
+pass a flag. What it does enforce is the gene count and a digest over the
+reference set itself (each gene's location, locus tag and length), so a changed
+annotation release or a pattern that started matching something new refuses to
+write a table. `--adopt-digests` re-pins deliberately.
+
+### What it moved, measured before it was adopted
+
+The reason to measure first: re-deriving a table that gold depends on is a gold
+rebuild, and the size of the rebuild decides whether this is a provenance note or
+a four-campaign job. Built against scratch copies, then again in place:
+
+| campaign | gold keys moved |
+|---|---|
+| `construct-ecoli-rebh-01` | 20 of 41 |
+| `construct-ecoli-prna-01` | 17 of 41 |
+| `constraint-conflict-ecoli-rebh-01` | **0 of 62** |
+| `constraint-feasible-ecoli-rebh-01` | **0 of 71** |
+
+The two constraint campaigns are byte-identical because they read the table for
+which codons encode which residue and what GC each can reach, and never read the
+weights — now stated in both campaigns' audit notes, with the measurement behind
+it. In the two design campaigns what moved was every CAI quantity (floors 0.902 →
+0.888 and 0.929 → 0.880 for RebH, 0.908 → 0.883 and 0.914 → 0.848 for PrnA),
+every cost spread, and **five of the twenty-four unconstrained-violation
+counts** — three in RebH (E. coli `direct_repeat` 11 → 12 and `gc_window` 50 →
+30, *Streptomyces* `direct_repeat` 15 → 14) and two in PrnA. What did *not* move:
+the binding constraint in any host, the non-binding sets, and the flipped-
+constraint sets. R3's and R4's categorical answers are stable under the table;
+their integers are not, which is the right way round — the integers are the part
+that depends on the weights.
+
+Two graded integers changing also made two cold-sandbox exemptions stale, and the
+gate failed the campaign until they were dropped. Both were genuine coincidences
+(`uv_gc_window` equalled the declared 50-nt window length; `uv_direct_repeat`
+equalled the 11-mer repeat length) and both stopped colliding the moment the
+optimum moved. That is the staleness half of check 22 doing exactly what it was
+written for: an exemption outlives the number it was written for, and the next
+reader takes it for a standing allowance.
+
+### One thing the release packager should not learn from this
+
+The derived tables carry a `license` per record, and the release's attribution is
+assembled by walking each campaign's provenance for licence-named keys — so the
+obvious next move is to point that walk at `reference/` too. Measured before
+doing it: over all 23 campaigns it would add the two INSDC records per
+construct-design campaign, which is right, and a block from
+`pocket-rebh-01`/`residues-prna-01`'s `eco_policy.json` whose only licence-shaped
+key is `evidence_citation_unit` — a counting rule about PubMed citations, not an
+attribution. That is the same false reading the attribution check has now
+produced three times, so the walk stays on `task.yaml` and `inputs/provenance.json`
+where it is calibrated. The records themselves are INSDC public domain, and the
+provenance ships inside the reference file that travels with the weights, which
+is where an auditor reading the table will look.
+
+### Three more answers the sandbox was stating, and the shape they were in
+
+Rewriting the two design campaigns' `task.yaml` meant re-reading the notes around
+the numbers, and the split-constraint note had been naming the answers in words
+since before the free-component audit:
+
+> "3 of 6 graded sub-answers are identical: the binding constraint for both hosts
+> (gc_window for E. coli, direct_repeat for Streptomyces)"
+
+That is R3's `binding_constraint` and R4's `swap_binding_constraint`, both of
+them, in both instantiations. The note's own tail says the earlier version had
+printed R3's integers and that they were removed — and then it kept naming the
+constraints, which is the same disclosure in words. Check 22 could not see it:
+its pair scan looks for a label and a term *inside the graded value*, and here
+the value is a bare string whose label is in the gold **path**
+(`hosts.ecoli.binding_constraint`). Nor would a literal search have found the
+pair, because the path writes the host as `ecoli` and the prose writes it as
+"E. coli".
+
+So the scan grew a third shape: for a graded value that is one term of published
+vocabulary, take the innermost segment of its gold path as the label, and look
+for the two within a window of each other with **both sides normalised to
+lower-case alphanumerics** — which collapses "E. coli", "E.coli" and `ecoli` onto
+one string, and `gc_window` onto "GC window" too. Two refinements the measurement
+forced, in this order:
+
+- **The label is the innermost path segment, not every segment.** With all
+  segments, `hosts.ecoli.binding_constraint` also pairs on `hosts`, which matches
+  the host block of `codon_tables.json` and fires on every construct campaign for
+  nothing.
+- **Shape three reads sentences, not structure.** A nested document states a
+  label against a field name by construction: the block keyed `ecoli_bl21`
+  declares a field called `gc_window`, which is not a disclosure. So shape three
+  runs over the sandbox's prose with its structure dropped — JSON strings long
+  enough to be sentences, YAML and Markdown lines with their leading key removed
+  and their value kept. Shapes one and two still read everything.
+
+Across all 23 campaigns the widened scan finds three answers, and it found the
+third one in a campaign nobody was looking at: `massbalance-nrps-malleobactin-01`
+stated "All four verdicts are additional_chemistry_required", which is four
+graded components — *and* named the sevadicin instantiation's verdict, which is a
+different campaign's graded answer. For the record, where no sandbox reads it:
+malleobactin's four congeners are all `additional_chemistry_required` and
+sevadicin is `balanced`, which is why the field is graded at all even though it
+discriminates nothing within either campaign.
+
+That cross-campaign case is a gap this check does not close. The scan compares
+each sandbox against its own gold; a sandbox stating a *neighbouring* campaign's
+answer passes 23 times out of 23. Both instantiations of a template already
+declare a `split_constraint` for the related problem of shared answers, and the
+arithmetic for a cross-campaign pass is 23 × 23 runs of a scan that takes two
+seconds for all 23 — so it is affordable and it is now an open item rather than a
+finished one.
+
 ## Open items
 
-1. **CAI table provenance.** The relative-adaptiveness values now live in
-   `campaigns/*/reference/codon_tables.json` (shipped to agents; the oracle
-   loads the same file). They are representative values for highly-expressed
-   genes, flagged in the JSON, and need a cited source release — a named
-   Kazusa / HIVE-CUT release, or a table computed over a declared
-   ribosomal-protein gene set — with a hash, before the audit packet ships. Gold
-   does not depend on them being *the* correct measurement, only on their being
-   frozen, hashed and published; but an auditor will and should ask.
+1. ~~CAI table provenance.~~ **Closed.** The tables are derived from two pinned
+   INSDC records by a declared ribosomal-protein rule, the reference set is
+   hashed and enforced, the per-codon counts and gene lists ship in
+   `audit/codon_table_provenance.json`, and the rebuild moved 37 gold keys across
+   the two design campaigns and none in the two constraint campaigns. See "Where
+   the codon tables come from" above, including the two stale exemptions and the
+   three disclosures it surfaced on the way.
 2. ~~Release packaging must exclude `gold/`, `oracle/` and
    `oracle_submission/`.~~ **Done**, and it is a program rather than a sentence:
    `npbench_c.release.package` builds the tree, refuses one that carries gold,
@@ -3579,3 +3744,13 @@ so nobody hunts for it.
    agreement with Gwet's AC1 / Krippendorff's alpha alongside kappa, gate on
    Spearman against the continuous rating. This is the one place humans are
    involved, and it sits outside the grading pipeline by design.
+
+13. **A cross-campaign disclosure scan.** Check 22 compares each sandbox against
+   its own gold, so one campaign's `task.yaml` naming a *neighbouring* campaign's
+   graded answer passes every time — which is how the malleobactin notes came to
+   state sevadicin's verdict. The fix is the same scan over every (sandbox, other
+   campaign's gold) pair, affordable at 23 × 23 because the whole-suite scan takes
+   two seconds. What needs deciding first is the policy: two instantiations of one
+   template legitimately share arithmetic, which is what `split_constraint`
+   declares, so the check has to distinguish a declared overlap from a leak rather
+   than flag every pair of siblings.

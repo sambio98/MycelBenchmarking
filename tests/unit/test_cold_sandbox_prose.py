@@ -15,11 +15,20 @@ coincidence. Two shapes live in that gap:
   count, `79` as a position, `0.62` as a GC floor;
 - a declared term stated against its own label, where the label is a declared
   parameter and the term is published vocabulary, so neither half is distinctive
-  and the pair is the answer.
+  and the pair is the answer;
+- the same pair with the label in the gold PATH rather than in the graded value,
+  and spelled as prose spells it: `hosts.ecoli.binding_constraint` against "for
+  E. coli". Both sides are normalised before the windows are compared, and this
+  shape reads the sandbox's sentences rather than its structure, because a block
+  keyed `ecoli_bl21` declaring a field named `gc_window` is not a disclosure.
 
-An audit found twelve answers across nine campaigns in those two shapes, ten of
-them disclosures and the rest copies of the campaign's own parameters. Every one
-is fixed; this is what keeps them fixed.
+An audit found twelve answers across nine campaigns in the first two shapes, ten
+of them disclosures and the rest copies of the campaign's own parameters. The
+third shape was added when the codon tables were re-derived, and found three
+more: both construct-design campaigns were naming the binding constraint for
+both hosts -- R3's answer and R4's -- and the malleobactin campaign was naming
+its own four verdicts and the sevadicin instantiation's. Every one is fixed; this
+is what keeps them fixed.
 """
 
 from __future__ import annotations
@@ -176,3 +185,129 @@ def test_a_number_in_inputs_is_not_a_disclosure(tmp_path):
     (sandbox / "task.yaml").write_text("objective: count the loci\n")
     (sandbox / "inputs" / "loci.json").write_text(json.dumps({"rows": 15}))
     assert cold_sandbox.findings(campaign, sandbox, _resolve_gold) == []
+
+
+def _one_component_campaign(root: pathlib.Path, gold: dict, path: str,
+                            name: str = "binding_constraint") -> pathlib.Path:
+    campaign = root / "campaign"
+    (campaign / "gold").mkdir(parents=True)
+    (campaign / "gold" / "gold.json").write_text(json.dumps(gold))
+    (campaign / "grading.json").write_text(json.dumps({"rungs": [
+        {"rung_id": "r3", "components": [
+            {"name": name, "scorer": "exact",
+             "args": {"pred": f"pred:{name}", "gold": f"gold:{path}"}}]}]}))
+    return campaign
+
+
+def _sandbox_with(root: pathlib.Path, task: str,
+                  vocabulary: list[str] | None = None) -> pathlib.Path:
+    sandbox = root / "sandbox"
+    (sandbox / "reference").mkdir(parents=True)
+    (sandbox / "inputs").mkdir(exist_ok=True)
+    (sandbox / "task.yaml").write_text(task)
+    (sandbox / "reference" / "limits.json").write_text(json.dumps(
+        {"constraint_order": vocabulary or
+         ["forbidden_sites", "gc_window", "gc_global", "homopolymer",
+          "direct_repeat", "internal_rbs"]}))
+    return sandbox
+
+
+GOLD_PAIR = {"hosts": {"ecoli": {"binding_constraint": "gc_window"},
+                       "streptomyces": {"binding_constraint": "direct_repeat"}}}
+
+
+def test_a_term_keyed_by_its_gold_path_is_found(tmp_path):
+    """The shape that shipped: the label is in the path, not in the value.
+
+    This is the sentence both construct-design campaigns carried, down to the
+    spelling -- the gold path says `ecoli` and the note says "E. coli", so no
+    literal search for the pair finds it.
+    """
+    campaign = _one_component_campaign(
+        tmp_path, GOLD_PAIR, "hosts.ecoli.binding_constraint")
+    sandbox = _sandbox_with(tmp_path, (
+        "split_constraint: >\n"
+        "  3 of 6 graded sub-answers are identical: the binding constraint for\n"
+        "  both hosts (gc_window for E. coli, direct_repeat for Streptomyces).\n"))
+    assert cold_sandbox.findings(campaign, sandbox, _resolve_gold) == [
+        "binding_constraint@ecoli = 'gc_window'"]
+
+
+def test_the_same_sentence_without_the_label_is_not_a_hit(tmp_path):
+    """A published vocabulary term on its own is not a disclosure.
+
+    Which term applies is the answer, and the campaign has to publish the
+    vocabulary for two correct answers to be written the same way.
+    """
+    campaign = _one_component_campaign(
+        tmp_path, GOLD_PAIR, "hosts.ecoli.binding_constraint")
+    sandbox = _sandbox_with(tmp_path, (
+        "split_constraint: >\n"
+        "  3 of 6 graded sub-answers are identical, including the binding\n"
+        "  constraint for each host; gold/gold.json names them.\n"))
+    assert cold_sandbox.findings(campaign, sandbox, _resolve_gold) == []
+
+
+def test_a_nested_structure_is_not_a_pair(tmp_path):
+    """Shape three reads sentences, not structure.
+
+    `codon_tables.json` keys a host block `ecoli_bl21` and declares a field in it
+    called `gc_window`. Scanning the structure pairs every label with every field
+    under it, which fired on both construct campaigns for nothing. The real
+    table is used, so the exclusion is tested against what ships.
+    """
+    campaign = _one_component_campaign(
+        tmp_path, GOLD_PAIR, "hosts.ecoli.binding_constraint")
+    sandbox = _sandbox_with(tmp_path, "objective: design the construct\n")
+    (sandbox / "reference" / "codon_tables.json").write_text(
+        (ROOT / "src" / "npbench_c" / "templates" / "construct_design"
+         / "constants" / "codon_tables.json").read_text())
+    assert cold_sandbox.findings(campaign, sandbox, _resolve_gold) == []
+
+
+def test_the_window_bounds_the_pair(tmp_path):
+    """Two unrelated sentences in one note are not a statement about the label."""
+    campaign = _one_component_campaign(
+        tmp_path, GOLD_PAIR, "hosts.ecoli.binding_constraint")
+    filler = "  " + ("the measurement is recorded in gold rather than here. " * 12)
+    sandbox = _sandbox_with(tmp_path, (
+        "notes_for_audit: >\n"
+        "  the E. coli host is the primary one.\n"
+        + filler + "\n"
+        "  gc_window is one of the six declared constraints.\n"))
+    assert cold_sandbox.findings(campaign, sandbox, _resolve_gold) == []
+
+
+def test_only_the_innermost_path_segment_is_a_label(tmp_path):
+    """`hosts` names a shape, not a thing asked about.
+
+    With every segment taken as a label, a container name pairs with any field
+    declared under it and the check drowns in its own output.
+    """
+    assert cold_sandbox._path_labels("hosts.ecoli.binding_constraint") == ["ecoli"]
+    assert cold_sandbox._path_labels("per_query.0.verdict") == []
+    assert cold_sandbox._path_labels("verdict") == []
+    assert cold_sandbox._path_labels("hosts.ec.binding_constraint") == []
+
+
+def test_normalisation_collapses_the_spellings():
+    assert cold_sandbox._normalise("E. coli") == "ecoli"
+    assert cold_sandbox._normalise("E.coli") == "ecoli"
+    assert cold_sandbox._normalise("GC window") == "gcwindow"
+    assert cold_sandbox._normalise("malleobactin D") == "malleobactind"
+
+
+def test_sentences_drop_structure_and_keep_prose(tmp_path):
+    sandbox = tmp_path / "sandbox"
+    (sandbox / "inputs").mkdir(parents=True)
+    (sandbox / "task.yaml").write_text(
+        "hosts:\n  ecoli:\n    note: the bottleneck here is the gc_window limit\n")
+    (sandbox / "short.json").write_text(json.dumps(
+        {"ecoli": "gc_window", "reason": "a sentence long enough to be prose, "
+                                         "which is what this check reads"}))
+    sentences = cold_sandbox.sandbox_sentences(sandbox)
+    assert "the bottleneck here is the gc_window limit" in sentences
+    assert "hosts:" not in sentences
+    # The short mapping value is a label, not a sentence, so it is not prose.
+    assert "gc_window\"" not in sentences
+    assert "a sentence long enough to be prose" in sentences

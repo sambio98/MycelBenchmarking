@@ -154,8 +154,12 @@ notes_for_audit:
   - This entry annotates four congeners including a dimer (malleobactin D,
     C46H80N16O23). All four residuals are computed; taking compounds[0] would
     have baked an undeclared choice into gold.
-  - All four verdicts are additional_chemistry_required, so the verdict field
-    carries no discriminating power within this campaign; R3's information is in
-    the residual vectors. The verdict varies across instantiations of this
-    template (sevadicin BGC0000426 is exactly balanced, obafluorin BGC0001437
-    differs by one water).
+  - >
+    The four congeners' verdicts coincide, so the verdict field carries no
+    discriminating power within this campaign and R3's information is in the
+    residual vectors. Which verdict it is, is in gold/gold.json: an earlier
+    version of this note named it, which handed over four graded components at
+    once, and named the verdict of the sevadicin instantiation as well, which
+    handed over another campaign's. The verdict does vary across instantiations
+    of this template -- that is why it is graded at all -- and where each one
+    lands is in docs/npbench-c.md, which no sandbox sees.

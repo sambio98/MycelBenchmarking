@@ -5,10 +5,10 @@
     "internal_rbs"
   ],
   "unconstrained_violations": {
-    "direct_repeat": 11,
+    "direct_repeat": 12,
     "forbidden_sites": 3,
     "gc_global": 0,
-    "gc_window": 50,
+    "gc_window": 30,
     "homopolymer": 1,
     "internal_rbs": 0
   }

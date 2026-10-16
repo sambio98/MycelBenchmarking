@@ -8,10 +8,10 @@
         "internal_rbs"
       ],
       "unconstrained_violations": {
-        "direct_repeat": 20,
+        "direct_repeat": 19,
         "forbidden_sites": 1,
         "gc_global": 0,
-        "gc_window": 29,
+        "gc_window": 27,
         "homopolymer": 0,
         "internal_rbs": 0
       }
@@ -41,8 +41,8 @@
   },
   "ecoli": {
     "all_constraints_satisfied": 1,
-    "cai": 0.950799,
-    "gc": 0.520099,
+    "cai": 0.93739,
+    "gc": 0.508349,
     "protein_identity": 1,
     "schema": {
       "ends_stop": 1,
@@ -69,8 +69,8 @@
   },
   "streptomyces": {
     "all_constraints_satisfied": 1,
-    "cai": 0.968238,
-    "gc": 0.666048,
+    "cai": 0.940847,
+    "gc": 0.667285,
     "protein_identity": 1,
     "schema": {
       "ends_stop": 1,

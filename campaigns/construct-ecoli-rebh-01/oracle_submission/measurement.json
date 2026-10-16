@@ -7,10 +7,10 @@
         "internal_rbs"
       ],
       "unconstrained_violations": {
-        "direct_repeat": 11,
+        "direct_repeat": 12,
         "forbidden_sites": 3,
         "gc_global": 0,
-        "gc_window": 50,
+        "gc_window": 30,
         "homopolymer": 1,
         "internal_rbs": 0
       }
@@ -30,7 +30,7 @@
         "homopolymer"
       ],
       "unconstrained_violations": {
-        "direct_repeat": 15,
+        "direct_repeat": 14,
         "forbidden_sites": 0,
         "gc_global": 0,
         "gc_window": 0,
@@ -41,8 +41,8 @@
   },
   "ecoli": {
     "all_constraints_satisfied": 1,
-    "cai": 0.955127,
-    "gc": 0.526679,
+    "cai": 0.950609,
+    "gc": 0.512241,
     "protein_identity": 1,
     "schema": {
       "ends_stop": 1,
@@ -69,8 +69,8 @@
   },
   "streptomyces": {
     "all_constraints_satisfied": 1,
-    "cai": 0.981777,
-    "gc": 0.674827,
+    "cai": 0.957817,
+    "gc": 0.672316,
     "protein_identity": 1,
     "schema": {
       "ends_stop": 1,

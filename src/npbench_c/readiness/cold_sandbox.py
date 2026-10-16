@@ -23,6 +23,18 @@ sandbox. The answer is the two of them in one sentence, which is how this
 project's own frameshift campaign shipped twelve of R3's twenty-one answers in a
 rules file before the leak was caught.
 
+**A term whose label is in the gold PATH, spelled as prose spells it.** The scan
+above looks inside the graded value, so it reaches a mapping and misses a bare
+string: `hosts.ecoli.binding_constraint` grades one word of published
+vocabulary, and the label it belongs to is in the path, not the value. That is
+how two construct-design campaigns shipped both halves of their binding
+constraint -- R3's answer and R4's -- in a note explaining what the two
+instantiations share: "gc_window for E. coli, direct_repeat for Streptomyces".
+A literal search finds neither pair, because the path writes the host the way a
+key allows and the prose writes it the way a reader expects. So both sides are
+normalised to lower-case alphanumerics before the windows are compared, which
+also collapses `gc_window` onto "GC window".
+
 **Collisions are declared, in `audit/cold_sandbox_exemptions.json`.** Not in the
 campaign: an exemption says which declared value a component's answer equals,
 which states the answer. The file sits outside `campaigns/` so that no sandbox
@@ -64,6 +76,11 @@ WINDOW = 160
 #: "mixed") and matches any prose.
 MIN_TERM = 6
 
+#: Below this length a path segment is not a label worth pairing on: "id",
+#: "r3", "aa". Four characters is the shortest host, gene or rung key this
+#: project uses as a gold-path segment.
+MIN_LABEL = 4
+
 #: Check 21 covers integers at or above this, so this check covers below it.
 DISTINCTIVE_INT = 1000
 
@@ -72,6 +89,12 @@ DISTINCTIVE_DECIMALS = 4
 
 EXEMPTIONS = (pathlib.Path(__file__).resolve().parents[3]
               / "audit" / "cold_sandbox_exemptions.json")
+
+#: A JSON string shorter than this is a key, a label or an identifier rather
+#: than a sentence. Shape three runs over sentences only: a nested structure
+#: necessarily states a field name inside its container's key, so scanning the
+#: structure pairs every label with every field under it.
+MIN_PROSE = 40
 
 #: Suffixes worth reading as prose. A sandbox also carries the inputs, which are
 #: excluded below for the reason check 21 gives.
@@ -102,6 +125,45 @@ def sandbox_prose(sandbox: pathlib.Path) -> str:
         if path.relative_to(sandbox).parts[0] == "inputs":
             continue
         parts.append(path.read_text(errors="replace"))
+    return "\n".join(parts)
+
+
+def sandbox_sentences(sandbox: pathlib.Path) -> str:
+    """The sandbox's prose with its structure dropped.
+
+    Shape three pairs a gold-path label with a vocabulary term, and both halves
+    of such a pair sit in any nested document by construction: a host block keyed
+    `ecoli_bl21` that declares a field named `gc_window` states the pair without
+    telling anyone anything. What matters is a SENTENCE that does. So a JSON
+    string is read only when it is long enough to be one, and a YAML or Markdown
+    line is read with its leading key dropped and its value kept.
+    """
+    parts: list[str] = []
+
+    def walk(node) -> None:
+        if isinstance(node, dict):
+            for value in node.values():
+                walk(value)
+        elif isinstance(node, list):
+            for value in node:
+                walk(value)
+        elif isinstance(node, str) and len(node) >= MIN_PROSE:
+            parts.append(node)
+
+    for path in sorted(sandbox.rglob("*")):
+        if not path.is_file() or path.suffix not in TEXT_SUFFIXES:
+            continue
+        if path.relative_to(sandbox).parts[0] == "inputs":
+            continue
+        text = path.read_text(errors="replace")
+        if path.suffix == ".json":
+            try:
+                walk(json.loads(text))
+            except json.JSONDecodeError:
+                parts.append(text)
+            continue
+        # The key names the field; the value is what somebody wrote.
+        parts.append(re.sub(r"(?m)^[ \t-]*[A-Za-z_][\w.-]*:[ \t]*", "", text))
     return "\n".join(parts)
 
 
@@ -137,18 +199,24 @@ def vocabularies(sandbox: pathlib.Path) -> set[str]:
 
 
 def _graded(spec: dict, gold: dict, resolve):
-    """Every graded component with its gold value, skipping what cannot resolve."""
+    """Every graded component, its gold path, and its value.
+
+    The path is yielded because it carries the label half of a pair: a component
+    reached at `hosts.ecoli.binding_constraint` answers a question about `ecoli`,
+    and nothing in the value itself says so.
+    """
     for rung in spec["rungs"]:
         for component in rung["components"]:
             args = component.get("args") or {}
             reference = args.get("gold")
             if not isinstance(reference, str) or not reference.startswith("gold:"):
                 continue
+            path = reference.split(":", 1)[1]
             try:
-                value = resolve(gold, reference.split(":", 1)[1])
+                value = resolve(gold, path)
             except (KeyError, IndexError, TypeError, ValueError):
                 continue
-            yield component["name"], value
+            yield component["name"], path, value
 
 
 def _scalar_forms(value) -> list[str]:
@@ -169,48 +237,106 @@ def _scalar_forms(value) -> list[str]:
     return []
 
 
-def findings(campaign: pathlib.Path, sandbox: pathlib.Path, resolve) -> list[str]:
-    """Graded answers the cold sandbox states, as "<component> = <value>".
+def _normalise(text: str) -> str:
+    """Lower-case alphanumerics only, so a label matches however it is spelled.
 
-    `resolve` is the gate's gold-path resolver, passed in so there is one
-    implementation of that and it lives with the grader.
+    The leak that forced this: a graded binding constraint stated as "gc_window
+    for E. coli", against a gold path of `hosts.ecoli.binding_constraint`. The
+    label is the same word in both and no literal search finds it, because prose
+    writes an organism the way a reader expects and a gold path writes it the way
+    a key allows. Normalising both sides collapses "E. coli", "E.coli" and
+    "ecoli" onto one string -- and collapses the term too, so `gc_window` is
+    found in "GC window" as well.
     """
+    return re.sub(r"[^a-z0-9]", "", text.lower())
+
+
+def _path_labels(path: str) -> list[str]:
+    """The one segment of the gold path that labels what the component answers.
+
+    `hosts.ecoli.binding_constraint` labels `ecoli`. The last segment is the
+    question rather than the thing asked about, and the segments outside the
+    innermost one are containers -- `hosts`, `per_query` -- which name a shape:
+    taking those as labels pairs a container with every field declared under it,
+    which fires on a nested document for nothing. A list index labels nothing at
+    all, and neither does a segment too short to be a name.
+    """
+    parts = path.split(".")[:-1]
+    if not parts or parts[-1].isdigit() or len(parts[-1]) < MIN_LABEL:
+        return []
+    return [parts[-1]]
+
+
+def _pair_in(normalised_prose: str, label: str, term: str,
+             min_label: int = 1) -> bool:
+    """Is `term` stated within a window of `label`, both normalised?
+
+    `min_label` is 1 for a label the graded value itself carries -- a gene length
+    of `170` is a label, and the value is what says so -- and MIN_LABEL for one
+    taken from the gold path, where a short segment is a container abbreviation
+    rather than a name.
+    """
+    needle, target = _normalise(label), _normalise(term)
+    if len(needle) < min_label or len(target) < MIN_TERM:
+        return False
+    for match in re.finditer(re.escape(needle), normalised_prose):
+        window = normalised_prose[max(0, match.start() - WINDOW):
+                                  match.start() + WINDOW]
+        if target in window:
+            return True
+    return False
+
+
+def _hit(name: str, path: str, value, prose: str, normalised_prose: str,
+         normalised_sentences: str, terms: set[str]) -> str | None:
+    """What the cold sandbox states about this component, if anything.
+
+    Three shapes, in the order they were found. The first two are check 22 as
+    first written; the third is the one that shipped a leak past both.
+    """
+    # --- shape one: a small scalar stated anywhere. A published vocabulary term
+    # is not a disclosure on its own -- which term applies is the answer -- so a
+    # bare term falls through to shape three, where its label decides.
+    if not (isinstance(value, str) and value in terms):
+        for form in _scalar_forms(value):
+            if re.search(r"(?<![\w.])" + re.escape(form) + r"(?![\w.])", prose):
+                return f"{name} = {value!r}"
+
+    # --- shape two: a mapping of declared label to declared term, both halves
+    # inside the graded value.
+    if isinstance(value, dict):
+        for label, term in sorted(value.items(), key=lambda kv: str(kv[0])):
+            if isinstance(term, str) and term in terms and _pair_in(
+                    normalised_prose, str(label), term):
+                return f"{name}[{label}] = {term!r}"
+
+    # --- shape three: a declared term whose label is in the gold PATH. The
+    # value is one word of published vocabulary and the sandbox may say it; what
+    # it may not say is which label that word belongs to.
+    if isinstance(value, str) and value in terms:
+        for label in _path_labels(path):
+            if _pair_in(normalised_sentences, label, value, MIN_LABEL):
+                return f"{name}@{label} = {value!r}"
+    return None
+
+
+def findings(campaign: pathlib.Path, sandbox: pathlib.Path, resolve) -> list[str]:
+    """Graded answers the cold sandbox states, as "<component> = <value>"."""
     spec = json.loads((campaign / "grading.json").read_text())
     gold = json.loads((campaign / "gold" / "gold.json").read_text())
     prose = sandbox_prose(sandbox)
+    normalised = _normalise(prose)
+    sentences = _normalise(sandbox_sentences(sandbox))
     terms = vocabularies(sandbox)
     waived = exemptions(campaign.name)
 
-    hits: list[str] = []
-    for name, value in _graded(spec, gold, resolve):
+    hits = []
+    for name, path, value in _graded(spec, gold, resolve):
         if name in waived:
             continue
-        # --- shape one: a small scalar stated anywhere
-        for form in _scalar_forms(value):
-            if isinstance(value, str) and value in terms:
-                # A vocabulary term has to be published, and no label is paired
-                # with it here; which term applies is the answer.
-                continue
-            pattern = r"(?<![\w.])" + re.escape(form) + r"(?![\w.])"
-            if re.search(pattern, prose):
-                hits.append(f"{name} = {value!r}")
-                break
-        else:
-            # --- shape two: a declared term stated against its own label
-            if not isinstance(value, dict):
-                continue
-            for label, term in sorted(value.items(), key=lambda kv: str(kv[0])):
-                if not isinstance(term, str) or term not in terms:
-                    continue
-                for match in re.finditer(re.escape(str(label)), prose):
-                    window = prose[max(0, match.start() - WINDOW):
-                                   match.start() + WINDOW]
-                    if term in window:
-                        hits.append(f"{name}[{label}] = {term!r}")
-                        break
-                else:
-                    continue
-                break
+        found = _hit(name, path, value, prose, normalised, sentences, terms)
+        if found is not None:
+            hits.append(found)
     return hits
 
 
@@ -220,42 +346,29 @@ def stale_exemptions(campaign: pathlib.Path, sandbox: pathlib.Path,
 
     The reason this exists: the first waiver list written in this project went
     stale within a minute, because removing a leaked sentence also removed the
-    collision a neighbouring waiver rested on.
+    collision a neighbouring waiver rested on. It has fired twice since, both
+    times on a number that moved under a campaign rebuild rather than on a
+    sentence anybody edited.
+
+    The scan is the same one `findings` runs, with the waiver ignored: an
+    exemption earns its place only if the hit it waives is still there.
     """
     spec = json.loads((campaign / "grading.json").read_text())
     gold = json.loads((campaign / "gold" / "gold.json").read_text())
-    graded = {name for name, _ in _graded(spec, gold, resolve)}
     waived = exemptions(campaign.name)
     if not waived:
         return []
 
-    # Re-run the scan with nothing waived, and see which exemptions earn their
-    # place. `findings` skips waived components, so ask it again via a copy of
-    # the campaign's exemption set emptied out.
-    live = set()
     prose = sandbox_prose(sandbox)
+    normalised = _normalise(prose)
+    sentences = _normalise(sandbox_sentences(sandbox))
     terms = vocabularies(sandbox)
-    for name, value in _graded(spec, gold, resolve):
-        if name not in waived:
-            continue
-        for form in _scalar_forms(value):
-            if isinstance(value, str) and value in terms:
-                continue
-            if re.search(r"(?<![\w.])" + re.escape(form) + r"(?![\w.])", prose):
-                live.add(name)
-                break
-        if name in live or not isinstance(value, dict):
-            continue
-        for label, term in sorted(value.items(), key=lambda kv: str(kv[0])):
-            if not isinstance(term, str) or term not in terms:
-                continue
-            for match in re.finditer(re.escape(str(label)), prose):
-                if term in prose[max(0, match.start() - WINDOW):
-                                 match.start() + WINDOW]:
-                    live.add(name)
-                    break
-            if name in live:
-                break
+    graded, live = set(), set()
+    for name, path, value in _graded(spec, gold, resolve):
+        graded.add(name)
+        if name in waived and _hit(name, path, value, prose, normalised,
+                                   sentences, terms) is not None:
+            live.add(name)
 
     out = []
     for name in sorted(waived):

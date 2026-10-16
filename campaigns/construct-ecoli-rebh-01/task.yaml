@@ -122,41 +122,66 @@ structural_elements: [verification, abstention_free, counterfactual]
 excluded_from_grading:
   - field: binding_cost
     reason: >
-      Cross-optimiser spread (0.0356 for gc_window) exceeds the between-constraint
-      signal for four of six constraints, so the magnitude is not gradable. The
-      argmax is stable across all four optimiser policies and is graded instead.
-      Measured by oracle/generate_gold.py; recorded in gold/gold.json.
+      Cross-optimiser spread exceeds the between-constraint signal -- the
+      gap from that constraint's mean cost to the nearest other constraint's
+      -- for 4 of six constraints in the primary host and 1 of six in the
+      swap host, so the magnitude is not gradable. The argmax is stable
+      across all four optimiser policies and is graded instead. Recomputable
+      by running the four policies in core.OPTIMIZER_POLICIES over the
+      shipped tables. The spreads themselves are not printed here: the
+      widest of them belongs to the constraint R3 and R4 are asked to name.
+      They are in gold/gold.json, which the sandbox never sees.
   - field: cai_full
     reason: >
-      Spread 0.0528 across legitimate optimiser policies. Graded as a floor
-      (cai >= 0.902 for E. coli, >= 0.929 for Streptomyces) rather than against
-      the oracle's value, so a different valid optimiser is never penalised.
+      The four legitimate optimiser policies disagree about cai_full by more
+      than the 0.025 margin the floor is set with, so the magnitude is not
+      gradable. Graded as a floor instead -- 0.888 in the primary host and
+      0.88 in the swap host, each set that margin below the worst of the
+      four policies -- so a different valid optimiser is never penalised.
+      The floor is the bar a submission is checked against, which is why it
+      is stated; the oracle's own CAI and the measured spreads are in
+      gold/gold.json.
 
 split_constraint: >
   These two instantiations MUST NOT be split across the public and private sets.
-  Measured against construct-ecoli-rebh-01, 3 of 6 graded sub-answers are
-  identical: the binding constraint for both hosts (gc_window for E. coli,
-  direct_repeat for Streptomyces) and the Streptomyces non-binding set. A system
-  that has solved the public half can transfer those to the private half without
-  recomputing anything.
+  Measured across the two golds, 3 of 6 graded sub-answers coincide: the binding
+  constraint for each of the two hosts, and one of the two non-binding sets. A
+  system that has solved the public half can transfer those to the private half
+  without recomputing anything.
 
   What does differ, and is what this instantiation actually adds: every
-  unconstrained-violation count for both hosts, the E. coli non-binding set, and
-  the flipped-constraint set (RebH also flips homopolymer). So R3's six integer
-  components and R4's flipped set remain real work while R3's
-  binding-constraint component does not.
+  unconstrained-violation count for both hosts, the other non-binding set, and
+  the flipped-constraint set. So R3's six integer components and R4's flipped
+  set remain real work while R3's binding-constraint component does not.
 
-  The counts themselves are not written here, in either instantiation. They are
-  what R3 and R4 grade, and an earlier version of this note printed all six of
-  R3's integers for both hosts plus R4's swapped direct-repeat count, in the same
-  sentence that claimed they remain real work. Where they differ, and by how
-  much, is in docs/npbench-c.md, which the sandbox never sees.
+  Neither the counts nor the constraint names are written here, in either
+  instantiation. They are what R3 and R4 grade. An earlier version of this note
+  printed all six of R3's integers for both hosts plus R4's swapped
+  direct-repeat count; the version after it removed the integers but kept
+  naming which constraint binds in each host, which is the same disclosure in
+  words. Which constraints these are, where the two instantiations differ, and
+  by how much, is in docs/npbench-c.md, which the sandbox never sees.
 
   If the private set needs a construct-design campaign, author a third
-  instantiation whose binding constraint genuinely differs -- a protein or host
-  pairing where gc_window is not the E. coli bottleneck -- rather than reusing
-  either of these.
+  instantiation whose binding constraint genuinely differs from both of these --
+  a protein and host pairing whose bottleneck is a different constraint, which
+  gold/gold.json names for each of these two -- rather than reusing either.
 
 notes_for_audit:
-  - The CAI relative-adaptiveness tables need a cited source release before this
-    packet ships. See the PROVENANCE GAP note in oracle/tables.py.
+  - >
+    The CAI relative-adaptiveness tables are derived, not asserted: for each
+    host, every CDS of a pinned INSDC record whose product names a ribosomal
+    protein, validated against the record's own translation, counted codon
+    by codon, and divided by the most-used codon of each synonymous family.
+    The rule, the accessions, the gene counts and the digest of each gene
+    set are in reference/codon_tables.json under provenance; the per-codon
+    counts and the gene list are in audit/codon_table_provenance.json, which
+    no sandbox sees. Regenerate with
+    npbench_c.templates.construct_design.prepare_tables, which refuses to
+    write a table whose reference set no longer matches the manifest. The
+    earlier tables were representative values with no citable source; the
+    change moved 20 of this campaign's 41 gold keys, three of them among
+    the twelve unconstrained-violation counts, and 17 of 41 in the other
+    instantiation. It moved nothing at all in the two constraint campaigns
+    on the same tables, whose arithmetic uses the codon sets but not the
+    weights.

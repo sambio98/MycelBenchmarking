@@ -1,0 +1,1102 @@
+{
+  "_what_this_is": "The arithmetic behind constants/codon_tables.json: the reference gene list and the per-codon counts, so the weights can be checked without re-downloading a genome. Audit-side on purpose -- it is not copied into any campaign's reference/ and never reaches a sandbox.",
+  "generated_by": "npbench_c.templates.construct_design.prepare_tables",
+  "hosts": {
+    "ecoli_bl21": {
+      "accession": "CP001509.3",
+      "census_of_dropped_candidates": {
+        "codon_start": 0,
+        "no_translation": 0,
+        "not_whole_codons": 0,
+        "product_match": 54,
+        "pseudo": 0,
+        "spliced_or_partial": 0,
+        "stop_structure": 0,
+        "transl_table": 0,
+        "translation_mismatch": 0
+      },
+      "codon_counts": {
+        "AAA": 479,
+        "AAC": 219,
+        "AAG": 200,
+        "AAT": 33,
+        "ACA": 13,
+        "ACC": 157,
+        "ACG": 19,
+        "ACT": 175,
+        "AGA": 4,
+        "AGC": 83,
+        "AGG": 0,
+        "AGT": 12,
+        "ATA": 1,
+        "ATC": 291,
+        "ATG": 175,
+        "ATT": 100,
+        "CAA": 55,
+        "CAC": 108,
+        "CAG": 176,
+        "CAT": 40,
+        "CCA": 31,
+        "CCC": 1,
+        "CCG": 160,
+        "CCT": 35,
+        "CGA": 2,
+        "CGC": 195,
+        "CGG": 2,
+        "CGT": 419,
+        "CTA": 1,
+        "CTC": 20,
+        "CTG": 419,
+        "CTT": 23,
+        "GAA": 346,
+        "GAC": 195,
+        "GAG": 117,
+        "GAT": 124,
+        "GCA": 215,
+        "GCC": 67,
+        "GCG": 127,
+        "GCT": 357,
+        "GGA": 4,
+        "GGC": 216,
+        "GGG": 7,
+        "GGT": 345,
+        "GTA": 176,
+        "GTC": 63,
+        "GTG": 85,
+        "GTT": 349,
+        "TAA": 51,
+        "TAC": 95,
+        "TAG": 0,
+        "TAT": 31,
+        "TCA": 8,
+        "TCC": 83,
+        "TCG": 4,
+        "TCT": 124,
+        "TGA": 3,
+        "TGC": 27,
+        "TGG": 40,
+        "TGT": 9,
+        "TTA": 13,
+        "TTC": 160,
+        "TTG": 19,
+        "TTT": 51
+      },
+      "gene_set_sha256": "a0f156b8b2cdb639600ef0af51b86e32e3268ba2dc18f02df9744fc4b386b75d",
+      "genes": [
+        {
+          "gene": "rpmF",
+          "length_nt": 174,
+          "location": "1149934..1150107",
+          "locus_tag": "ECD_01085",
+          "product": "50S ribosomal subunit protein L32"
+        },
+        {
+          "gene": "rpsB",
+          "length_nt": 726,
+          "location": "192717..193442",
+          "locus_tag": "ECD_00167",
+          "product": "30S ribosomal subunit protein S2"
+        },
+        {
+          "gene": "rplY",
+          "length_nt": 285,
+          "location": "2177366..2177650",
+          "locus_tag": "ECD_02115",
+          "product": "50S ribosomal subunit protein L25"
+        },
+        {
+          "gene": "rpsU",
+          "length_nt": 216,
+          "location": "3076863..3077078",
+          "locus_tag": "ECD_02935",
+          "product": "30S ribosomal subunit protein S21"
+        },
+        {
+          "gene": "rpmH",
+          "length_nt": 141,
+          "location": "3773132..3773272",
+          "locus_tag": "ECD_03586",
+          "product": "50S ribosomal subunit protein L34"
+        },
+        {
+          "gene": "rpmE",
+          "length_nt": 213,
+          "location": "4034936..4035148",
+          "locus_tag": "ECD_03821",
+          "product": "50S ribosomal subunit protein L31"
+        },
+        {
+          "gene": "rplK",
+          "length_nt": 429,
+          "location": "4086498..4086926",
+          "locus_tag": "ECD_03859",
+          "product": "50S ribosomal subunit protein L11"
+        },
+        {
+          "gene": "rplA",
+          "length_nt": 705,
+          "location": "4086930..4087634",
+          "locus_tag": "ECD_03860",
+          "product": "50S ribosomal subunit protein L1"
+        },
+        {
+          "gene": "rplJ",
+          "length_nt": 498,
+          "location": "4088047..4088544",
+          "locus_tag": "ECD_03861",
+          "product": "50S ribosomal subunit protein L10"
+        },
+        {
+          "gene": "rplL",
+          "length_nt": 366,
+          "location": "4088611..4088976",
+          "locus_tag": "ECD_03862",
+          "product": "50S ribosomal subunit protein L7/L12"
+        },
+        {
+          "gene": "rpsF",
+          "length_nt": 396,
+          "location": "4331638..4332033",
+          "locus_tag": "ECD_04067",
+          "product": "30S ribosomal subunit protein S6"
+        },
+        {
+          "gene": "rpsR",
+          "length_nt": 228,
+          "location": "4332359..4332586",
+          "locus_tag": "ECD_04069",
+          "product": "30S ribosomal subunit protein S18"
+        },
+        {
+          "gene": "rplI",
+          "length_nt": 450,
+          "location": "4332628..4333077",
+          "locus_tag": "ECD_04070",
+          "product": "50S ribosomal subunit protein L9"
+        },
+        {
+          "gene": "rpsA",
+          "length_nt": 1674,
+          "location": "967085..968758",
+          "locus_tag": "ECD_00915",
+          "product": "30S ribosomal subunit protein S1"
+        },
+        {
+          "gene": "rplT",
+          "length_nt": 357,
+          "location": "complement(1743808..1744164)",
+          "locus_tag": "ECD_01685",
+          "product": "50S ribosomal subunit protein L20"
+        },
+        {
+          "gene": "rpmI",
+          "length_nt": 198,
+          "location": "complement(1744217..1744414)",
+          "locus_tag": "ECD_01686",
+          "product": "50S ribosomal subunit protein L35"
+        },
+        {
+          "gene": "rpsT",
+          "length_nt": 264,
+          "location": "complement(24887..25150)",
+          "locus_tag": "ECD_00027",
+          "product": "30S ribosomal subunit protein S20"
+        },
+        {
+          "gene": "rplS",
+          "length_nt": 348,
+          "location": "complement(2610697..2611044)",
+          "locus_tag": "ECD_02495",
+          "product": "50S ribosomal subunit protein L19"
+        },
+        {
+          "gene": "rpsP",
+          "length_nt": 249,
+          "location": "complement(2612451..2612699)",
+          "locus_tag": "ECD_02498",
+          "product": "30S ribosomal subunit protein S16"
+        },
+        {
+          "gene": "rpsO",
+          "length_nt": 270,
+          "location": "complement(3179914..3180183)",
+          "locus_tag": "ECD_03032",
+          "product": "30S ribosomal subunit protein S15"
+        },
+        {
+          "gene": "rpmA",
+          "length_nt": 258,
+          "location": "complement(3201361..3201618)",
+          "locus_tag": "ECD_03050",
+          "product": "50S ribosomal subunit protein L27"
+        },
+        {
+          "gene": "rplU",
+          "length_nt": 312,
+          "location": "complement(3201639..3201950)",
+          "locus_tag": "ECD_03051",
+          "product": "50S ribosomal subunit protein L21"
+        },
+        {
+          "gene": "rpsI",
+          "length_nt": 393,
+          "location": "complement(3238978..3239370)",
+          "locus_tag": "ECD_03090",
+          "product": "30S ribosomal subunit protein S9"
+        },
+        {
+          "gene": "rplM",
+          "length_nt": 429,
+          "location": "complement(3239386..3239814)",
+          "locus_tag": "ECD_03091",
+          "product": "50S ribosomal subunit protein L13"
+        },
+        {
+          "gene": "rplQ",
+          "length_nt": 384,
+          "location": "complement(3300786..3301169)",
+          "locus_tag": "ECD_03145",
+          "product": "50S ribosomal subunit protein L17"
+        },
+        {
+          "gene": "rpsD",
+          "length_nt": 621,
+          "location": "complement(3302225..3302845)",
+          "locus_tag": "ECD_03147",
+          "product": "30S ribosomal subunit protein S4"
+        },
+        {
+          "gene": "rpsK",
+          "length_nt": 390,
+          "location": "complement(3302879..3303268)",
+          "locus_tag": "ECD_03148",
+          "product": "30S ribosomal subunit protein S11"
+        },
+        {
+          "gene": "rpsM",
+          "length_nt": 357,
+          "location": "complement(3303285..3303641)",
+          "locus_tag": "ECD_03149",
+          "product": "30S ribosomal subunit protein S13"
+        },
+        {
+          "gene": "rpmJ",
+          "length_nt": 117,
+          "location": "complement(3303788..3303904)",
+          "locus_tag": "ECD_03150",
+          "product": "50S ribosomal subunit protein L36"
+        },
+        {
+          "gene": "rplO",
+          "length_nt": 435,
+          "location": "complement(3305275..3305709)",
+          "locus_tag": "ECD_03152",
+          "product": "50S ribosomal subunit protein L15"
+        },
+        {
+          "gene": "rpmD",
+          "length_nt": 180,
+          "location": "complement(3305713..3305892)",
+          "locus_tag": "ECD_03153",
+          "product": "50S ribosomal subunit protein L30"
+        },
+        {
+          "gene": "rpsE",
+          "length_nt": 504,
+          "location": "complement(3305896..3306399)",
+          "locus_tag": "ECD_03154",
+          "product": "30S ribosomal subunit protein S5"
+        },
+        {
+          "gene": "rplR",
+          "length_nt": 354,
+          "location": "complement(3306414..3306767)",
+          "locus_tag": "ECD_03155",
+          "product": "50S ribosomal subunit protein L18"
+        },
+        {
+          "gene": "rplF",
+          "length_nt": 534,
+          "location": "complement(3306777..3307310)",
+          "locus_tag": "ECD_03156",
+          "product": "50S ribosomal subunit protein L6"
+        },
+        {
+          "gene": "rpsH",
+          "length_nt": 393,
+          "location": "complement(3307323..3307715)",
+          "locus_tag": "ECD_03157",
+          "product": "30S ribosomal subunit protein S8"
+        },
+        {
+          "gene": "rpsN",
+          "length_nt": 306,
+          "location": "complement(3307749..3308054)",
+          "locus_tag": "ECD_03158",
+          "product": "30S ribosomal subunit protein S14"
+        },
+        {
+          "gene": "rplE",
+          "length_nt": 540,
+          "location": "complement(3308069..3308608)",
+          "locus_tag": "ECD_03159",
+          "product": "50S ribosomal subunit protein L5"
+        },
+        {
+          "gene": "rplX",
+          "length_nt": 315,
+          "location": "complement(3308623..3308937)",
+          "locus_tag": "ECD_03160",
+          "product": "50S ribosomal subunit protein L24"
+        },
+        {
+          "gene": "rplN",
+          "length_nt": 372,
+          "location": "complement(3308948..3309319)",
+          "locus_tag": "ECD_03161",
+          "product": "50S ribosomal subunit protein L14"
+        },
+        {
+          "gene": "rpsQ",
+          "length_nt": 255,
+          "location": "complement(3309484..3309738)",
+          "locus_tag": "ECD_03162",
+          "product": "30S ribosomal subunit protein S17"
+        },
+        {
+          "gene": "rpmC",
+          "length_nt": 192,
+          "location": "complement(3309738..3309929)",
+          "locus_tag": "ECD_03163",
+          "product": "50S ribosomal subunit protein L29"
+        },
+        {
+          "gene": "rplP",
+          "length_nt": 411,
+          "location": "complement(3309929..3310339)",
+          "locus_tag": "ECD_03164",
+          "product": "50S ribosomal subunit protein L16"
+        },
+        {
+          "gene": "rpsC",
+          "length_nt": 702,
+          "location": "complement(3310352..3311053)",
+          "locus_tag": "ECD_03165",
+          "product": "30S ribosomal subunit protein S3"
+        },
+        {
+          "gene": "rplV",
+          "length_nt": 333,
+          "location": "complement(3311071..3311403)",
+          "locus_tag": "ECD_03166",
+          "product": "50S ribosomal subunit protein L22"
+        },
+        {
+          "gene": "rpsS",
+          "length_nt": 279,
+          "location": "complement(3311418..3311696)",
+          "locus_tag": "ECD_03167",
+          "product": "30S ribosomal subunit protein S19"
+        },
+        {
+          "gene": "rplB",
+          "length_nt": 822,
+          "location": "complement(3311713..3312534)",
+          "locus_tag": "ECD_03168",
+          "product": "50S ribosomal subunit protein L2"
+        },
+        {
+          "gene": "rplW",
+          "length_nt": 303,
+          "location": "complement(3312552..3312854)",
+          "locus_tag": "ECD_03169",
+          "product": "50S ribosomal subunit protein L23"
+        },
+        {
+          "gene": "rplD",
+          "length_nt": 606,
+          "location": "complement(3312851..3313456)",
+          "locus_tag": "ECD_03170",
+          "product": "50S ribosomal subunit protein L4"
+        },
+        {
+          "gene": "rplC",
+          "length_nt": 630,
+          "location": "complement(3313467..3314096)",
+          "locus_tag": "ECD_03171",
+          "product": "50S ribosomal subunit protein L3"
+        },
+        {
+          "gene": "rpsJ",
+          "length_nt": 312,
+          "location": "complement(3314129..3314440)",
+          "locus_tag": "ECD_03172",
+          "product": "30S ribosomal subunit protein S10"
+        },
+        {
+          "gene": "rpsG",
+          "length_nt": 471,
+          "location": "complement(3333212..3333682)",
+          "locus_tag": "ECD_03192",
+          "product": "30S ribosomal subunit protein S7"
+        },
+        {
+          "gene": "rpsL",
+          "length_nt": 375,
+          "location": "complement(3333779..3334153)",
+          "locus_tag": "ECD_03193",
+          "product": "30S ribosomal subunit protein S12"
+        },
+        {
+          "gene": "rpmG",
+          "length_nt": 168,
+          "location": "complement(3678040..3678207)",
+          "locus_tag": "ECD_03493",
+          "product": "50S ribosomal subunit protein L33"
+        },
+        {
+          "gene": "rpmB",
+          "length_nt": 237,
+          "location": "complement(3678228..3678464)",
+          "locus_tag": "ECD_03494",
+          "product": "50S ribosomal subunit protein L28"
+        }
+      ],
+      "weights": {
+        "AAA": 1.0,
+        "AAC": 1.0,
+        "AAG": 0.417537,
+        "AAT": 0.150685,
+        "ACA": 0.074286,
+        "ACC": 0.897143,
+        "ACG": 0.108571,
+        "ACT": 1.0,
+        "AGA": 0.009547,
+        "AGC": 0.669355,
+        "AGG": 0.001193,
+        "AGT": 0.096774,
+        "ATA": 0.003436,
+        "ATC": 1.0,
+        "ATG": 1.0,
+        "ATT": 0.343643,
+        "CAA": 0.3125,
+        "CAC": 1.0,
+        "CAG": 1.0,
+        "CAT": 0.37037,
+        "CCA": 0.19375,
+        "CCC": 0.00625,
+        "CCG": 1.0,
+        "CCT": 0.21875,
+        "CGA": 0.004773,
+        "CGC": 0.465394,
+        "CGG": 0.004773,
+        "CGT": 1.0,
+        "CTA": 0.002387,
+        "CTC": 0.047733,
+        "CTG": 1.0,
+        "CTT": 0.054893,
+        "GAA": 1.0,
+        "GAC": 1.0,
+        "GAG": 0.33815,
+        "GAT": 0.635897,
+        "GCA": 0.602241,
+        "GCC": 0.187675,
+        "GCG": 0.355742,
+        "GCT": 1.0,
+        "GGA": 0.011594,
+        "GGC": 0.626087,
+        "GGG": 0.02029,
+        "GGT": 1.0,
+        "GTA": 0.504298,
+        "GTC": 0.180516,
+        "GTG": 0.243553,
+        "GTT": 1.0,
+        "TAA": 1.0,
+        "TAC": 1.0,
+        "TAG": 0.009804,
+        "TAT": 0.326316,
+        "TCA": 0.064516,
+        "TCC": 0.669355,
+        "TCG": 0.032258,
+        "TCT": 1.0,
+        "TGA": 0.058824,
+        "TGC": 1.0,
+        "TGG": 1.0,
+        "TGT": 0.333333,
+        "TTA": 0.031026,
+        "TTC": 1.0,
+        "TTG": 0.045346,
+        "TTT": 0.31875
+      }
+    },
+    "streptomyces_coelicolor": {
+      "accession": "AL645882.2",
+      "census_of_dropped_candidates": {
+        "codon_start": 0,
+        "no_translation": 0,
+        "not_whole_codons": 0,
+        "product_match": 60,
+        "pseudo": 0,
+        "spliced_or_partial": 0,
+        "stop_structure": 0,
+        "transl_table": 0,
+        "translation_mismatch": 0
+      },
+      "codon_counts": {
+        "AAA": 0,
+        "AAC": 236,
+        "AAG": 660,
+        "AAT": 6,
+        "ACA": 3,
+        "ACC": 310,
+        "ACG": 135,
+        "ACT": 17,
+        "AGA": 0,
+        "AGC": 83,
+        "AGG": 8,
+        "AGT": 4,
+        "ATA": 0,
+        "ATC": 372,
+        "ATG": 134,
+        "ATT": 12,
+        "CAA": 0,
+        "CAC": 175,
+        "CAG": 267,
+        "CAT": 2,
+        "CCA": 0,
+        "CCC": 127,
+        "CCG": 214,
+        "CCT": 11,
+        "CGA": 7,
+        "CGC": 439,
+        "CGG": 97,
+        "CGT": 198,
+        "CTA": 0,
+        "CTC": 235,
+        "CTG": 264,
+        "CTT": 18,
+        "GAA": 36,
+        "GAC": 368,
+        "GAG": 478,
+        "GAT": 6,
+        "GCA": 17,
+        "GCC": 490,
+        "GCG": 251,
+        "GCT": 66,
+        "GGA": 26,
+        "GGC": 429,
+        "GGG": 28,
+        "GGT": 202,
+        "GTA": 2,
+        "GTC": 456,
+        "GTG": 209,
+        "GTT": 45,
+        "TAA": 15,
+        "TAC": 165,
+        "TAG": 7,
+        "TAT": 0,
+        "TCA": 0,
+        "TCC": 167,
+        "TCG": 105,
+        "TCT": 11,
+        "TGA": 38,
+        "TGC": 34,
+        "TGG": 44,
+        "TGT": 3,
+        "TTA": 0,
+        "TTC": 177,
+        "TTG": 2,
+        "TTT": 1
+      },
+      "gene_set_sha256": "75f52bb1f779699d301b0786fcb2bd9fb98445a68b55931167292845dca6dafb",
+      "genes": [
+        {
+          "gene": "SCO1150",
+          "length_nt": 273,
+          "location": "1210322..1210594",
+          "locus_tag": "",
+          "product": "50S ribosomal protein L31"
+        },
+        {
+          "gene": "SCO2563",
+          "length_nt": 267,
+          "location": "2766694..2766960",
+          "locus_tag": "",
+          "product": "30s ribosomal protein S20."
+        },
+        {
+          "gene": "SCO3429",
+          "length_nt": 222,
+          "location": "3791191..3791412",
+          "locus_tag": "",
+          "product": "putative 50S ribosomal protein L28"
+        },
+        {
+          "gene": "SCO3430",
+          "length_nt": 306,
+          "location": "3791412..3791717",
+          "locus_tag": "",
+          "product": "putative 30S ribosomal protein S14"
+        },
+        {
+          "gene": "SCO3880",
+          "length_nt": 138,
+          "location": "4273127..4273264",
+          "locus_tag": "",
+          "product": "putative 50S ribosomal protein L34"
+        },
+        {
+          "gene": "SCO3906",
+          "length_nt": 291,
+          "location": "4303242..4303532",
+          "locus_tag": "",
+          "product": "putative 30S ribosomal protein S6"
+        },
+        {
+          "gene": "SCO3908",
+          "length_nt": 237,
+          "location": "4304258..4304494",
+          "locus_tag": "",
+          "product": "putative 30S ribosomal protein S18"
+        },
+        {
+          "gene": "SCO3909",
+          "length_nt": 447,
+          "location": "4304513..4304959",
+          "locus_tag": "",
+          "product": "50S ribosomal protein L9"
+        },
+        {
+          "gene": "SCO4635",
+          "length_nt": 165,
+          "location": "5061599..5061763",
+          "locus_tag": "",
+          "product": "50S ribosomal protein L33"
+        },
+        {
+          "gene": "SCO4648",
+          "length_nt": 435,
+          "location": "5072851..5073285",
+          "locus_tag": "",
+          "product": "50S ribosomal protein L11"
+        },
+        {
+          "gene": "SCO4649",
+          "length_nt": 726,
+          "location": "5073369..5074094",
+          "locus_tag": "",
+          "product": "50S ribosomal protein L1"
+        },
+        {
+          "gene": "SCO4652",
+          "length_nt": 531,
+          "location": "5076440..5076970",
+          "locus_tag": "",
+          "product": "50S ribosomal protein L10"
+        },
+        {
+          "gene": "SCO4653",
+          "length_nt": 384,
+          "location": "5077088..5077471",
+          "locus_tag": "",
+          "product": "50S ribosomal protein L7/L12"
+        },
+        {
+          "gene": "SCO4659",
+          "length_nt": 372,
+          "location": "5088946..5089317",
+          "locus_tag": "",
+          "product": "30S ribosomal protein S12"
+        },
+        {
+          "gene": "SCO4660",
+          "length_nt": 471,
+          "location": "5089320..5089790",
+          "locus_tag": "",
+          "product": "30S ribosomal protein S7"
+        },
+        {
+          "gene": "SCO4701",
+          "length_nt": 309,
+          "location": "5127609..5127917",
+          "locus_tag": "",
+          "product": "30S ribosomal protein S10"
+        },
+        {
+          "gene": "SCO4702",
+          "length_nt": 645,
+          "location": "5127934..5128578",
+          "locus_tag": "",
+          "product": "50S ribosomal protein L3"
+        },
+        {
+          "gene": "SCO4703",
+          "length_nt": 660,
+          "location": "5128587..5129246",
+          "locus_tag": "",
+          "product": "50S ribosomal protein L4"
+        },
+        {
+          "gene": "SCO4704",
+          "length_nt": 420,
+          "location": "5129246..5129665",
+          "locus_tag": "",
+          "product": "50S ribosomal protein L23"
+        },
+        {
+          "gene": "SCO4705",
+          "length_nt": 837,
+          "location": "5129706..5130542",
+          "locus_tag": "",
+          "product": "50S ribosomal protein L2"
+        },
+        {
+          "gene": "SCO4706",
+          "length_nt": 282,
+          "location": "5130555..5130836",
+          "locus_tag": "",
+          "product": "30S ribosomal protein S19"
+        },
+        {
+          "gene": "SCO4707",
+          "length_nt": 378,
+          "location": "5130849..5131226",
+          "locus_tag": "",
+          "product": "50S ribosomal protein L22"
+        },
+        {
+          "gene": "SCO4708",
+          "length_nt": 834,
+          "location": "5131226..5132059",
+          "locus_tag": "",
+          "product": "30S ribosomal protein S3"
+        },
+        {
+          "gene": "SCO4709",
+          "length_nt": 420,
+          "location": "5132065..5132484",
+          "locus_tag": "",
+          "product": "50S ribosomal protein L16"
+        },
+        {
+          "gene": "SCO4710",
+          "length_nt": 225,
+          "location": "5132484..5132708",
+          "locus_tag": "",
+          "product": "50S ribosomal protein L29"
+        },
+        {
+          "gene": "SCO4711",
+          "length_nt": 288,
+          "location": "5132708..5132995",
+          "locus_tag": "",
+          "product": "30S ribosomal protein S17"
+        },
+        {
+          "gene": "SCO4712",
+          "length_nt": 369,
+          "location": "5133103..5133471",
+          "locus_tag": "",
+          "product": "50S ribosomal protein L14"
+        },
+        {
+          "gene": "SCO4713",
+          "length_nt": 324,
+          "location": "5133474..5133797",
+          "locus_tag": "",
+          "product": "50S ribosomal protein L24"
+        },
+        {
+          "gene": "SCO4714",
+          "length_nt": 558,
+          "location": "5133797..5134354",
+          "locus_tag": "",
+          "product": "50S ribosomal protein L5"
+        },
+        {
+          "gene": "SCO4715",
+          "length_nt": 186,
+          "location": "5134360..5134545",
+          "locus_tag": "",
+          "product": "30S ribosomal protein S14"
+        },
+        {
+          "gene": "SCO4716",
+          "length_nt": 399,
+          "location": "5134757..5135155",
+          "locus_tag": "",
+          "product": "30S ribosomal protein S8"
+        },
+        {
+          "gene": "SCO4717",
+          "length_nt": 540,
+          "location": "5135180..5135719",
+          "locus_tag": "",
+          "product": "50S ribosomal protein L6"
+        },
+        {
+          "gene": "SCO4718",
+          "length_nt": 384,
+          "location": "5135723..5136106",
+          "locus_tag": "",
+          "product": "50S ribosomal protein L18"
+        },
+        {
+          "gene": "SCO4719",
+          "length_nt": 606,
+          "location": "5136150..5136755",
+          "locus_tag": "",
+          "product": "30S ribosomal protein S5"
+        },
+        {
+          "gene": "SCO4720",
+          "length_nt": 183,
+          "location": "5136758..5136940",
+          "locus_tag": "",
+          "product": "50S ribosomal protein L30"
+        },
+        {
+          "gene": "SCO4721",
+          "length_nt": 456,
+          "location": "5136943..5137398",
+          "locus_tag": "",
+          "product": "50S ribosomal protein L15"
+        },
+        {
+          "gene": "SCO4726",
+          "length_nt": 114,
+          "location": "5141041..5141154",
+          "locus_tag": "",
+          "product": "50S ribosomal protein L36"
+        },
+        {
+          "gene": "SCO4727",
+          "length_nt": 381,
+          "location": "5141343..5141723",
+          "locus_tag": "",
+          "product": "30S ribosomal protein S13"
+        },
+        {
+          "gene": "SCO4728",
+          "length_nt": 405,
+          "location": "5141791..5142195",
+          "locus_tag": "",
+          "product": "30S ribosomal protein S11"
+        },
+        {
+          "gene": "SCO4730",
+          "length_nt": 507,
+          "location": "5143544..5144050",
+          "locus_tag": "",
+          "product": "50S ribosomal protein L17"
+        },
+        {
+          "gene": "SCO4734",
+          "length_nt": 444,
+          "location": "5147451..5147894",
+          "locus_tag": "",
+          "product": "50S ribosomal protein L13"
+        },
+        {
+          "gene": "SCO4735",
+          "length_nt": 513,
+          "location": "5147937..5148449",
+          "locus_tag": "",
+          "product": "30S ribosomal protein S9"
+        },
+        {
+          "gene": "SCO5359",
+          "length_nt": 225,
+          "location": "5830020..5830244",
+          "locus_tag": "",
+          "product": "50S ribosomal protein L31"
+        },
+        {
+          "gene": "SCO5571",
+          "length_nt": 174,
+          "location": "6069794..6069967",
+          "locus_tag": "",
+          "product": "50S ribosomal protein L32"
+        },
+        {
+          "gene": "SCO5591",
+          "length_nt": 420,
+          "location": "6097191..6097610",
+          "locus_tag": "",
+          "product": "30S ribosomal protein S16"
+        },
+        {
+          "gene": "SCO5595",
+          "length_nt": 351,
+          "location": "6099500..6099850",
+          "locus_tag": "",
+          "product": "50S ribosomal protein L19"
+        },
+        {
+          "gene": "SCO5624",
+          "length_nt": 933,
+          "location": "6123494..6124426",
+          "locus_tag": "",
+          "product": "30S ribosomal protein S2"
+        },
+        {
+          "gene": "SCO5736",
+          "length_nt": 288,
+          "location": "6259203..6259490",
+          "locus_tag": "",
+          "product": "30S ribosomal protein S15"
+        },
+        {
+          "gene": "SCO1505",
+          "length_nt": 615,
+          "location": "complement(1608976..1609590)",
+          "locus_tag": "",
+          "product": "30S ribosomal protein S4"
+        },
+        {
+          "gene": "SCO1598",
+          "length_nt": 384,
+          "location": "complement(1710331..1710714)",
+          "locus_tag": "",
+          "product": "50S ribosomal protein L20"
+        },
+        {
+          "gene": "SCO1599",
+          "length_nt": 195,
+          "location": "complement(1710812..1711006)",
+          "locus_tag": "",
+          "product": "50S ribosomal protein L35"
+        },
+        {
+          "gene": "SCO1998",
+          "length_nt": 1509,
+          "location": "complement(2133121..2134629)",
+          "locus_tag": "",
+          "product": "30S ribosomal protein S1"
+        },
+        {
+          "gene": "SCO2596",
+          "length_nt": 255,
+          "location": "complement(2812358..2812612)",
+          "locus_tag": "",
+          "product": "50S ribosomal protein L27"
+        },
+        {
+          "gene": "SCO2597",
+          "length_nt": 321,
+          "location": "complement(2812627..2812947)",
+          "locus_tag": "",
+          "product": "ribosomal protein L21"
+        },
+        {
+          "gene": "SCO3425",
+          "length_nt": 240,
+          "location": "complement(3789248..3789487)",
+          "locus_tag": "",
+          "product": "putative 30S ribosomal protein S18"
+        },
+        {
+          "gene": "SCO3427",
+          "length_nt": 255,
+          "location": "complement(3790678..3790932)",
+          "locus_tag": "",
+          "product": "putative 50S ribosomal protein L31"
+        },
+        {
+          "gene": "SCO3428",
+          "length_nt": 165,
+          "location": "complement(3790939..3791103)",
+          "locus_tag": "",
+          "product": "putative 50S ribosomal protein L33"
+        },
+        {
+          "gene": "SCO5564",
+          "length_nt": 186,
+          "location": "complement(6062059..6062244)",
+          "locus_tag": "",
+          "product": "putative 50S ribosomal protein L28"
+        },
+        {
+          "gene": "SCO0569",
+          "length_nt": 123,
+          "location": "complement(611984..612106)",
+          "locus_tag": "",
+          "product": "putative 50S ribosomal protein L36"
+        },
+        {
+          "gene": "SCO0570",
+          "length_nt": 165,
+          "location": "complement(612156..612320)",
+          "locus_tag": "",
+          "product": "50S ribosomal protein L33"
+        }
+      ],
+      "weights": {
+        "AAA": 0.000758,
+        "AAC": 1.0,
+        "AAG": 1.0,
+        "AAT": 0.025424,
+        "ACA": 0.009677,
+        "ACC": 1.0,
+        "ACG": 0.435484,
+        "ACT": 0.054839,
+        "AGA": 0.001139,
+        "AGC": 0.497006,
+        "AGG": 0.018223,
+        "AGT": 0.023952,
+        "ATA": 0.001344,
+        "ATC": 1.0,
+        "ATG": 1.0,
+        "ATT": 0.032258,
+        "CAA": 0.001873,
+        "CAC": 1.0,
+        "CAG": 1.0,
+        "CAT": 0.011429,
+        "CCA": 0.002336,
+        "CCC": 0.593458,
+        "CCG": 1.0,
+        "CCT": 0.051402,
+        "CGA": 0.015945,
+        "CGC": 1.0,
+        "CGG": 0.220957,
+        "CGT": 0.451025,
+        "CTA": 0.001894,
+        "CTC": 0.890152,
+        "CTG": 1.0,
+        "CTT": 0.068182,
+        "GAA": 0.075314,
+        "GAC": 1.0,
+        "GAG": 1.0,
+        "GAT": 0.016304,
+        "GCA": 0.034694,
+        "GCC": 1.0,
+        "GCG": 0.512245,
+        "GCT": 0.134694,
+        "GGA": 0.060606,
+        "GGC": 1.0,
+        "GGG": 0.065268,
+        "GGT": 0.470862,
+        "GTA": 0.004386,
+        "GTC": 1.0,
+        "GTG": 0.458333,
+        "GTT": 0.098684,
+        "TAA": 0.394737,
+        "TAC": 1.0,
+        "TAG": 0.184211,
+        "TAT": 0.00303,
+        "TCA": 0.002994,
+        "TCC": 1.0,
+        "TCG": 0.628743,
+        "TCT": 0.065868,
+        "TGA": 1.0,
+        "TGC": 1.0,
+        "TGG": 1.0,
+        "TGT": 0.088235,
+        "TTA": 0.001894,
+        "TTC": 1.0,
+        "TTG": 0.007576,
+        "TTT": 0.00565
+      }
+    }
+  }
+}
