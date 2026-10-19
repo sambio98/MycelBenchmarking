@@ -80,6 +80,62 @@ def test_no_graded_answer_is_stated_in_the_release(release):
         assert not hits, (campaign.name, hits)
 
 
+def test_no_neighbours_graded_answer_is_stated_in_the_release(release):
+    """Check 23, pointed at the release and scoped to what it ships.
+
+    The scope is the point: a disclosure of a neighbour's answer only matters
+    where both reach the same system, so the campaigns in THIS release are the
+    neighbours -- not every campaign in the build repository.
+    """
+    chosen = campaigns(ROOT)
+    for campaign in chosen:
+        if not (campaign / "gold" / "gold.json").is_file():
+            continue
+        packaged = release / "campaigns" / campaign.name
+        others = [c for c in chosen if c.name != campaign.name]
+        hits = cold_sandbox.cross_findings(
+            campaign, packaged, others, _resolve_gold)
+        assert not hits, (campaign.name, hits)
+
+
+def test_a_sentence_about_a_neighbours_answer_is_refused(tmp_path, release):
+    """The audit has to be able to refuse. A note added to one packaged campaign
+    naming another's distinctive graded value fails the release, which is where
+    "shipped together" stops being a figure of speech."""
+    import json as _json
+
+    from npbench_c.release.package import audit_release
+
+    chosen = campaigns(ROOT)
+    reader, neighbour = chosen[0], None
+    for candidate in chosen[1:]:
+        gold_path = candidate / "gold" / "gold.json"
+        if not gold_path.is_file():
+            continue
+        gold = _json.loads(gold_path.read_text())
+        spec = _json.loads((candidate / "grading.json").read_text())
+        graded = {c["args"].get("gold") for rung in spec["rungs"]
+                  for c in rung["components"]}
+        for key, value in sorted(gold.items()):
+            if (f"gold:{key}" in graded and isinstance(value, int)
+                    and not isinstance(value, bool) and value >= 1000):
+                neighbour = (candidate.name, key, value)
+                break
+        if neighbour:
+            break
+    assert neighbour, "no neighbour grades a distinctive integer to plant"
+
+    note = release / "campaigns" / reader.name / "task.yaml"
+    original = note.read_text()
+    note.write_text(original + f"\nplanted_note: the neighbour counts "
+                                f"{neighbour[2]} of them\n")
+    try:
+        with pytest.raises(GoldLeak, match="shipped with it"):
+            audit_release(ROOT, release, chosen)
+    finally:
+        note.write_text(original)
+
+
 def test_the_docs_exclusion_is_load_bearing():
     """Not tidiness. `docs/` states graded values on purpose, because the rule
     for a measurement behind a design decision is that it lives there rather

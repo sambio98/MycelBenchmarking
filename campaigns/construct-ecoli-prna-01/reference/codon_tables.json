@@ -167,7 +167,7 @@
         "genes": 54,
         "license": "public domain / no restrictions on use (INSDC)",
         "organism": "Escherichia coli BL21(DE3)",
-        "record_gc_fraction": 0.508326,
+        "record_gc_inside_design_window": true,
         "record_sha256_when_derived": "cec64b722967dd8f6cc951d93c484b43483618e7445c82e195068ddc34f2475e",
         "source": "GenBank record for the Escherichia coli BL21(DE3) complete genome, fetched as rettype=gbwithparts",
         "unobserved_codons": [
@@ -184,7 +184,7 @@
         "genes": 60,
         "license": "public domain / no restrictions on use (INSDC)",
         "organism": "Streptomyces coelicolor A3(2)",
-        "record_gc_fraction": 0.721187,
+        "record_gc_inside_design_window": true,
         "record_sha256_when_derived": "56a79c6e7f39b23f98b892c20be40a254c0e36b99ae38ede53f37e82ee1e67bf",
         "source": "GenBank record for the Streptomyces coelicolor A3(2) chromosome. The same file is shipped as the input of campaigns/bgcdetect-scoelicolor-01, so this host's table is recomputable from the repository alone.",
         "unobserved_codons": [

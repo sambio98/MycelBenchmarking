@@ -22,6 +22,15 @@ coincidence. Two shapes live in that gap:
   shape reads the sandbox's sentences rather than its structure, because a block
   keyed `ecoli_bl21` declaring a field named `gc_window` is not a disclosure.
 
+And the same scan runs ACROSS campaigns, as check 23: a sandbox stating a
+neighbouring campaign's answer passes a per-campaign scan every time, which is
+how the malleobactin notes came to state sevadicin's verdict and how a codon
+table's provenance block came to state the gene-calling campaign's graded GC
+fraction in four campaigns at once. That scan runs the distinctive scalars and
+the two pair shapes but NOT the small scalars, because anchoring on the component
+is what makes a two-digit integer checkable and across 22 neighbours the anchor
+is gone -- measured at 77 hits over 506 ordered pairs, all coincidence.
+
 An audit found twelve answers across nine campaigns in the first two shapes, ten
 of them disclosures and the rest copies of the campaign's own parameters. The
 third shape was added when the codon tables were re-derived, and found three
@@ -35,6 +44,7 @@ from __future__ import annotations
 
 import json
 import pathlib
+import shutil
 import tempfile
 
 import pytest
@@ -115,11 +125,14 @@ def test_the_exemptions_are_outside_every_sandbox(sandboxes):
         for path in sandbox.rglob("*"):
             if path.is_file() and path.name == cold_sandbox.EXEMPTIONS.name:
                 raise AssertionError(f"{name} ships the exemptions file")
-    # And the reasons themselves must not have been copied into a sandbox.
+    # And the reasons themselves must not have been copied into a sandbox,
+    # from either list: a cross-campaign reason names another campaign's answer.
+    declared = json.loads(body)
     for name, sandbox in sandboxes.items():
         prose = cold_sandbox.sandbox_prose(sandbox)
-        for entry in json.loads(body)["exemptions"].get(name, []):
-            assert entry["reason"] not in prose, (name, entry["component"])
+        for key in ("exemptions", "cross_campaign_exemptions"):
+            for entry in (declared.get(key) or {}).get(name, []):
+                assert entry["reason"] not in prose, (key, name, entry["component"])
 
 
 def test_the_scan_finds_a_planted_pair(tmp_path):
@@ -311,3 +324,142 @@ def test_sentences_drop_structure_and_keep_prose(tmp_path):
     # The short mapping value is a label, not a sentence, so it is not prose.
     assert "gc_window\"" not in sentences
     assert "a sentence long enough to be prose" in sentences
+
+
+# ------------------------------------------------------------ across campaigns
+
+
+@pytest.mark.parametrize("campaign", _campaigns(), ids=lambda c: c.name)
+def test_no_other_campaigns_answer_is_stated(campaign, sandboxes):
+    """Check 23 over the whole built set, one reader at a time."""
+    others = [c for c in _campaigns() if c.name != campaign.name]
+    hits = cold_sandbox.cross_findings(
+        campaign, sandboxes[campaign.name], others, _resolve_gold)
+    assert not hits, (
+        f"{campaign.name}: its cold sandbox states {len(hits)} graded answer(s) "
+        "belonging to another campaign shipped alongside it:\n"
+        + "\n".join(f"  {hit}" for hit in sorted(hits))
+        + "\n\nRemove the value from this campaign's task.yaml/reference (the "
+          "measurement belongs in docs/), or -- only if the match is a genuine "
+          "collision -- declare it under cross_campaign_exemptions in "
+          "audit/cold_sandbox_exemptions.json.")
+
+
+@pytest.mark.parametrize("campaign", _campaigns(), ids=lambda c: c.name)
+def test_every_declared_cross_collision_still_collides(campaign, sandboxes):
+    others = [c for c in _campaigns() if c.name != campaign.name]
+    stale = cold_sandbox.stale_cross_exemptions(
+        campaign, sandboxes[campaign.name], others, _resolve_gold)
+    assert not stale, f"{campaign.name}: {stale}"
+
+
+@pytest.mark.parametrize("campaign", _campaigns(), ids=lambda c: c.name)
+def test_declared_terms_equals_the_sandbox_vocabulary(campaign, sandboxes):
+    """What makes check 23 affordable, asserted rather than assumed.
+
+    The check needs 22 neighbours' vocabularies per run and reads them from
+    `reference/` instead of building 22 sandboxes, which would copy every
+    neighbour's inputs. That shortcut is only valid while the two agree.
+    """
+    assert (cold_sandbox.declared_terms(campaign)
+            == cold_sandbox.vocabularies(sandboxes[campaign.name]))
+
+
+def test_every_cross_exemption_names_a_pair_and_a_reason():
+    declared = json.loads(cold_sandbox.EXEMPTIONS.read_text()).get(
+        "cross_campaign_exemptions") or {}
+    assert declared, "the cross-campaign waiver list is empty; the frameshift/" \
+                     "genecall grouping should be in it"
+    for reader, entries in sorted(declared.items()):
+        assert (CAMPAIGNS / reader).is_dir(), f"{reader} is not a campaign"
+        for entry in entries:
+            assert (CAMPAIGNS / entry["states"]).is_dir(), entry
+            assert entry["states"] != reader, entry
+            assert entry.get("component"), entry
+            assert len(entry.get("reason", "")) > 40, entry
+
+
+def test_the_cross_scan_finds_a_planted_neighbours_answer(tmp_path):
+    """The check has to be able to fail: one campaign's prose, another's gold."""
+    reader = _one_component_campaign(tmp_path, {"n": 1}, "n", name="count")
+    neighbour = tmp_path / "neighbour"
+    (neighbour / "gold").mkdir(parents=True)
+    (neighbour / "gold" / "gold.json").write_text(json.dumps({"loci_total": 4552}))
+    (neighbour / "grading.json").write_text(json.dumps({"rungs": [
+        {"rung_id": "r3", "components": [
+            {"name": "loci_total", "scorer": "exact",
+             "args": {"pred": "pred:loci_total", "gold": "gold:loci_total"}}]}]}))
+    sandbox = _sandbox_with(tmp_path, (
+        "notes_for_audit: >\n"
+        "  the neighbouring corpus carries 4,552 loci, which is why this one\n"
+        "  samples rather than enumerates.\n"))
+    hits = cold_sandbox.cross_findings(reader, sandbox, [neighbour], _resolve_gold)
+    assert hits == ["neighbour:loci_total = 4552"]
+
+
+def test_the_cross_scan_leaves_small_scalars_alone(tmp_path):
+    """The measured exclusion. A neighbour's graded 30 in this campaign's prose
+    is a coincidence 77 times out of 77, so the shape is not run across
+    campaigns -- stated here so removing the exclusion fails a test rather than
+    merely looking tidier."""
+    reader = _one_component_campaign(tmp_path, {"n": 1}, "n", name="count")
+    neighbour = tmp_path / "neighbour"
+    (neighbour / "gold").mkdir(parents=True)
+    (neighbour / "gold" / "gold.json").write_text(json.dumps({"windows": 30}))
+    (neighbour / "grading.json").write_text(json.dumps({"rungs": [
+        {"rung_id": "r3", "components": [
+            {"name": "windows", "scorer": "exact",
+             "args": {"pred": "pred:windows", "gold": "gold:windows"}}]}]}))
+    sandbox = _sandbox_with(tmp_path, "objective: read the 30 declared windows\n")
+    assert cold_sandbox.cross_findings(
+        reader, sandbox, [neighbour], _resolve_gold) == []
+
+
+def test_a_number_inside_a_token_is_not_a_statement_of_it():
+    """The false positive that tightened the boundary: the chemical-space
+    campaign ships a compound named S2502 and the diff campaign grades 2502."""
+    prose = '{"name":"S2502","accession":"BGC0002502"}'
+    assert not cold_sandbox.states_scalar(prose, prose, "2502")
+    assert cold_sandbox.states_scalar("source_entries: 2502", "source_entries: 2502",
+                                      "2502")
+    grouped = "the corpus holds 4,552 loci"
+    assert cold_sandbox.states_scalar(grouped, cold_sandbox.plain_digits(grouped),
+                                      "4552")
+
+
+def test_distinctive_forms_is_check_21s_class():
+    assert cold_sandbox.distinctive_forms(2502) == ["2502", "2,502"]
+    assert cold_sandbox.distinctive_forms(30) == []
+    assert cold_sandbox.distinctive_forms(0.721187) == ["0.721187"]
+    assert cold_sandbox.distinctive_forms(0.72) == []
+    assert cold_sandbox.distinctive_forms("gc_window") == []
+    assert cold_sandbox.distinctive_forms([]) == []
+    assert cold_sandbox.distinctive_forms({"a": 1}) == ['{"a": 1}']
+
+
+def test_the_cross_scan_catches_the_leak_that_forced_it(tmp_path, sandboxes):
+    """The historical case, restored verbatim.
+
+    The malleobactin campaign's audit notes carried this sentence, which names
+    the sevadicin instantiation's graded verdict while making a true point about
+    the template. Checks 21 and 22 passed it: the verdict is one word of a
+    vocabulary malleobactin itself declares, and the label is in sevadicin's
+    gold path.
+    """
+    mall = CAMPAIGNS / "massbalance-nrps-malleobactin-01"
+    sev = CAMPAIGNS / "massbalance-nrps-sevadicin-01"
+    for campaign in (mall, sev):
+        if not (campaign / "gold" / "gold.json").is_file():
+            pytest.skip(f"{campaign.name} gold not generated")
+
+    sandbox = tmp_path / "cold"
+    shutil.copytree(sandboxes[mall.name], sandbox)
+    task = sandbox / "task.yaml"
+    task.write_text(task.read_text() + (
+        "\n  - The verdict varies across instantiations of this template\n"
+        "    (sevadicin BGC0000426 is exactly balanced, obafluorin BGC0001437\n"
+        "    differs by one water).\n"))
+
+    assert cold_sandbox.findings(mall, sandbox, _resolve_gold) == []
+    assert cold_sandbox.cross_findings(mall, sandbox, [sev], _resolve_gold) == [
+        "massbalance-nrps-sevadicin-01:verdict_sevadicin@sevadicin = 'balanced'"]

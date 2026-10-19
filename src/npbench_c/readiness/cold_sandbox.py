@@ -41,6 +41,30 @@ which states the answer. The file sits outside `campaigns/` so that no sandbox
 can reach it. Every exemption must still collide -- a stale one is a check nobody
 is getting.
 
+**The same scan runs across campaigns**, as the gate's check 23, because a
+sandbox stating a NEIGHBOURING campaign's answer passes a per-campaign scan
+every time: that is how `massbalance-nrps-malleobactin-01`'s notes came to state
+the sevadicin instantiation's verdict, and how a provenance block added to four
+campaigns came to state the gene-calling campaign's graded GC fraction. Which
+shapes it runs is a measurement, over all 506 ordered pairs of the 23 built
+campaigns:
+
+| shape | hits |
+|---|---|
+| distinctive scalar (check 21's class) | 5 |
+| small scalar (shape one above) | 77 |
+| label -> term inside the value (shape two) | 1 |
+| label from the gold path (shape three) | 0 |
+
+So the cross scan runs the distinctive scalars and the two pair shapes, and NOT
+the small scalars: anchoring on the component is what makes a two-digit integer
+checkable within one campaign, and across 22 neighbours that anchor is gone --
+77 hits, each one a graded count of 12 or 30 appearing somewhere in somebody
+else's prose. Of the other 6, four were the provenance block above, one was the
+malleobactin case already fixed, and one was a coincidence inside a shipped
+accession (`S2502` against a graded 2502) that tightened the scalar boundary to
+exclude a leading word character.
+
 **What this does not reach**, stated plainly rather than implied, because check
 21's own docstring does the same and that honesty is what made this gap findable:
 
@@ -66,6 +90,7 @@ from __future__ import annotations
 import json
 import pathlib
 import re
+from typing import Sequence
 
 #: How close a label and its term have to be to read as one statement about that
 #: label. Wide enough to cross a clause, narrow enough that two unrelated
@@ -108,6 +133,22 @@ def exemptions(campaign_name: str, path: pathlib.Path | None = None) -> dict[str
         return {}
     declared = json.loads(source.read_text()).get("exemptions") or {}
     return {entry["component"]: entry["reason"]
+            for entry in declared.get(campaign_name, [])}
+
+
+def cross_exemptions(campaign_name: str,
+                     path: pathlib.Path | None = None) -> dict[tuple[str, str], str]:
+    """Declared cross-campaign collisions for one READER campaign.
+
+    Keyed by (the campaign whose answer is stated, the component), because the
+    same component name occurs in several campaigns and a waiver has to name
+    which one it covers.
+    """
+    source = path or EXEMPTIONS
+    if not source.is_file():
+        return {}
+    declared = json.loads(source.read_text()).get("cross_campaign_exemptions") or {}
+    return {(entry["states"], entry["component"]): entry["reason"]
             for entry in declared.get(campaign_name, [])}
 
 
@@ -167,14 +208,11 @@ def sandbox_sentences(sandbox: pathlib.Path) -> str:
     return "\n".join(parts)
 
 
-def vocabularies(sandbox: pathlib.Path) -> set[str]:
-    """Every term the campaign declares as a closed vocabulary.
+def _terms_in(documents: list[pathlib.Path]) -> set[str]:
+    """Every closed-vocabulary term declared by these JSON documents.
 
-    This bounds the pair scan, and the bound is the point. A graded string that
-    is NOT a declared term -- a molecular formula, a unit, an InChIKey -- is
-    published because the campaign cannot be solved without it, and whether
-    grading it back is a free component is a separate question with its own
-    answer per campaign.
+    A list of strings is a declared vocabulary; a string anywhere else is a
+    value. Terms shorter than MIN_TERM are ordinary words.
     """
     terms: set[str] = set()
 
@@ -188,14 +226,39 @@ def vocabularies(sandbox: pathlib.Path) -> set[str]:
             for value in node:
                 walk(value)
 
-    for path in sorted(sandbox.rglob("*.json")):
-        if path.relative_to(sandbox).parts[0] == "inputs":
-            continue
+    for path in documents:
         try:
             walk(json.loads(path.read_text(errors="replace")))
         except json.JSONDecodeError:
             continue
     return terms
+
+
+def vocabularies(sandbox: pathlib.Path) -> set[str]:
+    """Every term the campaign declares as a closed vocabulary.
+
+    This bounds the pair scan, and the bound is the point. A graded string that
+    is NOT a declared term -- a molecular formula, a unit, an InChIKey -- is
+    published because the campaign cannot be solved without it, and whether
+    grading it back is a free component is a separate question with its own
+    answer per campaign.
+    """
+    return _terms_in([path for path in sorted(sandbox.rglob("*.json"))
+                      if path.relative_to(sandbox).parts[0] != "inputs"])
+
+
+def declared_terms(campaign: pathlib.Path) -> set[str]:
+    """The same vocabularies, read from the campaign rather than from a sandbox.
+
+    The cross-campaign scan needs 22 neighbours' vocabularies per run, and
+    building 22 sandboxes to read them would copy every neighbour's inputs --
+    tens of megabytes apiece. A sandbox's JSON outside `inputs/` is exactly
+    `reference/`, so reading `reference/` gives the same terms for nothing.
+    """
+    reference = campaign / "reference"
+    if not reference.is_dir():
+        return set()
+    return _terms_in(sorted(reference.glob("*.json")))
 
 
 def _graded(spec: dict, gold: dict, resolve):
@@ -217,6 +280,50 @@ def _graded(spec: dict, gold: dict, resolve):
             except (KeyError, IndexError, TypeError, ValueError):
                 continue
             yield component["name"], path, value
+
+
+def distinctive_forms(value) -> list[str]:
+    """The string forms of a value that are distinctive on their own.
+
+    Check 21's class, lifted here so the per-campaign check and the
+    cross-campaign one search for the same things: four or more digits for an
+    integer, four or more decimals for a float, a non-empty composite whole. An
+    empty composite serialises to "[]" or "{}", which occurs in any JSON file by
+    coincidence and carries no answer anyway.
+    """
+    if isinstance(value, bool) or value is None:
+        return []
+    if isinstance(value, int):
+        return [str(value), f"{value:,}"] if abs(value) >= DISTINCTIVE_INT else []
+    if isinstance(value, float):
+        text = repr(value)
+        _, _, decimals = text.partition(".")
+        return [text] if len(decimals) >= DISTINCTIVE_DECIMALS else []
+    if isinstance(value, str):
+        return []
+    if isinstance(value, (dict, list)):
+        return [json.dumps(value, sort_keys=True)] if value else []
+    return []
+
+
+def plain_digits(prose: str) -> str:
+    """The prose with digit-group separators removed: "4,552" is "4552"."""
+    return re.sub(r"(?<=\d)[,_](?=\d)", "", prose)
+
+
+def states_scalar(prose: str, plain: str, form: str) -> bool:
+    """Is `form` stated in the prose, as a value rather than inside a token?
+
+    The boundary excludes a neighbouring word character, not just a digit, and
+    the reason is a measured false positive: the chemical-space campaign ships a
+    compound named `S2502`, and the MIBiG diff campaign grades a source-entry
+    count of 2502. A digit-only boundary reads the compound name as the count.
+    A composite is distinctive enough to match as a substring.
+    """
+    if form.startswith(("[", "{")):
+        return form in prose or form in plain
+    pattern = r"(?<![\w.])" + re.escape(form) + r"(?![\w])"
+    return bool(re.search(pattern, prose) or re.search(pattern, plain))
 
 
 def _scalar_forms(value) -> list[str]:
@@ -376,4 +483,95 @@ def stale_exemptions(campaign: pathlib.Path, sandbox: pathlib.Path,
             out.append(f"{name} (not a graded component)")
         elif name not in live:
             out.append(f"{name} (no longer collides; drop the exemption)")
+    return out
+
+
+
+# ------------------------------------------------------------ across campaigns
+
+
+def _cross_hit(name: str, path: str, value, prose: str, plain: str,
+               normalised_prose: str, normalised_sentences: str,
+               terms: set[str]) -> str | None:
+    """What this sandbox states about another campaign's component, if anything.
+
+    Three of the four shapes: a distinctive scalar, and the two label/term
+    pairs. The small-scalar shape is deliberately absent -- see the table in the
+    module docstring. A graded count of 30 in one campaign is a sentence in
+    twenty-two others.
+    """
+    for form in distinctive_forms(value):
+        if states_scalar(prose, plain, form):
+            return f"{name} = {value!r}"
+    if isinstance(value, dict):
+        for label, term in sorted(value.items(), key=lambda kv: str(kv[0])):
+            if isinstance(term, str) and term in terms and _pair_in(
+                    normalised_prose, str(label), term):
+                return f"{name}[{label}] = {term!r}"
+    if isinstance(value, str) and value in terms:
+        for label in _path_labels(path):
+            if _pair_in(normalised_sentences, label, value, MIN_LABEL):
+                return f"{name}@{label} = {value!r}"
+    return None
+
+
+def _cross_scan(campaign: pathlib.Path, sandbox: pathlib.Path,
+                others: Sequence[pathlib.Path], resolve):
+    """Every (other campaign, component, what this sandbox states) triple."""
+    prose = sandbox_prose(sandbox)
+    plain = plain_digits(prose)
+    normalised = _normalise(prose)
+    sentences = _normalise(sandbox_sentences(sandbox))
+    reader_terms = vocabularies(sandbox)
+
+    for other in sorted(others, key=lambda c: c.name):
+        if other.name == campaign.name:
+            continue
+        spec_path, gold_path = other / "grading.json", other / "gold" / "gold.json"
+        if not (spec_path.is_file() and gold_path.is_file()):
+            continue
+        spec = json.loads(spec_path.read_text())
+        gold = json.loads(gold_path.read_text())
+        # The reader's own vocabulary counts as well as the target's: two
+        # instantiations of one template publish the same terms, and the leak
+        # that forced this check was one sibling's note naming the other's
+        # verdict out of a vocabulary both of them declare.
+        terms = reader_terms | declared_terms(other)
+        for name, path, value in _graded(spec, gold, resolve):
+            found = _cross_hit(name, path, value, prose, plain, normalised,
+                               sentences, terms)
+            if found is not None:
+                yield other.name, name, found
+
+
+def cross_findings(campaign: pathlib.Path, sandbox: pathlib.Path,
+                   others: Sequence[pathlib.Path], resolve) -> list[str]:
+    """Other campaigns' graded answers that this cold sandbox states.
+
+    Scope is the set of campaigns shipped together: a disclosure only matters
+    where both campaigns reach the same system, so `others` is passed in rather
+    than discovered -- the gate passes every built campaign, and a release that
+    ships a subset passes that subset.
+    """
+    waived = cross_exemptions(campaign.name)
+    return [f"{other}:{found}"
+            for other, name, found in _cross_scan(campaign, sandbox, others, resolve)
+            if (other, name) not in waived]
+
+
+def stale_cross_exemptions(campaign: pathlib.Path, sandbox: pathlib.Path,
+                           others: Sequence[pathlib.Path], resolve) -> list[str]:
+    """Declared cross-campaign collisions that no longer collide."""
+    waived = cross_exemptions(campaign.name)
+    if not waived:
+        return []
+    live = {(other, name) for other, name, _ in
+            _cross_scan(campaign, sandbox, others, resolve)}
+    known = {c.name for c in others}
+    out = []
+    for other, name in sorted(waived):
+        if other not in known:
+            out.append(f"{other}:{name} (not a campaign in this set)")
+        elif (other, name) not in live:
+            out.append(f"{other}:{name} (no longer collides; drop the exemption)")
     return out

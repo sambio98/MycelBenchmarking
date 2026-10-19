@@ -3,10 +3,20 @@
     "chemspace's most_shared_informative_scaffold was declared here first and removed immediately: the pair scan is bounded to terms the campaign declares as a closed vocabulary, and an InChIKey is not one, so that component never collides and the exemption was a check nobody was getting. The staleness test found it. Recorded because the next person to widen the scan will be tempted to re-add it.",
     "construct-ecoli-rebh-01's uv_gc_window and uv_direct_repeat exemptions were dropped when the codon tables were re-derived from their source records. Both were genuine coincidences against the declared window and k-mer lengths, and both stopped colliding the moment the weights changed the unconstrained optimum -- which is the point of the staleness half of check 22: an exemption outlives the number it was written for, and the next reader takes it for a standing allowance. The gate failed this campaign until they were removed."
   ],
-  "_note": "Declared exemptions for the readiness gate's check 22, cold_sandbox_withholds_small_answers.",
-  "_what_the_gate_checks": "That every hit is declared here with a reason, AND that every declaration still collides. A stale exemption is a check nobody is getting: this project had one within a minute of writing the first waiver list, resting on a number that had just been removed from the prose.",
+  "_note": "Declared exemptions for the readiness gate's checks 22 and 23. `exemptions` covers check 22, which scans each cold sandbox against its own gold; `cross_campaign_exemptions` covers check 23, which scans it against every other campaign shipped alongside it.",
+  "_what_the_cross_campaign_exemptions_are": "Declared collisions for check 23, which scans each cold sandbox against every OTHER built campaign's gold. Keyed by the campaign doing the reading, and each entry names the campaign whose component it covers, because the same component name occurs in several campaigns.",
+  "_what_the_gate_checks": "That every hit is declared here with a reason, AND that every declaration still collides -- for both lists. A stale exemption is a check nobody is getting: this project had one within a minute of writing the first waiver list, resting on a number that had just been removed from the prose, and two more went stale when a codon table was re-derived and moved the numbers they named.",
   "_what_the_gate_does_not_check": "Whether a reason is legitimate. That is an audit question, which is why each reason is written to be read rather than parsed.",
   "_why_this_file_is_not_in_a_campaign": "An exemption names a graded component and says which declared value its answer collides with -- 'uv_gc_window equals the declared 50-nt window length' states the answer. Putting that in task.yaml or reference/ would ship the disclosure the check exists to prevent, so the exemptions live outside campaigns/ where no sandbox can reach them. The gate and tests/unit/test_cold_sandbox_prose.py read this one file.",
+  "cross_campaign_exemptions": {
+    "frameshift-scoelicolor-01": [
+      {
+        "component": "environment",
+        "reason": "Deliberate grouping, as for the same component inside each of these two campaigns. Both run the same ab initio caller on the same chromosome, so both must publish the mode names their own finding is about, and this campaign's note explains that its baseline is the metagenome mode rather than the single-genome one -- which names the other campaign's mode cell. The component is graded as ONE claim: caller, version, mode and flags together. The version in it is the caller's own self-reported string, obtainable only by running the caller, and neither sandbox states it. One cell of a composite is not the composite, which is the gap check 22's docstring already names.",
+        "states": "genecall-scoelicolor-01"
+      }
+    ]
+  },
   "exemptions": {
     "chemspace-mibig-4_0-01": [
       {

@@ -462,6 +462,7 @@
           "product": "50S ribosomal subunit protein L28"
         }
       ],
+      "record_gc_fraction": 0.508326,
       "weights": {
         "AAA": 1.0,
         "AAC": 1.0,
@@ -1031,6 +1032,7 @@
           "product": "50S ribosomal protein L33"
         }
       ],
+      "record_gc_fraction": 0.721187,
       "weights": {
         "AAA": 0.000758,
         "AAC": 1.0,

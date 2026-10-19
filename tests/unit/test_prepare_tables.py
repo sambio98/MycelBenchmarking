@@ -70,6 +70,25 @@ def test_every_weight_is_a_positive_ratio_with_one_top_per_family():
             assert len(tops) == 1, (host, amino_acid, tops)
 
 
+def test_the_shipped_provenance_withholds_the_records_gc_fraction():
+    """It shipped for three days and it is another campaign's answer.
+
+    `record_gc_fraction` for AL645882.2 is 0.721187, which is exactly what
+    `genecall-scoelicolor-01` grades over the same chromosome -- so four
+    campaigns' reference tables were stating a fifth campaign's R2 answer. The
+    gate's check 23 found it the moment that check existed. What a sandbox gets
+    is that the window check ran; the number is audit-side.
+    """
+    tables = json.loads(pt.TABLES.read_text())
+    audit = json.loads((pt.AUDIT / pt.PROVENANCE).read_text())
+    for host, block in tables["provenance"]["hosts"].items():
+        assert "record_gc_fraction" not in block, host
+        assert block["record_gc_inside_design_window"] is True, host
+        low, high = tables["hosts"][host]["gc_global"]
+        assert low <= audit["hosts"][host]["record_gc_fraction"] <= high, host
+    assert "0.721187" not in pt.TABLES.read_text()
+
+
 def test_the_provenance_block_names_a_record_per_host():
     tables = json.loads(pt.TABLES.read_text())
     for host, block in tables["provenance"]["hosts"].items():
@@ -78,8 +97,7 @@ def test_the_provenance_block_names_a_record_per_host():
         assert block["license"]
         assert block["genes"] >= pt.MIN_GENES
         assert block["codons_counted"] > 1000
-        low, high = tables["hosts"][host]["gc_global"]
-        assert low <= block["record_gc_fraction"] <= high
+        assert block["record_gc_inside_design_window"] is True
 
 
 # ---------------------------------------------------------------- the fixtures

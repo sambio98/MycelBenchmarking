@@ -530,6 +530,54 @@ def _cold_sandbox_withholds_small_answers(campaign: pathlib.Path) -> Check:
     return _check("cold_sandbox_withholds_small_answers", not problems, detail)
 
 
+def _cold_sandbox_withholds_other_campaigns_answers(campaign: pathlib.Path) -> Check:
+    """Check 23: the cold sandbox may not state ANOTHER campaign's answer either.
+
+    Checks 21 and 22 compare a sandbox against its own gold, so a note naming a
+    neighbouring campaign's graded answer passes both every time. Two instances
+    shipped: the malleobactin campaign's audit notes stated the sevadicin
+    instantiation's verdict while explaining that the field varies across
+    instantiations, and a codon-table provenance block added to four
+    construct-design campaigns stated the gene-calling campaign's graded GC
+    fraction while recording which record the weights came from. Both were true,
+    useful sentences about this campaign that happened to answer another one.
+
+    The scope is the set of campaigns shipped together, because that is when the
+    disclosure can reach a system: every built campaign beside this one. The
+    neighbours are read from `campaigns/` directly rather than through a sandbox
+    apiece -- a sandbox copies the inputs, and 22 of them per gate run would cost
+    minutes to learn vocabularies that `reference/` already states.
+
+    Which shapes it runs is measured rather than assumed, and the small-scalar
+    shape is excluded: see the table in `cold_sandbox`'s docstring.
+    """
+    import tempfile
+
+    from npbench_c.readiness import cold_sandbox
+    from npbench_c.sweep.runner import build_sandbox
+
+    others = [c for c in sorted(campaign.parent.iterdir())
+              if c.is_dir() and c.name != campaign.name
+              and (c / "grading.json").is_file()
+              and (c / "gold" / "gold.json").is_file()]
+    with tempfile.TemporaryDirectory() as tmp:
+        sandbox = build_sandbox(campaign, pathlib.Path(tmp) / "cold", None)
+        hits = cold_sandbox.cross_findings(campaign, sandbox, others, _resolve_gold)
+        stale = cold_sandbox.stale_cross_exemptions(
+            campaign, sandbox, others, _resolve_gold)
+        waived = cold_sandbox.cross_exemptions(campaign.name)
+
+    problems = ([f"states: {h}" for h in sorted(hits)]
+                + [f"stale exemption: {s}" for s in stale])
+    detail = f"{len(others)} neighbouring campaign(s) checked"
+    if waived:
+        detail += f", {len(waived)} declared collision(s)"
+    detail += ("; " + "; ".join(problems) if problems
+               else "; no other campaign's answer stated")
+    return _check("cold_sandbox_withholds_other_campaigns_answers",
+                  not problems, detail)
+
+
 def _integrity(campaign: pathlib.Path) -> list[Check]:
     hits = []
     for path in sorted(campaign.rglob("*")):
@@ -581,6 +629,7 @@ def run(campaign_dir: pathlib.Path) -> list[Check]:
     checks.append(_warm_bundles_withhold_answers(campaign))
     checks.append(_cold_sandbox_withholds_answers(campaign))
     checks.append(_cold_sandbox_withholds_small_answers(campaign))
+    checks.append(_cold_sandbox_withholds_other_campaigns_answers(campaign))
     checks += _integrity(campaign)
     checks += _pending_agent_runs(campaign)
     return checks

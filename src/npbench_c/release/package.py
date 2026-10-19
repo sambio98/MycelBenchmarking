@@ -297,9 +297,9 @@ def audit_release(repo: pathlib.Path, out: pathlib.Path,
         if any((packaged / "submission").iterdir()):
             raise ReleaseError(f"{campaign.name}: submission/ is not empty")
 
-        # The same scan the readiness gate runs as check 22, pointed at the
-        # release instead of a sandbox: gold and the grading spec come from the
-        # build repo, the prose from what would ship.
+        # The same scans the readiness gate runs as checks 22 and 23, pointed
+        # at the release instead of a sandbox: gold and the grading spec come
+        # from the build repo, the prose from what would ship.
         if not (campaign / "gold" / "gold.json").is_file():
             continue
         hits = cold_sandbox.findings(campaign, packaged, _resolve_gold)
@@ -307,6 +307,23 @@ def audit_release(repo: pathlib.Path, out: pathlib.Path,
             raise GoldLeak(
                 f"{campaign.name}: the release states {len(hits)} graded "
                 f"answer(s): {sorted(hits)[:4]}")
+
+        # And check 23, over THIS release's campaigns rather than every built
+        # one. A disclosure of a neighbour's answer only matters where both
+        # reach the same system, so the set being shipped is the right scope --
+        # a release that drops a campaign should not refuse over a sentence
+        # about it, and one that adds a campaign must be rechecked against it.
+        neighbours = [c for c in chosen
+                      if c.name != campaign.name
+                      and (c / "gold" / "gold.json").is_file()
+                      and (c / "grading.json").is_file()]
+        cross = cold_sandbox.cross_findings(
+            campaign, packaged, neighbours, _resolve_gold)
+        if cross:
+            raise GoldLeak(
+                f"{campaign.name}: the release states {len(cross)} graded "
+                f"answer(s) belonging to a campaign shipped with it: "
+                f"{sorted(cross)[:4]}")
 
 
 def main(argv: list[str] | None = None) -> int:

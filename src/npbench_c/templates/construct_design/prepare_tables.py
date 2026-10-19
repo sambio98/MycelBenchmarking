@@ -490,7 +490,12 @@ def build_tables(manifest: Mapping, records: Mapping[str, pathlib.Path],
             "genes": len(genes),
             "license": spec["license"],
             "organism": spec["organism"],
-            "record_gc_fraction": round(gc, ROUND),
+            # The record's GC fraction is NOT published here. It was, for three
+            # days, and it is the gene-calling campaign's graded answer for this
+            # same chromosome -- which the gate's check 23 found the moment it
+            # existed. What belongs in a sandbox is that the check ran; the
+            # number is in audit/codon_table_provenance.json.
+            "record_gc_inside_design_window": True,
             "record_sha256_when_derived": spec.get(
                 "record_sha256_when_derived", _file_digest(path)),
             "source": spec["source"],
@@ -499,6 +504,7 @@ def build_tables(manifest: Mapping, records: Mapping[str, pathlib.Path],
         }
         audit["hosts"][host] = {
             "accession": spec["accession"],
+            "record_gc_fraction": round(gc, ROUND),
             "census_of_dropped_candidates": census,
             "codon_counts": {codon: counts[codon] for codon in sorted(counts)},
             "gene_set_sha256": digest,
@@ -544,7 +550,7 @@ def main(argv: list[str] | None = None) -> int:
         block = tables["provenance"]["hosts"][host]
         print(f"  {host:<24} {block['accession']:<12} "
               f"{block['genes']} genes  {block['codons_counted']} codons  "
-              f"GC {block['record_gc_fraction']}  "
+              f"GC {audit['hosts'][host]['record_gc_fraction']}  "
               f"unobserved {len(block['unobserved_codons'])}")
         print(f"  {'':<24} gene_set_sha256 {block['gene_set_sha256']}")
     print(f"  wrote {TABLES}")

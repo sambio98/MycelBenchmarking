@@ -13,14 +13,14 @@ scoring path.
 | Rung ladders | `src/npbench_c/grading/ladder.py` | depth, monotonicity, chance floor |
 | Grader | `src/npbench_c/grading/grade.py` | pure declarative comparator |
 | Grader identity | `src/npbench_c/grading/version.py` | semver + content hash |
-| Readiness gate | `src/npbench_c/readiness/gate.py` | 22 mechanical checks, 5 pending-on-agent-runs |
+| Readiness gate | `src/npbench_c/readiness/gate.py` | 23 mechanical checks, 5 pending-on-agent-runs |
 | Template: construct design | `src/npbench_c/templates/construct_design/` | shared engine, 2 ladders |
-| Campaign: construct design | `campaigns/construct-ecoli-rebh-01/` | oracle 1.0, gate 22/0/5 |
-| Campaign: constraint conflict | `campaigns/constraint-conflict-ecoli-rebh-01/` | oracle 1.0, gate 22/0/5 |
-| Campaign: feasible control | `campaigns/constraint-feasible-ecoli-rebh-01/` | oracle 1.0, gate 22/0/5 |
+| Campaign: construct design | `campaigns/construct-ecoli-rebh-01/` | oracle 1.0, gate 23/0/5 |
+| Campaign: constraint conflict | `campaigns/constraint-conflict-ecoli-rebh-01/` | oracle 1.0, gate 23/0/5 |
+| Campaign: feasible control | `campaigns/constraint-feasible-ecoli-rebh-01/` | oracle 1.0, gate 23/0/5 |
 | Template: NRPS mass balance | `src/npbench_c/templates/mass_balance_nrps/` | shared oracle, 2 instantiations |
-| Campaign: malleobactin | `campaigns/massbalance-nrps-malleobactin-01/` | oracle 1.0, gate 22/0/5 |
-| Campaign: sevadicin | `campaigns/massbalance-nrps-sevadicin-01/` | oracle 1.0, gate 22/0/5 |
+| Campaign: malleobactin | `campaigns/massbalance-nrps-malleobactin-01/` | oracle 1.0, gate 23/0/5 |
+| Campaign: sevadicin | `campaigns/massbalance-nrps-sevadicin-01/` | oracle 1.0, gate 23/0/5 |
 | Internal sweep | `src/npbench_c/sweep/` | runner, stats, gates, stub fixtures |
 | Refusal contract | `tests/unit/test_build_refusals.py` | every one of 149 build refusals across 12 templates named by a test |
 | Release packager | `src/npbench_c/release/package.py` | builds the shippable tree; refuses gold, the oracle, `docs/`, the grading spec or any graded answer; assembles attribution |
@@ -28,38 +28,38 @@ scoring path.
 | Catalog | `docs/catalog.md` | 24 templates / 32 campaigns, grounded |
 | Provisioning | `docs/environment.md` | tools, DBs, sandbox contract |
 | Template: MIBiG release diff | `src/npbench_c/templates/mibig_diff/` | shared oracle |
-| Campaign: MIBiG 3.1→4.0 diff | `campaigns/mibig-diff-3_1-to-4_0-01/` | oracle 1.0, gate 22/0/5 |
+| Campaign: MIBiG 3.1→4.0 diff | `campaigns/mibig-diff-3_1-to-4_0-01/` | oracle 1.0, gate 23/0/5 |
 | Template: annotation audit | `src/npbench_c/templates/mibig_annotation_audit/` | shared oracle |
-| Campaign: PrnA construct | `campaigns/construct-ecoli-prna-01/` | oracle 1.0, gate 22/0/5 |
-| Campaign: gene-function evidence | `campaigns/mibig-gene-function-evidence-01/` | oracle 1.0, gate 22/0/5 |
+| Campaign: PrnA construct | `campaigns/construct-ecoli-prna-01/` | oracle 1.0, gate 23/0/5 |
+| Campaign: gene-function evidence | `campaigns/mibig-gene-function-evidence-01/` | oracle 1.0, gate 23/0/5 |
 | Template: structure features | `src/npbench_c/templates/structure_features/` | shared engine, 2 ladders |
-| Campaign: PrnA residue evidence | `campaigns/residues-prna-01/` | oracle 1.0, gate 22/0/5 |
-| Campaign: RebH pocket geometry | `campaigns/pocket-rebh-01/` | oracle 1.0, gate 22/0/5 |
+| Campaign: PrnA residue evidence | `campaigns/residues-prna-01/` | oracle 1.0, gate 23/0/5 |
+| Campaign: RebH pocket geometry | `campaigns/pocket-rebh-01/` | oracle 1.0, gate 23/0/5 |
 | Template: chemical space | `src/npbench_c/templates/chemical_space/` | shared oracle, RDKit pinned at instantiation |
-| Campaign: MIBiG 4.0 chemical space | `campaigns/chemspace-mibig-4_0-01/` | oracle 1.0, gate 22/0/5 |
+| Campaign: MIBiG 4.0 chemical space | `campaigns/chemspace-mibig-4_0-01/` | oracle 1.0, gate 23/0/5 |
 | Template: kinetics consistency | `src/npbench_c/templates/kinetics_consistency/` | shared oracle, BRENDA 2026.1 |
-| Campaign: BRENDA EC 1.1 kinetics | `campaigns/kinetics-brenda-ec1_1-01/` | oracle 1.0, gate 22/0/5 |
+| Campaign: BRENDA EC 1.1 kinetics | `campaigns/kinetics-brenda-ec1_1-01/` | oracle 1.0, gate 23/0/5 |
 | Template: ChEMBL selectivity | `src/npbench_c/templates/chembl_selectivity/` | shared oracle, ChEMBL_37, first `share_alike` |
-| Campaign: S. aureus topoisomerases | `campaigns/selectivity-saureus-topoisomerase-01/` | oracle 1.0, gate 22/0/5 |
+| Campaign: S. aureus topoisomerases | `campaigns/selectivity-saureus-topoisomerase-01/` | oracle 1.0, gate 23/0/5 |
 | Template: EC domain audit | `src/npbench_c/templates/ec_domain_audit/` | HMMER 3.4 + Pfam 35.0, first tool-running template |
-| Campaign: EC 1.1.3.15 FMN_dh audit | `campaigns/ecaudit-fmn-dh-1_1_3_15-01/` | oracle 1.0, gate 22/0/5, **first S1** |
+| Campaign: EC 1.1.3.15 FMN_dh audit | `campaigns/ecaudit-fmn-dh-1_1_3_15-01/` | oracle 1.0, gate 23/0/5, **first S1** |
 | Template: annotation transfer | `src/npbench_c/templates/annotation_transfer/` | DIAMOND 2.2.8, closed reference set |
-| Campaign: EC 1.14 transfer | `campaigns/transfer-ec1_14-uniprot-01/` | oracle 1.0, gate 22/0/5 |
+| Campaign: EC 1.14 transfer | `campaigns/transfer-ec1_14-uniprot-01/` | oracle 1.0, gate 23/0/5 |
 | Template: BGC detection | `src/npbench_c/templates/bgc_detection/` | antiSMASH 8.0.4, whole chromosome, **first S2** |
-| Campaign: S. coelicolor regions | `campaigns/bgcdetect-scoelicolor-01/` | oracle 1.0, gate 22/0/5 |
+| Campaign: S. coelicolor regions | `campaigns/bgcdetect-scoelicolor-01/` | oracle 1.0, gate 23/0/5 |
 | Template: GCF cutoff | `src/npbench_c/templates/gcf_cutoff/` | BiG-SCAPE 2.0.3, one run over a declared grid |
-| Campaign: MIBiG 32 cutoff sweep | `campaigns/gcfcutoff-mibig-32-01/` | oracle 1.0, gate 22/0/5 |
+| Campaign: MIBiG 32 cutoff sweep | `campaigns/gcfcutoff-mibig-32-01/` | oracle 1.0, gate 23/0/5 |
 | Template: RiPP precursor audit | `src/npbench_c/templates/ripp_precursor/` | HMMER 3.4 + declared Pfam panel, elected coordinate convention |
-| Campaign: MIBiG RiPP precursors | `campaigns/ripp-precursor-mibig-4_0-01/` | oracle 1.0, gate 22/0/5 |
+| Campaign: MIBiG RiPP precursors | `campaigns/ripp-precursor-mibig-4_0-01/` | oracle 1.0, gate 23/0/5 |
 | Template: domain architecture | `src/npbench_c/templates/domain_architecture/` | HMMER 3.4 + declared 65-model Pfam panel, declared overlap resolution |
-| Campaign: MIBiG NRPS architectures | `campaigns/arch-nrps-mibig-4_0-01/` | oracle 1.0, gate 22/0/5 |
-| Campaign: MIBiG PKS architectures | `campaigns/arch-pks-mibig-4_0-01/` | oracle 1.0, gate 22/0/5, cis-AT vs trans-AT strata |
+| Campaign: MIBiG NRPS architectures | `campaigns/arch-nrps-mibig-4_0-01/` | oracle 1.0, gate 23/0/5 |
+| Campaign: MIBiG PKS architectures | `campaigns/arch-pks-mibig-4_0-01/` | oracle 1.0, gate 23/0/5, cis-AT vs trans-AT strata |
 | Template: gene calling | `src/npbench_c/templates/gene_calling/` | Prodigal 2.6.3, declared fragmentation rule, no external resource |
-| Campaign: S. coelicolor gene calls | `campaigns/genecall-scoelicolor-01/` | oracle 1.0, gate 22/0/5 |
+| Campaign: S. coelicolor gene calls | `campaigns/genecall-scoelicolor-01/` | oracle 1.0, gate 23/0/5 |
 | Template: remote homology | `src/npbench_c/templates/remote_homology/` | MMseqs2 18.8cc5c over one superfamily, InterPro 110.0 as the label, declared shuffle ladder |
-| Campaign: IPR036188 twilight zone | `campaigns/homology-twilight-ipr036188-01/` | oracle 1.0, gate 22/0/5, recovery from 5% to 97% across five queries |
+| Campaign: IPR036188 twilight zone | `campaigns/homology-twilight-ipr036188-01/` | oracle 1.0, gate 23/0/5, recovery from 5% to 97% across five queries |
 | Template: frameshift response | `src/npbench_c/templates/frameshift_response/` | Prodigal 2.6.3 in the opposite mode, planted single-base deletion, coordinate lift past the cut |
-| Campaign: S. coelicolor frameshifts | `campaigns/frameshift-scoelicolor-01/` | oracle 1.0, gate 22/0/5, ladder samples the measured turnover band |
+| Campaign: S. coelicolor frameshifts | `campaigns/frameshift-scoelicolor-01/` | oracle 1.0, gate 23/0/5, ladder samples the measured turnover band |
 | External resources | `src/npbench_c/tools/resources.py` | one declaration for a pinned file read from the image, shared by 3 campaigns |
 | Tool memo | `src/npbench_c/tools/cache.py` | stub sweeps only; 29m32s to 3m44s |
 | Phase 1 image | `image/Dockerfile`, `image/environment.lock.json` | 8 tools pinned to `version=build`, 185-package closure hashed, antiSMASH databases pinned at 9.4 GB |
@@ -201,7 +201,7 @@ A campaign is ready when `npbench_c.readiness.gate` returns all-pass — not whe
 someone believes it is. Checks requiring internal agent runs report **PENDING**,
 never PASS: the gate does not launder an unmeasured property into a green tick.
 
-Current state, every campaign: **22 pass / 0 fail / 5 pending**.
+Current state, every campaign: **23 pass / 0 fail / 5 pending**.
 
 The five pending checks (monotonicity, R1 clear rate, no-tool leakage,
 difficulty gate, discrimination) are satisfied by an `internal_sweep.json` from
@@ -2957,7 +2957,8 @@ The scan is now the gate's twenty-second mechanical check,
 `cold_sandbox_withholds_small_answers`, running the same code as the project-wide
 test: `src/npbench_c/readiness/cold_sandbox.py`. It builds the real cold sandbox,
 as check 21 does, rather than reading `task.yaml` directly — the question is what
-an agent gets, not what a file says. Every campaign is at 22/0/5.
+an agent gets, not what a file says. Every campaign was at 22/0/5 when
+this landed; check 23 below took them to 23/0/5.
 
 The design question worth recording is where a declared collision can live.
 
@@ -3635,6 +3636,89 @@ arithmetic for a cross-campaign pass is 23 × 23 runs of a scan that takes two
 seconds for all 23 — so it is affordable and it is now an open item rather than a
 finished one.
 
+## Check 23: the leak that passes a per-campaign scan every time
+
+Checks 21 and 22 compare a cold sandbox against **its own** gold. A sentence in
+one campaign's notes that names a *neighbouring* campaign's graded answer passes
+both, 23 times out of 23 — and two of them had shipped. The malleobactin
+campaign's audit notes named the sevadicin instantiation's verdict while
+explaining that the field varies across instantiations (fixed in the previous
+section), and the codon-table provenance block added in that same commit stated
+`record_gc_fraction: 0.721187` for AL645882.2 in four campaigns' reference
+tables — which is exactly what `genecall-scoelicolor-01` grades over that
+chromosome. Four campaigns were stating a fifth's R2 answer, three days old, my
+own, and found by the check written to look for it.
+
+### Which shapes to run is a measurement, not a preference
+
+All 506 ordered pairs of the 23 built campaigns, each shape counted separately,
+before any of it was wired into the gate:
+
+| shape | hits over 506 pairs |
+|---|---|
+| distinctive scalar (check 21's class: 4+ digits, 4+ decimals, whole composite) | 5 |
+| small scalar (check 22's shape one: a graded 15 or 0.62 in a sentence) | 77 |
+| label → term inside the graded value (check 22's shape two) | 1 |
+| label from the gold path (check 22's shape three) | 0 |
+
+So check 23 runs the distinctive scalars and both pair shapes, and **not** the
+small scalars. What makes a two-digit integer checkable within one campaign is
+anchoring on the component — 22 graded values, each searched once — and across 22
+neighbours that anchor is gone: 77 hits, every one a graded count of 12 or 30
+appearing somewhere in somebody else's prose. Running it anyway would have
+produced a check nobody could keep green, which is how waiver lists start.
+
+Of the six non-small hits, four were the provenance block, one was the
+malleobactin case, and the sixth was a false positive worth keeping: the
+chemical-space campaign ships a compound named **`S2502`** and the MIBiG diff
+campaign grades a source-entry count of **2502**. Check 21's boundary excludes a
+neighbouring *digit* — its own comment says so, about `BGC0002359` — but not a
+neighbouring letter, so the compound name read as the count. Both checks now
+share one `states_scalar`, with the boundary widened to any word character, and
+one `distinctive_forms`. The duplication was the real defect: two
+implementations of "is this number stated" drift, and only one of them had the
+accession-table comment.
+
+### Scope is the set shipped together, so it is passed in rather than discovered
+
+A disclosure only matters where both campaigns can reach the same system. The
+gate passes every built campaign beside the one under test; the release packager
+passes **its own** subset, so dropping a campaign cannot refuse a release over a
+sentence about it, and adding one forces a re-check. `audit_release` now runs
+checks 22 and 23 against the assembled tree, which is the point at which
+"shipped together" stops being a figure of speech.
+
+### What made it affordable
+
+A sandbox copies the campaign's inputs — tens of megabytes apiece — and the scan
+needs 22 neighbours' declared vocabularies per run. It does not need their
+sandboxes: a sandbox's JSON outside `inputs/` is exactly `reference/`, so
+`declared_terms(campaign)` reads the vocabularies straight from the repository.
+That shortcut is only valid while the two agree, so a test asserts
+`declared_terms(campaign) == vocabularies(sandbox)` for all 23. Measured cost of
+check 23 inside a gate run: **0.4s** for a construct-design campaign and **6.0s**
+for the chemical-space one, whose own prose is a 3,000-row chemistry table.
+Against a gate run of minutes that is free, and the whole-suite version in
+`tests/unit/test_cold_sandbox_prose.py` — every campaign read against every other,
+sandbox builds included — runs in about fifteen seconds, because there the
+sandboxes are built once and shared.
+
+### One declared collision, and it is the composite gap again
+
+`frameshift-scoelicolor-01` states `genecall-scoelicolor-01`'s
+`environment[baseline_mode]`. Both run the same ab initio caller on the same
+chromosome, both must publish the mode names their own finding is about, and the
+frameshift campaign's note explains that its baseline is the metagenome mode
+rather than the single-genome one — which names the other campaign's mode cell.
+But `environment` is graded as ONE claim: caller, version, mode and flags
+together, and the version in it is the caller's self-reported string, obtainable
+only by running the caller. One cell of a composite is not the composite, which
+is the gap check 22's docstring already names. Declared under
+`cross_campaign_exemptions` in `audit/cold_sandbox_exemptions.json`, keyed by the
+reader and naming the campaign and component it covers, with the same staleness
+rule as the within-campaign waivers: an exemption that no longer collides fails
+the gate.
+
 ## Open items
 
 1. ~~CAI table provenance.~~ **Closed.** The tables are derived from two pinned
@@ -3732,7 +3816,7 @@ finished one.
 
 11. ~~The categorical-leak check belongs in the readiness gate, as check 22.~~
    **Done.** `cold_sandbox_withholds_small_answers` is the gate's twenty-second
-   mechanical check, so the gate now reports 22/0/5. The scan lives in
+   mechanical check, which took the gate to 22/0/5 at the time. The scan lives in
    `src/npbench_c/readiness/cold_sandbox.py`, the gate and
    `tests/unit/test_cold_sandbox_prose.py` run the same implementation, and the
    test covers all 22 campaigns in two seconds where the gate covers one at a
@@ -3745,12 +3829,12 @@ finished one.
    Spearman against the continuous rating. This is the one place humans are
    involved, and it sits outside the grading pipeline by design.
 
-13. **A cross-campaign disclosure scan.** Check 22 compares each sandbox against
-   its own gold, so one campaign's `task.yaml` naming a *neighbouring* campaign's
-   graded answer passes every time — which is how the malleobactin notes came to
-   state sevadicin's verdict. The fix is the same scan over every (sandbox, other
-   campaign's gold) pair, affordable at 23 × 23 because the whole-suite scan takes
-   two seconds. What needs deciding first is the policy: two instantiations of one
-   template legitimately share arithmetic, which is what `split_constraint`
-   declares, so the check has to distinguish a declared overlap from a leak rather
-   than flag every pair of siblings.
+13. ~~A cross-campaign disclosure scan.~~ **Done**, as the gate's
+   twenty-third mechanical check, so the gate now reports 23/0/5. Which shapes
+   it runs was measured over all 506 ordered pairs first, and the small-scalar
+   shape is deliberately excluded with the number that excluded it. It found
+   four campaigns stating the gene-calling campaign's graded GC fraction — a
+   provenance block three days old — and one false positive that tightened the
+   scalar boundary both checks now share. Scope is the set shipped together:
+   the gate passes every built campaign, `audit_release` passes the release's
+   own subset. See "Check 23" above.
