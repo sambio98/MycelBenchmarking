@@ -221,7 +221,6 @@ rungs:
 # curated record that was never derived from it; the control is the genes whose
 # record names no condensation domain, which the reconciliation must report as
 # uncurated rather than as a disagreement with zero.
-structural_elements: [verification, counterfactual, control]
 
 harness:
   gold_command: ["python3", "-m", "npbench_c.templates.domain_architecture.build", "{campaign}"]

@@ -116,8 +116,6 @@ harness:
     - {name: stub-complete,    level: complete}
     - {name: stub-parametric,  level: parametric, mode: no_tool}
 
-structural_elements: [verification, abstention_free, counterfactual]
-
 # Quantities deliberately NOT graded, with the measurement that excluded them.
 excluded_from_grading:
   - field: binding_cost

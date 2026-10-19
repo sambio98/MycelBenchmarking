@@ -187,7 +187,6 @@ rungs:
 # Nothing is planted. The verification is one run of the caller against another
 # over the same bases; the control is the unfragmented cell of the grid, which
 # must lose and gain nothing against itself.
-structural_elements: [verification, counterfactual, control]
 
 harness:
   gold_command: ["python3", "-m", "npbench_c.templates.gene_calling.build", "{campaign}"]

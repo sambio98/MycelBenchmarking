@@ -19,7 +19,9 @@ import pytest
 from npbench_c.readiness.gate import (
     LICENSE_CLASSES,
     PASS,
+    UNVALIDATED_DESIGN_LABELS,
     _contract_and_provenance,
+    _design_claims_are_checkable,
     _resolve_gold,
     _warm_bundles_withhold_answers,
 )
@@ -179,3 +181,79 @@ def test_a_share_alike_campaign_must_carry_its_notice(tmp_path):
     (copy / "task.yaml").write_text(yaml.safe_dump(task, sort_keys=False))
     by_name = {c.name: c for c in _contract_and_provenance(copy)}
     assert by_name["share_alike_notice_present"].status == PASS
+
+
+# ----------------------------------------------- design claims a reader can check
+
+
+@pytest.mark.parametrize("campaign", CAMPAIGNS, ids=lambda c: c.name)
+def test_no_campaign_declares_an_unvalidated_design_label(campaign):
+    """What retired `structural_elements`, asserted over the whole suite.
+
+    It was a free-text list of design features that nothing read: 23 of 23
+    campaigns declared `verification` and `counterfactual`, which is what the
+    four-rung ladder means; 11 declared `planted` and no campaign ships an
+    altered input; 14 declared `control` for three unrelated things. And on the
+    constraint control pair the conflict half declared `abstention` while the
+    feasible half did not, which states which half of a two-verdict pair the
+    reader is holding.
+    """
+    result = _design_claims_are_checkable(campaign)
+    assert result.status == PASS, result.detail
+
+
+def test_the_check_fires_on_a_restored_design_label(tmp_path):
+    """The check has to be able to fail, under any of the field's names."""
+    for field in UNVALIDATED_DESIGN_LABELS:
+        campaign = tmp_path / field
+        shutil.copytree(SMALL, campaign)
+        task = campaign / "task.yaml"
+        task.write_text(task.read_text()
+                        + f"\n{field}: [verification, counterfactual, planted]\n")
+        result = _design_claims_are_checkable(campaign)
+        assert result.status != PASS, field
+        assert field in result.detail
+
+
+def test_the_check_fires_on_a_dangling_campaign_reference(tmp_path):
+    """A renamed or retired campaign leaves a sentence pointing at nothing."""
+    campaign = tmp_path / SMALL.name
+    shutil.copytree(SMALL, campaign)
+    task = campaign / "task.yaml"
+    task.write_text(task.read_text() + (
+        "\nsplit_note: >\n  compare against construct-ecoli-retired-09, which "
+        "shares this template.\n"))
+    result = _design_claims_are_checkable(campaign)
+    assert result.status != PASS
+    assert "construct-ecoli-retired-09" in result.detail
+
+
+def test_the_check_fires_on_a_one_way_control_pair(tmp_path):
+    """A control pair whose halves do not name each other is two campaigns."""
+    pair = ROOT / "constraint-conflict-ecoli-rebh-01"
+    if not (pair / "task.yaml").is_file():
+        pytest.skip("the constraint control pair is not built")
+    campaign = tmp_path / "conflict"
+    shutil.copytree(pair, campaign)
+    # The copy keeps the pairing, but it is no longer the campaign its partner
+    # names -- which is exactly the asymmetry the check looks for.
+    (tmp_path / "constraint-feasible-ecoli-rebh-01").mkdir()
+    shutil.copy(ROOT / "constraint-feasible-ecoli-rebh-01" / "task.yaml",
+                tmp_path / "constraint-feasible-ecoli-rebh-01" / "task.yaml")
+    result = _design_claims_are_checkable(campaign)
+    assert result.status != PASS
+    assert "names" in result.detail
+
+
+def test_a_campaign_naming_its_real_partner_passes(tmp_path):
+    """The other side of the pairing test: a symmetric pair is fine."""
+    for name in ("constraint-conflict-ecoli-rebh-01",
+                 "constraint-feasible-ecoli-rebh-01"):
+        source = ROOT / name
+        if not (source / "task.yaml").is_file():
+            pytest.skip("the constraint control pair is not built")
+        (tmp_path / name).mkdir()
+        shutil.copy(source / "task.yaml", tmp_path / name / "task.yaml")
+    result = _design_claims_are_checkable(
+        tmp_path / "constraint-conflict-ecoli-rebh-01")
+    assert result.status == PASS, result.detail

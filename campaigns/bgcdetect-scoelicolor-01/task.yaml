@@ -173,7 +173,6 @@ rungs:
 # Nothing is planted. The traps are the record's own: a slice would set the
 # boundaries, the two resources count coordinates differently, and half of what
 # the tool finds has no curated counterpart.
-structural_elements: [verification, counterfactual, control]
 
 harness:
   gold_command: ["python3", "-m", "npbench_c.templates.bgc_detection.build", "{campaign}"]

@@ -14,6 +14,7 @@ import hashlib
 import json
 import os
 import pathlib
+import re
 import subprocess
 import sys
 from dataclasses import dataclass
@@ -578,6 +579,93 @@ def _cold_sandbox_withholds_other_campaigns_answers(campaign: pathlib.Path) -> C
                   not problems, detail)
 
 
+#: Design-label fields a campaign may not declare. `structural_elements` was one
+#: for twenty-three campaigns and nothing read it; the census that retired it is
+#: in docs. The synonyms are listed because the field's defect was its
+#: unverifiability, not its name, and a replacement under another name would
+#: inherit it.
+UNVALIDATED_DESIGN_LABELS = ("structural_elements", "design_elements",
+                             "structural_features", "design_features",
+                             "design_properties")
+
+#: A campaign directory name: lower-case words joined by - or _, ending in the
+#: two-digit instantiation number.
+CAMPAIGN_NAME = re.compile(r"\b[a-z][a-z0-9]*(?:[-_][a-z0-9][a-z0-9._]*)+-\d{2}\b")
+
+
+def _design_claims_are_checkable(campaign: pathlib.Path) -> Check:
+    """Check 24: a design claim in task.yaml must be one a reader can check.
+
+    `structural_elements` was a free-text list of design features --
+    `verification`, `counterfactual`, `control`, `planted`, `abstention`,
+    `abstention_free`, `recovery` -- that no code read and no check validated.
+    The census that retired it: `verification` and `counterfactual` were declared
+    by 23 of 23 campaigns, which is what the four-rung ladder means, so they
+    carried no information. `planted` was declared by 11, and no campaign ships
+    an altered input: the two that explained the claim describe something the
+    campaign DOES at run time (a declared single-base deletion, a declared query
+    shuffle), and every campaign that wrote out its reasoning concluded "nothing
+    is planted" while nine others claimed it with no explanation at all.
+    `control` was declared by 14 and meant a different thing in each -- a
+    negative subset, two chains that must agree, a clean comparison section --
+    with no common signature to check. `recovery` was what one campaign measures.
+
+    And one of them was answer-adjacent, which is what settled it: on the
+    constraint control pair, the conflict half declared `abstention` and the
+    feasible half did not, while the graded R2 answer of each is exactly
+    `infeasible_gc_unreachable` against `feasible`. The label told a reader which
+    half of the pair they were holding.
+
+    So the field is gone, this check keeps it gone under any of its names, and
+    what it gestured at lives where something reads it: the ladder in
+    `grading.json`, the controls in gold where a component grades them, the
+    abstention verdict in the graded vocabulary, the planting rule in the
+    campaign's own rules file.
+
+    The other half of the check is the design claims that DO resolve: a campaign
+    name mentioned in `task.yaml` must be a campaign that exists, and
+    `control_pair_with` must name one that names this campaign back. A dangling
+    reference is how a renamed or retired campaign leaves a sentence pointing at
+    nothing, and a one-way pairing is how a control pair becomes a pair of
+    unrelated campaigns.
+    """
+    import yaml
+
+    text = (campaign / "task.yaml").read_text()
+    task = yaml.safe_load(text)
+    problems = []
+
+    for field in UNVALIDATED_DESIGN_LABELS:
+        if field in task:
+            problems.append(
+                f"{field} is declared ({task[field]!r}); it is a design label no "
+                "check can verify, and on a control pair it states which half "
+                "the reader is holding")
+
+    known = {c.name for c in campaign.parent.iterdir() if c.is_dir()}
+    # A campaign names itself in its own id; what matters is the names of others.
+    mentioned = set(CAMPAIGN_NAME.findall(text)) - {campaign.name}
+    for name in sorted(mentioned - known):
+        problems.append(f"names {name}, which is not a campaign")
+
+    pair = task.get("control_pair_with")
+    if pair is not None:
+        if pair not in known:
+            problems.append(f"control_pair_with={pair} is not a campaign")
+        else:
+            other = yaml.safe_load((campaign.parent / pair / "task.yaml").read_text())
+            if other.get("control_pair_with") != campaign.name:
+                problems.append(
+                    f"control_pair_with={pair}, which names "
+                    f"{other.get('control_pair_with')!r} back")
+
+    detail = (f"{len(mentioned & known)} reference(s) to other campaigns resolve"
+              + (f", paired with {pair}" if pair else "")
+              + ("; " + "; ".join(problems) if problems
+                 else "; no unvalidated design label"))
+    return _check("design_claims_are_checkable", not problems, detail)
+
+
 def _integrity(campaign: pathlib.Path) -> list[Check]:
     hits = []
     for path in sorted(campaign.rglob("*")):
@@ -630,6 +718,7 @@ def run(campaign_dir: pathlib.Path) -> list[Check]:
     checks.append(_cold_sandbox_withholds_answers(campaign))
     checks.append(_cold_sandbox_withholds_small_answers(campaign))
     checks.append(_cold_sandbox_withholds_other_campaigns_answers(campaign))
+    checks.append(_design_claims_are_checkable(campaign))
     checks += _integrity(campaign)
     checks += _pending_agent_runs(campaign)
     return checks

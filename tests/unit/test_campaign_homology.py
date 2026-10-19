@@ -764,7 +764,23 @@ def test_the_search_identity_is_graded_as_one_claim():
 def test_the_catalogued_judgement_is_excluded_by_name():
     excluded = [str(b["field"]) for b in _task()["excluded_from_grading"]]
     assert any("really homologous" in field for field in excluded)
-    assert "planted" in _task()["structural_elements"]
+
+
+def test_nothing_is_sampled_filtered_or_planted():
+    """This campaign declared `structural_elements: [planted]` and plants
+    nothing: its provenance says the whole reviewed set is the corpus. The
+    perturbation it does carry is a shuffle it performs at run time, under a
+    declared window, which is a rule rather than an artefact. The label is gone;
+    the two claims it stood for are asserted here instead.
+    """
+    provenance = json.loads((CAMPAIGN / "inputs" / "provenance.json").read_text())
+    rule = provenance["corpus"]["selection_rule"]
+    assert "Nothing is sampled or filtered" in rule
+    rules = json.loads(
+        (CAMPAIGN / "reference" / "homology_rules.json").read_text())["homology"]
+    assert rules["shuffle_windows"][0] == 0, (
+        "the zero-width shuffle is the control that makes the perturbation a "
+        "declared rule rather than a planted corpus")
 
 
 # --------------------------------------------------------------- the measurer

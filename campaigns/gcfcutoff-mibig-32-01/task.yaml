@@ -174,7 +174,6 @@ rungs:
 # Nothing is planted. The negative controls are part of the declared selection
 # rule, not an insertion: one entry per biosynthetic class belonging to no
 # chemistry-derived group.
-structural_elements: [verification, counterfactual, control]
 
 harness:
   gold_command: ["python3", "-m", "npbench_c.templates.gcf_cutoff.build", "{campaign}"]

@@ -13,14 +13,14 @@ scoring path.
 | Rung ladders | `src/npbench_c/grading/ladder.py` | depth, monotonicity, chance floor |
 | Grader | `src/npbench_c/grading/grade.py` | pure declarative comparator |
 | Grader identity | `src/npbench_c/grading/version.py` | semver + content hash |
-| Readiness gate | `src/npbench_c/readiness/gate.py` | 23 mechanical checks, 5 pending-on-agent-runs |
+| Readiness gate | `src/npbench_c/readiness/gate.py` | 24 mechanical checks, 5 pending-on-agent-runs |
 | Template: construct design | `src/npbench_c/templates/construct_design/` | shared engine, 2 ladders |
-| Campaign: construct design | `campaigns/construct-ecoli-rebh-01/` | oracle 1.0, gate 23/0/5 |
-| Campaign: constraint conflict | `campaigns/constraint-conflict-ecoli-rebh-01/` | oracle 1.0, gate 23/0/5 |
-| Campaign: feasible control | `campaigns/constraint-feasible-ecoli-rebh-01/` | oracle 1.0, gate 23/0/5 |
+| Campaign: construct design | `campaigns/construct-ecoli-rebh-01/` | oracle 1.0, gate 24/0/5 |
+| Campaign: constraint conflict | `campaigns/constraint-conflict-ecoli-rebh-01/` | oracle 1.0, gate 24/0/5 |
+| Campaign: feasible control | `campaigns/constraint-feasible-ecoli-rebh-01/` | oracle 1.0, gate 24/0/5 |
 | Template: NRPS mass balance | `src/npbench_c/templates/mass_balance_nrps/` | shared oracle, 2 instantiations |
-| Campaign: malleobactin | `campaigns/massbalance-nrps-malleobactin-01/` | oracle 1.0, gate 23/0/5 |
-| Campaign: sevadicin | `campaigns/massbalance-nrps-sevadicin-01/` | oracle 1.0, gate 23/0/5 |
+| Campaign: malleobactin | `campaigns/massbalance-nrps-malleobactin-01/` | oracle 1.0, gate 24/0/5 |
+| Campaign: sevadicin | `campaigns/massbalance-nrps-sevadicin-01/` | oracle 1.0, gate 24/0/5 |
 | Internal sweep | `src/npbench_c/sweep/` | runner, stats, gates, stub fixtures |
 | Refusal contract | `tests/unit/test_build_refusals.py` | every one of 149 build refusals across 12 templates named by a test |
 | Release packager | `src/npbench_c/release/package.py` | builds the shippable tree; refuses gold, the oracle, `docs/`, the grading spec or any graded answer; assembles attribution |
@@ -28,38 +28,38 @@ scoring path.
 | Catalog | `docs/catalog.md` | 24 templates / 32 campaigns, grounded |
 | Provisioning | `docs/environment.md` | tools, DBs, sandbox contract |
 | Template: MIBiG release diff | `src/npbench_c/templates/mibig_diff/` | shared oracle |
-| Campaign: MIBiG 3.1→4.0 diff | `campaigns/mibig-diff-3_1-to-4_0-01/` | oracle 1.0, gate 23/0/5 |
+| Campaign: MIBiG 3.1→4.0 diff | `campaigns/mibig-diff-3_1-to-4_0-01/` | oracle 1.0, gate 24/0/5 |
 | Template: annotation audit | `src/npbench_c/templates/mibig_annotation_audit/` | shared oracle |
-| Campaign: PrnA construct | `campaigns/construct-ecoli-prna-01/` | oracle 1.0, gate 23/0/5 |
-| Campaign: gene-function evidence | `campaigns/mibig-gene-function-evidence-01/` | oracle 1.0, gate 23/0/5 |
+| Campaign: PrnA construct | `campaigns/construct-ecoli-prna-01/` | oracle 1.0, gate 24/0/5 |
+| Campaign: gene-function evidence | `campaigns/mibig-gene-function-evidence-01/` | oracle 1.0, gate 24/0/5 |
 | Template: structure features | `src/npbench_c/templates/structure_features/` | shared engine, 2 ladders |
-| Campaign: PrnA residue evidence | `campaigns/residues-prna-01/` | oracle 1.0, gate 23/0/5 |
-| Campaign: RebH pocket geometry | `campaigns/pocket-rebh-01/` | oracle 1.0, gate 23/0/5 |
+| Campaign: PrnA residue evidence | `campaigns/residues-prna-01/` | oracle 1.0, gate 24/0/5 |
+| Campaign: RebH pocket geometry | `campaigns/pocket-rebh-01/` | oracle 1.0, gate 24/0/5 |
 | Template: chemical space | `src/npbench_c/templates/chemical_space/` | shared oracle, RDKit pinned at instantiation |
-| Campaign: MIBiG 4.0 chemical space | `campaigns/chemspace-mibig-4_0-01/` | oracle 1.0, gate 23/0/5 |
+| Campaign: MIBiG 4.0 chemical space | `campaigns/chemspace-mibig-4_0-01/` | oracle 1.0, gate 24/0/5 |
 | Template: kinetics consistency | `src/npbench_c/templates/kinetics_consistency/` | shared oracle, BRENDA 2026.1 |
-| Campaign: BRENDA EC 1.1 kinetics | `campaigns/kinetics-brenda-ec1_1-01/` | oracle 1.0, gate 23/0/5 |
+| Campaign: BRENDA EC 1.1 kinetics | `campaigns/kinetics-brenda-ec1_1-01/` | oracle 1.0, gate 24/0/5 |
 | Template: ChEMBL selectivity | `src/npbench_c/templates/chembl_selectivity/` | shared oracle, ChEMBL_37, first `share_alike` |
-| Campaign: S. aureus topoisomerases | `campaigns/selectivity-saureus-topoisomerase-01/` | oracle 1.0, gate 23/0/5 |
+| Campaign: S. aureus topoisomerases | `campaigns/selectivity-saureus-topoisomerase-01/` | oracle 1.0, gate 24/0/5 |
 | Template: EC domain audit | `src/npbench_c/templates/ec_domain_audit/` | HMMER 3.4 + Pfam 35.0, first tool-running template |
-| Campaign: EC 1.1.3.15 FMN_dh audit | `campaigns/ecaudit-fmn-dh-1_1_3_15-01/` | oracle 1.0, gate 23/0/5, **first S1** |
+| Campaign: EC 1.1.3.15 FMN_dh audit | `campaigns/ecaudit-fmn-dh-1_1_3_15-01/` | oracle 1.0, gate 24/0/5, **first S1** |
 | Template: annotation transfer | `src/npbench_c/templates/annotation_transfer/` | DIAMOND 2.2.8, closed reference set |
-| Campaign: EC 1.14 transfer | `campaigns/transfer-ec1_14-uniprot-01/` | oracle 1.0, gate 23/0/5 |
+| Campaign: EC 1.14 transfer | `campaigns/transfer-ec1_14-uniprot-01/` | oracle 1.0, gate 24/0/5 |
 | Template: BGC detection | `src/npbench_c/templates/bgc_detection/` | antiSMASH 8.0.4, whole chromosome, **first S2** |
-| Campaign: S. coelicolor regions | `campaigns/bgcdetect-scoelicolor-01/` | oracle 1.0, gate 23/0/5 |
+| Campaign: S. coelicolor regions | `campaigns/bgcdetect-scoelicolor-01/` | oracle 1.0, gate 24/0/5 |
 | Template: GCF cutoff | `src/npbench_c/templates/gcf_cutoff/` | BiG-SCAPE 2.0.3, one run over a declared grid |
-| Campaign: MIBiG 32 cutoff sweep | `campaigns/gcfcutoff-mibig-32-01/` | oracle 1.0, gate 23/0/5 |
+| Campaign: MIBiG 32 cutoff sweep | `campaigns/gcfcutoff-mibig-32-01/` | oracle 1.0, gate 24/0/5 |
 | Template: RiPP precursor audit | `src/npbench_c/templates/ripp_precursor/` | HMMER 3.4 + declared Pfam panel, elected coordinate convention |
-| Campaign: MIBiG RiPP precursors | `campaigns/ripp-precursor-mibig-4_0-01/` | oracle 1.0, gate 23/0/5 |
+| Campaign: MIBiG RiPP precursors | `campaigns/ripp-precursor-mibig-4_0-01/` | oracle 1.0, gate 24/0/5 |
 | Template: domain architecture | `src/npbench_c/templates/domain_architecture/` | HMMER 3.4 + declared 65-model Pfam panel, declared overlap resolution |
-| Campaign: MIBiG NRPS architectures | `campaigns/arch-nrps-mibig-4_0-01/` | oracle 1.0, gate 23/0/5 |
-| Campaign: MIBiG PKS architectures | `campaigns/arch-pks-mibig-4_0-01/` | oracle 1.0, gate 23/0/5, cis-AT vs trans-AT strata |
+| Campaign: MIBiG NRPS architectures | `campaigns/arch-nrps-mibig-4_0-01/` | oracle 1.0, gate 24/0/5 |
+| Campaign: MIBiG PKS architectures | `campaigns/arch-pks-mibig-4_0-01/` | oracle 1.0, gate 24/0/5, cis-AT vs trans-AT strata |
 | Template: gene calling | `src/npbench_c/templates/gene_calling/` | Prodigal 2.6.3, declared fragmentation rule, no external resource |
-| Campaign: S. coelicolor gene calls | `campaigns/genecall-scoelicolor-01/` | oracle 1.0, gate 23/0/5 |
+| Campaign: S. coelicolor gene calls | `campaigns/genecall-scoelicolor-01/` | oracle 1.0, gate 24/0/5 |
 | Template: remote homology | `src/npbench_c/templates/remote_homology/` | MMseqs2 18.8cc5c over one superfamily, InterPro 110.0 as the label, declared shuffle ladder |
-| Campaign: IPR036188 twilight zone | `campaigns/homology-twilight-ipr036188-01/` | oracle 1.0, gate 23/0/5, recovery from 5% to 97% across five queries |
+| Campaign: IPR036188 twilight zone | `campaigns/homology-twilight-ipr036188-01/` | oracle 1.0, gate 24/0/5, recovery from 5% to 97% across five queries |
 | Template: frameshift response | `src/npbench_c/templates/frameshift_response/` | Prodigal 2.6.3 in the opposite mode, planted single-base deletion, coordinate lift past the cut |
-| Campaign: S. coelicolor frameshifts | `campaigns/frameshift-scoelicolor-01/` | oracle 1.0, gate 23/0/5, ladder samples the measured turnover band |
+| Campaign: S. coelicolor frameshifts | `campaigns/frameshift-scoelicolor-01/` | oracle 1.0, gate 24/0/5, ladder samples the measured turnover band |
 | External resources | `src/npbench_c/tools/resources.py` | one declaration for a pinned file read from the image, shared by 3 campaigns |
 | Tool memo | `src/npbench_c/tools/cache.py` | stub sweeps only; 29m32s to 3m44s |
 | Phase 1 image | `image/Dockerfile`, `image/environment.lock.json` | 8 tools pinned to `version=build`, 185-package closure hashed, antiSMASH databases pinned at 9.4 GB |
@@ -201,7 +201,7 @@ A campaign is ready when `npbench_c.readiness.gate` returns all-pass — not whe
 someone believes it is. Checks requiring internal agent runs report **PENDING**,
 never PASS: the gate does not launder an unmeasured property into a green tick.
 
-Current state, every campaign: **23 pass / 0 fail / 5 pending**.
+Current state, every campaign: **24 pass / 0 fail / 5 pending**.
 
 The five pending checks (monotonicity, R1 clear rate, no-tool leakage,
 difficulty gate, discrimination) are satisfied by an `internal_sweep.json` from
@@ -3719,6 +3719,85 @@ reader and naming the campaign and component it covers, with the same staleness
 rule as the within-campaign waivers: an exemption that no longer collides fails
 the gate.
 
+## Item 9: the field was decorative, and the census is why it is gone
+
+`structural_elements` was a list in every campaign's `task.yaml` —
+`verification`, `counterfactual`, `control`, `planted`, `abstention`,
+`abstention_free`, `recovery` — that no code read and no check validated. The
+open item said it needed either a definition and a gate check or removal. I
+tried to write the definition first, and the census is what decided it:
+
+| term | declared by | what an artefact could decide |
+|---|---|---|
+| `verification` | 23 of 23 | nothing to decide — every campaign recomputes from the submission; that is what measure-then-grade *is* |
+| `counterfactual` | 23 of 23 | nothing to decide — all 23 ladders have exactly four rungs, and R4 is the counterfactual |
+| `control` | 14 | no common signature: a negative subset (`ripp`), two chains that must agree (`pocket-rebh`), a clean comparison section (`ecaudit`), declared control entries in gold (`gcfcutoff`) |
+| `planted` | 11 | **no campaign ships an altered input** |
+| `abstention` | 1 | a graded gold value that means "there is no answer" — true for `constraint-conflict` |
+| `abstention_free` | 2 | the absence of the above, which the absence of the term already says |
+| `recovery` | 1 | what that campaign measures, not a property of its structure |
+
+Two of the seven terms were universal, so they carried no information. Three
+appeared once or twice and described what the campaign measures rather than how
+it is built. And the two load-bearing ones did not survive contact with the
+artefacts.
+
+### `planted` was the one I expected to keep
+
+The previous revision of this item said `frameshift-scoelicolor-01` "deletes a
+base from the chromosome itself, and that planting is the whole reason its R3 is
+gradeable", and offered it as the worked example that would make the definition
+writable. It is not what the campaign ships. Its own provenance says the contig
+is "the same extraction as the gene-calling campaign on this accession, so the
+two are comparable: identical bases, identical digest" — and the mutated copies
+are deliberately **not** shipped, because shipping them would hand over both the
+target positions and the coordinate lift. The planting is a rule the campaign
+applies at run time, not an artefact in `inputs/`. Same for
+`homology-twilight-ipr036188-01`, the other campaign that explained its claim:
+the perturbation is a declared shuffle with a declared seed, and its corpus
+provenance says "Nothing is sampled or filtered: the whole reviewed set is the
+corpus".
+
+So in 23 campaigns, zero planted artefacts and eleven `planted` declarations.
+The pattern in where those eleven sit is the tell: **every campaign that wrote
+out its reasoning above the field concluded "nothing is planted"** — eight of
+them, in those words — and the nine that claimed `planted` without explanation
+are all from before that convention existed. A label nobody has to justify
+drifts to whatever sounded good.
+
+### And one of them was answer-adjacent
+
+This is what settled it rather than merely argued it. The constraint control
+pair grades one verdict each: `constraint-conflict-ecoli-rebh-01` answers
+`infeasible_gc_unreachable` and `constraint-feasible-ecoli-rebh-01` answers
+`feasible`. The conflict half declared `abstention` in its sandbox-facing
+`task.yaml`; the feasible half declared `control`. The label told a reader which
+half of a two-verdict pair they were holding — in a field added for tidiness,
+which none of checks 21, 22 or 23 can see, because "abstention" is not the
+verdict string and appears in no declared vocabulary.
+
+### What replaced it
+
+Nothing, in `task.yaml`. Check 24, `design_claims_are_checkable`, keeps the
+field out under any of five names — the defect was unverifiability, not the
+spelling — and validates the design claims that *do* resolve:
+
+- a campaign name mentioned anywhere in `task.yaml` must be a campaign that
+  exists, so a renamed or retired campaign cannot leave a sentence pointing at
+  nothing;
+- `control_pair_with`, where present, must name a campaign that names this one
+  back. The constraint pair is symmetric today; a one-way pairing is a control
+  pair that has quietly become two unrelated campaigns.
+
+What the retired terms gestured at all still exists, in places something reads:
+the four-rung ladder in `grading.json`, `gcfcutoff`'s five control entries in
+gold where a component grades them, the abstention verdict in the graded
+vocabulary, the deletion rule in `frameshift`'s pinned rules file. The two tests
+that asserted `"planted" in structural_elements` now assert the artefacts
+instead — that the frameshift contig's digest matches the gene-calling
+campaign's over the same accession, and that the homology corpus is the whole
+reviewed set — which is the difference between a label and a claim.
+
 ## Open items
 
 1. ~~CAI table provenance.~~ **Closed.** The tables are derived from two pinned
@@ -3795,18 +3874,16 @@ the gate.
    drive the tool itself — so whether that needs parallelism depends on how long
    real agents take per run, measurable only once item 3 supplies the `SystemSpec`
    entries.
-9. **`structural_elements` is decorative and nothing validates it.** Nine of the
-   twenty-three built campaigns declare `planted` and several of them plant nothing —
-   `mibig-diff-3_1-to-4_0-01`'s own notes say its sharpest case is "supplied by the
-   corpus rather than planted". The campaigns built since declare only what they
-   have (`verification, counterfactual, control`), with one exception that earns
-   the term: `frameshift-scoelicolor-01` deletes a base from the chromosome
-   itself, and that planting is the whole reason its R3 is gradeable. So the field
-   now has one worked example of what `planted` should mean, which makes the
-   definition easier to write and the other nine easier to judge. It still needs
-   either a definition and a gate check or removal, and fixing the other nine is
-   the owner's taxonomy call rather than a silent edit. A declaration no check reads is the
-   thing this project keeps finding in other people's data.
+9. ~~`structural_elements` is decorative and nothing validates it.~~
+   **Closed by removal**, with the census that justified it: two of its seven
+   terms were declared by 23 of 23 campaigns, `planted` was declared by 11 and no
+   campaign ships an altered input, `control` meant three unrelated things, and on
+   the constraint control pair the label stated which half of a two-verdict pair
+   the reader was holding. The field is gone from every `task.yaml`, check 24
+   keeps it out under five names and validates the design references that do
+   resolve, and the two tests that asserted the label now assert the artefacts.
+   See "Item 9" above.
+
 10. ~~Twenty graded components restate the campaign's own definition.~~
    **Closed.** All twenty are dropped from grading across nine campaigns, each
    with its exclusion recorded in the campaign's `task.yaml`, and
@@ -3830,7 +3907,8 @@ the gate.
    involved, and it sits outside the grading pipeline by design.
 
 13. ~~A cross-campaign disclosure scan.~~ **Done**, as the gate's
-   twenty-third mechanical check, so the gate now reports 23/0/5. Which shapes
+   twenty-third mechanical check, which took the gate to 23/0/5 at the time
+   (item 9 below added a twenty-fourth). Which shapes
    it runs was measured over all 506 ordered pairs first, and the small-scalar
    shape is deliberately excluded with the number that excluded it. It found
    four campaigns stating the gene-calling campaign's graded GC fraction — a

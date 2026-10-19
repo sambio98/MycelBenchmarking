@@ -142,7 +142,6 @@ rungs:
 # Nothing is planted here: the traps this campaign grades -- the fragment
 # explanation and the domtblout column order -- are supplied by the data and the
 # tool rather than inserted, so the element is not claimed.
-structural_elements: [verification, counterfactual, control]
 
 harness:
   gold_command: ["python3", "-m", "npbench_c.templates.ec_domain_audit.build", "{campaign}"]

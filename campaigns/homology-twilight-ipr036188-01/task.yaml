@@ -183,7 +183,6 @@ rungs:
 # The campaign shuffles the queries itself, so what the perturbation is, is known
 # by construction. The control is the zero-width window, which must reproduce the
 # baseline exactly or the search is not deterministic under this invocation.
-structural_elements: [planted, verification, counterfactual, control]
 
 harness:
   gold_command: ["python3", "-m", "npbench_c.templates.remote_homology.build", "{campaign}"]

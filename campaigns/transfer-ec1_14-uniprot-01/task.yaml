@@ -132,7 +132,6 @@ rungs:
 # Nothing is planted: the trap this campaign grades -- that the closest hit is
 # often the wrong donor, and that a dash in an EC number is not a value -- is a
 # property of the shipped set rather than something inserted into it.
-structural_elements: [verification, counterfactual, control]
 
 harness:
   gold_command: ["python3", "-m", "npbench_c.templates.annotation_transfer.build", "{campaign}"]

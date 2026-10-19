@@ -119,8 +119,6 @@ rungs:
   - {rung_id: r3, ordinal: 3, name: commit,         gold_tier: G1, warm_start_bundle: gold/warm/r3}
   - {rung_id: r4, ordinal: 4, name: counterfactual, gold_tier: G1, warm_start_bundle: gold/warm/r4}
 
-structural_elements: [verification, counterfactual, control, planted]
-
 harness:
   gold_command: ["python3", "-m", "npbench_c.templates.kinetics_consistency.build", "{campaign}"]
   solve_command: ["python3", "-m", "npbench_c.templates.kinetics_consistency.solve", "{campaign}", "{submission}"]

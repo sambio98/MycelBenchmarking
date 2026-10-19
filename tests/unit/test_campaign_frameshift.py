@@ -693,7 +693,34 @@ def test_the_judgement_the_catalog_asked_for_is_excluded():
     judgement this benchmark keeps out of grading."""
     excluded = [str(b["field"]) for b in _task()["excluded_from_grading"]]
     assert any("pseudogene" in field for field in excluded)
-    assert "planted" in _task()["structural_elements"]
+
+
+def test_the_campaign_plants_a_rule_rather_than_an_artefact():
+    """What this campaign used to declare as `structural_elements: [planted]`.
+
+    The claim is worth keeping and the label was not: the shipped contig is NOT
+    altered -- it is byte-identical to the gene-calling campaign's extraction of
+    the same accession -- and the frameshift comes from a declared rule applied
+    at run time. So the assertion is made against the artefacts, where it can
+    fail: same digest as the neighbour, and a deletion rule in the pinned rules
+    file that fixes the position.
+    """
+    import gzip
+    import hashlib
+
+    rules = json.loads((CAMPAIGN / "reference" / "frameshift_rules.json").read_text())
+    assert "deletion" in json.dumps(rules).lower()
+
+    neighbour = CAMPAIGN.parent / "genecall-scoelicolor-01"
+    digests = []
+    for campaign in (CAMPAIGN, neighbour):
+        with gzip.open(campaign / "inputs" / "contig.fna.gz", "rt") as handle:
+            bases = "".join(line.strip() for line in handle
+                            if not line.startswith(">"))
+        digests.append(hashlib.sha256(bases.encode()).hexdigest())
+    assert digests[0] == digests[1], (
+        "the shipped contig differs from the gene-calling campaign's extraction "
+        "of the same accession, so one of the two provenance notes is wrong")
 
 
 # --------------------------------------------------------------- the measurer

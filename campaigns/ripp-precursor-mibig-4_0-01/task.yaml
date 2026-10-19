@@ -210,7 +210,6 @@ rungs:
 # Nothing is planted. The negative control at R4 is every corpus record the panel
 # does not recognise, which the corpus supplies on its own; the verification is
 # the core's position measured against the declared coordinate.
-structural_elements: [verification, counterfactual, control]
 
 harness:
   gold_command: ["python3", "-m", "npbench_c.templates.ripp_precursor.build", "{campaign}"]

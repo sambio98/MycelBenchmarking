@@ -197,11 +197,12 @@ rungs:
   - {rung_id: r3, ordinal: 3, name: commit,         gold_tier: G1, warm_start_bundle: gold/warm/r3}
   - {rung_id: r4, ordinal: 4, name: counterfactual, gold_tier: G1, warm_start_bundle: gold/warm/r4}
 
-# This campaign genuinely PLANTS: the frameshift is introduced by the campaign at
-# a declared position, which is what makes the broken gene known by construction
-# rather than a judgement. The control is the noise arm, which measures the mode
-# this campaign does not use.
-structural_elements: [planted, verification, counterfactual, control]
+# Nothing shipped here is altered: inputs/contig.fna.gz is byte-identical to the
+# gene-calling campaign's extraction of the same accession, digest included. The
+# frameshift is introduced by the declared rule at run time, at a position the
+# rule fixes, which is what makes the broken gene known by construction rather
+# than a judgement -- and it is why the mutated copies are not shipped. The noise
+# arm is the control, and it measures the mode this campaign does not use.
 
 harness:
   gold_command: ["python3", "-m", "npbench_c.templates.frameshift_response.build", "{campaign}"]
