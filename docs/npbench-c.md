@@ -13,14 +13,14 @@ scoring path.
 | Rung ladders | `src/npbench_c/grading/ladder.py` | depth, monotonicity, chance floor |
 | Grader | `src/npbench_c/grading/grade.py` | pure declarative comparator |
 | Grader identity | `src/npbench_c/grading/version.py` | semver + content hash |
-| Readiness gate | `src/npbench_c/readiness/gate.py` | 24 mechanical checks, 5 pending-on-agent-runs |
+| Readiness gate | `src/npbench_c/readiness/gate.py` | 25 mechanical checks, 5 pending-on-agent-runs |
 | Template: construct design | `src/npbench_c/templates/construct_design/` | shared engine, 2 ladders |
-| Campaign: construct design | `campaigns/construct-ecoli-rebh-01/` | oracle 1.0, gate 24/0/5 |
-| Campaign: constraint conflict | `campaigns/constraint-conflict-ecoli-rebh-01/` | oracle 1.0, gate 24/0/5 |
-| Campaign: feasible control | `campaigns/constraint-feasible-ecoli-rebh-01/` | oracle 1.0, gate 24/0/5 |
+| Campaign: construct design | `campaigns/construct-ecoli-rebh-01/` | oracle 1.0, gate 25/0/5 |
+| Campaign: constraint conflict | `campaigns/constraint-conflict-ecoli-rebh-01/` | oracle 1.0, gate 25/0/5 |
+| Campaign: feasible control | `campaigns/constraint-feasible-ecoli-rebh-01/` | oracle 1.0, gate 25/0/5 |
 | Template: NRPS mass balance | `src/npbench_c/templates/mass_balance_nrps/` | shared oracle, 2 instantiations |
-| Campaign: malleobactin | `campaigns/massbalance-nrps-malleobactin-01/` | oracle 1.0, gate 24/0/5 |
-| Campaign: sevadicin | `campaigns/massbalance-nrps-sevadicin-01/` | oracle 1.0, gate 24/0/5 |
+| Campaign: malleobactin | `campaigns/massbalance-nrps-malleobactin-01/` | oracle 1.0, gate 25/0/5 |
+| Campaign: sevadicin | `campaigns/massbalance-nrps-sevadicin-01/` | oracle 1.0, gate 25/0/5 |
 | Internal sweep | `src/npbench_c/sweep/` | runner, stats, gates, stub fixtures |
 | Refusal contract | `tests/unit/test_build_refusals.py` | every one of 149 build refusals across 12 templates named by a test |
 | Release packager | `src/npbench_c/release/package.py` | builds the shippable tree; refuses gold, the oracle, `docs/`, the grading spec or any graded answer; assembles attribution |
@@ -28,38 +28,38 @@ scoring path.
 | Catalog | `docs/catalog.md` | 24 templates / 32 campaigns, grounded |
 | Provisioning | `docs/environment.md` | tools, DBs, sandbox contract |
 | Template: MIBiG release diff | `src/npbench_c/templates/mibig_diff/` | shared oracle |
-| Campaign: MIBiG 3.1→4.0 diff | `campaigns/mibig-diff-3_1-to-4_0-01/` | oracle 1.0, gate 24/0/5 |
+| Campaign: MIBiG 3.1→4.0 diff | `campaigns/mibig-diff-3_1-to-4_0-01/` | oracle 1.0, gate 25/0/5 |
 | Template: annotation audit | `src/npbench_c/templates/mibig_annotation_audit/` | shared oracle |
-| Campaign: PrnA construct | `campaigns/construct-ecoli-prna-01/` | oracle 1.0, gate 24/0/5 |
-| Campaign: gene-function evidence | `campaigns/mibig-gene-function-evidence-01/` | oracle 1.0, gate 24/0/5 |
+| Campaign: PrnA construct | `campaigns/construct-ecoli-prna-01/` | oracle 1.0, gate 25/0/5 |
+| Campaign: gene-function evidence | `campaigns/mibig-gene-function-evidence-01/` | oracle 1.0, gate 25/0/5 |
 | Template: structure features | `src/npbench_c/templates/structure_features/` | shared engine, 2 ladders |
-| Campaign: PrnA residue evidence | `campaigns/residues-prna-01/` | oracle 1.0, gate 24/0/5 |
-| Campaign: RebH pocket geometry | `campaigns/pocket-rebh-01/` | oracle 1.0, gate 24/0/5 |
+| Campaign: PrnA residue evidence | `campaigns/residues-prna-01/` | oracle 1.0, gate 25/0/5 |
+| Campaign: RebH pocket geometry | `campaigns/pocket-rebh-01/` | oracle 1.0, gate 25/0/5 |
 | Template: chemical space | `src/npbench_c/templates/chemical_space/` | shared oracle, RDKit pinned at instantiation |
-| Campaign: MIBiG 4.0 chemical space | `campaigns/chemspace-mibig-4_0-01/` | oracle 1.0, gate 24/0/5 |
+| Campaign: MIBiG 4.0 chemical space | `campaigns/chemspace-mibig-4_0-01/` | oracle 1.0, gate 25/0/5 |
 | Template: kinetics consistency | `src/npbench_c/templates/kinetics_consistency/` | shared oracle, BRENDA 2026.1 |
-| Campaign: BRENDA EC 1.1 kinetics | `campaigns/kinetics-brenda-ec1_1-01/` | oracle 1.0, gate 24/0/5 |
+| Campaign: BRENDA EC 1.1 kinetics | `campaigns/kinetics-brenda-ec1_1-01/` | oracle 1.0, gate 25/0/5 |
 | Template: ChEMBL selectivity | `src/npbench_c/templates/chembl_selectivity/` | shared oracle, ChEMBL_37, first `share_alike` |
-| Campaign: S. aureus topoisomerases | `campaigns/selectivity-saureus-topoisomerase-01/` | oracle 1.0, gate 24/0/5 |
+| Campaign: S. aureus topoisomerases | `campaigns/selectivity-saureus-topoisomerase-01/` | oracle 1.0, gate 25/0/5 |
 | Template: EC domain audit | `src/npbench_c/templates/ec_domain_audit/` | HMMER 3.4 + Pfam 35.0, first tool-running template |
-| Campaign: EC 1.1.3.15 FMN_dh audit | `campaigns/ecaudit-fmn-dh-1_1_3_15-01/` | oracle 1.0, gate 24/0/5, **first S1** |
+| Campaign: EC 1.1.3.15 FMN_dh audit | `campaigns/ecaudit-fmn-dh-1_1_3_15-01/` | oracle 1.0, gate 25/0/5, **first S1** |
 | Template: annotation transfer | `src/npbench_c/templates/annotation_transfer/` | DIAMOND 2.2.8, closed reference set |
-| Campaign: EC 1.14 transfer | `campaigns/transfer-ec1_14-uniprot-01/` | oracle 1.0, gate 24/0/5 |
+| Campaign: EC 1.14 transfer | `campaigns/transfer-ec1_14-uniprot-01/` | oracle 1.0, gate 25/0/5 |
 | Template: BGC detection | `src/npbench_c/templates/bgc_detection/` | antiSMASH 8.0.4, whole chromosome, **first S2** |
-| Campaign: S. coelicolor regions | `campaigns/bgcdetect-scoelicolor-01/` | oracle 1.0, gate 24/0/5 |
+| Campaign: S. coelicolor regions | `campaigns/bgcdetect-scoelicolor-01/` | oracle 1.0, gate 25/0/5 |
 | Template: GCF cutoff | `src/npbench_c/templates/gcf_cutoff/` | BiG-SCAPE 2.0.3, one run over a declared grid |
-| Campaign: MIBiG 32 cutoff sweep | `campaigns/gcfcutoff-mibig-32-01/` | oracle 1.0, gate 24/0/5 |
+| Campaign: MIBiG 32 cutoff sweep | `campaigns/gcfcutoff-mibig-32-01/` | oracle 1.0, gate 25/0/5 |
 | Template: RiPP precursor audit | `src/npbench_c/templates/ripp_precursor/` | HMMER 3.4 + declared Pfam panel, elected coordinate convention |
-| Campaign: MIBiG RiPP precursors | `campaigns/ripp-precursor-mibig-4_0-01/` | oracle 1.0, gate 24/0/5 |
+| Campaign: MIBiG RiPP precursors | `campaigns/ripp-precursor-mibig-4_0-01/` | oracle 1.0, gate 25/0/5 |
 | Template: domain architecture | `src/npbench_c/templates/domain_architecture/` | HMMER 3.4 + declared 65-model Pfam panel, declared overlap resolution |
-| Campaign: MIBiG NRPS architectures | `campaigns/arch-nrps-mibig-4_0-01/` | oracle 1.0, gate 24/0/5 |
-| Campaign: MIBiG PKS architectures | `campaigns/arch-pks-mibig-4_0-01/` | oracle 1.0, gate 24/0/5, cis-AT vs trans-AT strata |
+| Campaign: MIBiG NRPS architectures | `campaigns/arch-nrps-mibig-4_0-01/` | oracle 1.0, gate 25/0/5 |
+| Campaign: MIBiG PKS architectures | `campaigns/arch-pks-mibig-4_0-01/` | oracle 1.0, gate 25/0/5, cis-AT vs trans-AT strata |
 | Template: gene calling | `src/npbench_c/templates/gene_calling/` | Prodigal 2.6.3, declared fragmentation rule, no external resource |
-| Campaign: S. coelicolor gene calls | `campaigns/genecall-scoelicolor-01/` | oracle 1.0, gate 24/0/5 |
+| Campaign: S. coelicolor gene calls | `campaigns/genecall-scoelicolor-01/` | oracle 1.0, gate 25/0/5 |
 | Template: remote homology | `src/npbench_c/templates/remote_homology/` | MMseqs2 18.8cc5c over one superfamily, InterPro 110.0 as the label, declared shuffle ladder |
-| Campaign: IPR036188 twilight zone | `campaigns/homology-twilight-ipr036188-01/` | oracle 1.0, gate 24/0/5, recovery from 5% to 97% across five queries |
+| Campaign: IPR036188 twilight zone | `campaigns/homology-twilight-ipr036188-01/` | oracle 1.0, gate 25/0/5, recovery from 5% to 97% across five queries |
 | Template: frameshift response | `src/npbench_c/templates/frameshift_response/` | Prodigal 2.6.3 in the opposite mode, planted single-base deletion, coordinate lift past the cut |
-| Campaign: S. coelicolor frameshifts | `campaigns/frameshift-scoelicolor-01/` | oracle 1.0, gate 24/0/5, ladder samples the measured turnover band |
+| Campaign: S. coelicolor frameshifts | `campaigns/frameshift-scoelicolor-01/` | oracle 1.0, gate 25/0/5, ladder samples the measured turnover band |
 | External resources | `src/npbench_c/tools/resources.py` | one declaration for a pinned file read from the image, shared by 3 campaigns |
 | Tool memo | `src/npbench_c/tools/cache.py` | stub sweeps only; 29m32s to 3m44s |
 | One-pass archive reads | `src/npbench_c/tools/archive.py` | a .tar.gz read in order; ripp's sweep 7m51s to 45s |
@@ -202,7 +202,7 @@ A campaign is ready when `npbench_c.readiness.gate` returns all-pass — not whe
 someone believes it is. Checks requiring internal agent runs report **PENDING**,
 never PASS: the gate does not launder an unmeasured property into a green tick.
 
-Current state, every campaign: **24 pass / 0 fail / 5 pending**.
+Current state, every campaign: **25 pass / 0 fail / 5 pending**.
 
 The five pending checks (monotonicity, R1 clear rate, no-tool leakage,
 difficulty gate, discrimination) are satisfied by an `internal_sweep.json` from
@@ -926,6 +926,11 @@ campaign: comparing its own 8.0.4 regions against that reference set is precisel
 the cross-version comparison antiSMASH's rules forbid. Either reprocess the
 reference set with the pinned antiSMASH, or state that both sides come from the
 published set.
+
+*Settled.* T-L3-2 was authored as `gcfcutoff-mibig-32-01` and takes both sides
+from the published set; so do the three other campaigns that read it, none of
+which runs antiSMASH. The gate's check 25 now enforces it per campaign — see
+"Item 5" below for the count and the field it reads.
 
 ### Projections, and why they are a third kind of licence
 
@@ -3879,6 +3884,65 @@ And the second candidate fix this item proposed, reusing one sandbox across
 repeats, is now dead rather than deferred: it would have saved the 0.01 seconds
 `build_sandbox` costs, at the price of three repeats no longer being independent.
 
+## Item 5: the antiSMASH version coupling, settled by counting
+
+MIBiG publishes its reference set as `mibig_antismash_4.0_gbk_as8b1.tar.bz2`,
+processed with antiSMASH **8.0 beta 1**. The image pins **8.0.4**. antiSMASH's own
+rules forbid comparing regions produced by two of its versions, so this was
+recorded in three places as a coupling to settle before shipping, with two ways
+out: reprocess the reference set with the pinned antiSMASH, or state that both
+sides come from the published set.
+
+Counting first, because the choice depends on who actually touches what. Over all
+23 campaigns, from their own declarations and provenance:
+
+| | runs antiSMASH | ships antiSMASH-processed records |
+|---|---|---|
+| `bgcdetect-scoelicolor-01` | **8.0.4** | no — a raw INSDC chromosome and MIBiG's curated loci |
+| `ripp-precursor-mibig-4_0-01` | no — HMMER | yes, the published set |
+| `arch-nrps-mibig-4_0-01` | no — HMMER | yes |
+| `arch-pks-mibig-4_0-01` | no — HMMER | yes |
+| `gcfcutoff-mibig-32-01` | no — BiG-SCAPE | yes |
+| the other 18 | no | no |
+
+**The two groups do not overlap.** The campaign that runs antiSMASH reads a
+chromosome nobody processed, and the four that read processed records drive a
+different tool entirely — they use the records as data: CDS translations to scan
+with HMMER, GenBank files to cluster with BiG-SCAPE. Not one comparison in the
+suite puts 8.0.4 output next to 8.0-beta-1 output.
+
+So reprocessing buys no campaign anything, and it would cost something real: the
+records are a published, citable artefact with a URL and a digest, and
+reprocessing them locally makes them ours. The resolution is the second option,
+and it was already written in prose in all four campaigns' provenance — ripp's
+says the records "are NOT re-run through the image's antiSMASH: this campaign
+never compares output from two antiSMASH versions". What was missing is the thing
+this project keeps finding missing: anything that notices when a sentence stops
+being true.
+
+### Check 25, and the field it reads
+
+`antismash_versions_are_not_mixed` is the gate's twenty-fifth mechanical check:
+
+- a campaign that ships antiSMASH-processed records must **record which
+  antiSMASH processed them**, in `inputs/provenance.json` under
+  `antismash_version_that_processed_them` — a field, where a check can read it,
+  rather than a version left to be inferred from an archive's filename.
+  `gcfcutoff` already had the field; ripp and the two architecture campaigns said
+  it in prose only, and now carry it;
+- a campaign that *also* runs antiSMASH must run the version that processed them,
+  and a failure names both ways out, because either is legitimate: reprocess with
+  the pinned tool, or take both sides from the published set and stop running it;
+- a declared `antismash@` pin must match the registry's, so a campaign cannot
+  claim a tool the image does not carry.
+
+Two details are deliberate. The scan reads only `source` and `url`, never a
+free-text note: the one campaign that runs antiSMASH explains in its own note
+that it ships the complete chromosome because a slice truncates CDS features
+"which antiSMASH refuses", and a scan over prose would read that as shipping
+processed records and fail the campaign doing it right. And the reprocessing
+route has its own test, so the check cannot forbid the fix it recommends.
+
 ## Open items
 
 1. ~~CAI table provenance.~~ **Closed.** The tables are derived from two pinned
@@ -3911,10 +3975,17 @@ repeats, is now dead rather than deferred: it would have saved the 0.01 seconds
    determinism check cannot catch that because it re-runs in the same container.
    (This item appeared twice in earlier revisions, as 5 and 6; the duplicate is
    merged here.)
-5. **Reprocess the MIBiG reference set with the pinned antiSMASH**, or declare
-   that a T-L3-2 campaign takes both sides from the published `as8b1` set. As
-   shipped, the reference clusters were processed with antiSMASH 8.0 beta 1 and
-   the image pins 8.0.4.
+5. ~~Reprocess the MIBiG reference set with the pinned antiSMASH, or declare
+   that a T-L3-2 campaign takes both sides from the published `as8b1` set.~~
+   **Declared, and now enforced.** Counted over all 23 campaigns, the group that
+   runs antiSMASH (one campaign, on a raw INSDC chromosome) and the group that
+   ships antiSMASH-processed records (four, all driving HMMER or BiG-SCAPE) do
+   not overlap, so no comparison in the suite mixes versions and reprocessing
+   would only cost the provenance of a published set. The four now record
+   `antismash_version_that_processed_them` as a field, and check 25 refuses a
+   campaign that ships processed records without it or runs a different antiSMASH
+   over them. See "Item 5" above.
+
 6. **T-L5-2 is a decision, not a build task.** T-L5-1 is built. T-L5-2 has no
    on-theme data (counts above); the owner picks between HIV-1 RT with the theme
    drift, a re-scoped census ladder, and waiting for a release that fills the

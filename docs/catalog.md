@@ -1412,7 +1412,11 @@ of the 12 `build: image` rows; matchms is the remaining provisioning work.
    input file. The image pins `sqlalchemy=2.0.54`. And the MIBiG reference set
    ships processed with antiSMASH **8.0 beta 1** while the image pins 8.0.4, so a
    T-L3-2 campaign must either reprocess it or take both sides from the published
-   set — the cross-version rule applies to the reference data too.
+   set — the cross-version rule applies to the reference data too. T-L3-2 was
+   authored as `gcfcutoff-mibig-32-01` and takes both sides from the published
+   set; the suite was then counted (one campaign runs antiSMASH, four ship
+   processed records, no overlap) and the rule is enforced per campaign by the
+   gate's check 25.
 
    **antiSMASH's pin is a pair** and the lock records both halves: the binary at
    8.0.4 and the 9.4 GB database release it was fetched with. On top of that the

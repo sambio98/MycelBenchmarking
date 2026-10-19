@@ -475,6 +475,17 @@ reference set is exactly the cross-version comparison antiSMASH's own rules
 forbid. Either the reference set is reprocessed with the pinned antiSMASH, or the
 campaign states that both sides come from the published set.
 
+**Settled, by counting.** Over all 23 campaigns the two groups do not overlap:
+one campaign runs antiSMASH 8.0.4, on a raw INSDC chromosome and MIBiG's curated
+loci, and four ship records out of the published set while driving HMMER or
+BiG-SCAPE. Nothing compares 8.0.4 output against 8.0-beta-1 output, so the
+reference set stays as published — reprocessing would buy no campaign anything
+and would cost the provenance of a citable artefact — and each of the four
+records `antismash_version_that_processed_them` in its provenance. The readiness
+gate's check 25, `antismash_versions_are_not_mixed`, reads that field and refuses
+a campaign that ships processed records without it, or that runs a different
+antiSMASH over them.
+
 ### antiSMASH, and the three things adding it forced
 
 **Its pin is a pair, so the lock records both halves.** The binary is 8.0.4; the

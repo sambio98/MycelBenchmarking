@@ -666,6 +666,109 @@ def _design_claims_are_checkable(campaign: pathlib.Path) -> Check:
     return _check("design_claims_are_checkable", not problems, detail)
 
 
+#: The provenance field that says which antiSMASH processed a shipped record set.
+#: A field rather than the archive's name, because a check can read a field.
+ANTISMASH_PROCESSING_KEY = "antismash_version_that_processed_them"
+
+#: Matches a snapshot tag or a provenance source/url that names antiSMASH.
+NAMES_ANTISMASH = re.compile(r"antismash", re.IGNORECASE)
+
+
+def _antismash_versions_are_not_mixed(campaign: pathlib.Path) -> Check:
+    """Check 25: one antiSMASH per campaign, and it must be written down.
+
+    antiSMASH's own rules forbid comparing regions from two of its versions, and
+    this benchmark has the ingredients for exactly that mistake sitting in the
+    repository. MIBiG publishes its reference set as
+    `mibig_antismash_4.0_gbk_as8b1.tar.bz2`, processed with antiSMASH **8.0 beta
+    1**; the image pins **8.0.4**. Four campaigns ship records out of that set and
+    one campaign runs antiSMASH, and the open item that led here asked whether to
+    reprocess the set or to declare that both sides come from the published one.
+
+    Measured over all 23 campaigns, the two groups do not overlap: the four that
+    ship the processed set drive HMMER or BiG-SCAPE and never invoke antiSMASH,
+    and the one that invokes antiSMASH reads a raw INSDC chromosome and MIBiG's
+    curated loci. So nothing is mixed today, reprocessing would buy no campaign
+    anything, and it would cost the provenance of a published, citable set. What
+    was missing was anything that notices if that changes.
+
+    So this is the rule, enforced per campaign:
+
+    - a campaign that ships antiSMASH-processed records must RECORD which
+      antiSMASH processed them, in `inputs/provenance.json` under
+      `antismash_version_that_processed_them`, where a check can read it;
+    - a campaign that also runs antiSMASH must run the version that processed
+      them. If it does not, the campaign is making the forbidden comparison and
+      has two ways out: reprocess the records with the pinned antiSMASH, or take
+      both sides from the published set and stop running the tool;
+    - a declared antiSMASH pin must be the version the registry pins, so a
+      campaign cannot claim a tool the image does not carry.
+    """
+    import yaml
+
+    from npbench_c.tools.registry import ANTISMASH
+
+    text = (campaign / "task.yaml").read_text()
+    task = yaml.safe_load(text)
+    snapshots = task.get("snapshots_required") or {}
+    pins = [tag for tag in (snapshots.get("image") or [])
+            if str(tag).lower().startswith("antismash@")]
+    shipped = [tag for tag in (snapshots.get("shipped") or [])
+               if NAMES_ANTISMASH.search(str(tag).split("@")[0])]
+
+    # Only `source` and `url` are read, never a free-text note: the campaign that
+    # RUNS antiSMASH explains in its note that a sliced record is one antiSMASH
+    # refuses, and a scan over prose would read that as shipping processed data.
+    processed_fields: list[str] = []
+    recorded: list[str] = []
+    provenance = campaign / "inputs" / "provenance.json"
+    if provenance.is_file():
+        def walk(node: object, path: str = "") -> None:
+            if isinstance(node, dict):
+                for field in ("source", "url"):
+                    value = node.get(field)
+                    if isinstance(value, str) and NAMES_ANTISMASH.search(value):
+                        processed_fields.append(f"{path or '.'}:{field}")
+                value = node.get(ANTISMASH_PROCESSING_KEY)
+                if isinstance(value, str) and value.strip():
+                    recorded.append(value)
+                for key, child in node.items():
+                    walk(child, f"{path}.{key}")
+            elif isinstance(node, list):
+                for index, child in enumerate(node):
+                    walk(child, f"{path}[{index}]")
+        walk(json.loads(provenance.read_text()))
+
+    problems = []
+    ships_processed = bool(shipped or processed_fields)
+    if ships_processed and not recorded:
+        problems.append(
+            f"ships antiSMASH-processed records ({sorted(set(shipped + processed_fields))}) "
+            f"and records no {ANTISMASH_PROCESSING_KEY} in inputs/provenance.json, "
+            "so nothing can check which antiSMASH produced them")
+
+    for pin in pins:
+        version = pin.split("@", 1)[1]
+        if version != ANTISMASH.pinned_version:
+            problems.append(
+                f"declares {pin} and the registry pins "
+                f"antismash {ANTISMASH.pinned_version}")
+        for record in recorded:
+            if version not in record:
+                problems.append(
+                    f"runs antiSMASH {version} and ships records processed by "
+                    f"{record.split(',')[0]!r}. That is the cross-version "
+                    "comparison antiSMASH's rules forbid: either reprocess the "
+                    "records with the pinned antiSMASH, or take both sides from "
+                    "the published set and stop running the tool here")
+
+    detail = (f"{len(pins)} antiSMASH pin(s), {len(set(shipped + processed_fields))} "
+              f"processed-record reference(s), {len(recorded)} version record(s)")
+    detail += ("; " + "; ".join(problems) if problems
+               else "; no campaign mixes two antiSMASH versions")
+    return _check("antismash_versions_are_not_mixed", not problems, detail)
+
+
 def _integrity(campaign: pathlib.Path) -> list[Check]:
     hits = []
     for path in sorted(campaign.rglob("*")):
@@ -719,6 +822,7 @@ def run(campaign_dir: pathlib.Path) -> list[Check]:
     checks.append(_cold_sandbox_withholds_small_answers(campaign))
     checks.append(_cold_sandbox_withholds_other_campaigns_answers(campaign))
     checks.append(_design_claims_are_checkable(campaign))
+    checks.append(_antismash_versions_are_not_mixed(campaign))
     checks += _integrity(campaign)
     checks += _pending_agent_runs(campaign)
     return checks

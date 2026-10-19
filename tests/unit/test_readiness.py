@@ -17,9 +17,11 @@ import shutil
 import pytest
 
 from npbench_c.readiness.gate import (
+    ANTISMASH_PROCESSING_KEY,
     LICENSE_CLASSES,
     PASS,
     UNVALIDATED_DESIGN_LABELS,
+    _antismash_versions_are_not_mixed,
     _contract_and_provenance,
     _design_claims_are_checkable,
     _resolve_gold,
@@ -257,3 +259,102 @@ def test_a_campaign_naming_its_real_partner_passes(tmp_path):
     result = _design_claims_are_checkable(
         tmp_path / "constraint-conflict-ecoli-rebh-01")
     assert result.status == PASS, result.detail
+
+
+# ------------------------------------------------- one antiSMASH per campaign
+
+
+def _fake_campaign(root: pathlib.Path, snapshots: dict,
+                   provenance: dict | None = None) -> pathlib.Path:
+    """The two files check 25 reads, and nothing else."""
+    campaign = root / "campaign"
+    (campaign / "inputs").mkdir(parents=True, exist_ok=True)
+    (campaign / "task.yaml").write_text(
+        json.dumps({"snapshots_required": snapshots}, indent=2) + "\n")
+    if provenance is not None:
+        (campaign / "inputs" / "provenance.json").write_text(
+            json.dumps(provenance, indent=2) + "\n")
+    return campaign
+
+
+PUBLISHED = ("https://dl.secondarymetabolites.org/mibig/"
+             "mibig_antismash_4.0_gbk_as8b1.tar.bz2")
+
+
+@pytest.mark.parametrize("campaign", CAMPAIGNS, ids=lambda c: c.name)
+def test_no_campaign_mixes_two_antismash_versions(campaign):
+    """The measurement that resolved the open item, asserted over the suite.
+
+    Four campaigns ship records out of MIBiG's antiSMASH 8.0-beta-1 set and one
+    campaign runs the pinned antiSMASH 8.0.4. The two groups do not overlap, so
+    nothing is mixed -- and this is what notices if that changes.
+    """
+    result = _antismash_versions_are_not_mixed(campaign)
+    assert result.status == PASS, result.detail
+
+
+def test_processed_records_without_a_version_record_are_refused(tmp_path):
+    campaign = _fake_campaign(
+        tmp_path, {"shipped": ["mibig_antismash@4.0_as8b1"], "image": []},
+        {"records": {"source": "MIBiG antiSMASH-processed reference set",
+                     "url": PUBLISHED}})
+    result = _antismash_versions_are_not_mixed(campaign)
+    assert result.status != PASS
+    assert ANTISMASH_PROCESSING_KEY in result.detail
+
+
+def test_running_one_antismash_over_another_s_records_is_refused(tmp_path):
+    """The forbidden comparison, planted: the pinned tool against the published
+    set. The refusal names both ways out, because either is legitimate."""
+    campaign = _fake_campaign(
+        tmp_path,
+        {"shipped": ["mibig_antismash@4.0_as8b1"], "image": ["antismash@8.0.4"]},
+        {"records": {"source": "MIBiG antiSMASH-processed reference set",
+                     "url": PUBLISHED,
+                     ANTISMASH_PROCESSING_KEY: "8.0 beta 1, as the archive name "
+                                               "as8b1 states"}})
+    result = _antismash_versions_are_not_mixed(campaign)
+    assert result.status != PASS
+    assert "cross-version" in result.detail
+    assert "reprocess" in result.detail and "published set" in result.detail
+
+
+def test_a_reprocessed_set_is_not_refused(tmp_path):
+    """The other way out has to pass, or the check would forbid the fix.
+
+    A campaign that reprocessed the records with the pinned antiSMASH and says so
+    is running one version over its own output, which is what the rule asks for.
+    """
+    campaign = _fake_campaign(
+        tmp_path,
+        {"shipped": ["mibig_antismash@4.0_reprocessed"],
+         "image": ["antismash@8.0.4"]},
+        {"records": {"source": "MIBiG reference set, reprocessed here",
+                     "url": PUBLISHED,
+                     ANTISMASH_PROCESSING_KEY: "8.0.4, the version this image "
+                                               "pins; reprocessed for this "
+                                               "campaign"}})
+    assert _antismash_versions_are_not_mixed(campaign).status == PASS
+
+
+def test_a_pin_the_registry_does_not_carry_is_refused(tmp_path):
+    campaign = _fake_campaign(tmp_path, {"shipped": [], "image": ["antismash@7.1.0"]})
+    result = _antismash_versions_are_not_mixed(campaign)
+    assert result.status != PASS
+    assert "registry pins" in result.detail
+
+
+def test_a_note_mentioning_antismash_is_not_shipped_processed_data(tmp_path):
+    """Why the scan reads `source` and `url` and never a note.
+
+    The campaign that RUNS antiSMASH explains in its provenance that it ships the
+    complete chromosome because a slice truncates CDS features "which antiSMASH
+    refuses". A scan over prose reads that as shipping processed records and
+    fails the one campaign doing it right.
+    """
+    campaign = _fake_campaign(
+        tmp_path, {"shipped": ["genbank@AL645882.2"], "image": ["antismash@8.0.4"]},
+        {"sequence_source": "NCBI Nucleotide efetch, rettype=gbwithparts",
+         "note": "The COMPLETE chromosome, unsliced. A slice truncates CDS "
+                 "features at its edges, which antiSMASH refuses."})
+    assert _antismash_versions_are_not_mixed(campaign).status == PASS
