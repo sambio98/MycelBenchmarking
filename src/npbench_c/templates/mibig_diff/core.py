@@ -17,9 +17,10 @@ from __future__ import annotations
 
 import json
 import pathlib
-import tarfile
 from dataclasses import dataclass
 from typing import Any, Iterable, Mapping
+
+from npbench_c.tools.archive import ArchiveError, read_members
 
 TEMPLATE_ID = "mibig-release-diff"
 CONSTANTS = pathlib.Path(__file__).resolve().parent / "constants"
@@ -33,21 +34,22 @@ class DiffError(RuntimeError):
 def load_release(archive: pathlib.Path) -> dict[str, dict]:
     """Read every BGC record from a release tarball, keyed by accession.
 
-    Members are sorted before reading so the mapping is built in a fixed order
-    and nothing depends on the archive's internal ordering.
+    The archive is read in one pass and the RESULT is sorted, so the mapping is
+    built in a fixed order and nothing depends on the archive's internal
+    ordering -- while a gzip stream is still read the only way it is cheap to
+    read. Sorting the members before extracting them, which is what this did,
+    re-inflates the file once per member; see npbench_c.tools.archive.
     """
+    try:
+        members = read_members(archive, ".json")
+    except ArchiveError as exc:
+        raise DiffError(str(exc)) from exc
     out: dict[str, dict] = {}
-    with tarfile.open(archive, "r:gz") as tar:
-        members = sorted((m for m in tar.getmembers()
-                          if m.isfile() and m.name.endswith(".json")
-                          and pathlib.PurePath(m.name).name.startswith("BGC")),
-                         key=lambda m: m.name)
-        for member in members:
-            handle = tar.extractfile(member)
-            if handle is None:
-                continue
-            accession = pathlib.PurePath(member.name).stem
-            out[accession] = json.loads(handle.read().decode("utf-8"))
+    for name in sorted(members):
+        if not pathlib.PurePath(name).name.startswith("BGC"):
+            continue
+        accession = pathlib.PurePath(name).stem
+        out[accession] = json.loads(members[name].decode("utf-8"))
     if not out:
         raise DiffError(f"no BGC records found in {archive.name}")
     return out

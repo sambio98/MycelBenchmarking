@@ -57,6 +57,7 @@ from dataclasses import dataclass
 from typing import Mapping, Sequence
 
 from npbench_c.tools import cache
+from npbench_c.tools.registry import ANTISMASH
 
 TEMPLATE_ID = "bgc-detection"
 CONSTANTS = pathlib.Path(__file__).resolve().parent / "constants"
@@ -314,10 +315,23 @@ class Detection:
     # ------------------------------------------------------------ tool calls
 
     def antismash_version(self) -> str:
-        done = _run([str(tool_prefix() / "antismash"), "--version"])
-        if done.returncode != 0:
-            raise DetectionError(f"antismash --version failed: {done.stderr[-400:]}")
-        return done.stdout.strip()
+        """The caller's self-reported version, memoised.
+
+        `antismash --version` costs 2.12s -- it imports the whole package to
+        answer -- and a warm sweep run was asking twice, which was 4.4 of its
+        4.5 seconds. See npbench_c.tools.cache.memoize_version for the two
+        scopes and why the on-disk half is a stub-only proxy.
+        """
+        command = [str(tool_prefix() / "antismash"), "--version"]
+
+        def query() -> str:
+            done = _run(command)
+            if done.returncode != 0:
+                raise DetectionError(
+                    f"antismash --version failed: {done.stderr[-400:]}")
+            return done.stdout.strip()
+
+        return cache.memoize_version([*command, ANTISMASH.pinned_version], query)
 
     def rule_fingerprint(self) -> str:
         """A hash over the three detection rule files, as the registry declares.

@@ -48,12 +48,11 @@ import os
 import pathlib
 import re
 import subprocess
-import tarfile
 import tempfile
 from dataclasses import dataclass
 from typing import Mapping, Sequence
 
-from npbench_c.tools import cache
+from npbench_c.tools import archive, cache
 from npbench_c.tools.resources import (
     DEFAULT_PREFIX,
     Resource,
@@ -257,8 +256,15 @@ def read_curated(path: pathlib.Path, rules: Rules) -> tuple[
     this campaign reconciles cannot be apportioned between them without a rule
     nothing in the record supplies.
     """
-    if not path.is_file():
-        raise ArchitectureError(f"the annotation archive {path} is not present")
+    # Read in ONE pass and sorted AFTERWARDS. Extracting members in name order
+    # from a .tar.gz means seeking backwards in a gzip stream, which re-inflates
+    # the archive from the start for each member; the sort is what the processing
+    # order needs, not what the reading order can afford. See
+    # npbench_c.tools.archive for the measurement.
+    try:
+        members = archive.read_members(path, ".json")
+    except archive.ArchiveError as exc:
+        raise ArchitectureError(str(exc)) from exc
     census: collections.Counter = collections.Counter()
     coordinates: collections.Counter = collections.Counter()
     active: collections.Counter = collections.Counter()
@@ -269,51 +275,45 @@ def read_curated(path: pathlib.Path, rules: Rules) -> tuple[
     by_type: dict[str, collections.Counter] = {}
     genes: dict[tuple[str, str], dict] = {}
     statuses: dict[str, str] = {}
-    with tarfile.open(path, "r:*") as archive:
-        for member in sorted(archive.getmembers(), key=lambda m: m.name):
-            if not member.isfile() or not member.name.endswith(".json"):
-                continue
-            handle = archive.extractfile(member)
-            if handle is None:
-                continue
-            document = json.loads(handle.read().decode())
-            accession = document.get("accession") or pathlib.Path(member.name).stem
-            modules = (document.get("biosynthesis") or {}).get("modules") or []
-            if not modules:
-                continue
-            census["entries_with_modules"] += 1
-            statuses[accession] = document.get("status")
-            for module in modules:
-                census["modules"] += 1
-                active[repr(module.get("active"))] += 1
-                typed = by_type.setdefault(module.get("type"),
-                                           collections.Counter())
-                for key in rules.curated_domain_keys:
-                    block = module.get(key)
-                    if not block:
-                        continue
-                    typed[key] += 1
-                    location = block.get("location") or {}
-                    usable = (isinstance(location.get("from"), int)
-                              and isinstance(location.get("to"), int)
-                              and location["from"] >= 0 and location["to"] > 0)
-                    coordinates["usable" if usable else "placeholder"] += 1
-                named = module.get("genes") or []
-                if len(named) != 1:
-                    census["modules_spanning_several_genes"] += 1
+    for name in sorted(members):
+        document = json.loads(members[name].decode())
+        accession = document.get("accession") or pathlib.Path(name).stem
+        modules = (document.get("biosynthesis") or {}).get("modules") or []
+        if not modules:
+            continue
+        census["entries_with_modules"] += 1
+        statuses[accession] = document.get("status")
+        for module in modules:
+            census["modules"] += 1
+            active[repr(module.get("active"))] += 1
+            typed = by_type.setdefault(module.get("type"),
+                                       collections.Counter())
+            for key in rules.curated_domain_keys:
+                block = module.get(key)
+                if not block:
                     continue
-                block = genes.setdefault((accession, named[0]), {
-                    "modules": 0, "types": [], "carriers": 0,
-                    "modification_domains": 0,
-                    "domains": collections.Counter()})
-                block["modules"] += 1
-                block["types"].append(module.get("type"))
-                block["carriers"] += len(module.get("carriers") or [])
-                block["modification_domains"] += len(
-                    module.get("modification_domains") or [])
-                for key in rules.curated_domain_keys:
-                    if module.get(key):
-                        block["domains"][key] += 1
+                typed[key] += 1
+                location = block.get("location") or {}
+                usable = (isinstance(location.get("from"), int)
+                          and isinstance(location.get("to"), int)
+                          and location["from"] >= 0 and location["to"] > 0)
+                coordinates["usable" if usable else "placeholder"] += 1
+            named = module.get("genes") or []
+            if len(named) != 1:
+                census["modules_spanning_several_genes"] += 1
+                continue
+            block = genes.setdefault((accession, named[0]), {
+                "modules": 0, "types": [], "carriers": 0,
+                "modification_domains": 0,
+                "domains": collections.Counter()})
+            block["modules"] += 1
+            block["types"].append(module.get("type"))
+            block["carriers"] += len(module.get("carriers") or [])
+            block["modification_domains"] += len(
+                module.get("modification_domains") or [])
+            for key in rules.curated_domain_keys:
+                if module.get(key):
+                    block["domains"][key] += 1
     if not genes:
         raise ArchitectureError(f"{path.name} holds no curated modules")
     curated = {

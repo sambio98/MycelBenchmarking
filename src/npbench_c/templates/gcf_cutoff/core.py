@@ -52,6 +52,7 @@ from dataclasses import dataclass
 from typing import Mapping, Sequence
 
 from npbench_c.tools import cache
+from npbench_c.tools.registry import BIGSCAPE
 from npbench_c.tools.resources import (
     DEFAULT_PREFIX,
     Resource,
@@ -169,10 +170,22 @@ class Clustering:
     # ------------------------------------------------------------ tool calls
 
     def bigscape_version(self) -> str:
-        done = _run([str(tool_prefix() / "bigscape"), "--version"])
-        if done.returncode != 0:
-            raise CutoffError(f"bigscape --version failed: {done.stderr[-400:]}")
-        return done.stdout.strip()
+        """The clusterer's self-reported version, memoised.
+
+        `bigscape --version` costs 2.38s, for the same reason antiSMASH's does:
+        a Python package that imports itself to answer. See
+        npbench_c.tools.cache.memoize_version.
+        """
+        command = [str(tool_prefix() / "bigscape"), "--version"]
+
+        def query() -> str:
+            done = _run(command)
+            if done.returncode != 0:
+                raise CutoffError(
+                    f"bigscape --version failed: {done.stderr[-400:]}")
+            return done.stdout.strip()
+
+        return cache.memoize_version([*command, BIGSCAPE.pinned_version], query)
 
     def _cluster(self) -> dict[str, dict[str, list[str]]]:
         """One BiG-SCAPE run over the whole declared cutoff grid.

@@ -53,12 +53,11 @@ import os
 import pathlib
 import re
 import subprocess
-import tarfile
 import tempfile
 from dataclasses import dataclass
 from typing import Mapping, Sequence
 
-from npbench_c.tools import cache
+from npbench_c.tools import archive, cache
 from npbench_c.tools.resources import (
     DEFAULT_PREFIX,
     Resource,
@@ -396,7 +395,7 @@ class Corpus:
             both += int(retired and unreferenced)
             if retired or unreferenced:
                 continue
-            translations = cds_translations(shipped[accession]())
+            translations = cds_translations(shipped[accession])
             for precursor in precursors:
                 translation = translations.get(precursor["gene"])
                 if translation is None:
@@ -845,60 +844,44 @@ def _ribosomal_block(document: Mapping) -> Mapping | None:
 
 def _read_mibig(path: pathlib.Path) -> dict[str, dict]:
     """Every MIBiG entry in the shipped archive, keyed by accession."""
-    if not path.is_file():
-        raise PrecursorError(f"the annotation archive {path} is not present")
+    try:
+        members = archive.read_members(path, ".json")
+    except archive.ArchiveError as exc:
+        raise PrecursorError(str(exc)) from exc
     entries: dict[str, dict] = {}
-    with tarfile.open(path, "r:*") as archive:
-        for member in archive.getmembers():
-            if not member.isfile() or not member.name.endswith(".json"):
-                continue
-            handle = archive.extractfile(member)
-            if handle is None:
-                continue
-            document = json.loads(handle.read().decode())
-            accession = document.get("accession") or pathlib.Path(member.name).stem
-            if accession in entries:
-                raise PrecursorError(
-                    f"{accession} appears twice in {path.name}")
-            entries[accession] = document
-    if not entries:
-        raise PrecursorError(f"{path.name} holds no annotation records")
+    for name, blob in members.items():
+        document = json.loads(blob.decode())
+        accession = document.get("accession") or pathlib.Path(name).stem
+        if accession in entries:
+            raise PrecursorError(f"{accession} appears twice in {path.name}")
+        entries[accession] = document
     return entries
 
 
-def _reference_index(path: pathlib.Path):
-    """Accession -> a callable returning that reference record's text.
+def _reference_index(path: pathlib.Path) -> dict[str, str]:
+    """Accession -> that reference record's text, read in ONE pass.
 
-    The records are read on demand rather than all at once: the archive holds
-    every entry of the class and the corpus uses a fraction of them, and holding
-    twelve megabytes of GenBank in memory to read fifty of them is a cost the
-    sweep pays once per run.
+    This used to hand back a per-record reader closure, on the reasoning that
+    the archive holds every entry of the class while the corpus uses a fraction
+    of them, so holding twelve megabytes of GenBank in memory to read fifty of
+    them was a cost worth avoiding. Measured, the trade runs the other way: a
+    gzip stream cannot seek backwards, so each lazy read re-inflated the archive
+    from the beginning -- 5.3 seconds of a 7.6 second corpus load for 54 records,
+    paid again on all 72 runs of a stub sweep. One pass costs 0.2 seconds and
+    11.5 MB. See npbench_c.tools.archive, which is where the pass lives now so
+    the next corpus cannot reintroduce it.
     """
-    if not path.is_file():
-        raise PrecursorError(f"the reference archive {path} is not present")
+    try:
+        members = archive.read_members(path, ".gbk")
+    except archive.ArchiveError as exc:
+        raise PrecursorError(str(exc)) from exc
     index: dict[str, str] = {}
-    with tarfile.open(path, "r:*") as archive:
-        for member in archive.getmembers():
-            if not member.isfile() or not member.name.endswith(".gbk"):
-                continue
-            accession = pathlib.Path(member.name).stem
-            if accession in index:
-                raise PrecursorError(
-                    f"{accession} appears twice in {path.name}")
-            index[accession] = member.name
-    if not index:
-        raise PrecursorError(f"{path.name} holds no reference records")
-
-    def reader(name: str):
-        def read() -> str:
-            with tarfile.open(path, "r:*") as archive:
-                handle = archive.extractfile(name)
-                if handle is None:
-                    raise PrecursorError(f"{name} is not readable in {path.name}")
-                return handle.read().decode()
-        return read
-
-    return {accession: reader(name) for accession, name in sorted(index.items())}
+    for name, blob in members.items():
+        accession = pathlib.Path(name).stem
+        if accession in index:
+            raise PrecursorError(f"{accession} appears twice in {path.name}")
+        index[accession] = blob.decode()
+    return {accession: index[accession] for accession in sorted(index)}
 
 
 def _median(ordered: Sequence[int]) -> float:

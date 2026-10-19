@@ -81,7 +81,6 @@ def main() -> int:
                          params["proteins_input"])
     rules = corpus.rules
     pfam = rules.resources["pfam_a_hmm"]
-    from npbench_c.tools.cache import file_digest
 
     hits = corpus.hits()
     report = {
@@ -96,7 +95,15 @@ def main() -> int:
         "panel_size": len(rules.panel),
         "hmmer_version": corpus.hmmer_version(),
         "pfam_version": pfam.version,
-        "pfam_sha256": file_digest(pfam.resolve()),
+        # The DECLARED digest, not a fresh hash of the resource. Pfam-A.hmm is
+        # 1.57 GB and hashing it costs 4.5s, which a stub sweep paid on all 72
+        # runs -- six minutes to recompute a number the campaign's own
+        # reference/ already pins. The pin is not taken on trust anywhere it
+        # matters: the oracle calls Resource.verify(), which hashes the file and
+        # refuses to build gold if it does not match, and the readiness gate
+        # runs the oracle. A real system is handed no shortcut; this is a
+        # fixture.
+        "pfam_sha256": pfam.sha256,
         "selection_census": {
             **corpus.annotation_census["annotation_census"],
             **{f"drop_{k}": v for k, v in

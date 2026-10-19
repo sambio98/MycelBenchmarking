@@ -110,3 +110,45 @@ def memoize_json(parts: Sequence[str], compute: Callable[[], object]) -> object:
         indent=2, sort_keys=True) + "\n")
     staging.replace(entry)
     return value
+
+#: Version strings already queried in this process, keyed as the memo keys them.
+#: Not a cache of anything that can change: a tool does not change version while
+#: one process runs.
+_VERSIONS: dict[str, str] = {}
+
+
+def memoize_version(parts: Sequence[str], compute: Callable[[], str]) -> str:
+    """A tool's self-reported version, read once per process and once per sweep.
+
+    Measured, because only two of the nine tools this benchmark drives are worth
+    memoising: `antismash --version` costs **2.12s** and `bigscape --version`
+    **2.38s**, both of them Python packages whose import dominates the answer,
+    while hmmscan, hmmsearch, prodigal, mmseqs and diamond all answer in 10ms or
+    less and are left to answer. One warm bgcdetect sweep run spent 4.4 of its
+    4.5 seconds asking antiSMASH its version twice.
+
+    Two scopes with two different justifications:
+
+    - **Per process, always.** A tool cannot change version while one process
+      runs, so this needs no opt-in and applies to a build, a test and a real
+      agent's own invocation alike.
+    - **On disk, only where the tool memo is enabled** -- a stub in tooled mode,
+      per `memoize_json`. The key is a PROXY for what is installed: a command
+      path and whatever the caller pins, not a digest of the package, because a
+      Python tool reports a version from its installed library rather than from
+      the wrapper script a digest would cover. Staleness therefore surfaces as a
+      failed run rather than a wrong pass: gold carries the string the oracle's
+      own invocation produced, so a memo that returned an older one makes the
+      run fail the environment component. What keeps the pin honest is the
+      registry's verify, which the readiness gate runs.
+    """
+    key = _key(["tool_version", *parts])
+    if key in _VERSIONS:
+        return _VERSIONS[key]
+    value = memoize_json(["tool_version", *parts], compute)
+    if not isinstance(value, str) or not value.strip():
+        raise CacheError(
+            f"a version query returned {value!r}; a memo entry that is not a "
+            "non-empty string would be reported as a tool identity")
+    _VERSIONS[key] = value
+    return value

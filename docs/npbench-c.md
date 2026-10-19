@@ -62,6 +62,7 @@ scoring path.
 | Campaign: S. coelicolor frameshifts | `campaigns/frameshift-scoelicolor-01/` | oracle 1.0, gate 24/0/5, ladder samples the measured turnover band |
 | External resources | `src/npbench_c/tools/resources.py` | one declaration for a pinned file read from the image, shared by 3 campaigns |
 | Tool memo | `src/npbench_c/tools/cache.py` | stub sweeps only; 29m32s to 3m44s |
+| One-pass archive reads | `src/npbench_c/tools/archive.py` | a .tar.gz read in order; ripp's sweep 7m51s to 45s |
 | Phase 1 image | `image/Dockerfile`, `image/environment.lock.json` | 8 tools pinned to `version=build`, 185-package closure hashed, antiSMASH databases pinned at 9.4 GB |
 | Tool registry | `src/npbench_c/tools/registry.py` | pins, controls, invocations, declared normalisations, canonicalisations, projections, enforced bans |
 | Thread-invariance suite | `src/npbench_c/tools/invariance.py` | 8/8 tools invariant at 1 and 8 threads |
@@ -3798,6 +3799,86 @@ instead — that the frameshift contig's digest matches the gene-calling
 campaign's over the same accession, and that the homology corpus is the whole
 reviewed set — which is the difference between a label and a claim.
 
+## Item 8: the sweep was slow for three reasons, none of them the one on record
+
+The open item said the tool memo covers the tool and not the work around it, and
+named two candidate fixes: cache the parsed inputs, or let a stub level reuse one
+sandbox across repeats. Both were guesses. Profiling the four phases of a single
+run — build the sandbox, run the stub, run the measurer, grade — put the cost
+somewhere else entirely:
+
+| phase | ripp | architecture | bgcdetect |
+|---|---|---|---|
+| `build_sandbox` | 0.17s | 0.01s | 0.01s |
+| the stub subprocess | **10.06s** | **5.27s** | **4.19s** |
+| the measurer | 0.07s | 0.07s | 0.07s |
+| grading | 0.20s | 0.01s | 0.00s |
+
+So the sandbox copy, which this item blamed in writing, costs a hundredth of a
+second — the inputs are in the page cache after the first run and `shutil.copytree`
+of 7 MB is nothing. Nor was parsing the whole story. Inside those stub
+subprocesses were three separate defects:
+
+**A `.tar.gz` read out of order.** The RiPP corpus opened its reference archive
+once per record, through a per-record reader closure whose docstring explained
+that holding twelve megabytes of GenBank in memory to read fifty of them was a
+cost worth avoiding. The architecture corpus extracted members in *name* order,
+which is the same defect wearing a sort. A gzip stream cannot seek backwards, so
+each out-of-order read re-inflates from the beginning: 5.3 of ripp's 7.6 second
+corpus load, 133,873 calls to `zlib.decompress`, against 0.2 seconds for one
+pass. The fix is `npbench_c.tools.archive.read_members` — one open, one pass,
+members in archive order, and the caller sorts the result. Four call sites moved
+onto it, including `mibig_diff`, which had the same sort-before-reading pattern
+and had not been measured.
+
+**A 1.57 GB file hashed once per run.** Three stubs reported `pfam_sha256` by
+hashing `Pfam-A.hmm` — 4.5 seconds a run, six minutes a sweep, to recompute a
+number the campaign's own `reference/` already pins under
+`external_resources.pfam_a_hmm.sha256`. The stubs now report the declared digest.
+That is sound because the pin is not taken on trust where it matters: the oracle
+calls `Resource.verify()`, which hashes the file and refuses to build gold on a
+mismatch, and the readiness gate runs the oracle. A real system is handed no
+shortcut; a stub is a fixture.
+
+**A tool asked its own version twice per run.** This was the whole of bgcdetect's
+4.19 seconds, and it is not parsing at all: `antismash --version` costs **2.12s**
+because it imports the entire package to answer, and the stub asked twice.
+Measured across the nine tools this benchmark drives, exactly two behave that way
+— antiSMASH at 2.12s and BiG-SCAPE at 2.38s — while hmmscan, hmmsearch,
+prodigal, mmseqs and diamond all answer in 10ms or less. So
+`cache.memoize_version` memoises a version string per process always (a tool
+cannot change version inside one process, so this needs no opt-in) and on disk
+where the tool memo is already allowed, and only those two call sites use it. A
+memo around a 10ms call is a mechanism nobody needs.
+
+### What it bought, measured from a cold memo on both sides
+
+| campaign | recorded before | now | what remains |
+|---|---|---|---|
+| RiPP precursors (Campaign 18) | 7m51s | **45s** | HMMER, once per distinct scan |
+| MIBiG 32 cutoff sweep (Campaign 17) | 6m27s | **83s** | one BiG-SCAPE run |
+| S. coelicolor regions (Campaign 16) | 15m35s | **8m48s** | antiSMASH, ~80s per distinct run |
+| NRPS architectures | not recorded | 3m44s | HMMER |
+| PKS architectures | not recorded | 2m34s | HMMER |
+| MIBiG 3.1→4.0 diff | not recorded | 1m03s | no tool |
+
+Per-run overhead, which is what the fixes actually changed: ripp 10.06s → 0.61s,
+architecture 5.27s → 0.52s, bgcdetect 4.19s → 0.07s. Every campaign's
+`internal_sweep.json` is byte-identical to the one it had before, and every gate
+still passes — the sweep measures the same thing, faster.
+
+What is left is the tool itself. bgcdetect's remaining 8m48s is about six
+distinct antiSMASH invocations at 80 seconds each, and the frameshift campaign's
+sweep is roughly one build because its ladder calls Prodigal once per target.
+Neither is overhead: it is the one computation the memo exists to pay for once.
+Shaving it would mean memoising across campaigns or across sweeps, which trades a
+property — that a sweep is reproducible from a clean checkout — for minutes, and
+that trade is not worth making.
+
+And the second candidate fix this item proposed, reusing one sandbox across
+repeats, is now dead rather than deferred: it would have saved the 0.01 seconds
+`build_sandbox` costs, at the price of three repeats no longer being independent.
+
 ## Open items
 
 1. ~~CAI table provenance.~~ **Closed.** The tables are derived from two pinned
@@ -3849,31 +3930,18 @@ reviewed set — which is the difference between a label and a claim.
    count T-L3-5a, which is a built replacement for a re-tiered row rather than a
    catalogued campaign of its own. The arithmetic is settled; the number to
    publish is not. This must be decided before the audit packet quotes one.
-8. **Sweep cost: the tool memo covers the tool, not the work around it.**
-   `npbench_c.tools.cache` memoises tool output for stub systems in tooled mode
-   only, which took the EC-audit sweep from 29m32s to **3m44s** with identical
-   results. Measured since on the first S2 campaign, a stub sweep still takes
-   **15m35s** with the memo fully effective, because each of the 72 rung-repeats
-   re-reads and re-parses a 26 MB GenBank record and copies a 6.8 MB input into a
-   fresh sandbox. Two candidate fixes, neither taken yet: cache the parsed record
-   beside the tool output, or let a stub level reuse one sandbox across repeats.
-   Measured a third time on T-L3-4, where the tool is cheap and the inputs are
-   small, a 72-run stub sweep still takes **7m51s** — about 6.5 seconds per run of
-   re-parsing a 3,013-entry annotation archive and several hundred GenBank records
-   into the same corpus, with the tool itself memoised. So the pattern holds at
-   both ends of the cost range and the fix is the same one: cache the parsed
-   inputs, or reuse a sandbox across repeats.
-   Measured a fourth time on T-L1-4, where the tool is expensive and the input is
-   one 8.7 MB contig rather than a large corpus, a 72-run stub sweep takes
-   **15m11s** against a 12m47s build — so with the memo working the sweep costs
-   roughly one build plus sandbox overhead, and the overhead per run is small when
-   there is no corpus to re-parse. That is the counter-case to the three above and
-   it points the same way: what the memo cannot help with is re-reading inputs,
-   not re-running tools.
-   And the real-systems sweep gets no memo at all by design — every such run must
-   drive the tool itself — so whether that needs parallelism depends on how long
-   real agents take per run, measurable only once item 3 supplies the `SystemSpec`
-   entries.
+8. ~~Sweep cost: the tool memo covers the tool, not the work around it.~~
+   **Closed, and the diagnosis in this item was wrong.** Profiled per phase, the
+   sandbox copy it blamed costs 0.01s and the parse was only one of three causes:
+   a `.tar.gz` read out of order (5.3s of a 7.6s corpus load), a 1.57 GB Pfam
+   file hashed once per run to report a digest `reference/` already pins (4.5s),
+   and a tool asked its own version twice per run where that tool imports a
+   Python package to answer (2.12s and 2.38s for the only two of nine that do).
+   RiPP 7m51s → **45s**, cutoff sweep 6m27s → **83s**, bgcdetect 15m35s →
+   **8m48s**, with every `internal_sweep.json` byte-identical and every gate
+   still green. What remains in a sweep is the distinct tool invocations
+   themselves. See "Item 8" above.
+
 9. ~~`structural_elements` is decorative and nothing validates it.~~
    **Closed by removal**, with the census that justified it: two of its seven
    terms were declared by 23 of 23 campaigns, `planted` was declared by 11 and no
