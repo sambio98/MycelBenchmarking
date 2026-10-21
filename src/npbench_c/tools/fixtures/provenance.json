@@ -113,6 +113,33 @@
     "source": "UniProtKB",
     "url": "https://rest.uniprot.org/uniprotkb/stream?query=xref:pfam-PF04820+AND+reviewed:true&format=fasta"
   },
+  "matchms_cosine.py": {
+    "sha256": "962cf638a8a073e81d05a6ea28eb3ce2ff89528ee9c1e0a750d00c6ce2f4da5f",
+    "what": "The driver the invariance suite and any matchms campaign runs: it reads the fixture, scores every query against the library with CosineGreedy at a declared tolerance, and writes each query's top match at full float precision.",
+    "why_a_file_rather_than_a_command": "matchms is a LIBRARY pin: there is no binary to invoke, so the invocation is the prefix interpreter running this script as a subprocess. Keeping it in the repository means the thing the suite measures and the thing a campaign runs are one file."
+  },
+  "ms2_massbank.json.gz": {
+    "attribution": "MassBank consortium, MassBank-data release 2026.03 (https://github.com/MassBank/MassBank-data), CC BY 4.0",
+    "census": {
+      "compounds_spanning_2plus_instruments_and_contributors": 2384,
+      "compounds_with_2plus_spectra": 7142,
+      "distinct_compounds": 9078,
+      "ms2_with_key_precursor_and_5_peaks": 85146,
+      "of_those_in_positive_mode": 1967,
+      "records_in_release": 139240
+    },
+    "contributors": 22,
+    "instrument_types": 10,
+    "library_spectra": 378,
+    "license": "CC BY 4.0",
+    "measured_top1_at_tolerance_0.01": "19 of 24",
+    "queries": 24,
+    "release_tag_not_version_string": "The tag, deliberately. MassBank's dev branch carries VERSION '2026.03.1-SNAPSHOT', and an earlier grounding pass recorded that as the release 'MassBank 2026.03.1' -- which no clone can reproduce, because dev moves. The tag holds 139,240 records where that snapshot held 141,017, and every census number below shifts by about half a per cent.",
+    "selection_rule": "Every record of the release that is MS2, carries an InChIKey and a precursor m/z, and has at least five peaks. Grouped by the InChIKey's first block, keep the compounds whose spectra span at least two instrument types AND at least two contributors, positive mode only -- polarity cannot be mixed in a reference library. Sort those compounds by InChIKey block and take the first 24. For each, the QUERY is the spectrum from the lexicographically first contributor and the LIBRARY is every spectrum of that compound from any other contributor. Peaks are sorted by m/z, m/z rounded to 6 decimals and intensity to 4.",
+    "sha256": "e0feae1a47bc47bec649c442ed64a60644c6b378e11cb09b362cf755727a14f3",
+    "source": "MassBank-data, release tag 2026.03 (VERSION: version = 2026.03, timestamp 2026-03-16), cloned shallow from https://github.com/MassBank/MassBank-data",
+    "why_this_shape": "A dereplication fixture is gradeable only when the query compound is in the library through a DIFFERENT spectrum, and non-trivial only when that spectrum comes from another instrument in another lab."
+  },
   "synthetic.fna": {
     "derived_from": "halogenases.faa",
     "length_nt": 38455,

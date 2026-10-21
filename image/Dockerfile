@@ -29,6 +29,15 @@
 # resulting prefix, and the full invariance suite -- whose measured verdicts are in
 # image/thread_invariance.json. So the pins and the determinism results are real
 # and the layer sequence is not yet proven. Build it once before relying on it.
+#
+# And the prefix was built in STAGES rather than in the one create below: six
+# tools on 2026-10-02, antiSMASH, BiG-SCAPE and the sqlalchemy bound on 10-06,
+# matchms on 10-21. Each step is recorded with its date in the lock file's
+# `build_history`, which is generated from the prefix rather than written here,
+# because a closure assembled over five solves is not guaranteed to equal what
+# one solve produces and the difference should be visible rather than implied.
+# The matchms step was dry-run first and moved nothing already installed: 46 new
+# packages, no upgrade, no downgrade, no removal.
 
 FROM ubuntu:24.04
 

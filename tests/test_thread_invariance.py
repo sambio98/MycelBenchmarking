@@ -155,46 +155,71 @@ def test_the_lockfile_can_rebuild_the_image_byte_for_byte():
 def test_the_absences_are_declared_rather_than_implied():
     """What is missing is a decision with a reason, not a gap for an auditor to
     notice by counting rows."""
-    assert {"matchms", "iqtree"} <= set(NOT_IN_IMAGE)
+    assert "iqtree" in NOT_IN_IMAGE
     for reason in NOT_IN_IMAGE.values():
         assert len(reason) > 60
     installed = {tool.name for tool in TOOLS}
-    assert not (installed & set(NOT_IN_IMAGE))
+    assert not (installed & set(NOT_IN_IMAGE)), (
+        "a tool cannot be installed and declared absent; matchms was in both "
+        "lists for the two days between its pin being decided and the rebuild, "
+        "which is what PENDING_TOOLS is for")
 
 
-def test_a_pending_pin_is_decided_but_not_claimed_as_installed():
-    """matchms is the first pin that is settled and not yet in the image, and the
-    distinction has to survive in code rather than in a note.
+def test_a_pin_is_claimed_as_installed_only_once_it_is():
+    """The distinction PENDING_TOOLS exists for, now that matchms has crossed it.
 
-    It stays out of TOOLS because `--verify` exists to catch a pin that DRIFTED
-    in the built image: every row it checks is a row the image is supposed to
-    have, so a knowingly-absent row would turn a drift check into an intent list
-    and make its own MISS the normal state. PENDING_TOOLS is where a decided pin
-    waits for the rebuild that installs it.
+    `--verify` exists to catch a pin that DRIFTED in the built image: every row
+    it checks is a row the image is supposed to have, so a knowingly-absent row
+    would turn a drift check into an intent list and make its own MISS the normal
+    state. matchms waited in PENDING_TOOLS from the day its pin was decided until
+    the rebuild two days later; it is in TOOLS now, nothing is pending, and the
+    two sets stay disjoint whatever is in them.
     """
     pending = {tool.name for tool in PENDING_TOOLS}
     installed = {tool.name for tool in TOOLS}
-    assert pending == {"matchms"}
     assert not (pending & installed)
-    # And it is still a declared absence, because the built image lacks it.
-    assert pending <= set(NOT_IN_IMAGE)
+    assert not (pending | installed) & set(NOT_IN_IMAGE), (
+        "a tool cannot be installed, pending and declared absent at once")
+    assert "matchms" in installed
     assert "pyhdfd78af_1" in (ROOT / "image" / "Dockerfile").read_text()
 
 
-def test_the_pending_pin_names_the_version_the_grounding_measured():
+def test_the_pin_names_the_version_the_grounding_measured_and_is_in_the_closure():
     """0.30.2 rather than the newest on bioconda. A similarity implementation can
     change between minor versions, so inheriting the tolerance measurement means
-    pinning the version it was measured on."""
+    pinning the version it was measured on -- and the lock has to show the
+    version that is actually installed, not the version that was requested."""
     assert MATCHMS.pinned_version == "0.30.2"
     dockerfile = (ROOT / "image" / "Dockerfile").read_text()
     assert f"matchms={MATCHMS.pinned_version}=" in dockerfile
     lock = json.loads(LOCK.read_text())
-    note = lock["not_in_this_image"]["matchms"]
-    assert MATCHMS.pinned_version in note
-    # The lock must say out loud that its closure predates the request, or the
-    # next reader takes 185 packages for the whole story.
-    assert "REGENERATE" in note.upper()
-    assert not any(p["name"] == "matchms" for p in lock["packages"])
+    assert lock["requested"]["matchms"].startswith(MATCHMS.pinned_version + "=")
+    installed = [p for p in lock["packages"] if p["name"] == "matchms"]
+    assert len(installed) == 1 and installed[0]["version"] == MATCHMS.pinned_version
+    assert "matchms" not in lock["not_in_this_image"]
+
+
+def test_the_lock_is_generated_from_the_prefix_rather_than_written():
+    """The file went stale the moment it was hand-assembled, and said so in
+    prose. It is generated now, so staleness is a command away from being
+    caught -- and the generator carries the editorial fields over rather than
+    regenerating them, because a rationale is writing, not measurement."""
+    from npbench_c.tools import lockfile
+
+    lock = json.loads(LOCK.read_text())
+    assert lock["package_count"] == len(lock["packages"])
+    assert lock["artifact_bytes"] == sum(int(p["size"]) for p in lock["packages"])
+    assert lock["build_history"], "the lock records how the prefix was built"
+    assert all(step["at"] and step["command"] for step in lock["build_history"])
+    for field in lockfile.EDITORIAL:
+        assert field in lock, field
+    # Every requested spec is name=version=build, and each one is in the closure.
+    by_name = {p["name"]: p for p in lock["packages"]}
+    for name, spec in lock["requested"].items():
+        version, _, build = spec.partition("=")
+        assert name in by_name, name
+        assert by_name[name]["version"] == version, name
+        assert by_name[name]["build"] == build, name
 
 
 def test_a_library_pin_is_invoked_rather_than_imported():
@@ -215,24 +240,61 @@ def test_a_library_pin_is_invoked_rather_than_imported():
 
 
 def test_the_library_probe_reads_a_version_the_same_way_a_binary_does():
-    """The probe has to work, not merely be declared. Skipped where matchms is
-    absent, which includes the current image -- that is the point of the pin
-    being pending."""
+    """The probe has to work, not merely be declared.
+
+    And it resolves the PREFIX interpreter rather than PATH. `hmmscan` on PATH is
+    unambiguous because nothing else provides it; `python3.11` is the opposite --
+    the system interpreter answers to that name first and has no matchms -- so a
+    probe through PATH would report this pin missing on an image that has it.
+    """
     found = MATCHMS.installed_version()
     if found is None:
-        pytest.skip("matchms not importable by the probe interpreter here")
+        pytest.skip("the tool prefix is not present in this container")
+    assert found == MATCHMS.pinned_version
     assert re.match(r"\d+\.\d+\.\d+", found)
 
 
-def test_the_pending_pin_carries_the_tolerance_control():
+def test_the_library_pin_carries_the_tolerance_control():
     """The measured finding that makes this tool different from the binaries: the
     m/z tolerance is part of gold's definition rather than a comparison detail,
-    because the aggregate rate hides per-query movement."""
+    because the aggregate rate hides per-query movement.
+
+    The numbers are the ones re-measured in THIS image -- 19 of 150 verdicts
+    moving, rate 0.800 to 0.767 -- rather than the first grounding's, which ran
+    on a different numerical stack against a corpus read off a moving branch.
+    """
     controls = " ".join(MATCHMS.controls)
     assert "tolerance is part of gold" in controls
-    assert "20 of 150" in controls
-    assert "numpy" in controls and "scipy" in controls
+    assert "19 of 150" in controls
+    assert "numpy 2.2.5" in controls and "scipy 1.15.2" in controls
+    # The release pin, and the mistake it corrects, stay on the record.
+    assert "2026.03" in controls and "SNAPSHOT" in controls
+    # The thread question has an answer even without a thread flag.
+    assert "OMP_NUM_THREADS" in controls
     assert MATCHMS.needed_by == ("T-L4-1", "T-L4-2")
+
+
+def test_the_library_pin_is_measured_by_an_invocation_like_every_other_tool():
+    """TOOLS membership means the suite ran it. The invocation is the prefix
+    interpreter running the committed driver over the committed fixture, which is
+    the same shape a campaign will use."""
+    assert len(MATCHMS.invocations) == 1
+    invocation = MATCHMS.invocations[0]
+    assert invocation.argv[0] == "{bin}/python3.11"
+    assert "{fixtures}/matchms_cosine.py" in invocation.argv
+    assert "{fixtures}/ms2_massbank.json.gz" in invocation.argv
+    assert "--tolerance" in invocation.argv
+    fixtures = ROOT / "src" / "npbench_c" / "tools" / "fixtures"
+    assert (fixtures / "matchms_cosine.py").is_file()
+    assert (fixtures / "ms2_massbank.json.gz").is_file()
+    provenance = json.loads((fixtures / "provenance.json").read_text())
+    for name in ("ms2_massbank.json.gz", "matchms_cosine.py"):
+        assert name in provenance, name
+    record = provenance["ms2_massbank.json.gz"]
+    assert record["license"] == "CC BY 4.0" and record["attribution"]
+    assert "2026.03" in record["source"]
+    assert "SNAPSHOT" in record["release_tag_not_version_string"]
+    assert record["queries"] == 24 and record["library_spectra"] == 378
 
 
 def test_a_ban_is_enforced_rather_than_written_down():

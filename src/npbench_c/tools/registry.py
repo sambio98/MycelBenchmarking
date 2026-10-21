@@ -31,6 +31,8 @@ import re
 import shutil
 import subprocess
 import sys
+
+from npbench_c.tools import resources
 from dataclasses import dataclass, field
 
 #: The suite runs every tool at these thread counts. A tool with no thread flag
@@ -197,7 +199,13 @@ class Tool:
         NOT an in-process import, because the point of pinning a library this way
         is that it stays out of the grading core's address space.
         """
-        interpreter = f"{prefix}/{self.binary}" if prefix else self.binary
+        # The tool prefix, never PATH. A binary like `hmmscan` is unambiguous on
+        # PATH because nothing else provides it; `python3.11` is the opposite --
+        # the system interpreter answers to that name first, and the whole point
+        # of a library pin is that it is NOT the system interpreter. Probing
+        # through PATH would report the pin missing on an image that has it.
+        root = prefix or f"{resources.tool_prefix()}"
+        interpreter = f"{root}/{self.binary}"
         if shutil.which(interpreter) is None:
             return None
         try:
@@ -549,18 +557,18 @@ BIGSCAPE = Tool(
     ),
 )
 
-TOOLS: tuple[Tool, ...] = (ANTISMASH, BIGSCAPE, BLAST, DIAMOND, HMMER,
-                           MAFFT, MMSEQS2, PRODIGAL)
-BY_NAME = {tool.name: tool for tool in TOOLS}
+#: Built below, after MATCHMS, because a tuple cannot name a row declared later.
+#: TOOLS is what `--verify` checks: every tool the image is supposed to carry.
 
-#: The first LIBRARY pin, and not yet in the image.
+#: The first LIBRARY pin, and in the image since 2026-10-21.
 #:
-#: It sits in PENDING_TOOLS rather than TOOLS on purpose. `--verify` exists to
-#: catch a pin that DRIFTED in the built image, so every row it checks has to be
-#: a row the image is supposed to have; putting a knowingly-absent tool in there
-#: would turn a drift check into an intent list and make its own MISS the normal
-#: state. The pin, the controls and the probe all live here and are tested; the
-#: row moves into TOOLS in the same change that rebuilds the image.
+#: It waited in PENDING_TOOLS for the rebuild, because `--verify` exists to catch
+#: a pin that DRIFTED in the built image: every row it checks has to be a row the
+#: image is supposed to have, and a knowingly-absent row would turn a drift check
+#: into an intent list and make its own MISS the normal state. The prefix now
+#: carries matchms 0.30.2 from bioconda, `--verify --prefix` reports it alongside
+#: the eight binaries, and the closure is in image/environment.lock.json. The
+#: mechanism stays for the next decided-but-absent pin; nothing is in it today.
 #:
 #: The version is the one the fixture grounding actually measured. bioconda
 #: carries it as a noarch build, so the Dockerfile spec is exact like the others.
@@ -579,32 +587,72 @@ MATCHMS = Tool(
     thread_flag=None,
     controls=(
         "pin the version AND the m/z tolerance: the tolerance is part of gold's "
-        "definition, not a parameter of the comparison. Measured on a MassBank "
-        "2026.03.1 fixture, 20 of 150 per-query top-1 verdicts move across "
-        "tolerances 0.005 to 0.1 while the aggregate rate moves only 0.807 to "
-        "0.760, so a campaign pins one tolerance and grades the sweep as an axis",
+        "definition, not a parameter of the comparison. Re-measured in this "
+        "image on the MassBank 2026.03 release, 150 queries against 2,321 "
+        "library spectra: 19 of 150 per-query top-1 verdicts move across "
+        "tolerances 0.005 to 0.1 while the aggregate rate moves only 0.800 to "
+        "0.767, so a campaign pins one tolerance and grades the sweep as an axis",
         "pin numpy and scipy alongside it: the scores are floats, and float "
         "reproducibility is what makes a similarity score gold rather than an "
-        "estimate. The grounding ran against numpy 2.2.6 and scipy 1.16.3",
+        "estimate. This image carries numpy 2.2.5 and scipy 1.15.2, NOT the "
+        "2.2.6 and 1.16.3 the first grounding ran against, which is why the "
+        "tolerance table was re-measured here rather than inherited: the shape "
+        "held (peak at 0.01, mean top score rising monotonically with "
+        "tolerance) and the numbers moved in the third decimal",
+        "pin the RELEASE TAG, not the repository's VERSION string. The first "
+        "grounding recorded 'MassBank 2026.03.1', which is no release: it is "
+        "the dev branch's 2026.03.1-SNAPSHOT, read off a moving branch. The "
+        "released tag is 2026.03, 139,240 records against the snapshot's "
+        "141,017, and every census number shifts by about half a per cent",
         "never import it into the campaign runtime -- invoke the prefix "
         "interpreter as a subprocess. An in-process import would put numpy, "
         "scipy and numba inside a grading core that is stdlib-only by design",
+        "the thread question still has an answer even though the pin has no "
+        "thread flag: the suite runs it at one thread because there is nothing "
+        "to vary on the command line, so the threading that could bite is "
+        "numpy's BLAS. Measured directly -- OMP_NUM_THREADS, "
+        "OPENBLAS_NUM_THREADS, MKL_NUM_THREADS and NUMEXPR_NUM_THREADS at 1 and "
+        "at 8 give the byte-identical artifact -- and the image sets those "
+        "variables anyway as its backstop",
         "declare every filter parameter. matchms normalises, filters and "
         "harmonises metadata by default, and each default that runs unrecorded "
         "is a parameter of gold nobody declared",
-        "measured deterministic: repeat runs and a shuffled library order give "
-        "bit-identical score multisets at matchms 0.30.2 / numpy 2.2.6, so this "
-        "tool needs no canonicalisation for the scores themselves -- the "
-        "REPORTED ORDER of equal scores is a separate question a campaign fixes "
-        "by sorting its own output, as the MMseqs2 contract does",
+        "measured deterministic in this image: a repeat run and two different "
+        "shuffled library orders give the byte-identical top-1 artifact at "
+        "matchms 0.30.2 / numpy 2.2.5 / scipy 1.15.2, and the invariance suite "
+        "carries it as the cosine_top1 invocation. So the tool needs no "
+        "canonicalisation for the scores themselves -- the REPORTED ORDER of "
+        "equal scores is a separate question a campaign fixes by sorting its "
+        "own output, as the MMseqs2 contract does",
     ),
-    invocations=(),
+    invocations=(
+        Invocation(
+            name="cosine_top1",
+            # The prefix interpreter running a committed driver, which is how a
+            # campaign will reach this tool: a subprocess, never an import. The
+            # artifact is each query's top match at full float precision -- a
+            # rounded score would hide the bit-level difference this suite exists
+            # to catch.
+            argv=("{bin}/python3.11", "{fixtures}/matchms_cosine.py",
+                  "--fixture", "{fixtures}/ms2_massbank.json.gz",
+                  "--tolerance", "0.01", "--out", "{work}/scores.tsv"),
+            artifact="scores.tsv",
+        ),
+    ),
 )
 
 #: Pins that are decided and measured but whose image layer has not been built.
 #: Named here so "we know what to install and have not yet" is a recorded state
 #: rather than a gap between a note and a Dockerfile line.
-PENDING_TOOLS: tuple[Tool, ...] = (MATCHMS,)
+TOOLS: tuple[Tool, ...] = (ANTISMASH, BIGSCAPE, BLAST, DIAMOND, HMMER,
+                           MAFFT, MATCHMS, MMSEQS2, PRODIGAL)
+BY_NAME = {tool.name: tool for tool in TOOLS}
+
+#: Pins that are decided and not yet installed. Empty, and the type is what
+#: matters: the next pin settled before a rebuild waits here rather than being
+#: claimed as installed, which is what matchms did between 2026-10-19 and the
+#: rebuild two days later.
+PENDING_TOOLS: tuple[Tool, ...] = ()
 
 #: Declared absences. Named here so "the image does not have it" is a recorded
 #: decision rather than something an auditor has to infer from a missing row.
@@ -612,16 +660,6 @@ NOT_IN_IMAGE = {
     "iqtree": "Not needed by any catalogued template. If it ever is: always "
               "--seed, always fixed -T N, never AUTO, and a single-gene ML tree "
               "is not admissible as gold.",
-    "matchms": "Needed by T-L4-1 and T-L4-2, and no longer waiting on grounding: "
-               "the MassBank 2026.03.1 fixture pass is done and the tolerance "
-               "question has a measured answer, so the pin is decided and lives "
-               "in PENDING_TOOLS as MATCHMS, with the Dockerfile requesting "
-               "matchms=0.30.2=pyhdfd78af_1 from bioconda. What is left is a "
-               "rebuild: until the image carries it, `--verify` would report a "
-               "MISS on a row the image was never built with, which is why the "
-               "pin is pending rather than registered. It is also this project's "
-               "first LIBRARY pin rather than a binary, so it is invoked through "
-               "the prefix interpreter and never imported into the grading core.",
 }
 #: FastTreeMP is absent too, but it is a BAN rather than a deferral: see
 #: BANNED_BINARIES, which is checked rather than merely written down.

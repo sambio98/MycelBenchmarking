@@ -61,6 +61,7 @@ scoring path.
 | Template: frameshift response | `src/npbench_c/templates/frameshift_response/` | Prodigal 2.6.3 in the opposite mode, planted single-base deletion, coordinate lift past the cut |
 | Campaign: S. coelicolor frameshifts | `campaigns/frameshift-scoelicolor-01/` | oracle 1.0, gate 25/0/5, ladder samples the measured turnover band |
 | External resources | `src/npbench_c/tools/resources.py` | one declaration for a pinned file read from the image, shared by 3 campaigns |
+| Pinned-tool image | `image/Dockerfile`, `image/environment.lock.json` | 9 tools, 226-package closure, lock generated from the prefix |
 | Tool memo | `src/npbench_c/tools/cache.py` | stub sweeps only; 29m32s to 3m44s |
 | One-pass archive reads | `src/npbench_c/tools/archive.py` | a .tar.gz read in order; ripp's sweep 7m51s to 45s |
 | Phase 1 image | `image/Dockerfile`, `image/environment.lock.json` | 8 tools pinned to `version=build`, 185-package closure hashed, antiSMASH databases pinned at 9.4 GB |
@@ -3943,6 +3944,116 @@ that it ships the complete chromosome because a slice truncates CDS features
 processed records and fail the campaign doing it right. And the reprocessing
 route has its own test, so the check cannot forbid the fix it recommends.
 
+## Item 4: the image carries matchms, and two things were wrong on the way in
+
+The pin was decided two days earlier and the grounding was done; what was left
+was provisioning. That turned out to be the easy half.
+
+**The install.** `micromamba install` into `/opt/npbench-tools` with the
+Dockerfile's full spec list, dry-run first and read before it ran: **46 packages
+added, nothing upgraded, nothing downgraded, nothing removed**. numpy, scipy and
+pandas were already in the closure — antiSMASH brought them — so what arrived was
+numba, llvmlite, rdkit, pyteomics, sparsestack, pickydict and their dependencies.
+`registry --verify --prefix` then reports **9/9 tools at their pinned version**
+where it reported 8/8, the banned `FastTreeMP` is still absent, and the full
+invariance suite re-run after the install is **9 pass / 0 fail / 0 skip** with
+every previous verdict unchanged.
+
+Three things that were not just bookkeeping:
+
+**The lock file is generated now, because the hand-assembled one went stale
+immediately.** Its own prose said so: "THE NEXT BUILD MUST RE-SOLVE AND
+REGENERATE THIS FILE". `python -m npbench_c.tools.lockfile` reads the prefix's
+`conda-meta` — one JSON per package carrying exactly the fields the lock wants —
+and rewrites the mechanical half while carrying the editorial half over, because
+a per-pin rationale is writing and regenerating it would delete it. 185 packages
+became **226**, and the file gained a `build_history`: five solves between
+2026-10-02 and 2026-10-21, which is the honest shape of this prefix rather than
+the single `micromamba create` the Dockerfile presents. A closure assembled over
+five solves is not guaranteed to equal what one solve produces, and that is
+exactly why the artifact hashes are there.
+
+**A library pin cannot be probed through PATH.** `MATCHMS.binary` is
+`python3.11`, and `shutil.which("python3.11")` finds the *system* interpreter —
+which has no matchms, and whose being a different interpreter is the entire point
+of the pin. So `--verify` reported the pin missing on an image that has it. The
+probe now resolves the tool prefix explicitly. A binary like `hmmscan` never had
+this problem because nothing else on PATH answers to that name.
+
+**TOOLS membership means the suite measured it**, and matchms arrived with
+`invocations=()`, which the suite's own contract forbids — "a tool with no
+invocation is a tool not measured". So it got one: the prefix interpreter running
+a committed driver (`fixtures/matchms_cosine.py`) over a committed fixture
+(`fixtures/ms2_massbank.json.gz`), writing each query's top match at full float
+precision, because a rounded score would hide the bit-level difference the suite
+exists to catch. Verdict: **raw-identical** across repeats. The tool has no
+thread flag, so the suite runs it at one thread — but the threading that could
+bite a numpy-backed tool is BLAS, so that was measured separately:
+`OMP_NUM_THREADS`, `OPENBLAS_NUM_THREADS`, `MKL_NUM_THREADS` and
+`NUMEXPR_NUM_THREADS` at 1 and at 8 give the byte-identical artifact.
+
+### The release the grounding named does not exist
+
+The grounding recorded its corpus as **MassBank 2026.03.1**. Cloning that tag
+fails: `fatal: Remote branch 2026.03.1 not found`. The repository's tags run
+2023.06 … 2025.10, **2026.03**, and that is the latest release. What does carry
+the string is the *dev branch's* `VERSION` file:
+
+```
+main: version = 2026.03
+dev:  version = 2026.03.1-SNAPSHOT
+```
+
+So the fixture was cut from a moving branch and its development version string
+was written down as a release. Nobody — including me, four days later — can
+reproduce that corpus. Re-run against the released tag, every census number
+shifts by about half a per cent, exactly as a branch a few hundred records ahead
+would:
+
+| | tag 2026.03 | the dev snapshot |
+|---|---|---|
+| records | 139,240 | 141,017 |
+| MS2 with an InChIKey, a precursor and ≥5 peaks | 85,146 | 86,735 |
+| distinct compounds (InChIKey first block) | 9,078 | 9,182 |
+| compounds with ≥2 spectra | 7,142 | 7,249 |
+| spanning ≥2 instruments **and** ≥2 contributors | **2,384** | 2,394 |
+| positive / negative | 97,803 / 41,437 | 99,249 / 41,768 |
+
+The structure survives, which is the useful part: the selection rule reproduces
+on a release anyone can fetch, and the fixture is now cut from the tag with the
+rule, the census and the correction recorded in `fixtures/provenance.json`.
+
+### The tolerance table, re-measured on the stack that will produce gold
+
+The grounding ran on numpy 2.2.6 and scipy 1.16.3. This image has **numpy 2.2.5
+and scipy 1.15.2** — so the table could not be inherited, because the whole
+reason to pin a numerical stack is that the scores are floats. Re-measured here,
+150 queries against 2,321 library spectra from the tag:
+
+| m/z tolerance | top-1 correct | rate | mean top score | the grounding's rate |
+|---|---|---|---|---|
+| 0.005 | 117 | 0.780 | 0.7528 | 0.800 |
+| 0.01 | 120 | **0.800** | 0.7727 | 0.807 |
+| 0.02 | 118 | 0.787 | 0.7798 | 0.793 |
+| 0.05 | 115 | 0.767 | 0.7980 | 0.767 |
+| 0.1 | 118 | 0.787 | **0.8268** | 0.760 |
+
+Both findings a campaign depends on survive. **Mean top score rises
+monotonically with tolerance while accuracy does not** — a loose tolerance makes
+everything look more similar, including the wrong things. And **the aggregate
+hides the per-query answer**: the rate moves by 3.3 points across a twentyfold
+range of tolerance while **19 of 150 verdicts change somewhere** in it (3 at
+0.005, 4 at 0.02, 9 at 0.05, 16 at 0.1 against the 0.01 baseline). Thirteen per
+cent of the gold answers depend on a parameter whose aggregate effect is nearly
+invisible, so a campaign here pins the tolerance as part of gold and grades the
+sweep as an axis.
+
+One difference from the grounding worth stating rather than smoothing: its table
+showed accuracy falling monotonically to 0.760 at tolerance 0.1, and this one
+dips at 0.05 and recovers to 0.787. The monotone *fall* was an artefact of that
+corpus; the monotone *rise* of the mean score, and the per-query instability, are
+not.
+
 ## Open items
 
 1. ~~CAI table provenance.~~ **Closed.** The tables are derived from two pinned
@@ -3963,18 +4074,18 @@ route has its own test, so the check cannot forbid the fix it recommends.
 3. Real systems for the sweep. The harness is built and self-tested; it needs
    `SystemSpec` entries for the actual agents (bash-only, general biomedical,
    tool-equipped) before the five checks can go green.
-4. **matchms in the image** — the fixture half of this item is now done. The
-   grounding pass is above: the MassBank 2026.03.1 fixture is characterised, the
-   query/library split is a declared rule over 2,394 compounds spanning two
-   instruments and two contributors, and the tolerance question has a measured
-   answer (deterministic tool, 20 of 150 per-query verdicts moving across the
-   sweep, so the tolerance is part of gold and the sweep is a graded axis). What
-   remains is provisioning, not grounding: add `matchms==0.30.2` to the image with
-   numpy and scipy pinned alongside, per `image/environment.lock.json`. Until then
-   gold for these rows would come from a container that is not the image, and the
-   determinism check cannot catch that because it re-runs in the same container.
-   (This item appeared twice in earlier revisions, as 5 and 6; the duplicate is
-   merged here.)
+4. ~~matchms in the image.~~ **Done.** The prefix carries
+   matchms 0.30.2 (46 packages added, nothing moved), `--verify` reports 9/9,
+   the invariance suite measures it as an invocation like every other tool
+   (raw-identical, plus a separate BLAS-thread measurement), the lock is
+   generated from the prefix at 226 packages with a build history, and the
+   fixture is cut from MassBank's released tag with the tolerance table
+   re-measured on this image's numpy. Two defects came out of it: the grounding's
+   "MassBank 2026.03.1" was a dev-branch snapshot string that no clone can
+   reproduce, and a library pin probed through PATH reports itself missing on an
+   image that has it. See "Item 4" above. **T-L4-1 (×2) and T-L4-2 are now
+   buildable**, which is the next build rather than a decision.
+
 5. ~~Reprocess the MIBiG reference set with the pinned antiSMASH, or declare
    that a T-L3-2 campaign takes both sides from the published `as8b1` set.~~
    **Declared, and now enforced.** Counted over all 23 campaigns, the group that

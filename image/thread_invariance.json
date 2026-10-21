@@ -9,22 +9,23 @@
     "bgc_triplet.embl",
     "halogenases.afa",
     "halogenases.faa",
+    "matchms_cosine.py",
+    "ms2_massbank.json.gz",
     "provenance.json",
     "synthetic.fna"
   ],
   "not_in_image": {
-    "iqtree": "Not needed by any catalogued template. If it ever is: always --seed, always fixed -T N, never AUTO, and a single-gene ML tree is not admissible as gold.",
-    "matchms": "Needed by T-L4-1 and T-L4-2. Pip-installable, but what those rows need first is an MS2 fixture set from MassBank with its own grounding pass: for a spectral match the invariance question becomes a tolerance question, and that is a different suite."
+    "iqtree": "Not needed by any catalogued template. If it ever is: always --seed, always fixed -T N, never AUTO, and a single-gene ML tree is not admissible as gold."
   },
   "repeats": 2,
   "summary": {
     "fail": 0,
-    "invocations": 11,
-    "measured": 8,
+    "invocations": 12,
+    "measured": 9,
     "needed_canonicalisation": [
       "mmseqs2"
     ],
-    "pass": 8,
+    "pass": 9,
     "skip": 0,
     "xfail": 1,
     "xpass": 0
@@ -344,14 +345,14 @@
               "raw": "47918f1aa4148c9e"
             },
             "t8_r0": {
-              "canonical": "dad3165def6be47d",
-              "normalised": "dad3165def6be47d",
-              "raw": "dad3165def6be47d"
+              "canonical": "f750fd6ce579a15e",
+              "normalised": "f750fd6ce579a15e",
+              "raw": "f750fd6ce579a15e"
             },
             "t8_r1": {
-              "canonical": "f7f06a13e9a3e63f",
-              "normalised": "f7f06a13e9a3e63f",
-              "raw": "f7f06a13e9a3e63f"
+              "canonical": "4686d76312a7dccf",
+              "normalised": "4686d76312a7dccf",
+              "raw": "4686d76312a7dccf"
             }
           },
           "invocation": "blastp_tabular_no_reorder",
@@ -398,22 +399,22 @@
             "t1_r0": {
               "canonical": "7ae34b5010d56a59",
               "normalised": "7ae34b5010d56a59",
-              "raw": "47da0e1c9fdf140e"
+              "raw": "18b09a591989857f"
             },
             "t1_r1": {
               "canonical": "7ae34b5010d56a59",
               "normalised": "7ae34b5010d56a59",
-              "raw": "83eaa29b743b1086"
+              "raw": "c29e96ba3911fa25"
             },
             "t8_r0": {
               "canonical": "7ae34b5010d56a59",
               "normalised": "7ae34b5010d56a59",
-              "raw": "51182f9cee599871"
+              "raw": "dd3c012d0a00dc28"
             },
             "t8_r1": {
               "canonical": "7ae34b5010d56a59",
               "normalised": "7ae34b5010d56a59",
-              "raw": "853ecc2bc97031ad"
+              "raw": "3dd99ee02fd04ca5"
             }
           },
           "invocation": "hmmsearch_tblout",
@@ -437,27 +438,27 @@
           "canonical_identical": true,
           "canonicalisation": null,
           "compared": "artifact",
-          "detail": "identical after 1 declared normalisation rule(s); the raw bytes also agreed, but a declared-unstable field is present and only happened to match",
+          "detail": "identical after 1 declared normalisation rule(s)",
           "digests": {
             "t1_r0": {
               "canonical": "318074301e70c24b",
               "normalised": "318074301e70c24b",
-              "raw": "446c2358004952bd"
+              "raw": "b6b4e8e3fe6dee28"
             },
             "t1_r1": {
               "canonical": "318074301e70c24b",
               "normalised": "318074301e70c24b",
-              "raw": "446c2358004952bd"
+              "raw": "33e994680935c5de"
             },
             "t8_r0": {
               "canonical": "318074301e70c24b",
               "normalised": "318074301e70c24b",
-              "raw": "446c2358004952bd"
+              "raw": "33e994680935c5de"
             },
             "t8_r1": {
               "canonical": "318074301e70c24b",
               "normalised": "318074301e70c24b",
-              "raw": "446c2358004952bd"
+              "raw": "33e994680935c5de"
             }
           },
           "invocation": "hmmbuild",
@@ -468,7 +469,7 @@
           "projection": null,
           "projection_identical": false,
           "raw_identical": false,
-          "raw_identical_incidental": true,
+          "raw_identical_incidental": false,
           "repeatable_at_fixed_threads": true,
           "runs": 4,
           "status": "PASS",
@@ -549,6 +550,61 @@
       "tool": "mafft",
       "version": "7.526"
     },
+    "matchms": {
+      "canonicalisation": null,
+      "controls": [
+        "pin the version AND the m/z tolerance: the tolerance is part of gold's definition, not a parameter of the comparison. Re-measured in this image on the MassBank 2026.03 release, 150 queries against 2,321 library spectra: 19 of 150 per-query top-1 verdicts move across tolerances 0.005 to 0.1 while the aggregate rate moves only 0.800 to 0.767, so a campaign pins one tolerance and grades the sweep as an axis",
+        "pin numpy and scipy alongside it: the scores are floats, and float reproducibility is what makes a similarity score gold rather than an estimate. This image carries numpy 2.2.5 and scipy 1.15.2, NOT the 2.2.6 and 1.16.3 the first grounding ran against, which is why the tolerance table was re-measured here rather than inherited: the shape held (peak at 0.01, mean top score rising monotonically with tolerance) and the numbers moved in the third decimal",
+        "pin the RELEASE TAG, not the repository's VERSION string. The first grounding recorded 'MassBank 2026.03.1', which is no release: it is the dev branch's 2026.03.1-SNAPSHOT, read off a moving branch. The released tag is 2026.03, 139,240 records against the snapshot's 141,017, and every census number shifts by about half a per cent",
+        "never import it into the campaign runtime -- invoke the prefix interpreter as a subprocess. An in-process import would put numpy, scipy and numba inside a grading core that is stdlib-only by design",
+        "declare every filter parameter. matchms normalises, filters and harmonises metadata by default, and each default that runs unrecorded is a parameter of gold nobody declared",
+        "measured deterministic in this image: a repeat run and two different shuffled library orders give the byte-identical top-1 artifact at matchms 0.30.2 / numpy 2.2.5 / scipy 1.15.2, and the invariance suite carries it as the cosine_top1 invocation. So the tool needs no canonicalisation for the scores themselves -- the REPORTED ORDER of equal scores is a separate question a campaign fixes by sorting its own output, as the MMseqs2 contract does"
+      ],
+      "detail": "1/1 invocation(s) invariant at (1,) (no thread flag; repeat determinism only)",
+      "fingerprint": null,
+      "fingerprint_paths": null,
+      "invocations": [
+        {
+          "canonical_identical": true,
+          "canonicalisation": null,
+          "compared": "artifact",
+          "detail": "identical across all runs with no normalisation",
+          "digests": {
+            "t1_r0": {
+              "canonical": "9793db03e82f42f2",
+              "normalised": "9793db03e82f42f2",
+              "raw": "9793db03e82f42f2"
+            },
+            "t1_r1": {
+              "canonical": "9793db03e82f42f2",
+              "normalised": "9793db03e82f42f2",
+              "raw": "9793db03e82f42f2"
+            }
+          },
+          "invocation": "cosine_top1",
+          "normalisation_rules_fired": [],
+          "normalised_identical": true,
+          "projection": null,
+          "projection_identical": false,
+          "raw_identical": true,
+          "raw_identical_incidental": false,
+          "repeatable_at_fixed_threads": true,
+          "runs": 2,
+          "status": "PASS",
+          "thread_counts": [
+            1
+          ]
+        }
+      ],
+      "needed_by": [
+        "T-L4-1",
+        "T-L4-2"
+      ],
+      "slow": false,
+      "status": "PASS",
+      "tool": "matchms",
+      "version": "0.30.2"
+    },
     "mmseqs2": {
       "canonicalisation": "sort_lines",
       "controls": [
@@ -580,13 +636,13 @@
             },
             "t8_r0": {
               "canonical": "bc8281ff54bf6376",
-              "normalised": "e6e759b6263a95b3",
-              "raw": "e6e759b6263a95b3"
+              "normalised": "f449a76fd6304201",
+              "raw": "f449a76fd6304201"
             },
             "t8_r1": {
               "canonical": "bc8281ff54bf6376",
-              "normalised": "6222624464902871",
-              "raw": "6222624464902871"
+              "normalised": "98b7241e497542a3",
+              "raw": "98b7241e497542a3"
             }
           },
           "invocation": "search_convertalis",
