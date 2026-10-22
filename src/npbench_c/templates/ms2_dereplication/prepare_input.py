@@ -19,13 +19,26 @@ key disagrees on stereochemistry and protonation state that MS2 cannot see.
 
 **Eligible compounds span two instrument types AND two contributors.**
 Dereplication is gradeable only when the query compound is in the library
-through a DIFFERENT spectrum, and non-trivial only when that spectrum comes from
-another instrument in another lab. 1,693 of MassBank 2026.03's compounds qualify
+through a DIFFERENT spectrum. 1,693 of MassBank 2026.03's compounds qualify
 under the clauses above.
 
-**The query is the lexicographically first contributor's spectrum; the library
-is everything else.** A declared, order-free split: no sampling, no seed, and no
-way for the choice of query to depend on how well it happens to score.
+**The query is the lexicographically first contributor's spectrum, and the
+library takes that compound's spectra from EVERY OTHER contributor.** A
+declared, order-free split: no sampling, no seed, and no way for the choice of
+query to depend on how well it happens to score.
+
+The second half of that sentence is the one that was measured into a rule. The
+split first shipped as "every other spectrum of the compound", which leaves a
+lab's own replicates of its own query in the library: audited on the hundred
+graded queries, 19 compounds still had a same-contributor spectrum there, and 10
+of the 90 correct answers were won on one -- same contributor AND same instrument
+type. That is a retrieval of the same lab's measurement, which is what this
+campaign claims a correct answer is not. Excluding the query's own contributor
+makes the claim true by construction, and `split` refuses a corpus where it does
+not hold. The instrument axis is NOT made a rule: eligibility already requires
+the compound to span two instrument types, which contributor exclusion does not
+guarantee per query, so provenance reports the instrument support as a census
+rather than the campaign asserting it.
 
 **The release is named by its TAG.** MassBank's dev branch carries a VERSION
 string that reads like a release (`2026.03.1-SNAPSHOT`), and an earlier pass
@@ -166,16 +179,62 @@ def corpus(clone: pathlib.Path) -> tuple[dict[str, list[dict]], dict[str, int]]:
     return eligible, dict(census)
 
 
+def _assert_cross_contributor(queries: list[dict], library: list[dict]) -> None:
+    """The split's whole claim, checked rather than asserted in a docstring."""
+    by_block: dict[str, list[dict]] = {}
+    for row in library:
+        by_block.setdefault(row["compound_block"], []).append(row)
+    for query in queries:
+        own = by_block.get(query["compound_block"], [])
+        if not own:
+            raise InputError(
+                f"{query['accession']}'s compound ({query['compound_block']}) has "
+                "no library spectrum left after the contributor exclusion, so its "
+                "correct answer does not exist")
+        same = sorted(row["accession"] for row in own
+                      if row["contributor"] == query["contributor"])
+        if same:
+            raise InputError(
+                f"{query['accession']} is answerable from its own contributor's "
+                f"spectra ({same[:3]}), so a correct retrieval would be the same "
+                "lab's replicate rather than another lab's measurement")
+
+
+def instrument_support(queries: list[dict], library: list[dict]) -> dict:
+    """How the graded queries' compounds are represented, by instrument type.
+
+    Reported, not enforced. The contributor exclusion guarantees another lab; it
+    does not guarantee another instrument, and the campaign says so here instead
+    of claiming it.
+    """
+    by_block: dict[str, list[dict]] = {}
+    for row in library:
+        by_block.setdefault(row["compound_block"], []).append(row)
+    census = {"cross_instrument": 0, "same_instrument_only": 0}
+    for query in queries:
+        own = by_block.get(query["compound_block"], [])
+        key = ("cross_instrument"
+               if any(row["instrument_type"] != query["instrument_type"]
+                      for row in own)
+               else "same_instrument_only")
+        census[key] += 1
+    return census
+
+
 def split(eligible: dict[str, list[dict]], queries: int) -> tuple[list[dict], list[dict]]:
     chosen_queries, library = [], []
     for block in sorted(eligible):
+        # Sorted by contributor then accession, so the first row IS the
+        # lexicographically first contributor's first spectrum.
         rows = sorted(eligible[block], key=lambda r: (r["contributor"], r["accession"]))
-        first = rows[0]["contributor"]
-        query = next(r for r in rows if r["contributor"] == first)
+        query = rows[0]
         chosen_queries.append(query)
-        library.extend(r for r in rows if r["accession"] != query["accession"])
+        library.extend(row for row in rows
+                       if row["contributor"] != query["contributor"])
     graded = sorted(chosen_queries, key=lambda r: r["accession"])[:queries]
-    return graded, sorted(library, key=lambda r: r["accession"])
+    library = sorted(library, key=lambda r: r["accession"])
+    _assert_cross_contributor(graded, library)
+    return graded, library
 
 
 def write_gz(path: pathlib.Path, payload: object) -> str:
@@ -227,12 +286,26 @@ def main(argv: list[str] | None = None) -> int:
             f"{MIN_PEAKS} peaks. Grouped by the InChIKey's first block, a "
             "compound is eligible when its spectra span at least two instrument "
             "types AND at least two contributors. For each eligible compound the "
-            "QUERY is the spectrum from the lexicographically first contributor "
-            "and every other spectrum of it joins the LIBRARY. The graded "
-            f"queries are the first {args.queries} of those by accession; the "
-            "library is every eligible compound's non-query spectra, unfiltered, "
-            "so the right answer is in it from another lab and so are thousands "
-            "of distractors."),
+            "QUERY is the spectrum from the lexicographically first contributor, "
+            "and the LIBRARY takes that compound's spectra from every OTHER "
+            f"contributor. The graded queries are the first {args.queries} of "
+            "those by accession; the library is every eligible compound's "
+            "cross-contributor spectra, unfiltered, so the right answer is in it "
+            "from another lab and so are thousands of distractors."),
+        "split_excludes_the_query_s_own_contributor": (
+            "Measured, not stylistic. Under the earlier split -- every other "
+            "spectrum of the compound -- 19 of 100 graded compounds still had a "
+            "same-contributor spectrum in the library, and 10 of the 90 correct "
+            "answers came from one at the same instrument type too, which is a "
+            "replicate lookup rather than a retrieval. prepare_input now refuses "
+            "a split where any graded query is answerable from its own "
+            "contributor."),
+        "instrument_support": instrument_support(queries, library),
+        "instrument_support_note": (
+            "How many graded queries have their compound in the library on a "
+            "DIFFERENT instrument type. Reported rather than enforced: the "
+            "contributor exclusion guarantees another lab, not another "
+            "instrument."),
         "census": census,
         "graded_queries": len(queries),
         "library_spectra": len(library),

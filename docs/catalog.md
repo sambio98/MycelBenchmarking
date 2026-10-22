@@ -996,7 +996,7 @@ and every variant moves the total (595 / 749 / 636 / 640 against 620); the build
 
 | # | Template | Data | Build |
 |---|---|---|---|
-| T-L4-1 ×2 | MS² dereplication vs reference standards | **verified** | image (matchms) |
+| T-L4-1 ×2 | MS² dereplication vs reference standards | **verified** | **BUILT ×1** |
 | T-L4-2 | Molecular networking, mis-seeded annotation | **verified** | image (matchms) |
 | T-L4-3 ×2 | Mass balance & route validation (NRPS) | verified | **BUILT** |
 | T-L4-4 | Chemical space / scaffold analysis | verified | **BUILT** |
@@ -1012,13 +1012,25 @@ applied — predict which annotations survive. Perturbation:
 `adduct_misassignment`. **The nearest-neighbour suspect library is a distractor,
 never gold** — it is propagated by construction.
 
-**Data now verified, build still `image`.** The fixture grounding pass is done and
-recorded in `docs/npbench-c.md`. MassBank **2026.03.1** (141,017 records, CC BY)
-holds **2,394 compounds whose MS² spectra span at least two instrument types and
-two contributors** — the declared query/library split takes one spectrum per
-compound from the lexicographically first contributor as the query and every
-spectrum from other contributors as the library, so the right answer is in the
-library but from another lab.
+**Built ×1: `campaigns/derep-massbank-2026_03-01`** — 100 graded queries against a
+24,794-spectrum library cut from the release tag, 12 graded components over four
+rungs, gate 25/0/5. The second instantiation is still to build. The ladder as
+built, and the split defect the build found in the grounding's own rule, are in
+`docs/npbench-c.md` under "T-L4-1 built": the library now takes each compound's
+spectra from every contributor **other than its query's**, because the earlier
+"every other spectrum" rule left a lab's own replicates in the library and ten of
+ninety correct answers were won on one.
+
+**The fixture grounding pass is done and recorded in `docs/npbench-c.md`.** The
+numbers it recorded were off a dev-branch snapshot: the *released tag* 2026.03
+holds **139,240 records** and **1,693 compounds whose MS² spectra span at least
+two instrument types and two contributors**, against the snapshot's 141,017 and
+2,394. The declared query/library split takes one spectrum per compound from the
+lexicographically first contributor as the query and every spectrum **from other
+contributors** as the library, so the right answer is in the library but from
+another lab. That last clause is what the built campaign had to be corrected back
+to: it shipped as "every other spectrum", which is not the same rule and left a
+lab's own replicates in the library.
 
 **`CONFIDENCE` Level 1 cannot define "authentic standard".** The field exists and
 means exactly that, and **95 of 141,017 records carry it** — one contributor's

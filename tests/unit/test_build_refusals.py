@@ -56,6 +56,7 @@ TEST_FILES = {
     "gcf_cutoff": "test_campaign_gcfcutoff.py",
     "gene_calling": "test_campaign_genecall.py",
     "kinetics_consistency": "test_campaign_kinetics.py",
+    "ms2_dereplication": "test_campaign_derep.py",
     "remote_homology": "test_campaign_homology.py",
     "ripp_precursor": "test_campaign_ripp.py",
 }

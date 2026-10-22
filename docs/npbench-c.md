@@ -4058,6 +4058,11 @@ not.
 
 ## T-L4-1 grounded: three of its four rungs needed redesigning
 
+*Every number in this section is the grounding's, measured on the split the
+grounding declared. Building the campaign found that split wrong and the numbers
+moved; the built campaign's are in the next section, and the two should not be
+read as the same measurement.*
+
 The catalogued ladder was: R1 an annotation table keyed by InChIKey · R2 matches
 gold at the declared InChIKey block · R3 the confidence level per annotation and
 the discriminating fragment · R4 an adduct shift is applied, predict which
@@ -4154,6 +4159,133 @@ data rather than with the grading spec, and a second test holds that.
 | R4: which annotations survive an adduct shift | **the census** (73 no candidate / 27 lost / 0 survive); the per-query bit has one answer |
 | — | **added**: the tolerance-grid movement sets, 9 / 3 / 6 / 6 of 100 |
 
+## T-L4-1 built, and its one-sentence claim was false
+
+The grounding above left the pipeline, the corpus and all four rungs decided, so
+this was meant to be assembly: gold, the warm bundles, the grading spec, the
+measurer, the oracle, the stub ladder, the rungs in `task.yaml`. Five things came
+out of it, and the first one is the campaign's whole construct.
+
+### The split did not do what the campaign said it did
+
+What makes a dereplication campaign gradeable without anybody's judgement is
+that the query's compound is in the library through *another lab's* measurement.
+That sentence was in the template's docstring. Audited against the shipped
+hundred, it was false for a tenth of its own answers.
+
+The grounding's rule was: the query is the lexicographically first contributor's
+spectrum, and **every other spectrum** of that compound joins the library. The
+second half is the defect. A lab that contributed three spectra of a compound
+keeps two of them in the library, so the query can be answered from its own
+lab's replicate. Measured: **19 of the 100 graded compounds** had a
+same-contributor spectrum in the library, and **10 of the 90 correct answers**
+came from one — at the same contributor *and* the same instrument type. Not a
+retrieval. A lookup with one extra accession number.
+
+The rule is now: the library takes each eligible compound's spectra from **every
+contributor other than its own query's**. Eligibility already requires two
+contributors per compound, so no query loses its answer, and the library goes
+from 30,749 spectra to **24,794**. Of the ten replicate-won answers, **nine still
+retrieve correctly from another lab** and one does not: the whole cost of the fix
+is 90 → 89, which is also the measure of how little the replicates were doing
+except flattering the campaign.
+
+The catalogue had it right, which is the uncomfortable part. `docs/catalog.md`
+describes the split as "every spectrum **from other contributors** as the
+library"; the template's rule drifted to "every other spectrum of it" somewhere
+between the catalogue row and the code, and the docstring kept asserting the
+catalogue's version. Neither the gate nor the oracle can see a drift like that —
+both sides are internally consistent and gold is exactly what the code computes.
+What found it was reading the shipped records: a query and a library spectrum one
+accession apart, same contributor, same instrument.
+
+It is checked in two places, because the version that shipped was a sentence:
+`prepare_input` refuses a split where any graded query is answerable from its own
+contributor, and `Corpus.load` refuses a corpus where it holds — so a hand-built
+or re-cut corpus cannot reintroduce it. A test builds exactly that corpus and
+asserts the refusal.
+
+And the claim that is *not* made is the instrument. Contributor exclusion does
+not imply a different instrument type, so the campaign stops claiming one and
+reports it instead: `inputs/provenance.json` carries an `instrument_support`
+census, which comes out **100 cross-instrument / 0 same-instrument-only**. The
+strong version of the claim is true on this corpus — and it is a fact about the
+corpus, recorded as a census, not a rule the builder enforces.
+
+### The numbers as built
+
+| | grounding's split | as shipped |
+|---|---|---|
+| library spectra | 30,749 | **24,794** |
+| candidate set, median / max / total | 18 / 159 / — | **16.5 / 159 / 2,778** |
+| annotated / no candidate / no match | 98 / 2 / 0 | **98 / 2 / 0** |
+| correct / misannotated | 90 / 8 | **89 / 9** |
+| confirmed / tentative / unsupported | 62 / 23 / 13 | **61 / 23 / 14** |
+| queries with a competing compound | 28 | **27** |
+| inside the 0.05 margin | 7 | **7** |
+| tolerance movement, 0.005 / 0.02 / 0.05 / 0.1 | 9 / 3 / 6 / 6 | **10 / 3 / 6 / 6** |
+| adduct: no candidate / lost / survives | 73 / 27 / 0 | **74 / 26 / 0** |
+
+Every shape the grounding found survived the recut, which is the useful part of
+the table: the split fix cost one correct answer and moved nothing about what the
+rungs measure.
+
+### R1 was a free component in its first draft
+
+The first grading spec graded `corpus_census` — graded queries, library spectra,
+library compounds. All three are stated in `inputs/provenance.json`, which the
+sandbox ships because the selection rule and the per-file digests belong with the
+data. A component for them measures a copy, not a parse.
+
+What R1 grades instead is the **candidate census**: the median, maximum and total
+candidate-set size the declared precursor window leaves over this library. It
+cannot be read anywhere — it is the filter applied to both files — and it is
+answerable **without scoring a single peak**, which is the right shape for a
+first rung and is why the stub ladder's `reader` level never calls the
+similarity. `corpus_census` is still reported, and named in
+`excluded_from_grading` with that reason.
+
+### Two competence probes, and a third retired on measurement
+
+- **`peaksfirst`** ranks candidates by matched peaks before score. A defensible
+  reading of a spectral comparison and not the declared one: **65 of the 98
+  annotated queries get a different top match**, only 2 of which change
+  correctness. R1 is untouched — the filter is upstream of any ranking — so it
+  clears R1 and fails R2, where the search is.
+- **`scorefloor`** reads the declared confidence rule as a score threshold and
+  drops its matched-peak floor. The single-condition slip: **17 of 98 move
+  class**, 15 from `tentative` and 2 from `unsupported`, **every one of them
+  upward** into `confirmed` — the direction that makes a system look more certain
+  than its evidence supports. Clears R1 and R2, fails R3.
+- **Dropping the declared ranking's tie-break keys** moves **nothing**. Eight
+  queries have tied candidate scores and none of them at the top, so ordering by
+  score alone reproduces gold exactly. It is not a fixture — a probe that fails
+  nothing clears every rung and measures the harness — and the rule stays, since
+  it is what makes the answer independent of the tool's iteration order on a
+  corpus where a tie does reach the top. The measurement is recorded on
+  `core.declared_ranking`, where the rule lives.
+
+### One refusal was unreachable, and the test is what said so
+
+`_assert_has_content` first refused gold where "every annotation survives the
+misassigned adduct". That cannot happen: surviving everything means emptying no
+candidate window, and the refusal above it already fires on that. The
+parametrised refusal test could not construct a gold that reached it — which is
+the only way an unreachable guard announces itself, since a guard that never
+fires looks exactly like a guard nothing has triggered yet. It now refuses the
+reachable degeneracy: **as many right answers after the shift as before it**,
+which would make R4's census a restatement of R2's.
+
+### Where it stands
+
+Gate: **25 pass / 0 fail / 5 pending**, the pending five being the agent-run
+checks every campaign holds open. Stub sweep: **0 gates failing**, cold depths
+1 / 2 / 3 / 4 for the four ladder levels, 1 for `peaksfirst`, 2 for
+`scorefloor`, 0 for the no-tool ablation, R1 clear rate 1.0 and a cold mean score
+of 0.54. The suite gained **55 tests** and the cross-campaign scan is clean in
+both directions over all 24 campaigns. **24 campaigns are built**, and the
+release packager ships all of them.
+
 ## Open items
 
 1. ~~CAI table provenance.~~ **Closed.** The tables are derived from two pinned
@@ -4183,8 +4315,10 @@ data rather than with the grading spec, and a second test holds that.
    re-measured on this image's numpy. Two defects came out of it: the grounding's
    "MassBank 2026.03.1" was a dev-branch snapshot string that no clone can
    reproduce, and a library pin probed through PATH reports itself missing on an
-   image that has it. See "Item 4" above. **T-L4-1 (×2) and T-L4-2 are now
-   buildable**, which is the next build rather than a decision.
+   image that has it. See "Item 4" above. **T-L4-1's first instantiation is
+   now built** — see "T-L4-1 built" above, including the split defect the
+   assembly found — and T-L4-1 ×2 and T-L4-2 are the next builds rather than
+   decisions.
 
 5. ~~Reprocess the MIBiG reference set with the pinned antiSMASH, or declare
    that a T-L3-2 campaign takes both sides from the published `as8b1` set.~~
@@ -4203,10 +4337,10 @@ data rather than with the grading spec, and a second test holds that.
    bacterial variant values. Nothing is blocked on licensing.
 7. **Three rows are retired on measurement, so the reachable count is 26.**
    T-L2-4 (×2), T-L5-2 and now T-L6-3 all ground out, each with its numbers
-   recorded above. Against that: **23 campaigns are built**, and T-L4-1 (×2) and
-   T-L4-2 are buildable as soon as the image carries matchms, which makes **26
-   reachable** — 27 if T-L5-2 is re-scoped rather than dropped. The headline
-   "32 campaigns from 24 templates" in this file and in `docs/catalog.md` is the
+   recorded above. Against that: **24 campaigns are built**, and T-L4-1's
+   second instantiation and T-L4-2 are buildable now that the image carries
+   matchms, which makes **26 reachable** — 27 if T-L5-2 is re-scoped rather than
+   dropped. The headline "32 campaigns from 24 templates" in this file and in `docs/catalog.md` is the
    *catalogued* target and still has not been restated downward, because two
    things are the owner's call: whether to re-scope the retired rows, and how to
    count T-L3-5a, which is a built replacement for a re-tiered row rather than a

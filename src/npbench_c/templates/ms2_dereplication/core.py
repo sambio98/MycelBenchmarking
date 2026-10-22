@@ -2,9 +2,14 @@
 
 T-L4-1. A query spectrum is matched against a library of spectra of known
 compounds, and the question is which compound the query is. What makes it
-gradeable is the split: the query's own compound is in the library through a
-spectrum from a DIFFERENT contributor on a DIFFERENT instrument, so a correct
-answer is a real retrieval rather than a lookup of the same measurement.
+gradeable is the split: the query's own compound is in the library only through
+spectra from DIFFERENT contributors, so a correct answer is another lab's
+measurement rather than a lookup of the same one. That is a rule the inputs are
+built under and a refusal `Corpus.load` enforces, because it first shipped as a
+docstring and the audit found 10 of 90 correct answers coming from the query's
+own contributor at the query's own instrument type. The INSTRUMENT type is not
+guaranteed per query and the campaign does not claim it; `inputs/provenance.json`
+reports the instrument support as a census.
 
 Pure stdlib apart from the tool call, which is a subprocess: matchms is a
 library pin and importing it would put numpy, scipy and numba inside a grading
@@ -37,7 +42,7 @@ import pathlib
 import subprocess
 import tempfile
 from dataclasses import dataclass
-from typing import Mapping, Sequence
+from typing import Callable, Mapping, Sequence
 
 from npbench_c.tools import cache
 from npbench_c.tools.resources import tool_prefix
@@ -53,6 +58,19 @@ PRECISION = 6
 INTERPRETER = "python3.11"
 
 
+def declared_ranking(row: Sequence) -> tuple:
+    """Score down, matched peaks down, accession up.
+
+    The third key is not cosmetic: equal scores occur, and two keys would leave
+    the answer to whatever order the tool returned. Measured on the shipped
+    hundred, neither the second nor the third key changes a single top match --
+    8 queries have tied candidate scores and none of them at the top -- so the
+    rule is a determinism guarantee rather than a discriminator, and the stub
+    ladder's probe gets the order wrong in a way that does bite.
+    """
+    return (-row[1], -row[2], row[0])
+
+
 class DereplicationError(RuntimeError):
     """The corpus or the tool cannot support what the campaign grades. A
     campaign bug if it fires on shipped inputs."""
@@ -60,6 +78,7 @@ class DereplicationError(RuntimeError):
 
 @dataclass(frozen=True)
 class Rules:
+    similarity: str
     peak_tolerance: float
     precursor_window: float
     tolerance_grid: tuple[float, ...]
@@ -80,6 +99,7 @@ class Rules:
         confidence = document["confidence"]
         adduct = document["adduct_misassignment"]
         return cls(
+            similarity=str(search["similarity"]),
             peak_tolerance=float(search["peak_tolerance"]),
             precursor_window=float(search["precursor_window"]),
             tolerance_grid=tuple(float(t) for t in search["tolerance_grid"]),
@@ -134,12 +154,26 @@ class Corpus:
                 f"{len(overlap)} query spectra are also in the library "
                 f"({overlap[:3]}). A query that can match itself makes the "
                 "retrieval a lookup and every rung above R1 meaningless")
+        by_block: dict[str, list[dict]] = {}
+        for row in library:
+            by_block.setdefault(row["compound_block"], []).append(row)
         for row in queries:
-            if not any(other["compound_block"] == row["compound_block"]
-                       for other in library):
+            own = by_block.get(row["compound_block"], [])
+            if not own:
                 raise DereplicationError(
                     f"{row['accession']}'s compound is not in the library, so "
                     "its correct answer does not exist")
+            # The split's claim, checked on every load rather than asserted in a
+            # docstring: a library spectrum of the query's compound from the
+            # query's own contributor makes a correct answer a replicate lookup.
+            same = sorted(other["accession"] for other in own
+                          if other["contributor"] == row["contributor"])
+            if same:
+                raise DereplicationError(
+                    f"{row['accession']} is answerable from its own "
+                    f"contributor's spectra ({same[:3]}), so a correct retrieval "
+                    "would be the same lab's replicate rather than another lab's "
+                    "measurement")
         return cls(queries=tuple(sorted(queries, key=lambda r: r["accession"])),
                    library=tuple(sorted(library, key=lambda r: r["accession"])),
                    rules=Rules.load(campaign), campaign=campaign)
@@ -198,11 +232,16 @@ class Corpus:
     # --------------------------------------------------------------- the search
 
     def rank(self, tolerance: float | None = None, window: float | None = None,
-             centres: Mapping[str, float] | None = None) -> dict[str, list]:
+             centres: Mapping[str, float] | None = None,
+             ranking: "Callable[[list], tuple] | None" = None) -> dict[str, list]:
         """Every query's candidates, ranked by the declared rule.
 
         `centres` re-points the precursor filter, which is how the adduct
         misassignment is applied: the spectra do not change, the window does.
+
+        `ranking` exists for one caller: the stub ladder's competence probe, which
+        has to get the declared order wrong in a way that is internally
+        consistent. Gold never passes it, and `declared_ranking` is the default.
         """
         tolerance = self.rules.peak_tolerance if tolerance is None else tolerance
         tasks = []
@@ -214,13 +253,10 @@ class Corpus:
         ranked: dict[str, list] = {}
         for query in self.queries:
             rows = scored.get(query["accession"]) or []
-            # Score down, matched peaks down, accession up. The third key is not
-            # cosmetic: equal scores occur, and two keys would leave the answer
-            # to whatever order the tool returned.
             ranked[query["accession"]] = sorted(
                 ([str(name), float(score), int(matches)]
                  for name, score, matches in rows),
-                key=lambda row: (-row[1], -row[2], row[0]))
+                key=ranking or declared_ranking)
         return ranked
 
     # ---------------------------------------------------------- the annotations
@@ -233,9 +269,10 @@ class Corpus:
 
     def annotations(self, tolerance: float | None = None,
                     window: float | None = None,
-                    centres: Mapping[str, float] | None = None) -> list[dict]:
+                    centres: Mapping[str, float] | None = None,
+                    ranking: "Callable[[list], tuple] | None" = None) -> list[dict]:
         """One annotation per query: what it matched and how well."""
-        ranked = self.rank(tolerance, window, centres)
+        ranked = self.rank(tolerance, window, centres, ranking)
         out = []
         for query in self.queries:
             rows = ranked[query["accession"]]
