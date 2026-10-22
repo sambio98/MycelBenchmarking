@@ -216,12 +216,17 @@ def test_an_empty_version_refuses(monkeypatch):
         cache.memoize_version(["tool"], lambda: "  ")
 
 
-def test_only_the_two_slow_tools_are_memoised():
-    """Measured, and recorded as a boundary: antiSMASH 2.12s and BiG-SCAPE 2.38s
-    import a Python package to answer, the other six answer in 10ms. A memo
-    around a 10ms call is a mechanism nobody needs."""
+def test_only_the_slow_version_queries_are_memoised():
+    """Measured, and recorded as a boundary rather than a habit.
+
+    Three of the nine pinned tools answer "what version are you?" by importing a
+    Python package: antiSMASH 2.12s, BiG-SCAPE 2.38s and matchms **9.6 to
+    11.7s** -- the worst of them, because it pulls numpy, scipy, numba and
+    llvmlite to print a string. The other six answer in 10ms or less, and a memo
+    around a 10ms call is a mechanism nobody needs.
+    """
     templates = ROOT / "src" / "npbench_c" / "templates"
     memoised = sorted(
         path.parent.name for path in templates.glob("*/core.py")
         if "memoize_version" in path.read_text())
-    assert memoised == ["bgc_detection", "gcf_cutoff"], memoised
+    assert memoised == ["bgc_detection", "gcf_cutoff", "ms2_dereplication"], memoised

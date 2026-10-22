@@ -64,6 +64,16 @@ def file_digest(path: pathlib.Path) -> str:
     return digest.hexdigest()
 
 
+def text_digest(text: str) -> str:
+    """A key part for a computation whose input is text rather than a file.
+
+    The MS2 driver is handed its whole job -- the queries, their candidate sets
+    and the tolerance -- on stdin rather than as a path, so there is no file to
+    fingerprint and the job itself is what the memo key has to name.
+    """
+    return hashlib.sha256(text.encode()).hexdigest()
+
+
 def _key(parts: Sequence[str]) -> str:
     if not parts or any(not isinstance(p, str) or not p for p in parts):
         raise CacheError(
@@ -120,12 +130,14 @@ _VERSIONS: dict[str, str] = {}
 def memoize_version(parts: Sequence[str], compute: Callable[[], str]) -> str:
     """A tool's self-reported version, read once per process and once per sweep.
 
-    Measured, because only two of the nine tools this benchmark drives are worth
-    memoising: `antismash --version` costs **2.12s** and `bigscape --version`
-    **2.38s**, both of them Python packages whose import dominates the answer,
-    while hmmscan, hmmsearch, prodigal, mmseqs and diamond all answer in 10ms or
-    less and are left to answer. One warm bgcdetect sweep run spent 4.4 of its
-    4.5 seconds asking antiSMASH its version twice.
+    Measured, because only three of the nine tools this benchmark drives are
+    worth memoising, and they are the three that answer by importing a Python
+    package: `antismash --version` costs **2.12s**, `bigscape --version`
+    **2.38s**, and matchms **9.6 to 11.7s** -- the worst, because printing its
+    version pulls numpy, scipy, numba and llvmlite. hmmscan, hmmsearch,
+    prodigal, mmseqs and diamond all answer in 10ms or less and are left to
+    answer. One warm bgcdetect sweep run spent 4.4 of its 4.5 seconds asking
+    antiSMASH its version twice.
 
     Two scopes with two different justifications:
 

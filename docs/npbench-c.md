@@ -3849,9 +3849,11 @@ shortcut; a stub is a fixture.
 **A tool asked its own version twice per run.** This was the whole of bgcdetect's
 4.19 seconds, and it is not parsing at all: `antismash --version` costs **2.12s**
 because it imports the entire package to answer, and the stub asked twice.
-Measured across the nine tools this benchmark drives, exactly two behave that way
-— antiSMASH at 2.12s and BiG-SCAPE at 2.38s — while hmmscan, hmmsearch,
-prodigal, mmseqs and diamond all answer in 10ms or less. So
+Measured across the nine tools this benchmark drives, three behave that way —
+antiSMASH at 2.12s, BiG-SCAPE at 2.38s and, measured when the dereplication
+campaign was built, matchms at **9.6 to 11.7s**, which is the worst of them
+because printing its version pulls numpy, scipy, numba and llvmlite — while
+hmmscan, hmmsearch, prodigal, mmseqs and diamond all answer in 10ms or less. So
 `cache.memoize_version` memoises a version string per process always (a tool
 cannot change version inside one process, so this needs no opt-in) and on disk
 where the tool memo is already allowed, and only those two call sites use it. A
@@ -4053,6 +4055,91 @@ showed accuracy falling monotonically to 0.760 at tolerance 0.1, and this one
 dips at 0.05 and recovers to 0.787. The monotone *fall* was an artefact of that
 corpus; the monotone *rise* of the mean score, and the per-query instability, are
 not.
+
+## T-L4-1 grounded: three of its four rungs needed redesigning
+
+The catalogued ladder was: R1 an annotation table keyed by InChIKey · R2 matches
+gold at the declared InChIKey block · R3 the confidence level per annotation and
+the discriminating fragment · R4 an adduct shift is applied, predict which
+annotations survive. Grounded against MassBank 2026.03 before any oracle was
+written, two of those rungs do not survive contact with the data and one needed
+a different shape.
+
+### The pipeline the grounding declares
+
+Candidates are library spectra whose precursor m/z is within a declared window
+of the query's; they are scored with matchms `CosineGreedy` at a declared peak
+tolerance; the top match is the highest score, then the most matched peaks, then
+the lowest accession. The precursor filter is not an optimisation — it is what
+dereplication practice does, and it is the thing an adduct misassignment breaks.
+Over the eligible corpus it leaves a median of **18 candidates** out of 30,749,
+with a maximum of 159.
+
+The corpus: MassBank 2026.03, **[M+H]+ positive-mode MS2 only**, which holds the
+adduct fixed so the R4 perturbation is a perturbation of one thing. 139,240
+records → 54,599 usable → 6,173 compounds → **1,693 eligible**, where eligible
+means the compound's spectra span two instrument types *and* two contributors.
+The query is the lexicographically first contributor's spectrum and every other
+spectrum of that compound joins the library, so the right answer is always
+present and always from another lab.
+
+### R2 holds: 90 of 100
+
+On the 100 graded queries, the declared pipeline annotates 98 (two have no
+candidate in the window at all) and **90 are the right compound**. Eight are
+confidently wrong, which is what makes R2 worth grading: the set of correct
+annotations is a 90-member answer nobody guesses.
+
+### R3's "discriminating fragment" is undefined for most queries
+
+The catalogued R3 asks, per annotation, for the fragment that discriminates it.
+That presumes a competitor to discriminate against. Measured over 300 queries, a
+runner-up **of a different compound** exists for only **129** — for the other 171
+the precursor window holds nothing but that compound's own spectra, and the
+question has no answer. On the 100 graded queries it is 28.
+
+So the fragment claim is dropped and R3 grades two things that are defined
+everywhere: the **confidence census** under a declared mechanical rule (score
+≥0.80 and ≥6 matched peaks → confirmed; ≥0.50 and ≥3 → tentative; else
+unsupported), which comes out 62 / 23 / 13 and discriminates properly; and the
+**ambiguous set** — annotations whose nearest different-compound competitor sits
+within a declared 0.05 margin — which is 7 of the 28 that have a competitor at
+all. Where the catalogue wanted a per-annotation fragment, the data supports a
+set.
+
+MassBank's own `CONFIDENCE` field cannot do this job either, and the catalogue
+already knew why: 95 of 139,240 records carry it. One contributor's convention,
+not a corpus-wide field.
+
+### R4's adduct shift makes the search silent, not wrong
+
+Re-reading a protonated precursor as sodiated moves the candidate window 21.98 Da
+down. Measured on 300 queries: **246 have no candidate at all**, 54 get a wrong
+top-1, and **0 survive**. On the 100 graded queries: 73 / 27 / 0.
+
+"Predict which annotations survive" therefore grades one answer — none — which is
+the same degeneracy that retired T-L6-3 and the catalogued homology R4. But the
+*census* is a real answer requiring the whole perturbed search, and the finding
+in it is worth a rung: a misassigned adduct does not produce wrong
+identifications, it produces silence, and a pipeline that reports "no match"
+without reporting that its precursor assumption was never tested has told you
+nothing.
+
+So R4 grades the adduct census **and** a second axis the grounding found to be
+the gradeable one: the tolerance grid. Across 0.005 to 0.1 the aggregate top-1
+rate moves one point — 0.877 to 0.890 over 300 queries, which would suggest
+pinning anything in the range — while **26 of 300 individual answers move
+somewhere in it**. On the graded hundred the movement sets are 9, 3, 6 and 6
+queries at tolerances 0.005, 0.02, 0.05 and 0.1 against the 0.01 baseline. Four
+non-empty sets of named queries: a counterfactual with per-query content, which
+is what R4 is for.
+
+| what the catalogue asked for | what the data supports |
+|---|---|
+| R3: confidence level per annotation | the confidence census under a declared rule (62 / 23 / 13) |
+| R3: the discriminating fragment | **dropped** — no competing compound exists for 72 of 100 queries |
+| R4: which annotations survive an adduct shift | **the census** (73 no candidate / 27 lost / 0 survive); the per-query bit has one answer |
+| — | **added**: the tolerance-grid movement sets, 9 / 3 / 6 / 6 of 100 |
 
 ## Open items
 
