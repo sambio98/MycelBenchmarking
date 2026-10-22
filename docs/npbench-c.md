@@ -4134,6 +4134,19 @@ queries at tolerances 0.005, 0.02, 0.05 and 0.1 against the 0.01 baseline. Four
 non-empty sets of named queries: a counterfactual with per-query content, which
 is what R4 is for.
 
+### What is committed, and what a half-built campaign may not do
+
+The campaign directory holds its inputs, its pinned rules and nothing else yet:
+no gold, no grading spec, no stub ladder. That state turned out to be one the
+release packager handled wrongly — it ships every directory with a `task.yaml`,
+so it packaged a campaign with no rungs to clear and no score to earn. The
+criterion is mechanical now and needs no status flag anyone has to remember:
+**no `grading.json`, not a campaign yet.** The manifest names what it left out,
+`unfinished()` is the other half of `campaigns()`, and a test asserts both
+directions. Being unfinished is not a licence exemption either — the MassBank
+spectra are in the repository already, so the `license_notice` travels with the
+data rather than with the grading spec, and a second test holds that.
+
 | what the catalogue asked for | what the data supports |
 |---|---|
 | R3: confidence level per annotation | the confidence census under a declared rule (62 / 23 / 13) |

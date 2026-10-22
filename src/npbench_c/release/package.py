@@ -76,8 +76,24 @@ def _digest(path: pathlib.Path) -> str:
 
 
 def campaigns(repo: pathlib.Path) -> list[pathlib.Path]:
+    """Every campaign a release can ship: one that can also be SCORED.
+
+    A task.yaml is not enough. A campaign under construction has its inputs and
+    its rules and no grading spec yet, and shipping that hands a system a task
+    with nothing behind it -- no rungs to clear and no score to earn. The
+    criterion is mechanical rather than a status flag anyone has to remember to
+    set: no grading.json, not a campaign yet. `unfinished` names the ones left
+    out so the manifest can say so rather than letting a reader infer it from a
+    count.
+    """
     return [c for c in sorted((repo / "campaigns").iterdir())
-            if (c / "task.yaml").is_file()]
+            if (c / "task.yaml").is_file() and (c / "grading.json").is_file()]
+
+
+def unfinished(repo: pathlib.Path) -> list[pathlib.Path]:
+    """Campaign directories with a task.yaml and no grading spec."""
+    return [c for c in sorted((repo / "campaigns").iterdir())
+            if (c / "task.yaml").is_file() and not (c / "grading.json").is_file()]
 
 
 #: A key whose NAME states a licence or an attribution. "source" is not on the
@@ -225,7 +241,9 @@ def build_release(repo: pathlib.Path, out: pathlib.Path,
             raise ReleaseError(f"no such campaign: {unknown}")
         chosen = [c for c in chosen if c.name in only]
     if not chosen:
-        raise ReleaseError("no campaign has a task.yaml; nothing to release")
+        raise ReleaseError(
+            "no campaign carries both a task.yaml and a grading.json; nothing "
+            "to release")
 
     if out.exists():
         shutil.rmtree(out)
@@ -246,9 +264,14 @@ def build_release(repo: pathlib.Path, out: pathlib.Path,
     (out / ATTRIBUTION).write_text(_render_attribution(entries))
     (out / README).write_text(README_TEXT)
 
+    skipped = [c.name for c in unfinished(repo) if not only or c.name in only]
     manifest = {
         "grader_version": grader_version(),
         "campaigns": [campaign.name for campaign in chosen],
+        "omitted_campaigns": {
+            name: "under construction: a task.yaml and inputs but no grading "
+                  "spec, so nothing in it can be scored yet"
+            for name in skipped},
         "excluded_trees": list(EXCLUDED_TREES),
         "withheld_campaign_paths": list(SECRET_CAMPAIGN_PATHS),
         "files": {},
@@ -340,6 +363,9 @@ def main(argv: list[str] | None = None) -> int:
     print(f"  grader {manifest['grader_version']}")
     print(f"  {len(manifest['campaigns'])} campaigns, "
           f"{manifest['file_count']} files")
+    if manifest["omitted_campaigns"]:
+        print(f"  omitted (no grading spec yet): "
+              f"{', '.join(sorted(manifest['omitted_campaigns']))}")
     print(f"  withheld: {', '.join(manifest['withheld_campaign_paths'])}")
     print(f"  excluded trees: {', '.join(manifest['excluded_trees'])}")
     return 0

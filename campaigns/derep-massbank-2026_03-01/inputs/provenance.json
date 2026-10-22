@@ -1,0 +1,27 @@
+{
+  "attribution": "MassBank consortium, MassBank-data release 2026.03 (https://github.com/MassBank/MassBank-data), CC BY 4.0",
+  "census": {
+    "compounds": 6173,
+    "compounds_with_2plus_spectra": 4774,
+    "eligible_compounds": 1693,
+    "eligible_spectra": 32442,
+    "ms2_positive": 78646,
+    "protonated": 69038,
+    "records": 139240,
+    "usable": 54599
+  },
+  "files": {
+    "library.json.gz": "9a784d3dc4f0d2a1d4fd28b83ea26190839223c25aa51b80d1c46069e911a026",
+    "queries.json.gz": "1eb8815a0eeeb739a15cdbd5100b301630c059f7178e0586a0b42ed01b473914"
+  },
+  "graded_queries": 100,
+  "library_spectra": 30749,
+  "license": "CC BY 4.0",
+  "peaks": "sorted by m/z, m/z rounded to 6 decimals, intensity to 4",
+  "release": "2026.03",
+  "release_is_a_tag": "The tag, not the branch. MassBank's dev branch carries a VERSION string that reads like a release -- 2026.03.1-SNAPSHOT -- and an earlier grounding pass recorded that as the corpus, which no clone can reproduce because dev moves. prepare_input refuses a snapshot.",
+  "selection_rule": "Every record of the release that is MS2, POSITIVE, [M+H]+, carries an InChIKey and a precursor m/z, and has at least 5 peaks. Grouped by the InChIKey's first block, a compound is eligible when its spectra span at least two instrument types AND at least two contributors. For each eligible compound the QUERY is the spectrum from the lexicographically first contributor and every other spectrum of it joins the LIBRARY. The graded queries are the first 100 of those by accession; the library is every eligible compound's non-query spectra, unfiltered, so the right answer is in it from another lab and so are thousands of distractors.",
+  "source": "MassBank-data, release tag 2026.03, cloned shallow from https://github.com/MassBank/MassBank-data",
+  "url": "https://github.com/MassBank/MassBank-data",
+  "what_is_not_shipped": "No annotation of the queries: the compound each query IS is the answer. The library carries its own compound blocks, because a reference library without identities is not a reference library."
+}

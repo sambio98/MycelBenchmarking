@@ -1,0 +1,30 @@
+campaign_id: derep-massbank-2026_03-01
+template_id: ms2-dereplication
+title: >
+  Which compound is this spectrum? Dereplication of 100 MassBank MS2 queries
+  against a 30,749-spectrum reference library.
+
+# UNDER CONSTRUCTION. The inputs, the pinned rules and the oracle's analysis are
+# built and measured -- see "T-L4-1 grounded" in docs/npbench-c.md -- and the
+# rungs, the grading spec, the stub ladder and the gate run are not written yet.
+# Nothing here is ready to send to a system, and the campaign carries no gold,
+# so every tool that reads campaigns/ skips it rather than half-reading it.
+status: under_construction
+
+license_class: open
+license_notice:
+  source: MassBank-data, release tag 2026.03
+  license: CC BY 4.0
+  attribution: >
+    MassBank consortium, MassBank-data release 2026.03
+    (https://github.com/MassBank/MassBank-data), licensed CC BY 4.0.
+  redistribution: >
+    inputs/ carries spectra from the release unchanged apart from the declared
+    reshaping: peaks sorted by m/z, m/z rounded to six decimals and intensity to
+    four, and the fields the campaign reads kept. CC BY 4.0 requires attribution
+    and nothing further. The selection rule, the census it produced and the
+    per-file digests are in inputs/provenance.json.
+
+template_params:
+  queries_input: inputs/queries.json.gz
+  library_input: inputs/library.json.gz

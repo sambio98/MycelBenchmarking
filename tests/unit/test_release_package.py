@@ -310,3 +310,42 @@ def test_writing_the_release_inside_the_repo_is_refused(tmp_path):
 def test_an_unknown_campaign_is_refused(tmp_path):
     with pytest.raises(ReleaseError, match="no such campaign"):
         build_release(ROOT, tmp_path / "out", ("not-a-campaign",))
+
+
+def test_an_unfinished_campaign_is_named_and_left_out(release):
+    """A task.yaml is not enough to ship.
+
+    A campaign under construction has inputs and pinned rules and no grading
+    spec, and shipping it would hand a system a task with no rungs to clear and
+    no score to earn. The criterion is mechanical -- no grading.json, not a
+    campaign yet -- and the manifest names what it left out rather than leaving
+    a reader to notice a count.
+    """
+    from npbench_c.release.package import campaigns as shippable
+    from npbench_c.release.package import unfinished
+
+    manifest = json.loads((release / MANIFEST).read_text())
+    for campaign in unfinished(ROOT):
+        assert campaign.name in manifest["omitted_campaigns"], campaign.name
+        assert campaign.name not in manifest["campaigns"]
+        assert not (release / "campaigns" / campaign.name).exists()
+        assert len(manifest["omitted_campaigns"][campaign.name]) > 40
+    for campaign in shippable(ROOT):
+        assert (campaign / "grading.json").is_file(), campaign.name
+        assert campaign.name in manifest["campaigns"]
+
+
+def test_an_unfinished_campaign_still_declares_its_licence():
+    """Being unfinished is not an exemption: the inputs are already in the
+    repository, and a licence statement travels with the data rather than with
+    the grading spec."""
+    import yaml
+
+    from npbench_c.release.package import unfinished
+
+    for campaign in unfinished(ROOT):
+        task = yaml.safe_load((campaign / "task.yaml").read_text())
+        assert task.get("license_class"), campaign.name
+        notice = task.get("license_notice") or {}
+        for field in ("source", "license", "attribution", "redistribution"):
+            assert notice.get(field), (campaign.name, field)
