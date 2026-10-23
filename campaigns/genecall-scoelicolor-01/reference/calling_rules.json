@@ -1,0 +1,28 @@
+{
+  "calling": {
+    "modes": ["single", "meta"],
+    "baseline_mode": "single",
+    "mode_flags": {
+      "single": ["-p", "single"],
+      "meta": ["-p", "meta"]
+    },
+    "mode_note": "Prodigal's single mode TRAINS on the input it is given; its meta mode scores against pre-trained models. That is why the mode is pinned and varied rather than defaulted: fragmenting a contig changes the training set in one mode and not the other, so the two modes separate the local effect of a cut from the global effect of retraining. The baseline is single, which is the tool's own default and the mode that retrains.",
+    "fixed_flags": ["-f", "gff", "-q"],
+    "fixed_flags_note": "GFF output and quiet. No other flag is passed: the closed-ends and translation-table options would change what a call at a fragment edge means, which is the campaign's subject, so they stay at their defaults and the defaults are what the version pin pins.",
+    "fragment_counts": [1, 2, 10, 50],
+    "baseline_fragments": 50,
+    "fragment_counts_note": "The declared grid, as COUNTS of fragments rather than fragment lengths, so the rule reads the same for any contig. 1 is the unfragmented arm and has to be on the grid: without it every comparison would be between two cut assemblies. The baseline is 50, which is where the loss vocabulary below is populated in all three of its terms on this chromosome.",
+    "breakpoint_rule": "For a contig of length L cut into n fragments, the interior cut positions are round(k * L / n) for k in 1..n-1, as 0-based offsets of the first base of each fragment after the first. Fragment k therefore spans [cut[k-1], cut[k]) and is named frag_0001, frag_0002, ... in order.",
+    "breakpoint_rule_note": "A rule rather than a shipped set of fragments. The campaign ships one unfragmented FASTA and the agent cuts it, because shipping pre-cut fragments would put each fragment's offset in the input and the offsets ARE the coordinate contract.",
+    "coordinate_contract": "The tool reports 1-based inclusive positions on the FRAGMENT. A parent coordinate is that position plus the fragment's 0-based offset. Every table this campaign grades is in parent coordinates. A cut at offset c falls strictly inside a 1-based inclusive call when start <= c < end.",
+    "coordinate_contract_note": "The trap, stated so it is a contract rather than a puzzle. A reader who compares fragment coordinates against whole-contig coordinates reports almost every call as lost and almost every call as gained, and the counts still look plausible.",
+    "locality_window": 5000,
+    "locality_window_note": "How close a lost call has to come to a cut to count as an edge effect rather than a change the cut cannot explain. Declared at five kilobases, which is comfortably longer than any call on this contig, so a call classified as distant is distant by a margin rather than by a boundary case.",
+    "loss_verdicts": ["crosses_a_cut", "near_a_cut", "distant_from_every_cut"],
+    "loss_verdicts_note": "Closed, and every term is arithmetic over two integers. crosses_a_cut is geometry: the gene spans a breakpoint and cannot be called whole. near_a_cut is an edge effect within the declared window. distant_from_every_cut is the one that matters, because a cut cannot explain it -- it is the tool reacting to a changed training set, and the campaign's claim is that it is empty in the mode that does not retrain.",
+    "call_columns": ["start", "end", "strand", "partial", "start_type", "fragment"],
+    "call_columns_note": "The declared projection of a call. The scores Prodigal also reports are dropped: a float's last digits are not what a call is, and nothing the campaign grades needs them to say where a gene is. `fragment` is which piece the call was made on, which is how the coordinate lift is checkable.",
+    "partial_flags": ["00", "01", "10", "11"],
+    "partial_flags_note": "The tool's own two-character flag for a call running off the end of its sequence: left edge, right edge, both, or neither. A closed vocabulary the tool supplies rather than one this campaign invents, and the campaign refuses to build if a run reports anything outside it."
+  }
+}

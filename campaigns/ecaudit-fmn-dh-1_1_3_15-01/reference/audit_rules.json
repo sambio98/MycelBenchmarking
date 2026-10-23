@@ -1,0 +1,43 @@
+{
+  "audit": {
+    "ec_number": "1.1.3.15",
+    "canonical_model": "FMN_dh",
+    "canonical_model_note": "PF01070, FMN-dependent dehydrogenase. The canonical (S)-2-hydroxy-acid oxidase of EC 1.1.3.15 is an FMN enzyme, so this is the domain the annotation implies.",
+    "model_panel": [
+      "Amino_oxidase",
+      "CCG",
+      "DAO",
+      "FAD-oxidase_C",
+      "FAD_binding_2",
+      "FAD_binding_3",
+      "FAD_binding_4",
+      "FMN_dh",
+      "Fer2_BFD",
+      "Fer4_17",
+      "Fer4_8",
+      "NAD_binding_8",
+      "Pyr_redox"
+    ],
+    "model_panel_note": "Declared, not discovered. The panel was fixed at build time by scanning the canonical-model-absent sequences against the whole of the pinned Pfam release once; every family it found above the gathering threshold is listed here, so the panel is a published vocabulary rather than a hint. An agent scans with exactly these models, which takes seconds instead of the minutes a full Pfam-A pass costs, and the campaign refuses to build if the pinned release does not carry all of them.",
+    "threshold": "--cut_ga",
+    "threshold_note": "Pfam's curated gathering threshold, which is per-model and is the cutoff Pfam itself uses to define family membership. A bare E-value would make the verdict depend on database size.",
+    "threshold_variants": ["--cut_ga", "--cut_nc", "--cut_tc", "-E 1e-5", "-E 1e-10", "-E 0.01"],
+    "misannotation_policies": {
+      "p0_canonical_only": ["FMN_dh"],
+      "p1_accept_fad_oxidase": ["FMN_dh", "FAD-oxidase_C", "FAD_binding_4"],
+      "p2_accept_any_flavin": ["FMN_dh", "FAD-oxidase_C", "FAD_binding_4", "FAD_binding_2", "FAD_binding_3", "DAO", "Amino_oxidase", "Pyr_redox"]
+    },
+    "misannotation_policy_note": "A policy names the architectures ACCEPTED for this EC number; everything else is counted as misannotated. p0 is the strict reading: EC 1.1.3.15 is the FMN enzyme and nothing else qualifies. p1 admits the FAD-linked glycolate oxidase subunit architecture, which oxidises the same substrate through a different cofactor and is a defensible reading of the annotation rather than an error. p2 admits any flavin-binding architecture in the panel and is deliberately too permissive, to show the verdict's dependence on where the line is drawn. The campaign does not rule between p0 and p1: it grades the counts under each, which is the whole point of declaring the policy instead of asserting a misannotation rate.",
+    "length_bands": [100, 200, 300, 348],
+    "length_band_note": "348 is the FMN_dh model length: a sequence shorter than the model can miss it for reasons that have nothing to do with annotation, so the profile is graded and the fragment explanation is tested rather than assumed."
+  },
+  "external_resources": {
+    "pfam_a_hmm": {
+      "relative_path": "lib/python3.11/site-packages/antismash/databases/pfam/35.0/Pfam-A.hmm",
+      "provider": "antiSMASH 8.0.4 database layer",
+      "version": "Pfam 35.0",
+      "sha256": "8d3e2ffa785f91ee0e24a3994d2dcfff6f382e3cf663784a47688e7d95297fee",
+      "note": "1.5 GB, so it is read from the pinned image rather than shipped. Pfam itself is CC0; the reason this file is not redistributed is size, not licence. A campaign that needs a resource it cannot ship declares the path, the provider, the version and this fingerprint, so what it was built against is recorded even though the bytes live outside it."
+    }
+  }
+}

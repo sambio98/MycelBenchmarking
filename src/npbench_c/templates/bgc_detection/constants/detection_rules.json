@@ -1,0 +1,73 @@
+{
+  "detection": {
+    "accession": "AL645882.2",
+    "accession_note": "Streptomyces coelicolor A3(2), complete chromosome. Chosen because it is the single accession to which MIBiG maps the most clusters with a real genomic span, so the reconciliation has the largest curated set available without mixing organisms, annotation styles or assemblies. The record length and the curated locus count are properties of the shipped files and are not restated here.",
+    "search_flags": [
+      "--minimal"
+    ],
+    "search_note": "--minimal runs the detection modules and skips the analysis modules. The region call IS what this campaign grades, so the analysis modules would add about an hour of work to every run and nothing to gold. The input is annotated GenBank, never FASTA: letting antiSMASH call genes would fold the gene caller's determinism into antiSMASH's verdict and the two could no longer be told apart.",
+    "cpus": 2,
+    "whole_record_note": "The input is the COMPLETE chromosome, never a slice. Slicing fails twice: the slice truncates CDS features at its edges and antiSMASH refuses the record outright ('feature translation extends out of record'), and a region reaching the slice edge has its boundary set by the window rather than by the tool. Measured on an 81 kb window around the actinorhodin cluster, antiSMASH returned one region running to the record end with contig_edge=True; on the whole chromosome no region reaches an edge. A minimal run over this record takes on the order of a minute, so the slice bought nothing.",
+    "coordinate_convention": "0-based half-open",
+    "coordinate_note": "antiSMASH writes 0-based half-open locations such as [10992:81283]. MIBiG's from/to are 1-based inclusive, which is VERIFIED against the source annotation rather than assumed: BGC0000194's `to` is 5,535,091 and SCO5092 ends at 5,535,091 in AL645882.2. A MIBiG locus therefore converts as start-1 to end, and its true length is to-from+1 -- one more than its own numbers suggest at a glance. Both sides are converted before anything is compared, and the region table also reports 1-based inclusive coordinates for a reader holding a GenBank record.",
+    "verdict_order": [
+      "congruent",
+      "contained_generous",
+      "contained_much_larger",
+      "partial",
+      "marginal",
+      "not_detected"
+    ],
+    "verdict_thresholds": {
+      "contained_coverage": 0.99,
+      "partial_coverage": 0.5,
+      "congruent_jaccard": 0.9,
+      "generous_jaccard": 0.5
+    },
+    "verdict_note": "The vocabulary is about EXTENT rather than detection alone, because antiSMASH extends a region from the protocluster core by a class-dependent distance and the quantity of interest is how much larger the call is than the curated locus. The Jaccard index decides between the three contained grades. First match wins over the order the verdict function tests, which is published so the partition is checkable.",
+    "region_tie_break": "greatest overlap, then lowest start, then lowest end",
+    "region_tie_break_note": "A locus sitting inside two equally overlapping regions must not have its match decided by the order antiSMASH happened to emit features in.",
+    "deletion_variants": {
+      "v0_identity": [],
+      "v1_t2pks_core_both": [
+        "SCO5087",
+        "SCO5088"
+      ],
+      "v2_t2pks_core_one": [
+        "SCO5087"
+      ],
+      "v3_nrps_core": [
+        "SCO3230",
+        "SCO3231",
+        "SCO3232"
+      ],
+      "v4_lanthipeptide_core": [
+        "SCO6681"
+      ],
+      "v5_additional_not_core": [
+        "SCO5089"
+      ],
+      "v6_multiproduct_one_product": [
+        "SCO6266"
+      ]
+    },
+    "deletion_note": "The genes are named here rather than discovered at solve time, so the counterfactual is published and deterministic. Each set is drawn from the baseline run's own annotation, where antiSMASH marks a CDS gene_kind=biosynthetic (core) or biosynthetic-additional. v1 and v2 target the actinorhodin type II PKS: v1 deletes both core genes and v2 only the ketosynthase, so the pair measures whether the rule is conjunctive rather than assuming it. v3 targets the calcium-dependent antibiotic NRPS and v4 the single core gene of a class III lanthipeptide region. v5 is the NEGATIVE CONTROL: SCO5089 is the actinorhodin acyl carrier protein, which antiSMASH marks biosynthetic-additional rather than core, so it tests whether the rule needs the core genes specifically -- without such a variant a system could score the rung by answering 'a region is lost' every time. v6 deletes a gene that is core to two nested protoclusters inside one multi-product region, so it tests what happens to a region that loses one of its products rather than all of them. v0 deletes nothing and must reproduce the baseline exactly.",
+    "deletion_mechanism": "remove the CDS and gene features; leave the sequence untouched",
+    "deletion_mechanism_note": "antiSMASH scans the CDS translations present in an annotated record, so removing the feature is what deleting a gene means for a detection run -- and every other coordinate in the record stays where it was, which cutting the nucleotides out would not.",
+    "per_locus_order": "MIBiG accession ascending",
+    "per_locus_order_note": "A declared order the grader can reproduce from the shipped locus table alone. Coordinate order would read more naturally and would make the row list depend on something the measurer must not need to know."
+  },
+  "external_resources": {
+    "antismash_detection_rules": {
+      "relative_paths": [
+        "detection/hmm_detection/cluster_rules/strict.txt",
+        "detection/hmm_detection/cluster_rules/relaxed.txt",
+        "detection/hmm_detection/cluster_rules/loose.txt"
+      ],
+      "provider": "antiSMASH 8.0.4 package data",
+      "version": "antiSMASH 8.0.4, 103 rules (90 strict, 7 relaxed, 6 loose)",
+      "fingerprint": "04add3eb0e86a816",
+      "note": "The detection rule set IS the gold for a region-detection campaign: the rule count went 58 at v5 to 88 at v7.1 to 103 at 8.0.4, so a region set is a function of the rules that produced it. These files are NOT redistributed -- they are antiSMASH package data under AGPL-3.0-or-later, and the benchmark is not in a position to pass that licence on. The campaign records the paths, the provider, the version and a sha256 over the three files instead, so a rule change is detectable even when the version string is not what moved."
+    }
+  }
+}

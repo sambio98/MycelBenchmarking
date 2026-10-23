@@ -1,0 +1,30 @@
+{
+  "declared_units": {
+    "kcat_km_value": "mM^-1 s^-1",
+    "km_value": "mM",
+    "turnover_number": "s^-1"
+  },
+  "distinct_ec_numbers": 437,
+  "ec_prefix": "1.1.",
+  "parsed_by_field": {
+    "kcat_km_value": 5406,
+    "km_value": 19463,
+    "turnover_number": 9505
+  },
+  "records_by_field": {
+    "kcat_km_value": 5417,
+    "km_value": 20160,
+    "turnover_number": 9611
+  },
+  "release": "2026.1",
+  "sentinel_by_field": {
+    "kcat_km_value": 9,
+    "km_value": 477,
+    "turnover_number": 59
+  },
+  "unparsed_by_field": {
+    "kcat_km_value": 2,
+    "km_value": 220,
+    "turnover_number": 47
+  }
+}

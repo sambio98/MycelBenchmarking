@@ -1,0 +1,33 @@
+{
+  "attribution": "MassBank consortium, MassBank-data release 2026.03 (https://github.com/MassBank/MassBank-data), CC BY 4.0",
+  "census": {
+    "compounds": 6173,
+    "compounds_with_2plus_spectra": 4774,
+    "eligible_compounds": 1693,
+    "eligible_spectra": 32442,
+    "ms2_positive": 78646,
+    "protonated": 69038,
+    "records": 139240,
+    "usable": 54599
+  },
+  "files": {
+    "library.json.gz": "cb9a856fc95502296b2dab86f29669b1932c6d44209d77d721cf3a847ef2e3aa",
+    "queries.json.gz": "1eb8815a0eeeb739a15cdbd5100b301630c059f7178e0586a0b42ed01b473914"
+  },
+  "graded_queries": 100,
+  "instrument_support": {
+    "cross_instrument": 100,
+    "same_instrument_only": 0
+  },
+  "instrument_support_note": "How many graded queries have their compound in the library on a DIFFERENT instrument type. Reported rather than enforced: the contributor exclusion guarantees another lab, not another instrument.",
+  "library_spectra": 24794,
+  "license": "CC BY 4.0",
+  "peaks": "sorted by m/z, m/z rounded to 6 decimals, intensity to 4",
+  "release": "2026.03",
+  "release_is_a_tag": "The tag, not the branch. MassBank's dev branch carries a VERSION string that reads like a release -- 2026.03.1-SNAPSHOT -- and an earlier grounding pass recorded that as the corpus, which no clone can reproduce because dev moves. prepare_input refuses a snapshot.",
+  "selection_rule": "Every record of the release that is MS2, POSITIVE, [M+H]+, carries an InChIKey and a precursor m/z, and has at least 5 peaks. Grouped by the InChIKey's first block, a compound is eligible when its spectra span at least two instrument types AND at least two contributors. For each eligible compound the QUERY is the spectrum from the lexicographically first contributor, and the LIBRARY takes that compound's spectra from every OTHER contributor. The graded queries are the first 100 of those by accession; the library is every eligible compound's cross-contributor spectra, unfiltered, so the right answer is in it from another lab and so are thousands of distractors.",
+  "source": "MassBank-data, release tag 2026.03, cloned shallow from https://github.com/MassBank/MassBank-data",
+  "split_excludes_the_query_s_own_contributor": "Measured, not stylistic. Under the earlier split -- every other spectrum of the compound -- 19 of 100 graded compounds still had a same-contributor spectrum in the library, and 10 of the 90 correct answers came from one at the same instrument type too, which is a replicate lookup rather than a retrieval. prepare_input now refuses a split where any graded query is answerable from its own contributor.",
+  "url": "https://github.com/MassBank/MassBank-data",
+  "what_is_not_shipped": "No annotation of the queries: the compound each query IS is the answer. The library carries its own compound blocks, because a reference library without identities is not a reference library."
+}

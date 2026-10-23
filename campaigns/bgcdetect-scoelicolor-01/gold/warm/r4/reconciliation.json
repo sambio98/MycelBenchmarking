@@ -1,0 +1,126 @@
+{
+  "jaccard_max": 0.934303,
+  "jaccard_median": 0.295178,
+  "jaccard_min": 0.022607,
+  "loci_total": 15,
+  "per_locus": [
+    {
+      "bgc": "BGC0000038",
+      "coverage": 1.0,
+      "jaccard": 0.765296,
+      "region": 21,
+      "verdict": "contained_generous"
+    },
+    {
+      "bgc": "BGC0000194",
+      "coverage": 1.0,
+      "jaccard": 0.293057,
+      "region": 12,
+      "verdict": "contained_much_larger"
+    },
+    {
+      "bgc": "BGC0000315",
+      "coverage": 0.953108,
+      "jaccard": 0.934303,
+      "region": 11,
+      "verdict": "partial"
+    },
+    {
+      "bgc": "BGC0000324",
+      "coverage": 1.0,
+      "jaccard": 0.337285,
+      "region": 29,
+      "verdict": "contained_much_larger"
+    },
+    {
+      "bgc": "BGC0000325",
+      "coverage": 1.0,
+      "jaccard": 0.38785,
+      "region": 4,
+      "verdict": "contained_much_larger"
+    },
+    {
+      "bgc": "BGC0000551",
+      "coverage": 1.0,
+      "jaccard": 0.295178,
+      "region": 23,
+      "verdict": "contained_much_larger"
+    },
+    {
+      "bgc": "BGC0000660",
+      "coverage": 1.0,
+      "jaccard": 0.117044,
+      "region": 13,
+      "verdict": "contained_much_larger"
+    },
+    {
+      "bgc": "BGC0000663",
+      "coverage": 1.0,
+      "jaccard": 0.514434,
+      "region": 24,
+      "verdict": "contained_generous"
+    },
+    {
+      "bgc": "BGC0000849",
+      "coverage": 1.0,
+      "jaccard": 0.022607,
+      "region": 21,
+      "verdict": "contained_much_larger"
+    },
+    {
+      "bgc": "BGC0000910",
+      "coverage": 1.0,
+      "jaccard": 0.134342,
+      "region": 9,
+      "verdict": "contained_much_larger"
+    },
+    {
+      "bgc": "BGC0000940",
+      "coverage": 1.0,
+      "jaccard": 0.246005,
+      "region": 10,
+      "verdict": "contained_much_larger"
+    },
+    {
+      "bgc": "BGC0001063",
+      "coverage": 1.0,
+      "jaccard": 0.599545,
+      "region": 17,
+      "verdict": "contained_generous"
+    },
+    {
+      "bgc": "BGC0001181",
+      "coverage": 1.0,
+      "jaccard": 0.098327,
+      "region": 19,
+      "verdict": "contained_much_larger"
+    },
+    {
+      "bgc": "BGC0002127",
+      "coverage": 1.0,
+      "jaccard": 0.073289,
+      "region": 7,
+      "verdict": "contained_much_larger"
+    },
+    {
+      "bgc": "BGC0002128",
+      "coverage": 1.0,
+      "jaccard": 0.410451,
+      "region": 28,
+      "verdict": "contained_much_larger"
+    }
+  ],
+  "regions_holding_several_loci": [
+    21
+  ],
+  "regions_matching_a_locus": 14,
+  "regions_without_a_locus": 15,
+  "verdict_census": {
+    "congruent": 0,
+    "contained_generous": 3,
+    "contained_much_larger": 11,
+    "marginal": 0,
+    "not_detected": 0,
+    "partial": 1
+  }
+}

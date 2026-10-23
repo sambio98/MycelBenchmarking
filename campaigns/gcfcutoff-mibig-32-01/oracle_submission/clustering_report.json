@@ -1,0 +1,397 @@
+{
+  "baseline_cutoff": "0.3",
+  "baseline_partition": [
+    [
+      "BGC0000006",
+      "BGC0000007",
+      "BGC0000008",
+      "BGC0000009"
+    ],
+    [
+      "BGC0000011"
+    ],
+    [
+      "BGC0000026"
+    ],
+    [
+      "BGC0000605"
+    ],
+    [
+      "BGC0000702",
+      "BGC0000703",
+      "BGC0000704",
+      "BGC0000705"
+    ],
+    [
+      "BGC0000706"
+    ],
+    [
+      "BGC0000852"
+    ],
+    [
+      "BGC0000853",
+      "BGC0002052"
+    ],
+    [
+      "BGC0000854",
+      "BGC0000855",
+      "BGC0000856",
+      "BGC0000857",
+      "BGC0000859"
+    ],
+    [
+      "BGC0000858"
+    ],
+    [
+      "BGC0000860"
+    ],
+    [
+      "BGC0001030",
+      "BGC0002598",
+      "BGC0002605",
+      "BGC0002606",
+      "BGC0002607"
+    ],
+    [
+      "BGC0001082"
+    ],
+    [
+      "BGC0001483"
+    ],
+    [
+      "BGC0002197"
+    ],
+    [
+      "BGC0002608"
+    ],
+    [
+      "BGC0002609"
+    ]
+  ],
+  "best_cutoff": "0.6",
+  "best_pair_jaccard": 0.825581,
+  "bigscape_version": "BiG-SCAPE 2.0.3",
+  "class_census": {
+    "NRPS.PKS": 5,
+    "PKS": 4,
+    "other": 11
+  },
+  "clustered_records": 20,
+  "co_clustered_pairs": 33,
+  "controls": [
+    "BGC0000026",
+    "BGC0000605",
+    "BGC0001082",
+    "BGC0001483",
+    "BGC0002197"
+  ],
+  "controls_absorbed": [],
+  "corpus_size": 32,
+  "cutoff_sweep": {
+    "0.1": {
+      "clustered_records": 10,
+      "co_clustered_pairs": 13,
+      "controls_absorbed": [],
+      "designed_pairs": 86,
+      "false_join_pairs": 0,
+      "families_exact": 0,
+      "family_verdicts": {
+        "Aflatoxin B1": "fragmented",
+        "ectoine": "dissolved",
+        "kanamycin": "fragmented",
+        "ochratoxin A": "fragmented"
+      },
+      "groups": 25,
+      "largest_group": 4,
+      "missed_pairs": 73,
+      "pair_jaccard": 0.151163,
+      "recovered_pairs": 13,
+      "singletons": 22,
+      "size_census": {
+        "1": 22,
+        "2": 1,
+        "4": 2
+      }
+    },
+    "0.2": {
+      "clustered_records": 16,
+      "co_clustered_pairs": 19,
+      "controls_absorbed": [],
+      "designed_pairs": 86,
+      "false_join_pairs": 0,
+      "families_exact": 0,
+      "family_verdicts": {
+        "Aflatoxin B1": "fragmented",
+        "ectoine": "fragmented",
+        "kanamycin": "fragmented",
+        "ochratoxin A": "fragmented"
+      },
+      "groups": 21,
+      "largest_group": 4,
+      "missed_pairs": 67,
+      "pair_jaccard": 0.22093,
+      "recovered_pairs": 19,
+      "singletons": 16,
+      "size_census": {
+        "1": 16,
+        "2": 1,
+        "3": 2,
+        "4": 2
+      }
+    },
+    "0.3": {
+      "clustered_records": 20,
+      "co_clustered_pairs": 33,
+      "controls_absorbed": [],
+      "designed_pairs": 86,
+      "false_join_pairs": 0,
+      "families_exact": 0,
+      "family_verdicts": {
+        "Aflatoxin B1": "fragmented",
+        "ectoine": "fragmented",
+        "kanamycin": "fragmented",
+        "ochratoxin A": "fragmented"
+      },
+      "groups": 17,
+      "largest_group": 5,
+      "missed_pairs": 53,
+      "pair_jaccard": 0.383721,
+      "recovered_pairs": 33,
+      "singletons": 12,
+      "size_census": {
+        "1": 12,
+        "2": 1,
+        "4": 2,
+        "5": 2
+      }
+    },
+    "0.4": {
+      "clustered_records": 22,
+      "co_clustered_pairs": 44,
+      "controls_absorbed": [],
+      "designed_pairs": 86,
+      "false_join_pairs": 0,
+      "families_exact": 0,
+      "family_verdicts": {
+        "Aflatoxin B1": "fragmented",
+        "ectoine": "fragmented",
+        "kanamycin": "fragmented",
+        "ochratoxin A": "fragmented"
+      },
+      "groups": 15,
+      "largest_group": 7,
+      "missed_pairs": 42,
+      "pair_jaccard": 0.511628,
+      "recovered_pairs": 44,
+      "singletons": 10,
+      "size_census": {
+        "1": 10,
+        "2": 1,
+        "4": 2,
+        "5": 1,
+        "7": 1
+      }
+    },
+    "0.5": {
+      "clustered_records": 23,
+      "co_clustered_pairs": 67,
+      "controls_absorbed": [],
+      "designed_pairs": 86,
+      "false_join_pairs": 0,
+      "families_exact": 1,
+      "family_verdicts": {
+        "Aflatoxin B1": "fragmented",
+        "ectoine": "exact",
+        "kanamycin": "fragmented",
+        "ochratoxin A": "fragmented"
+      },
+      "groups": 13,
+      "largest_group": 10,
+      "missed_pairs": 19,
+      "pair_jaccard": 0.77907,
+      "recovered_pairs": 67,
+      "singletons": 9,
+      "size_census": {
+        "1": 9,
+        "10": 1,
+        "4": 2,
+        "5": 1
+      }
+    },
+    "0.6": {
+      "clustered_records": 24,
+      "co_clustered_pairs": 71,
+      "controls_absorbed": [],
+      "designed_pairs": 86,
+      "false_join_pairs": 0,
+      "families_exact": 2,
+      "family_verdicts": {
+        "Aflatoxin B1": "exact",
+        "ectoine": "exact",
+        "kanamycin": "fragmented",
+        "ochratoxin A": "fragmented"
+      },
+      "groups": 12,
+      "largest_group": 10,
+      "missed_pairs": 15,
+      "pair_jaccard": 0.825581,
+      "recovered_pairs": 71,
+      "singletons": 8,
+      "size_census": {
+        "1": 8,
+        "10": 1,
+        "4": 1,
+        "5": 2
+      }
+    },
+    "0.7": {
+      "clustered_records": 25,
+      "co_clustered_pairs": 76,
+      "controls_absorbed": [
+        "BGC0002197"
+      ],
+      "designed_pairs": 86,
+      "false_join_pairs": 5,
+      "families_exact": 2,
+      "family_verdicts": {
+        "Aflatoxin B1": "exact",
+        "ectoine": "exact",
+        "kanamycin": "fragmented",
+        "ochratoxin A": "fragmented_and_absorbed"
+      },
+      "groups": 11,
+      "largest_group": 10,
+      "missed_pairs": 15,
+      "pair_jaccard": 0.78022,
+      "recovered_pairs": 71,
+      "singletons": 7,
+      "size_census": {
+        "1": 7,
+        "10": 1,
+        "4": 1,
+        "5": 1,
+        "6": 1
+      }
+    },
+    "0.8": {
+      "clustered_records": 25,
+      "co_clustered_pairs": 76,
+      "controls_absorbed": [
+        "BGC0002197"
+      ],
+      "designed_pairs": 86,
+      "false_join_pairs": 5,
+      "families_exact": 2,
+      "family_verdicts": {
+        "Aflatoxin B1": "exact",
+        "ectoine": "exact",
+        "kanamycin": "fragmented",
+        "ochratoxin A": "fragmented_and_absorbed"
+      },
+      "groups": 11,
+      "largest_group": 10,
+      "missed_pairs": 15,
+      "pair_jaccard": 0.78022,
+      "recovered_pairs": 71,
+      "singletons": 7,
+      "size_census": {
+        "1": 7,
+        "10": 1,
+        "4": 1,
+        "5": 1,
+        "6": 1
+      }
+    }
+  },
+  "cutoffs": [
+    "0.1",
+    "0.2",
+    "0.3",
+    "0.4",
+    "0.5",
+    "0.6",
+    "0.7",
+    "0.8"
+  ],
+  "designed_families": {
+    "Aflatoxin B1": 5,
+    "ectoine": 10,
+    "kanamycin": 5,
+    "ochratoxin A": 7
+  },
+  "designed_pairs": 86,
+  "false_join_pairs": 0,
+  "families_exact": 0,
+  "first_cutoff_absorbing_a_control": "0.7",
+  "first_cutoff_recovering_each_family": {
+    "Aflatoxin B1": "0.6",
+    "ectoine": "0.5",
+    "kanamycin": null,
+    "ochratoxin A": null
+  },
+  "first_cutoff_with_a_false_join": "0.7",
+  "groups": 17,
+  "include_gbk": "BGC",
+  "largest_group": 5,
+  "missed_pairs": 53,
+  "pair_jaccard": 0.383721,
+  "per_family": {
+    "Aflatoxin B1": {
+      "group_sizes": [
+        4,
+        1
+      ],
+      "groups_spanned": 2,
+      "outsiders": [],
+      "verdict": "fragmented"
+    },
+    "ectoine": {
+      "group_sizes": [
+        5,
+        2,
+        1,
+        1,
+        1
+      ],
+      "groups_spanned": 5,
+      "outsiders": [],
+      "verdict": "fragmented"
+    },
+    "kanamycin": {
+      "group_sizes": [
+        4,
+        1
+      ],
+      "groups_spanned": 2,
+      "outsiders": [],
+      "verdict": "fragmented"
+    },
+    "ochratoxin A": {
+      "group_sizes": [
+        5,
+        1,
+        1
+      ],
+      "groups_spanned": 3,
+      "outsiders": [],
+      "verdict": "fragmented"
+    }
+  },
+  "pfam_sha256": "8d3e2ffa785f91ee0e24a3994d2dcfff6f382e3cf663784a47688e7d95297fee",
+  "pfam_version": "Pfam 35.0",
+  "recovered_pairs": 33,
+  "singletons": 12,
+  "size_census": {
+    "1": 12,
+    "2": 1,
+    "4": 2,
+    "5": 2
+  },
+  "verdict_census": {
+    "absorbed": 0,
+    "dissolved": 0,
+    "exact": 0,
+    "fragmented": 4,
+    "fragmented_and_absorbed": 0
+  }
+}

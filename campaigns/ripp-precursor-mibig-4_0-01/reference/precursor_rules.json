@@ -1,0 +1,104 @@
+{
+  "audit": {
+    "biosynthetic_class": "ribosomal",
+    "biosynthetic_class_note": "MIBiG's own biosynthetic-class term for the ribosomally synthesised peptides. The class is read from biosynthesis.classes[].class rather than from a name or a product string, so the selection is a field lookup and not an interpretation.",
+    "excluded_statuses": [
+      "retired"
+    ],
+    "excluded_statuses_note": "A retired entry is one MIBiG has withdrawn. Auditing its coordinates would be auditing an annotation its own curators have taken back. The rule is declared on the status field; whether the reference set happens to carry such entries is a separate, measured question.",
+    "amino_acid_alphabet": "ACDEFGHIKLMNPQRSTVWY",
+    "amino_acid_alphabet_note": "The twenty. A core sequence containing anything else, in either case, is malformed rather than merely unlocatable -- and the distinction matters, because the field also arrives holding punctuation from a serialisation that printed a list instead of emitting one.",
+    "ingestion_policies": {
+      "p0_strict": {
+        "case_fold": false,
+        "repair_printed_list": false
+      },
+      "p1_case_folded": {
+        "case_fold": true,
+        "repair_printed_list": false
+      },
+      "p2_repair_printed_list": {
+        "case_fold": true,
+        "repair_printed_list": true
+      }
+    },
+    "ingestion_policies_note": "A policy says how core_sequence is read, and nothing else. p0 reads the field as it stands: a string is one core, a list is its elements. p1 adds case folding, which is a normalisation and not a repair -- the reference translations are upper case and some cores are not. p2 additionally parses a core whose whole text is the printed form of a quoted list back into cores, which IS a repair: it reverses a serialisation accident and so is a counterfactual rather than the baseline. The campaign does not rule between them; it grades the localisation census under each, which is the point of declaring the policy instead of asserting a defect rate.",
+    "core_sequence_shapes": [
+      "bare_string",
+      "list_of_one",
+      "list_of_several",
+      "printed_list_in_a_string",
+      "other"
+    ],
+    "core_sequence_shapes_note": "The JSON shapes core_sequence is observed to arrive in, published so the shape census is a report against a declared vocabulary rather than whatever keys a reader invents. bare_string and list_of_one are the two readings a well-formed field can have; list_of_several is a precursor with genuinely more than one core, which some classes have; printed_list_in_a_string is the field holding the printed form of a list, brackets and quotes included, which is a serialisation accident rather than a sequence. `other` exists so a shape nobody anticipated is reported instead of crashing the census.",
+    "core_sequence_cases": [
+      "lower",
+      "mixed",
+      "upper"
+    ],
+    "core_sequence_cases_note": "Case of the letters in the field as it stands, before any policy is applied. `mixed` covers a core with letters in both cases and a core with no letters at all.",
+    "baseline_policy": "p1_case_folded",
+    "baseline_policy_note": "The conservative reading that still compares like with like. Folding case cannot invent a match that is not there -- the core either occurs in the translation or it does not -- whereas repairing a printed list decides what the curator meant.",
+    "localisation_verdicts": [
+      "malformed_core",
+      "core_absent",
+      "core_ambiguous",
+      "core_is_whole_precursor",
+      "core_at_N_terminus",
+      "core_at_C_terminus",
+      "core_internal"
+    ],
+    "localisation_verdicts_note": "Closed, and every term is a property of two strings. malformed_core: a character outside the alphabet. core_absent: no occurrence in the translation. core_ambiguous: more than one, so no coordinate can be derived. core_is_whole_precursor: the declared core IS the translation, leader included, which no cleavage can be reconciled with. The last three are the single-occurrence cases, by where the occurrence sits. A verdict is never 'probably': where the position is not unique the derived coordinates are null and the record is carried as such.",
+    "cleavage_conventions": [
+      "to_as_0based_core_start",
+      "to_as_1based_core_start",
+      "from_as_0based_core_start",
+      "from_as_1based_core_start"
+    ],
+    "cleavage_conventions_note": "Nothing in the annotation states whether leader_cleavage_location is 0-based or 1-based, or whether `from` or `to` marks the core's first residue, so all four readings are scored against the core's measured position and the convention is ELECTED by agreement. The list order is the tie-break, applied only if two readings agree on the same number of records. Assuming a convention instead of electing one would make every coordinate verdict below a restatement of the assumption.",
+    "reconciliation_verdicts": [
+      "agrees",
+      "disagrees",
+      "underivable"
+    ],
+    "reconciliation_verdicts_note": "underivable is a result, not a gap: the record declares a coordinate and the core has no single position for it to agree with.",
+    "model_panel": [
+      "DUF5837",
+      "DUF5840",
+      "DUF5973",
+      "Gallidermin",
+      "Lantibiotic_a",
+      "Nif11",
+      "RamS",
+      "Thiopep_pre"
+    ],
+    "model_panel_note": "Declared, not discovered. The panel was fixed at build time by scanning the corpus against the whole of the pinned Pfam release once, at the declared threshold, and listing every family that came back; so the panel is a published vocabulary rather than a hint. An agent scans with exactly these models, which takes seconds instead of the half-minute a full Pfam-A pass costs on this corpus, and the campaign refuses to build if the pinned release does not carry all of them.",
+    "threshold": "--cut_ga",
+    "threshold_note": "Pfam's curated gathering threshold, which is per-model and is the cutoff Pfam itself uses to define family membership. A bare E-value would make the verdict depend on database size, and these are very short sequences.",
+    "boundary_relations": [
+      "leader_only",
+      "core_only",
+      "spans_boundary",
+      "core_not_located"
+    ],
+    "boundary_relations_note": "Where a hit's envelope sits relative to the measured leader/core boundary. HMMER writes the envelope 1-based inclusive; the leader occupies positions 1 through core_start and the core begins at core_start + 1. leader_only: the envelope ends at or before the boundary. core_only: it begins at or after the core's first residue. spans_boundary: it covers both. core_not_located: the record's core has no single position, so the hit cannot be placed -- a property of the annotation, not of the model.",
+    "deletion_outcomes": [
+      "retained",
+      "changed",
+      "lost",
+      "gained",
+      "unchanged_absent",
+      "not_applicable"
+    ],
+    "deletion_outcomes_note": "The counterfactual removes each record's declared leader -- everything before the located core -- and scans again with the same panel at the same threshold. retained: the same models. changed: a different non-empty set. lost: nothing left. gained: a model appears that the full precursor did not carry. unchanged_absent: the negative control, a record the panel never recognised and still does not. not_applicable: no located core, so no declared leader to remove; such a record is left out of the second scan rather than passed through whole, which would compare a full precursor against the others' cores."
+  },
+  "external_resources": {
+    "pfam_a_hmm": {
+      "relative_path": "lib/python3.11/site-packages/antismash/databases/pfam/35.0/Pfam-A.hmm",
+      "provider": "antiSMASH 8.0.4 database layer",
+      "version": "Pfam 35.0",
+      "sha256": "8d3e2ffa785f91ee0e24a3994d2dcfff6f382e3cf663784a47688e7d95297fee",
+      "note": "1.5 GB, so it is read from the pinned image rather than shipped. Pfam itself is CC0; the reason this file is not redistributed is size, not licence. A campaign that needs a resource it cannot ship declares the path, the provider, the version and this fingerprint, so what it was built against is recorded even though the bytes live outside it."
+    }
+  }
+}

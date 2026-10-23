@@ -1,0 +1,148 @@
+{
+  "campaign_id": "derep-massbank-2026_03-01",
+  "template_id": "ms2-dereplication",
+  "grading_spec_version": "1.0.0",
+  "rungs": [
+    {
+      "rung_id": "r1",
+      "ordinal": 1,
+      "name": "execute",
+      "gold_tier": "G1",
+      "composition": "product",
+      "pass_threshold": 1.0,
+      "chance_level": 1.0,
+      "components": [
+        {
+          "name": "report_present",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:present.report",
+            "gold": 1
+          }
+        },
+        {
+          "name": "environment",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:environment",
+            "gold": "gold:environment"
+          }
+        },
+        {
+          "name": "candidate_census",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:candidate_census",
+            "gold": "gold:candidate_census"
+          }
+        }
+      ],
+      "chance_level_note": "Nominal rather than measured. The candidate-set shape over this library cannot be guessed and the similarity library's version is not in the sandbox, so the no-tool ablation fails R1 outright; the level stays at 1.0 because any system that reads both files and applies the declared window clears it, and the capped floor is computed over R2 upward.\n"
+    },
+    {
+      "rung_id": "r2",
+      "ordinal": 2,
+      "name": "correct",
+      "gold_tier": "G1",
+      "composition": "product",
+      "pass_threshold": 1.0,
+      "chance_level": 0.001,
+      "components": [
+        {
+          "name": "retrieval_census",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:retrieval_census",
+            "gold": "gold:retrieval_census"
+          }
+        },
+        {
+          "name": "top_matches",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:top_matches",
+            "gold": "gold:top_matches"
+          }
+        },
+        {
+          "name": "correct_queries",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:correct_queries",
+            "gold": "gold:correct_queries"
+          }
+        }
+      ]
+    },
+    {
+      "rung_id": "r3",
+      "ordinal": 3,
+      "name": "commit",
+      "gold_tier": "G1",
+      "composition": "product",
+      "pass_threshold": 1.0,
+      "chance_level": 0.001,
+      "components": [
+        {
+          "name": "confidence_by_query",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:confidence_by_query",
+            "gold": "gold:confidence_by_query"
+          }
+        },
+        {
+          "name": "confidence_census",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:confidence_census",
+            "gold": "gold:confidence_census"
+          }
+        },
+        {
+          "name": "margin_summary",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:margin_summary",
+            "gold": "gold:margin_summary"
+          }
+        },
+        {
+          "name": "ambiguous_queries",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:ambiguous_queries",
+            "gold": "gold:ambiguous_queries"
+          }
+        }
+      ]
+    },
+    {
+      "rung_id": "r4",
+      "ordinal": 4,
+      "name": "counterfactual",
+      "gold_tier": "G1",
+      "composition": "product",
+      "pass_threshold": 1.0,
+      "chance_level": 0.001,
+      "components": [
+        {
+          "name": "tolerance_movement",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:tolerance_movement",
+            "gold": "gold:tolerance_movement"
+          }
+        },
+        {
+          "name": "adduct_misassignment_census",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:adduct_misassignment_census",
+            "gold": "gold:adduct_misassignment_census"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,311 @@
+campaign_id: derep-massbank-2026_03-01
+template_id: ms2-dereplication
+track: EX
+family: spectral_dereplication
+layer: L4_molecule_and_structure
+np_class: mixed
+version: 1.0.0
+horizon_tier: T-short
+license_class: open
+grader_version: "2.0.0+9fc95658"
+grading_spec_version: "1.0.0"
+min_tool_surface: S1
+tool_surface_note: >
+  Needs one spectral-similarity library and nothing else. R1 reports what ran and
+  the precursor filter it applied over the shipped library, so the no-tool
+  ablation fails the first rung, and every rung above it is made of scoring runs
+  over the same two shipped files.
+
+license_notice:
+  source: MassBank-data, release tag 2026.03
+  license: CC BY 4.0
+  attribution: >
+    MassBank consortium, MassBank-data release 2026.03
+    (https://github.com/MassBank/MassBank-data), licensed CC BY 4.0.
+  redistribution: >
+    inputs/ carries spectra from the release unchanged apart from the declared
+    reshaping: peaks sorted by m/z, m/z rounded to six decimals and intensity to
+    four, and the fields the campaign reads kept. CC BY 4.0 requires attribution
+    and nothing further. The selection rule, the census it produced and the
+    per-file digests are in inputs/provenance.json.
+
+objective: >
+  Dereplication is the first question asked of any new extract: is this compound
+  already known? The answer is a retrieval against a reference library, and the
+  reason it is gradeable here without anybody's judgement is the split. Every
+  query's compound is in the shipped library -- but only through spectra recorded
+  by OTHER contributors, so a correct answer is another lab's measurement of the
+  same compound rather than a lookup of the same run.
+
+  Build the declared pipeline over the two shipped files: filter the library to
+  the spectra whose precursor sits inside the declared window of the query's,
+  score those with the pinned similarity at the pinned peak tolerance, rank by
+  the declared rule, and report what each query is. Then classify every
+  annotation under the declared confidence rule and say which ones are too close
+  to a competing compound to stand. Then re-run the search across the declared
+  tolerance grid and once more with the precursor read as the wrong adduct, and
+  report what moves.
+
+method_guidance: partial
+
+scope_note: >
+  Gold is the declared projection of a pinned library's own output over two
+  shipped files, plus exact arithmetic over it. Tier G1.
+
+  Four things are load-bearing.
+
+  THE SPLIT IS THE CONSTRUCT. A query's compound appears in the library only
+  through other contributors' spectra. That was a docstring before it was a rule,
+  and the audit that checked it found a tenth of the correct answers coming from
+  the query's own contributor at the query's own instrument type -- a replicate
+  lookup wearing a retrieval's clothes. The rule is enforced in two places now:
+  the input builder refuses a split that violates it, and the grading core
+  refuses to load a corpus that does. What is NOT claimed is a different
+  instrument: the contributor exclusion does not imply one, so
+  inputs/provenance.json reports the instrument support as a census instead.
+
+  THE PRECURSOR FILTER IS PART OF THE PIPELINE, NOT AN OPTIMISATION. Candidates
+  are the library spectra whose precursor m/z is within the declared window of
+  the query's, which is what dereplication practice does and what an adduct
+  misassignment breaks. R1 grades the shape of that filter over this library,
+  because the filter is upstream of any scoring: it can be answered without
+  comparing a single peak, and it cannot be answered without reading both files.
+
+  THE TOLERANCE IS PART OF GOLD. Across the declared grid the aggregate top-1
+  rate barely moves while individual answers do, so a campaign that pinned one
+  tolerance and called the rest a detail would be grading a parameter it never
+  declared. The grid is R4's first axis, graded as the set of queries whose
+  answer moves at each setting, with the pinned tolerance as the identity
+  control.
+
+  THE ADDUCT MISASSIGNMENT MAKES THE SEARCH SILENT, NOT WRONG. Re-reading a
+  protonated precursor as sodiated moves the window by the mass difference, and
+  on this corpus that mostly empties it. So it is graded as a census -- how many
+  annotations go missing, how many go wrong, how many survive -- and not as a
+  per-query survival bit, which would have had one answer for every query.
+
+catalog_deviation: >
+  Two claims the catalogue asked for are not graded, each for a measured reason,
+  and one axis the catalogue did not ask for is.
+
+  The catalogued R3 was "the confidence level per annotation AND the
+  discriminating fragment". The confidence level is graded, under a declared
+  mechanical rule rather than as a judgement. The discriminating fragment is not:
+  it presumes a competitor to discriminate against, and on this corpus most
+  queries' precursor windows hold no other compound at all, so for most of them
+  the question has no answer. What replaces it is the ambiguous set -- the
+  annotations whose nearest different-compound competitor sits inside a declared
+  margin -- which is defined wherever a competitor exists and empty where one
+  does not.
+
+  The catalogued R4 was "an adduct shift is applied -- predict which annotations
+  survive". Measured, almost none do, and the ones that fail mostly fail by
+  having no candidate rather than the wrong one: the per-query bit is one answer
+  repeated. The census replaces it, and the tolerance grid is added as the axis
+  with per-query content.
+
+template_params:
+  queries_input: inputs/queries.json.gz
+  library_input: inputs/library.json.gz
+
+output_contract:
+  dereplication_report.json:
+    environment: >
+      What ran the comparison: the similarity library's own version string, the
+      similarity name, the peak tolerance and the precursor window. The last
+      three are echoes of the pinned rules table; the version is not, and the
+      four are graded as one claim.
+    corpus_census: >
+      The two files as you parsed them -- graded queries, library spectra,
+      distinct library compounds. Reported for the record and NOT graded: all
+      three are in inputs/provenance.json, which you are given.
+    candidate_census: >
+      The precursor filter applied to the whole library: the median and the
+      maximum candidate-set size over the graded queries, and the total across
+      all of them. The total is reported with the other two because a median
+      alone cannot distinguish a library that filters tightly from one that
+      filters tightly in the middle of the distribution.
+    retrieval_census: >
+      How the queries came out: annotated, no candidate in the window at all, or
+      candidates that all scored zero. The third is a real state and not the
+      second: a sparse score matrix omits a zero-scoring pair rather than
+      reporting it.
+    top_matches: >
+      Per graded query, the library accession your pipeline ranks first, or null
+      where there is nothing to rank.
+    correct_queries: >
+      The queries whose top match is a spectrum of the query's own compound,
+      compared at the declared compound key.
+    misannotated_queries: >
+      The annotated queries whose top match is some other compound. Reported for
+      the record and NOT graded: it is the complement of the set above inside the
+      annotated set, so grading it adds a component and no claim.
+    confidence_by_query / confidence_census: >
+      The declared confidence class of every query, and the count per class. The
+      rule is a pair of floors -- a score AND a matched-peak count -- and the
+      first row that meets BOTH wins.
+    margin_summary: >
+      How many queries have a competing compound in their candidate window at
+      all, the median margin between the top match and the best competitor of a
+      different compound, and how many sit inside the declared margin. The median
+      is reported at the declared precision.
+    ambiguous_queries: >
+      The queries whose nearest different-compound competitor is within the
+      declared margin. Undefined where no competitor exists, which is a query
+      that does not appear here rather than one that appears as unambiguous.
+    tolerance_movement: >
+      Per declared tolerance, the queries whose answer -- the top match or the
+      verdict -- is not what the pinned tolerance gives. The pinned tolerance's
+      own entry is the identity control and must be empty.
+    adduct_misassignment_census: >
+      With every query's precursor re-read as the misread adduct: how many
+      queries lose their candidate window, how many keep one and annotate the
+      wrong compound, and how many still annotate the right one.
+
+constraints:
+  reference_dir: reference
+  pinned_tables:
+    - reference/dereplication_rules.json   # similarity, tolerances, confidence rule, margin, adduct
+  external_resources: []
+  external_resources_note: >
+    None. The similarity library reads the spectra it is handed and no reference
+    database, so the version and the declared tolerances are the whole of the
+    pin. The reference library this campaign searches is shipped in inputs/,
+    which is what makes the retrieval reproducible.
+
+snapshots_required:
+  shipped: [massbank@2026.03]
+  fetched: []
+  image: [matchms@0.30.2]
+
+budgets:
+  wall_clock_minutes: 90
+  cpu: 2
+  memory_gb: 8
+  network: off
+  budget_note: >
+    Six scoring passes over the same two files: one at the pinned tolerance, one
+    per other tolerance in the declared grid, and one with the precursor window
+    moved. Each pass compares every query against its own candidate set only --
+    the precursor filter is what keeps this affordable, and a run that skipped it
+    would compare every query against the whole library and not finish.
+
+rungs:
+  - {rung_id: r1, ordinal: 1, name: execute,        gold_tier: G1, warm_start_bundle: null}
+  - {rung_id: r2, ordinal: 2, name: correct,        gold_tier: G1, warm_start_bundle: gold/warm/r2}
+  - {rung_id: r3, ordinal: 3, name: commit,         gold_tier: G1, warm_start_bundle: gold/warm/r3}
+  - {rung_id: r4, ordinal: 4, name: counterfactual, gold_tier: G1, warm_start_bundle: gold/warm/r4}
+
+# The campaign applies both perturbations itself -- the tolerance comes from the
+# declared grid and the adduct from the declared masses -- so what is perturbed
+# is known by construction. The control is the pinned tolerance's own entry in
+# the movement table, which must be empty or the search is not deterministic
+# under this invocation.
+
+harness:
+  gold_command: ["python3", "-m", "npbench_c.templates.ms2_dereplication.build", "{campaign}"]
+  solve_command: ["python3", "-m", "npbench_c.templates.ms2_dereplication.solve", "{campaign}", "{submission}"]
+  measure_command: ["python3", "-m", "npbench_c.templates.ms2_dereplication.measure", "{campaign}", "{submission}", "{measurement}"]
+  stub_module: npbench_c.sweep.stubs.stub_derep
+  stub_args: []
+  stub_levels:
+    - {name: stub-reader,     level: reader, timeout_s: 3600}
+    - {name: stub-retrieve,   level: retrieve, reference: true, timeout_s: 3600}
+    - {name: stub-commit,     level: commit, timeout_s: 3600}
+    - {name: stub-complete,   level: complete, timeout_s: 7200}
+    - {name: stub-peaksfirst, level: peaksfirst, timeout_s: 3600}
+    - {name: stub-scorefloor, level: scorefloor, timeout_s: 3600}
+    - {name: stub-noncompute, level: noncompute, mode: no_tool, timeout_s: 600}
+
+grading:
+  chance_levels: {r1: 1.0, r2: 0.001, r3: 0.001, r4: 0.001}
+  chance_level_notes:
+    r1: >
+      Nominal rather than measured. The candidate-set shape over this library
+      cannot be guessed and the similarity library's version is not in the
+      sandbox, so the no-tool ablation fails R1 outright; the level stays at 1.0
+      because any system that reads both files and applies the declared window
+      clears it, and the capped floor is computed over R2 upward.
+
+excluded_from_grading:
+  - field: the discriminating fragment per annotation
+    reason: >
+      The catalogued R3's second half, and it is undefined for most of this
+      corpus: the question presumes a competing compound in the candidate window
+      and most queries have none, so there is nothing for a fragment to
+      discriminate against. The ambiguous set replaces it -- defined wherever a
+      competitor exists, and silent where one does not.
+  - field: whether each annotation survives the adduct misassignment, per query
+    reason: >
+      The catalogued R4's literal claim, and measured it has one answer: almost
+      no annotation survives, and most do not even have a candidate to be wrong
+      about. A rung whose answer is the same bit for every query grades nothing,
+      so the census of the three outcomes replaces it.
+  - field: corpus_census
+    reason: >
+      An echo. The graded-query count, the library spectrum count and the
+      compound count are all stated in inputs/provenance.json, which the sandbox
+      ships because the selection rule and the digests belong with the data. A
+      component for them would measure a copy out of the sandbox rather than any
+      work. Reported so a run records what it parsed; the filter applied to those
+      files is what R1 grades.
+  - field: misannotated_queries
+    reason: >
+      The arithmetic complement of correct_queries inside the annotated set, both
+      of which are graded or reported already. A component for it would add a
+      multiplication to the rung and no claim.
+  - field: similarity, peak_tolerance, precursor_window
+    reason: >
+      Echoes of reference/dereplication_rules.json read back. Graded only inside
+      the one environment claim, which also carries the similarity library's own
+      version string -- and that the sandbox does not state.
+  - field: the cosine score and matched-peak count per query
+    reason: >
+      Dropped from the declared projection rather than graded. The score is a
+      float out of a BLAS-backed library: it is byte-identical under this image's
+      pinned numpy and scipy, and it moved in the third decimal when those
+      versions changed, so a per-query score table would make a correct run
+      differ from gold on a detail that is not what an identification is. The
+      confidence class carries the claim, and one aggregate margin is graded at
+      the declared precision.
+  - field: MassBank's own CONFIDENCE field
+    reason: >
+      Not usable as the confidence ground truth and not graded. Fewer than a
+      hundred of the release's records carry it at all -- one contributor's
+      convention rather than a corpus-wide field -- so the campaign declares a
+      mechanical rule over the score and the matched-peak count instead.
+
+notes_for_audit:
+  - >
+    These notes say what to recompute and from where. They state no graded value:
+    an auditor has gold and docs/npbench-c.md, which carry the numbers, and a
+    system reading this file does not.
+  - >
+    First, the split, because every rung above R1 rests on it. Take any graded
+    query, find every library spectrum of its compound, and check that none of
+    them comes from the query's own contributor. The input builder refuses a
+    corpus where that fails and so does the grading core's loader, and the reason
+    both exist is that the claim shipped once as a sentence in a docstring and
+    was false for nineteen of the hundred graded compounds.
+  - >
+    Then the identity control inside R4's tolerance table. The pinned tolerance's
+    entry re-runs the whole search at the setting gold was built with and must
+    name no query at all. Anything else means the search is not deterministic
+    under this invocation and every movement set above it is uncalibrated. The
+    build refuses gold in that case.
+  - >
+    Then the confidence rule, by hand, on a handful of annotations. It is a pair
+    of floors and the first row meeting BOTH wins; reading it as a score
+    threshold alone moves a sixth of this corpus's annotations upward into the
+    most confident class, which is the direction that flatters a system, and it
+    is one of the two competence probes in the stub ladder for that reason.
+  - >
+    Then the margin summary against the ambiguous set. The count inside the
+    declared margin is the size of that set, by construction; the median is over
+    the queries that have a competitor at all, which is a smaller population than
+    the graded queries and a larger one than the ambiguous set. A median over the
+    wrong denominator is the mistake to look for.
+  - >
+    The perturbed searches are not shipped and must not be. Both follow from the
+    declared rules -- the grid from the rules table and the adduct from the two
+    declared masses -- and shipping either would hand over the counterfactual.

@@ -1,0 +1,9 @@
+{
+  "accession": "Q8KHZ8",
+  "license": "CC BY 4.0",
+  "note": "Same protein as construct-ecoli-rebh-01. The instantiation axis for this template is the constraint set, not the protein.",
+  "retrieved": "2026-10-01",
+  "sequence_version": 1,
+  "sha256_fasta": "9b4119b3c6383a711590b01b9dffc96869765785d34fe00a4eaf0811a74cdb8d",
+  "source": "UniProtKB"
+}

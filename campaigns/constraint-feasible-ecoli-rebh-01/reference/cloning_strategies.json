@@ -1,0 +1,25 @@
+{
+  "description": "Restriction sites forbidden inside the ORF per cloning strategy. All listed sites are palindromic, so one strand suffices.",
+  "strategies": {
+    "pet28a_ndei_xhoi": {
+      "forbidden_sites": {
+        "BamHI": "GGATCC",
+        "EcoRI": "GAATTC",
+        "HindIII": "AAGCTT",
+        "NcoI": "CCATGG",
+        "NdeI": "CATATG",
+        "XhoI": "CTCGAG"
+      },
+      "vector": "pET-28a(+)"
+    },
+    "pset152_ndei_xhoi": {
+      "forbidden_sites": {
+        "EcoRI": "GAATTC",
+        "HindIII": "AAGCTT",
+        "NdeI": "CATATG",
+        "XhoI": "CTCGAG"
+      },
+      "vector": "pSET152"
+    }
+  }
+}

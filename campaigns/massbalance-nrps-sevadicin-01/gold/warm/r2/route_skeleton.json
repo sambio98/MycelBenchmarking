@@ -1,0 +1,11 @@
+{
+  "compounds": [
+    "sevadicin"
+  ],
+  "monomers": [
+    "phenylalanine",
+    "alanine",
+    "tryptophan"
+  ],
+  "n_modules": 3
+}

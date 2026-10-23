@@ -7,8 +7,12 @@ offline.
 
 import json
 
-import biomni.agent as ba
 import pytest
+
+# Skip rather than error when biomni is absent: a collection-time ImportError
+# here aborts the whole suite, including the NPBench-C grading tests, which have
+# no biomni dependency.
+ba = pytest.importorskip("biomni.agent")
 
 from biomni_benchmark.runner import (
     infer_source,
