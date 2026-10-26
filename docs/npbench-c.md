@@ -4286,6 +4286,87 @@ of 0.54. The suite gained **55 tests** and the cross-campaign scan is clean in
 both directions over all 24 campaigns. **24 campaigns are built**, and the
 release packager ships all of them.
 
+## The library pin imported off the host, and `--verify` said 9/9
+
+Found while starting T-L4-2, by running a grounding script with `python3 -I`:
+
+```
+ModuleNotFoundError: No module named 'requests'
+  matchms/importing/load_from_usi.py, line 4
+```
+
+matchms 0.30.2 declares `requests >= 2.31.0` in its conda recipe and imports it
+at import time, through `matchms/__init__` → `importing` → `load_from_usi`. The
+pinned prefix did not carry it. Nor `urllib3`, `certifi`, `idna` or
+`charset-normalizer`: of matchms's twenty declared run dependencies, nineteen
+were in the prefix and `requests` was not.
+
+**It imported anyway, and that is the part worth keeping.** The session container
+has `requests` in `/root/.local/lib/python3.11/site-packages` — dated 2026-03-31,
+installed for `conan`, nothing to do with this project — and the prefix
+interpreter is the same Python minor version, so a plain `python3.11 -c "import
+matchms"` finds it on the user site. Which means:
+
+- every matchms score in T-L4-1's gold was produced through an import resolved
+  partly outside the pin;
+- `registry --verify` reported `matchms 0.30.2` and `9/9 tools at their pinned
+  version`, because its version probe is exactly that import;
+- `image/environment.lock.json`, which is generated **from the prefix**, recorded
+  a 226-package closure that cannot import its own library pin;
+- a container built from `image/Dockerfile` — which installs Ubuntu's `python3`
+  and `python3-yaml` and nothing else from PyPI — would have had no `requests`
+  anywhere, so the driver would have died on the first campaign that ran it.
+
+A pin that only imports next to the right host is not a pin.
+
+### Where the gap came from, and where it did not
+
+A fresh `micromamba create` of the same specs links the whole chain: measured, in
+a throwaway prefix, five packages linked and `import requests` clean. So the
+single `create` in the Dockerfile is the complete path and the **staged** prefix
+is the incomplete one — the one assembled over five solves between 2026-10-02 and
+10-21, which the Dockerfile's own comment already warned "is not guaranteed to
+equal what one solve produces". How the 10-21 matchms step came to link matchms
+without `requests` is not established: that install's log is gone, and my own
+first `install requests` into the prefix reported "Install: 5 packages" and left
+four of them unlinked, which is the same shape but one occurrence rather than a
+reproduction.
+
+That is the argument for a check rather than a note. The cause is unknown; the
+condition is one line of JSON away from being checkable.
+
+### Three changes, each one measured
+
+**The prefix carries the closure.** `requests 2.34.2` plus `urllib3`, `certifi`,
+`idna` and `charset-normalizer`, installed with exact `version=build` specs.
+Nothing was upgraded, downgraded or removed — the dry run said so and the result
+confirms it: numpy stays 2.2.5 and scipy 1.15.2, which is what makes the next
+paragraph possible. The lock is regenerated from the prefix: **231 packages**,
+seven build steps, and the five new `requested` entries carry their rationale.
+
+**The probes no longer read the host.** The library version probe and the
+invariance suite's `cosine_top1` invocation both run `python3.11 -s`, which drops
+the user site. `-s` and not `-I`: `-I` implies `-E`, and the image sets
+`PYTHONHASHSEED=0` on purpose. The dereplication campaign's own two calls — the
+version query and the scoring driver — carry `-s` for the same reason, so a score
+comes from the pinned prefix or not at all. **The invariance digest is unchanged
+by all of it**: `9793db03e82f42f2` before and after, so `-s` costs nothing
+numerically and `image/thread_invariance.json` stands as measured.
+
+**`--verify` checks the closure.** `dependency_gaps()` reads each library pin's
+own `depends` list out of the prefix's `conda-meta` and reports any package the
+prefix lacks — the check that would have caught this on the day it happened,
+and the one the Dockerfile's build-time `--verify` now runs. A binary pin needs
+no equivalent: a binary either runs or it does not, and `--verify` runs every
+one. A library is imported, and an import searches paths nobody pinned.
+
+### What it did not change
+
+T-L4-1's gold is byte-identical after all of it — same gate, 25 pass / 0 fail /
+5 pending, including the regeneration check that rebuilds gold and compares it
+byte for byte against what is committed. The numbers in the campaign were right;
+what was wrong was the claim that only the pinned image could produce them.
+
 ## Open items
 
 1. ~~CAI table provenance.~~ **Closed.** The tables are derived from two pinned

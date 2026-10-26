@@ -1,5 +1,5 @@
 {
-  "artifact_bytes": 675834527,
+  "artifact_bytes": 676542030,
   "banned_binaries": {
     "FastTreeMP": "Deleted from the prefix after install. Thread order affects the neighbour-joining heuristic, so it can never sit on a gold-producing path. It arrives as part of the fasttree package that antiSMASH depends on, so the ban is enforced by `registry --verify` rather than only written down. Single-threaded FastTree stays."
   },
@@ -23,6 +23,14 @@
     {
       "at": "2026-10-21 15:13:01",
       "command": "micromamba install -y -p /opt/npbench-tools --no-rc -c conda-forge -c bioconda hmmer=3.4=h7d74f8d_5 diamond=2.2.8=he361c42_0 mmseqs2=18.8cc5c=hd6d6fdc_0 prodigal=2.6.3=h577a1d6_11 mafft=7.526=ha3fa977_0 blast=2.17.0=hb02a186_1 antismash=8.0.4=pyhdfd78af_1 bigscape=2.0.3=pyhdfd78af_0 sqlalchemy=2.0.54=py311h194be0f_1 matchms=0.30.2=pyhdfd78af_1"
+    },
+    {
+      "at": "2026-10-26 19:16:43",
+      "command": "micromamba install -y -p /opt/npbench-tools --no-rc -c conda-forge -c bioconda requests=2.34.2=pyhcf101f3_0"
+    },
+    {
+      "at": "2026-10-26 19:17:06",
+      "command": "micromamba install -y -p /opt/npbench-tools --no-rc -c conda-forge -c bioconda urllib3=2.8.0=pyhd8ed1ab_0 certifi=2026.10.23=pyhd8ed1ab_0 idna=3.20=pyh5ded981_0 charset-normalizer=3.5.2=h1114479_0"
     }
   ],
   "channels": [
@@ -33,7 +41,7 @@
   "not_in_this_image": {
     "iqtree": "Not needed by any catalogued template. If it ever is: always --seed, always fixed -T N, never AUTO, and single-gene ML trees are not admissible as gold."
   },
-  "package_count": 226,
+  "package_count": 231,
   "packages": [
     {
       "build": "20_gnu",
@@ -212,12 +220,28 @@
       "version": "1.18.6"
     },
     {
+      "build": "pyhd8ed1ab_0",
+      "name": "certifi",
+      "sha256": "04e641ccaa58278b431e97f2a43090bafc676436d04b5860dfd9b18166f2b326",
+      "size": 135537,
+      "url": "https://conda.anaconda.org/conda-forge/noarch/certifi-2026.10.23-pyhd8ed1ab_0.conda",
+      "version": "2026.10.23"
+    },
+    {
       "build": "py311h904a5e5_3",
       "name": "cffi",
       "sha256": "1f9c8856b629d9c546cd6574345e7d3621f59fdde8c2902b88e00f09764d6295",
       "size": 310350,
       "url": "https://conda.anaconda.org/conda-forge/linux-64/cffi-2.1.1-py311h904a5e5_3.conda",
       "version": "2.1.1"
+    },
+    {
+      "build": "h1114479_0",
+      "name": "charset-normalizer",
+      "sha256": "e4f04b45d68716fcc47c808aeacbf165f6f295fb91bd20b91aa38942b8d2cdc6",
+      "size": 217200,
+      "url": "https://conda.anaconda.org/conda-forge/linux-64/charset-normalizer-3.5.2-h1114479_0.conda",
+      "version": "3.5.2"
     },
     {
       "build": "pyh5ded981_0",
@@ -482,6 +506,14 @@
       "size": 14459115,
       "url": "https://conda.anaconda.org/conda-forge/linux-64/icu-78.3-py310h44b86e0_2.conda",
       "version": "78.3"
+    },
+    {
+      "build": "pyh5ded981_0",
+      "name": "idna",
+      "sha256": "e044b1ec829e2e24f971fa3f3408eb26f1db836e521a58f08b0fd9a03fee47be",
+      "size": 178572,
+      "url": "https://conda.anaconda.org/conda-forge/noarch/idna-3.20-pyh5ded981_0.conda",
+      "version": "3.20"
     },
     {
       "build": "pyhcf101f3_0",
@@ -1580,6 +1612,14 @@
       "version": "5.0.1"
     },
     {
+      "build": "pyhcf101f3_0",
+      "name": "requests",
+      "sha256": "1715246b19c9f85ee022933b4845f2fc14ac9184981b7b7d9b728bec8e9588da",
+      "size": 68709,
+      "url": "https://conda.anaconda.org/conda-forge/noarch/requests-2.34.2-pyhcf101f3_0.conda",
+      "version": "2.34.2"
+    },
+    {
       "build": "pyh6c17108_0",
       "name": "rlpycairo",
       "sha256": "8d993b1a7d869855a1f6358dcc3de08dbeda9263d8c852d44bfc3900701c1e6c",
@@ -1724,6 +1764,14 @@
       "version": "18.0.0"
     },
     {
+      "build": "pyhd8ed1ab_0",
+      "name": "urllib3",
+      "sha256": "c5511c190ab55168ca412f3c54592fbf677ae6250784cb72b227a7cf3f538f7d",
+      "size": 107485,
+      "url": "https://conda.anaconda.org/conda-forge/noarch/urllib3-2.8.0-pyhd8ed1ab_0.conda",
+      "version": "2.8.0"
+    },
+    {
       "build": "h653f8fd_1",
       "name": "wget",
       "sha256": "66a5a05e0e44fd7a57e24d77665d5d6672646a7b316575b2f679108966d9124e",
@@ -1850,27 +1898,37 @@
     "antismash": "8.0.4=pyhdfd78af_1",
     "bigscape": "2.0.3=pyhdfd78af_0",
     "blast": "2.17.0=hb02a186_1",
+    "certifi": "2026.10.23=pyhd8ed1ab_0",
+    "charset-normalizer": "3.5.2=h1114479_0",
     "diamond": "2.2.8=he361c42_0",
     "hmmer": "3.4=h7d74f8d_5",
+    "idna": "3.20=pyh5ded981_0",
     "mafft": "7.526=ha3fa977_0",
     "matchms": "0.30.2=pyhdfd78af_1",
     "mmseqs2": "18.8cc5c=hd6d6fdc_0",
     "prodigal": "2.6.3=h577a1d6_11",
-    "sqlalchemy": "2.0.54=py311h194be0f_1"
+    "requests": "2.34.2=pyhcf101f3_0",
+    "sqlalchemy": "2.0.54=py311h194be0f_1",
+    "urllib3": "2.8.0=pyhd8ed1ab_0"
   },
   "requested_rationale": {
     "antismash": "8.0.4 is the current release. Its pin is really a PAIR -- this binary plus the database release that `download-antismash-databases` fetched -- because the detection rule set and the reference databases together determine which regions come out. A measured dry-run confirmed that adding antiSMASH to this environment moves NONE of the six sequence-tool pins, which is why there is one environment rather than two; antiSMASH's own constraint on DIAMOND (>= 2.1.21) is satisfied by the 2.2.8 pin.",
     "bigscape": "2.0.3 is the current release. A measured dry-run confirmed it moves none of the existing pins -- 36 packages added, none replaced. It reuses the Pfam library already shipped with the antiSMASH databases rather than fetching a second copy, which saves 1.5 GB and one separately-pinned release.",
     "blast": "2.17.0; Ubuntu ships 2.12.0, five years older, so bioconda is used for this pin too.",
+    "certifi": "`requests`'s own closure, linked with it. Named explicitly on 2026-10-26 because the staged prefix did not have it. matchms 0.30.2 declares `requests >= 2.31.0` and imports it at import time, and the prefix assembled over the earlier solves carried matchms without it, so `import matchms` worked only because the surrounding container had requests in root's user site for an unrelated tool. A fresh `create` of the same specs links the whole chain -- measured -- so this is the staged prefix's gap and not the Dockerfile's. `registry --verify` now checks every library pin's declared run dependencies against the prefix, and both the version probe and the measured invocation run with `-s` so no import can be satisfied off the host again.",
+    "charset-normalizer": "`requests`'s own closure, linked with it. Named explicitly on 2026-10-26 because the staged prefix did not have it. matchms 0.30.2 declares `requests >= 2.31.0` and imports it at import time, and the prefix assembled over the earlier solves carried matchms without it, so `import matchms` worked only because the surrounding container had requests in root's user site for an unrelated tool. A fresh `create` of the same specs links the whole chain -- measured -- so this is the staged prefix's gap and not the Dockerfile's. `registry --verify` now checks every library pin's declared run dependencies against the prefix, and both the version probe and the measured invocation run with `-s` so no import can be satisfied off the host again.",
     "diamond": "2.2.8 clears the >= 2.2.7 floor the determinism controls require. Ubuntu's archive ships 2.1.9, which does NOT, so apt cannot satisfy this pin and bioconda is used instead.",
     "hmmer": "3.4 is the current release (Aug 2023); needed by L1-2, L2-1, L3-4",
+    "idna": "`requests`'s own closure, linked with it. Named explicitly on 2026-10-26 because the staged prefix did not have it. matchms 0.30.2 declares `requests >= 2.31.0` and imports it at import time, and the prefix assembled over the earlier solves carried matchms without it, so `import matchms` worked only because the surrounding container had requests in root's user site for an unrelated tool. A fresh `create` of the same specs links the whole chain -- measured -- so this is the staged prefix's gap and not the Dockerfile's. `registry --verify` now checks every library pin's declared run dependencies against the prefix, and both the version probe and the measured invocation run with `-s` so no import can be satisfied off the host again.",
     "mafft": "7.526; the controls require only a pinned major version plus deterministic modes.",
     "matchms": "0.30.2 from bioconda, noarch, and the first LIBRARY pin here rather than a binary: it has no executable to invoke and no --version to read, so a campaign reaches it by running this prefix's python3.11 as a subprocess, which is why PATH keeps the prefix last and `python3` the system interpreter. The version is the one the MassBank 2026.03.1 fixture grounding measured -- a similarity implementation can change between minor versions, so inheriting a tolerance measurement means pinning the version it was measured on. Installed 2026-10-21 as the fifth step in build_history; it added 46 packages (numba, llvmlite, rdkit, pyteomics and their closure) and moved nothing already here, which the install's dry run was read for before it ran. numpy and scipy were already in the closure at 2.2.5 and 1.15.2, NOT the 2.2.6 and 1.16.3 the grounding ran against, so the tolerance and determinism measurements are re-run against this stack before any campaign inherits them.",
     "mmseqs2": "18.8cc5c is the current release. MMseqs2 is the tool most likely to fail thread invariance (upstream issue #277: results differ by core count), so the suite decides whether this pin is usable rather than the version number.",
     "prodigal": "2.6.3 is the final Prodigal release. Prodigal-GV is a DIFFERENT tool and is not in the image.",
     "python": "antiSMASH is a Python application, so the environment now carries its own interpreter and it is pinned rather than left to the solver. The grading core is stdlib-only, so nothing in the scoring path depends on which 3.11 this is, but a benchmark that does not record its interpreter has an unrecorded dependency. (This row is no longer in `requested`, which is now derived from the prefix's own install history rather than written by hand: python was never an explicit spec, it arrived as a dependency of the tools that need it.)",
-    "sqlalchemy": "Pinned to the 2.0 series because BiG-SCAPE 2.0.3 does NOT work with 2.1. Its bioconda recipe asks only for sqlalchemy >= 2.0.2, so a fresh solve installs 2.1.3, and BiG-SCAPE then raises ObjectNotExecutableError before it reads a single input file: it passes a compiled statement object to Connection.execute, which 2.0 tolerated and 2.1 rejects. The image has to carry an upper bound the upstream recipe does not. Installing is not the same as working, and only running the tool found the difference."
+    "requests": "2.34.2. Named explicitly on 2026-10-26 because the staged prefix did not have it. matchms 0.30.2 declares `requests >= 2.31.0` and imports it at import time, and the prefix assembled over the earlier solves carried matchms without it, so `import matchms` worked only because the surrounding container had requests in root's user site for an unrelated tool. A fresh `create` of the same specs links the whole chain -- measured -- so this is the staged prefix's gap and not the Dockerfile's. `registry --verify` now checks every library pin's declared run dependencies against the prefix, and both the version probe and the measured invocation run with `-s` so no import can be satisfied off the host again.",
+    "sqlalchemy": "Pinned to the 2.0 series because BiG-SCAPE 2.0.3 does NOT work with 2.1. Its bioconda recipe asks only for sqlalchemy >= 2.0.2, so a fresh solve installs 2.1.3, and BiG-SCAPE then raises ObjectNotExecutableError before it reads a single input file: it passes a compiled statement object to Connection.execute, which 2.0 tolerated and 2.1 rejects. The image has to carry an upper bound the upstream recipe does not. Installing is not the same as working, and only running the tool found the difference.",
+    "urllib3": "`requests`'s own closure, linked with it. Named explicitly on 2026-10-26 because the staged prefix did not have it. matchms 0.30.2 declares `requests >= 2.31.0` and imports it at import time, and the prefix assembled over the earlier solves carried matchms without it, so `import matchms` worked only because the surrounding container had requests in root's user site for an unrelated tool. A fresh `create` of the same specs links the whole chain -- measured -- so this is the staged prefix's gap and not the Dockerfile's. `registry --verify` now checks every library pin's declared run dependencies against the prefix, and both the version probe and the measured invocation run with `-s` so no import can be satisfied off the host again."
   },
-  "resolved_on": "2026-10-21",
+  "resolved_on": "2026-10-26",
   "solver": "micromamba 2.9.0"
 }

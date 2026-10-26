@@ -26,6 +26,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import json
 import pathlib
 import re
 import shutil
@@ -210,7 +211,19 @@ class Tool:
             return None
         try:
             result = subprocess.run(
-                [interpreter, "-c",
+                # `-s` is the whole of this check's honesty. Without it the
+                # import also searches the SURROUNDING container's user site
+                # (~/.local/lib/python3.11/site-packages), so a dependency the
+                # prefix is missing can be supplied by whatever else happens to
+                # be installed on the host. Measured: matchms 0.30.2 declares
+                # `requests` and the prefix did not carry it, and this probe
+                # reported 0.30.2 anyway because the session image had requests
+                # in root's user site for an unrelated tool. A pin that only
+                # imports next to the right host is not a pin.
+                #
+                # `-s` rather than `-I`: the image sets PYTHONHASHSEED=0 on
+                # purpose, and `-I` implies `-E`, which would drop it.
+                [interpreter, "-s", "-c",
                  f"import {self.module} as m; print(m.__version__)"],
                 capture_output=True, text=True, timeout=120)
         except (OSError, subprocess.TimeoutExpired):
@@ -633,7 +646,10 @@ MATCHMS = Tool(
             # artifact is each query's top match at full float precision -- a
             # rounded score would hide the bit-level difference this suite exists
             # to catch.
-            argv=("{bin}/python3.11", "{fixtures}/matchms_cosine.py",
+            # `-s` for the same reason the version probe carries it: with the
+            # host's user site on sys.path, this measures a closure the prefix
+            # may not have. The digest is unchanged by it.
+            argv=("{bin}/python3.11", "-s", "{fixtures}/matchms_cosine.py",
                   "--fixture", "{fixtures}/ms2_massbank.json.gz",
                   "--tolerance", "0.01", "--out", "{work}/scores.tsv"),
             artifact="scores.tsv",
@@ -689,6 +705,47 @@ def banned_present(prefix: str | None = None) -> list[str]:
     return found
 
 
+def dependency_gaps(prefix: str | None = None) -> dict[str, list[str]]:
+    """Per LIBRARY pin, the run dependencies its own package declares and the
+    prefix does not carry.
+
+    Only a library pin needs this, and the reason is what it caught. A binary
+    either runs or it does not, and `--verify` runs every one of them. A library
+    is IMPORTED, and an import resolves against every path on `sys.path` --
+    including the surrounding container's user site. So a prefix missing one of
+    matchms's declared dependencies still answered the version probe above:
+    `requests` was absent from the prefix and present in the session image's
+    `~/.local` for an unrelated tool, and `--verify` reported 9/9. With the user
+    site excluded the same import raised ModuleNotFoundError.
+
+    A pin that only imports next to the right host is not a pin, so the probe now
+    runs with `-s` and this check reads the package's own `depends` list rather
+    than trusting that an import which worked here will work anywhere.
+    """
+    root = pathlib.Path(prefix or f"{resources.tool_prefix()}")
+    meta = (root if (root / "conda-meta").is_dir() else root.parent) / "conda-meta"
+    if not meta.is_dir():
+        return {}
+    records = {}
+    for path in sorted(meta.glob("*.json")):
+        try:
+            record = json.loads(path.read_text())
+        except (OSError, json.JSONDecodeError):
+            continue
+        if record.get("name"):
+            records[record["name"]] = record
+    gaps = {}
+    for tool in TOOLS:
+        if not tool.is_library or tool.name not in records:
+            continue
+        missing = sorted(
+            spec for spec in records[tool.name].get("depends", [])
+            if re.split(r"[\s<>=!]", spec, maxsplit=1)[0] not in records)
+        if missing:
+            gaps[tool.name] = missing
+    return gaps
+
+
 def fingerprint(tool: Tool, package_root: str | None = None) -> str | None:
     """Hash the files that pin the tool's behaviour beyond its version string."""
     if tool.fingerprint is None or package_root is None:
@@ -733,11 +790,17 @@ def main(argv: list[str] | None = None) -> int:
     print(f"[{' FAIL ' if banned else '  ok  '}] banned binaries   "
           + (f"present: {banned}" if banned else
              f"absent: {sorted(BANNED_BINARIES)}"))
+
+    gaps = dependency_gaps(args.prefix)
+    libraries = [tool.name for tool in TOOLS if tool.is_library]
+    print(f"[{' FAIL ' if gaps else '  ok  '}] library closure  "
+          + (f"declared dependencies missing from the prefix: {gaps}" if gaps
+             else f"every run dependency of {libraries} is in the prefix"))
     for name, reason in sorted(NOT_IN_IMAGE.items()):
         print(f"[ n/a  ] {name:<{width}}  {reason.split('.')[0]}.")
     if not args.verify:
         return 0
-    return 0 if not bad and not banned else 1
+    return 0 if not bad and not banned and not gaps else 1
 
 
 if __name__ == "__main__":

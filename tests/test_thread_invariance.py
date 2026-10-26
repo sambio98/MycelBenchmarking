@@ -34,6 +34,7 @@ from npbench_c.tools.invariance import (
 from npbench_c.tools.registry import (
     BANNED_BINARIES,
     MATCHMS,
+    dependency_gaps,
     NOT_IN_IMAGE,
     PENDING_TOOLS,
     REPEATS,
@@ -237,6 +238,63 @@ def test_a_library_pin_is_invoked_rather_than_imported():
     grading = (ROOT / "src" / "npbench_c" / "grading").rglob("*.py")
     for path in grading:
         assert "matchms" not in path.read_text(), path
+
+
+def test_the_library_probe_excludes_the_host_s_user_site():
+    """The defect this caught, and the reason the flag is in the argv.
+
+    The prefix carried matchms without `requests`, which matchms declares and
+    imports at import time. The probe reported 0.30.2 regardless, because the
+    import also searched the surrounding container's user site, where an
+    unrelated tool had installed requests. A pin that only imports next to the
+    right host is not a pin.
+
+    `-s` rather than `-I`: the image sets PYTHONHASHSEED=0 deliberately and `-I`
+    implies `-E`, which would drop it.
+    """
+    source = (ROOT / "src" / "npbench_c" / "tools" / "registry.py").read_text()
+    assert '[interpreter, "-s", "-c",' in source
+    assert '"{bin}/python3.11", "-s", "{fixtures}/matchms_cosine.py"' in source
+    # And the campaign that drives the library reaches it the same way.
+    core = (ROOT / "src" / "npbench_c" / "templates" / "ms2_dereplication"
+            / "core.py").read_text()
+    assert core.count('"-s"') == 2, "the version query and the driver call"
+
+
+def test_a_library_pin_s_declared_dependencies_are_in_the_prefix(tmp_path):
+    """What `--verify` could not see before: an import succeeding off the host.
+
+    The synthetic prefix below is the shape of the defect -- a library package
+    declaring a dependency the prefix does not carry -- and the live check runs
+    against the real prefix when it is present.
+    """
+    meta = tmp_path / "conda-meta"
+    meta.mkdir()
+    (meta / f"{MATCHMS.name}-{MATCHMS.pinned_version}-x_0.json").write_text(
+        json.dumps({"name": MATCHMS.name, "version": MATCHMS.pinned_version,
+                    "depends": ["numpy >=2.0.0", "requests >=2.31.0"]}))
+    (meta / "numpy-2.2.5-x_0.json").write_text(
+        json.dumps({"name": "numpy", "version": "2.2.5", "depends": []}))
+    assert dependency_gaps(str(tmp_path)) == {MATCHMS.name: ["requests >=2.31.0"]}
+
+    (meta / "requests-2.34.2-x_0.json").write_text(
+        json.dumps({"name": "requests", "version": "2.34.2", "depends": []}))
+    assert dependency_gaps(str(tmp_path)) == {}
+
+
+def test_the_live_prefix_has_no_library_dependency_gap():
+    if MATCHMS.installed_version() is None:
+        pytest.skip("the tool prefix is not present in this container")
+    assert dependency_gaps() == {}
+
+
+def test_the_lock_carries_the_library_pin_s_whole_closure():
+    """The lock is generated from the prefix, so an incomplete prefix produced an
+    incomplete lock: 226 packages that could not import their own library pin."""
+    lock = json.loads(LOCK.read_text())
+    names = {p["name"] for p in lock["packages"]}
+    for name in ("requests", "urllib3", "certifi", "idna", "charset-normalizer"):
+        assert name in names, name
 
 
 def test_the_library_probe_reads_a_version_the_same_way_a_binary_does():

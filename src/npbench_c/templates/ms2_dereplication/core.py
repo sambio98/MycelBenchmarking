@@ -182,7 +182,7 @@ class Corpus:
 
     def matchms_version(self) -> str:
         """The library's own version string, via the interpreter that has it."""
-        command = [str(tool_prefix() / INTERPRETER), "-c",
+        command = [str(tool_prefix() / INTERPRETER), "-s", "-c",
                    "import matchms; print(matchms.__version__)"]
 
         def query() -> str:
@@ -219,7 +219,13 @@ class Corpus:
                 work = pathlib.Path(tmp)
                 (work / "job.json").write_text(body)
                 done = subprocess.run(
-                    [str(tool_prefix() / INTERPRETER), str(CONSTANTS / DRIVER),
+                    # `-s` keeps the surrounding container's user site out of
+                    # the import path, so the scores come from the pinned prefix
+                    # or not at all. The prefix was missing matchms's own
+                    # `requests` dependency when this campaign was built and the
+                    # import succeeded anyway, off the host's user site.
+                    [str(tool_prefix() / INTERPRETER), "-s",
+                     str(CONSTANTS / DRIVER),
                      str(work / "job.json"), str(work / "out.json")],
                     capture_output=True, text=True, timeout=3600)
                 if done.returncode != 0:

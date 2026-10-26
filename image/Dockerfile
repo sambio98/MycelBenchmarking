@@ -22,6 +22,16 @@
 # matchms is requested below and is this image's first LIBRARY pin rather than a
 # binary. That distinction is load-bearing: see the comment on the create step.
 #
+# It is also where the staged build bit. The prefix assembled in stages carried
+# matchms WITHOUT `requests`, which matchms declares and imports at import time,
+# and `registry --verify` reported it present anyway because the version probe
+# ran an import that could also see the surrounding container's user site, where
+# an unrelated tool had requests installed. A fresh `create` of the same spec
+# links the whole chain -- measured -- so the single create below is the complete
+# path and the staged prefix was the incomplete one. The probe now runs with
+# `-s`, and `--verify` checks every library pin's declared run dependencies
+# against the prefix, so neither form of this can pass again.
+#
 # STATUS: this file has not been built end to end. The build host available while
 # it was written had the Docker CLI but no daemon. What HAS been run is every step
 # it performs, directly: the micromamba download and the tar form below, the
