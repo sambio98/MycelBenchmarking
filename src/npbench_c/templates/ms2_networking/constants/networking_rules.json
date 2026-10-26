@@ -1,0 +1,36 @@
+{
+  "_what_this_is": "The pinned rules an MS2 molecular-networking campaign grades against. Every number here is part of gold's definition rather than a parameter of the comparison, and each was chosen before the ladder was written -- see the T-L4-2 grounding section in docs/npbench-c.md for what was measured and what the measurements retired.",
+  "network": {
+    "tool": "matchms",
+    "tool_version": "0.30.2",
+    "similarity": "CosineGreedy",
+    "peak_tolerance": 0.01,
+    "peak_tolerance_note": "In Da, and the same value the dereplication template pins, for the same measured reason: the aggregate barely moves across the plausible range while individual answers do.",
+    "edge_score_threshold": 0.7,
+    "edge_min_matched_peaks": 6,
+    "edge_rule_note": "An edge joins two node spectra whose cosine is at least the threshold AND which share at least this many matched peaks. Both halves are the classical molecular-networking convention; the peak floor is what stops a two-peak coincidence from becoming an edge. No top-K neighbour cap and no component-size cap are declared, and that is a measurement rather than an omission: on this node set the threshold alone leaves no component large enough to need one. A denser node set needs both, and would be a different instantiation rather than a change here.",
+    "threshold_grid": [0.6, 0.7, 0.8, 0.9],
+    "threshold_grid_note": "R4's axis. The edge rule is a cut through a continuous similarity, so the campaign grades the whole cut rather than one value: every structural number moves monotonically across this grid.",
+    "edge_scores_are_not_graded": "The pairs are graded and the scores are not. A cosine is a float out of a BLAS-backed library -- byte-identical under this image's pinned numpy and scipy, and moved in the third decimal when those versions changed -- so the pair set is the robust claim. Measured on this node set: no pair score sits within 1e-4 of any declared threshold except one, 5.6e-05 below 0.9, which is still three orders of magnitude above the float noise."
+  },
+  "annotation": {
+    "precursor_window": 0.01,
+    "precursor_window_note": "A library spectrum is a candidate for a node when its precursor m/z is within this window, in Da, of the node's. The same filter the dereplication template declares.",
+    "ranking_rule": "Candidates are ordered by score descending, then matched-peak count descending, then accession ascending. The third key is not cosmetic: equal scores occur and a rule that stopped at two keys would make the answer depend on the order matchms happened to return.",
+    "confidence": {
+      "rule": [[0.8, 6, "confirmed"], [0.5, 3, "tentative"]],
+      "fallback": "unsupported",
+      "vocabulary": ["confirmed", "tentative", "unsupported", "no_candidate", "no_match"],
+      "note": "A declared mechanical class: the first row whose score floor AND matched-peak floor the top match meets. MassBank's own CONFIDENCE field cannot do this job -- fewer than a hundred of the release's records carry it."
+    },
+    "accepted": ["confirmed", "tentative"],
+    "accepted_note": "Only an accepted annotation seeds the network. The tier below it exists so that R4 can drop one tier and ask what the network's annotation coverage then looks like."
+  },
+  "propagation": {
+    "vocabulary": ["annotated_directly", "no_annotated_neighbour", "same_compound", "analogue_with_mass_shift", "conflicting_neighbours"],
+    "rule": "A node with an accepted annotation of its own is `annotated_directly`. Otherwise look at its neighbours that carry one: none, and it is `no_annotated_neighbour`; two or more naming different compounds, and it is `conflicting_neighbours`; all naming the same compound, and the claim is `same_compound` when the precursor difference to the best-scoring such neighbour is within the annotation window and `analogue_with_mass_shift` otherwise.",
+    "note": "This is what a network is for and where it is dangerous. The `analogue_with_mass_shift` claim says the node is a relative of the named compound and reports the signed shift; the `same_compound` claim says it IS that compound. The grounding measured both against the truth and the asymmetry is the campaign's finding -- see docs. Neither claim is graded against the truth: a system cannot read it, and what is graded is the claim the declared rule makes.",
+    "mass_shift_precision": 4,
+    "mass_shift_note": "A shift is a difference of two shipped precursor values, so it is exact arithmetic over the inputs rather than tool output, and it is reported at the precision the records carry."
+  }
+}

@@ -57,6 +57,7 @@ TEST_FILES = {
     "gene_calling": "test_campaign_genecall.py",
     "kinetics_consistency": "test_campaign_kinetics.py",
     "ms2_dereplication": "test_campaign_derep.py",
+    "ms2_networking": "test_campaign_network.py",
     "remote_homology": "test_campaign_homology.py",
     "ripp_precursor": "test_campaign_ripp.py",
 }

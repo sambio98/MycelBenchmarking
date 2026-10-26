@@ -54,6 +54,15 @@ scope_note: >
 
   Four things are load-bearing.
 
+  A QUERY CARRIES NO IDENTITY. The shipped query records hold what an
+  experimental spectrum holds -- accession, contributor, instrument, precursor,
+  peaks -- and nothing that names the compound, because the compound a query is
+  is the answer. That is a rule the grading core enforces rather than a
+  convention: it refuses a query record carrying a compound block, an InChIKey or
+  a formula. The first cut of this campaign shipped all three while this file
+  said the queries were unannotated, which is why no rung asks which of your
+  retrievals are correct -- that question needs the answer to be in the sandbox.
+
   THE SPLIT IS THE CONSTRUCT. A query's compound appears in the library only
   through other contributors' spectra. That was a docstring before it was a rule,
   and the audit that checked it found a tenth of the correct answers coming from
@@ -133,13 +142,6 @@ output_contract:
     top_matches: >
       Per graded query, the library accession your pipeline ranks first, or null
       where there is nothing to rank.
-    correct_queries: >
-      The queries whose top match is a spectrum of the query's own compound,
-      compared at the declared compound key.
-    misannotated_queries: >
-      The annotated queries whose top match is some other compound. Reported for
-      the record and NOT graded: it is the complement of the set above inside the
-      annotated set, so grading it adds a component and no claim.
     confidence_by_query / confidence_census: >
       The declared confidence class of every query, and the count per class. The
       rule is a pair of floors -- a score AND a matched-peak count -- and the
@@ -159,8 +161,10 @@ output_contract:
       own entry is the identity control and must be empty.
     adduct_misassignment_census: >
       With every query's precursor re-read as the misread adduct: how many
-      queries lose their candidate window, how many keep one and annotate the
-      wrong compound, and how many still annotate the right one.
+      queries lose their candidate window, how many keep one and name a
+      DIFFERENT compound than they named before, and how many name the same one.
+      The comparison is against your own unshifted answer, not against the truth:
+      the compound a query is, is the answer, and it is not in the sandbox.
 
 constraints:
   reference_dir: reference
@@ -249,11 +253,17 @@ excluded_from_grading:
       component for them would measure a copy out of the sandbox rather than any
       work. Reported so a run records what it parsed; the filter applied to those
       files is what R1 grades.
-  - field: misannotated_queries
+  - field: which retrievals are correct, and which are misannotations
     reason: >
-      The arithmetic complement of correct_queries inside the annotated set, both
-      of which are graded or reported already. A component for it would add a
-      multiplication to the rung and no claim.
+      Not graded and not reported, because answering it requires the compound
+      each query is -- which is the answer. The first cut of this campaign graded
+      a `correct_queries` set and shipped every query's compound block, InChIKey
+      and formula to make it answerable, while its own provenance said the
+      queries carried no annotation. The identities now live in
+      gold/queries_truth.json, which no sandbox copies and no release ships, the
+      grading core refuses a query record that carries one, and gold keeps both
+      sets for the audit. What is graded instead is what the search answered:
+      the per-query top match and the retrieval census.
   - field: similarity, peak_tolerance, precursor_window
     reason: >
       Echoes of reference/dereplication_rules.json read back. Graded only inside
@@ -305,6 +315,15 @@ notes_for_audit:
     the queries that have a competitor at all, which is a smaller population than
     the graded queries and a larger one than the ambiguous set. A median over the
     wrong denominator is the mistake to look for.
+  - >
+    Then the adduct census's vocabulary, which is deliberately about the
+    pipeline's own answer rather than about the truth. `unchanged` means the
+    shifted search names the same compound as the unshifted one, not that it
+    names the right one. Gold also records the same perturbation measured against
+    the truth, under `adduct_against_the_truth`, which no component reads: it is
+    there because the campaign's prose rests on it -- a misassigned adduct makes
+    the search silent rather than wrong -- and a claim in prose should have a
+    number an auditor can find.
   - >
     The perturbed searches are not shipped and must not be. Both follow from the
     declared rules -- the grid from the rules table and the adduct from the two

@@ -129,12 +129,26 @@ def _read_gz(path: pathlib.Path) -> list[dict]:
         return json.load(handle)
 
 
+#: Fields that name the compound a spectrum is. A LIBRARY record carries them;
+#: a QUERY record may not, because that is the answer.
+IDENTITY_FIELDS = ("compound_block", "inchikey", "formula", "smiles",
+                   "compound_name")
+
+#: The queries' own identities, outside every sandbox. Read by the build and the
+#: oracle, absent when a system or a stub loads the same campaign.
+TRUTH = "gold/queries_truth.json"
+
+
 @dataclass(frozen=True)
 class Corpus:
     queries: tuple[dict, ...]
     library: tuple[dict, ...]
     rules: Rules
     campaign: pathlib.Path
+    #: accession -> compound block, or None where the truth is not readable.
+    #: Present on the gold side and absent in a sandbox, which is what makes
+    #: `correct` a gold-side column rather than a graded one.
+    truth: Mapping[str, str] | None = None
 
     @classmethod
     def load(cls, campaign: pathlib.Path, queries_input: str,
@@ -146,6 +160,29 @@ class Corpus:
             raise DereplicationError(
                 f"{queries_input} holds {len(queries)} queries and "
                 f"{library_input} holds {len(library)} spectra; both are needed")
+        # The query records may not name their own compound. Checked rather than
+        # declared: the first cut of this campaign shipped `compound_block`,
+        # `inchikey` and `formula` on every query while its provenance said it
+        # shipped no annotation of them.
+        leaked = sorted({field for row in queries for field in IDENTITY_FIELDS
+                         if field in row})
+        if leaked:
+            raise DereplicationError(
+                f"the query records carry {leaked}, which name the compound each "
+                "query is -- the answer. A query carries what an experimental "
+                "spectrum carries; the identities belong in " + TRUTH)
+
+        truth = None
+        truth_path = campaign / TRUTH
+        if truth_path.is_file():
+            truth = json.loads(truth_path.read_text())
+            missing = sorted(row["accession"] for row in queries
+                             if row["accession"] not in truth)
+            if missing:
+                raise DereplicationError(
+                    f"{len(missing)} queries have no entry in {TRUTH} "
+                    f"({missing[:3]}), so their answer is undefined")
+
         accessions = {row["accession"] for row in library}
         overlap = sorted(row["accession"] for row in queries
                          if row["accession"] in accessions)
@@ -157,8 +194,12 @@ class Corpus:
         by_block: dict[str, list[dict]] = {}
         for row in library:
             by_block.setdefault(row["compound_block"], []).append(row)
-        for row in queries:
-            own = by_block.get(row["compound_block"], [])
+        # Both refusals below need to know what each query IS, so they run where
+        # the truth is readable -- the build and the oracle -- and not in a
+        # sandbox, which is exactly where they are not needed: a system cannot
+        # reintroduce a split defect it cannot see.
+        for row in queries if truth else ():
+            own = by_block.get(truth[row["accession"]], [])
             if not own:
                 raise DereplicationError(
                     f"{row['accession']}'s compound is not in the library, so "
@@ -176,7 +217,7 @@ class Corpus:
                     "measurement")
         return cls(queries=tuple(sorted(queries, key=lambda r: r["accession"])),
                    library=tuple(sorted(library, key=lambda r: r["accession"])),
-                   rules=Rules.load(campaign), campaign=campaign)
+                   rules=Rules.load(campaign), campaign=campaign, truth=truth)
 
     # ------------------------------------------------------------- tool calls
 
@@ -289,10 +330,15 @@ class Corpus:
                 record.update({
                     "verdict": "no_candidate" if not record["candidates"]
                                else "no_match",
-                    "top_match": None, "score": None, "matched_peaks": None,
+                    "top_match": None, "top_block": None, "score": None,
+                    "matched_peaks": None,
                     "confidence": "no_candidate" if not record["candidates"]
                                   else "no_match",
-                    "correct": False, "margin_to_other_compound": None})
+                    # False where the truth is readable, None where it is not:
+                    # a sandbox cannot tell whether an annotation is right, and
+                    # nothing it is graded on asks it to.
+                    "correct": None if self.truth is None else False,
+                    "margin_to_other_compound": None})
                 out.append(record)
                 continue
             name, score, matches = rows[0]
@@ -306,7 +352,8 @@ class Corpus:
                 "score": round(score, PRECISION),
                 "matched_peaks": matches,
                 "confidence": self.rules.classify(score, matches),
-                "correct": block == query["compound_block"],
+                "correct": (None if self.truth is None
+                            else block == self.truth[query["accession"]]),
                 "margin_to_other_compound": (None if competitor is None
                                              else round(score - competitor[1],
                                                         PRECISION)),

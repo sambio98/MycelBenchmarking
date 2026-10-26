@@ -84,8 +84,7 @@ def main() -> int:
     if args.level == "noncompute":
         return write({
             "environment": {}, "corpus_census": {}, "candidate_census": {},
-            "retrieval_census": {}, "top_matches": {}, "correct_queries": [],
-            "misannotated_queries": [], "confidence_by_query": {},
+            "retrieval_census": {}, "top_matches": {}, "confidence_by_query": {},
             "confidence_census": {}, "margin_summary": {},
             "ambiguous_queries": [], "tolerance_movement": {},
             "adduct_misassignment_census": {},
@@ -128,7 +127,7 @@ def main() -> int:
 
     # R4.
     report["tolerance_movement"] = derep.tolerance_movement(corpus, rows)
-    report["adduct_misassignment_census"] = derep.adduct_census(corpus)
+    report["adduct_misassignment_census"] = derep.adduct_census(corpus, rows)
     return write(report)
 
 

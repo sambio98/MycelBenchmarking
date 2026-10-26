@@ -40,6 +40,14 @@ the compound to span two instrument types, which contributor exclusion does not
 guarantee per query, so provenance reports the instrument support as a census
 rather than the campaign asserting it.
 
+**A query carries no identity.** The shipped query records hold what an
+experimental spectrum holds -- accession, contributor, instrument, precursor and
+peaks -- and nothing that names the compound. The identities go to
+`gold/queries_truth.json`, which no sandbox can reach, because the compound a
+query is, is the answer. The first cut shipped `compound_block`, `inchikey` and
+`formula` on every query while this file's own provenance said it did not, and
+`Corpus.load` now refuses a query record that carries any of them.
+
 **The release is named by its TAG.** MassBank's dev branch carries a VERSION
 string that reads like a release (`2026.03.1-SNAPSHOT`), and an earlier pass
 recorded it as one -- a corpus no clone can reproduce, because dev moves. This
@@ -59,6 +67,21 @@ import re
 QUERIES = "queries.json.gz"
 LIBRARY = "library.json.gz"
 PROVENANCE = "provenance.json"
+#: Where the queries' own identities go. Inside `gold/`, which is a secret
+#: campaign path: the sandbox builder copies only `inputs/`, `reference/` and
+#: `task.yaml`, and the release packager withholds `gold/` outright.
+TRUTH = "queries_truth.json"
+
+#: What a shipped QUERY record carries: what an experimental spectrum carries.
+#: Not its compound, not its InChIKey, not its formula -- the compound a query
+#: is, is the answer, and a formula names it almost uniquely inside a precursor
+#: window. The first cut of this campaign shipped all three while its own
+#: provenance said "No annotation of the queries"; see docs.
+QUERY_FIELDS = ("accession", "contributor", "instrument_type", "precursor_mz",
+                "precursor_type", "peaks")
+#: What a LIBRARY record carries: the same, plus the identity. A reference
+#: library without identities is not a reference library.
+LIBRARY_FIELDS = QUERY_FIELDS + ("compound_block", "formula")
 
 #: Matched on the FULL tag, never as a substring: `ION_MODE` inside
 #: `FRAGMENTATION_MODE` reported CID and HCD as ion modes the first time this
@@ -237,6 +260,11 @@ def split(eligible: dict[str, list[dict]], queries: int) -> tuple[list[dict], li
     return graded, library
 
 
+def project(rows: list[dict], fields: tuple[str, ...]) -> list[dict]:
+    """A record cut down to the fields its side of the split may carry."""
+    return [{field: row[field] for field in fields} for row in rows]
+
+
 def write_gz(path: pathlib.Path, payload: object) -> str:
     body = (json.dumps(payload, indent=1, sort_keys=True) + "\n").encode()
     with gzip.GzipFile(path, "wb", compresslevel=9, mtime=0) as handle:
@@ -264,8 +292,13 @@ def main(argv: list[str] | None = None) -> int:
             f"asked for {args.queries} graded queries and the rule yields "
             f"{len(queries)}")
 
-    query_digest = write_gz(inputs / QUERIES, queries)
-    library_digest = write_gz(inputs / LIBRARY, library)
+    truth = {row["accession"]: row["compound_block"] for row in queries}
+    gold = campaign / "gold"
+    gold.mkdir(parents=True, exist_ok=True)
+    (gold / TRUTH).write_text(json.dumps(truth, indent=1, sort_keys=True) + "\n")
+
+    query_digest = write_gz(inputs / QUERIES, project(queries, QUERY_FIELDS))
+    library_digest = write_gz(inputs / LIBRARY, project(library, LIBRARY_FIELDS))
 
     (inputs / PROVENANCE).write_text(json.dumps({
         "source": f"MassBank-data, release tag {release}, cloned shallow from "
@@ -313,14 +346,21 @@ def main(argv: list[str] | None = None) -> int:
         "peaks": "sorted by m/z, m/z rounded to 6 decimals, intensity to 4",
         "what_is_not_shipped": (
             "No annotation of the queries: the compound each query IS is the "
-            "answer. The library carries its own compound blocks, because a "
-            "reference library without identities is not a reference library."),
+            "answer. A query record carries what an experimental spectrum "
+            f"carries -- {', '.join(QUERY_FIELDS)} -- and no compound block, "
+            "InChIKey or formula; a formula would name the compound almost "
+            "uniquely inside a precursor window. The identities are written to "
+            f"gold/{TRUTH}, which no sandbox copies and no release ships, and "
+            "the grading core refuses a query record that carries one. The "
+            "library does carry compound blocks, because a reference library "
+            "without identities is not a reference library."),
     }, indent=2, sort_keys=True) + "\n")
 
     print(f"  release {release}")
     print(f"  {census['records']} records -> {census['usable']} usable -> "
           f"{census['eligible_compounds']} eligible compounds")
     print(f"  {len(queries)} graded queries, {len(library)} library spectra")
+    print(f"  identities withheld to gold/{TRUTH} ({len(truth)} entries)")
     print(f"  {QUERIES} {query_digest[:16]}  {LIBRARY} {library_digest[:16]}")
     return 0
 

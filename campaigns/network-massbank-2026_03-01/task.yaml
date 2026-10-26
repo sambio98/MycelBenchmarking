@@ -1,0 +1,307 @@
+campaign_id: network-massbank-2026_03-01
+template_id: ms2-networking
+track: EX
+family: spectral_networking
+layer: L4_molecule_and_structure
+np_class: mixed
+version: 1.0.0
+horizon_tier: T-short
+license_class: open
+grader_version: "2.0.0+9fc95658"
+grading_spec_version: "1.0.0"
+min_tool_surface: S1
+tool_surface_note: >
+  Needs one spectral-similarity library and nothing else. R1 reports the graph
+  itself -- which pairs of the shipped spectra clear the declared threshold -- so
+  the no-tool ablation fails the first rung, and every rung above it is a
+  projection of the same two similarity calls.
+
+license_notice:
+  source: MassBank-data, release tag 2026.03
+  license: CC BY 4.0
+  attribution: >
+    MassBank consortium, MassBank-data release 2026.03
+    (https://github.com/MassBank/MassBank-data), licensed CC BY 4.0.
+  redistribution: >
+    inputs/ carries spectra from the release unchanged apart from the declared
+    reshaping: peaks sorted by m/z, m/z rounded to six decimals and intensity to
+    four, and the fields each side of the split may carry. CC BY 4.0 requires
+    attribution and nothing further. The two selection rules, the census they
+    produced and the per-file digests are in inputs/provenance.json.
+
+objective: >
+  A molecular network is how an untargeted MS2 experiment is read when most of
+  its spectra are unidentified: nodes are spectra, an edge joins two that
+  fragment alike, and the few nodes a reference library can name are expected to
+  say something about their neighbours. The expectation is the interesting part,
+  and it is where the practice goes wrong.
+
+  Build the declared network over the shipped node spectra -- one laboratory, one
+  instrument -- and report it: the edges, the components, the degree. Then
+  annotate what you can from the shipped reference library, which holds only
+  other laboratories' spectra, under the declared precursor window and the
+  declared confidence rule. Then, for every node the library could not name,
+  report what the network claims about it from a closed vocabulary: nothing, a
+  compound inherited from a neighbour at the same precursor, an analogue of a
+  neighbour's compound with a signed mass shift, or neighbours that disagree.
+  Finally, re-cut the network across the declared threshold grid and drop the
+  lower confidence tier, and report what moves.
+
+method_guidance: partial
+
+scope_note: >
+  Gold is the declared projection of a pinned library's own output over two
+  shipped files, plus exact arithmetic over it. Tier G1.
+
+  Five things are load-bearing.
+
+  THE NODE SET IS ONE LABORATORY ON ONE INSTRUMENT, which is what an experiment
+  is. Fragmentation behaviour differs between instrument types, so an edge across
+  two of them is not the similarity this campaign declares; the grading core
+  refuses a node set that spans either.
+
+  A NODE CARRIES NO IDENTITY. The node records hold what an experimental spectrum
+  holds -- accession, contributor, instrument, precursor, peaks -- and nothing
+  that names the compound, because the compound a node is, is the answer. The
+  grading core refuses a node record carrying a compound block, an InChIKey or a
+  formula. Nothing in the ladder asks whether an annotation is RIGHT: that needs
+  the answer to be in the sandbox. What the ladder asks is what the declared
+  pipeline claims.
+
+  THE EDGE PAIRS ARE GRADED AND THE EDGE SCORES ARE NOT. A cosine is a float out
+  of a BLAS-backed library; the pair set is a comparison against a declared
+  threshold. Measured on this node set, no pair score sits within a ten-thousandth
+  of any declared threshold except one, which sits 5.6e-05 below the highest --
+  three orders of magnitude above the float noise this image's pinned numpy and
+  scipy produce.
+
+  PROPAGATION IS A CLAIM ABOUT THE EVIDENCE, NOT ABOUT THE TRUTH. The declared
+  rule distinguishes the two cases the practice conflates: a neighbour at the
+  same precursor supports a same-compound claim, and a neighbour at a different
+  precursor supports an analogue claim with a signed mass shift. The grounding
+  measured both against the nodes' real identities, and the asymmetry it found is
+  the campaign's subject -- see the T-L4-2 section of the project notes. Gold
+  records those truth-side numbers and no component reads them.
+
+  THE LIBRARY IS FILTERED TO THE DECLARED WINDOW, and that is a size decision
+  rather than a design one. A library spectrum outside every node's precursor
+  window cannot be a candidate for any node, by the definition of the filter, so
+  shipping the whole cross-contributor corpus would add megabytes and change no
+  answer. The filter is a declared function of the shipped nodes and the declared
+  window, and the unfiltered census is in inputs/provenance.json.
+
+catalog_deviation: >
+  The catalogued ladder was: R1 a network edge table · R2 matches gold · R3 which
+  annotation is unsupported and why, from a closed confound vocabulary · R4 the
+  planted annotation is removed, predict the network change. R1 and R2 are built
+  as catalogued. The other two did not survive the grounding, and each was
+  measured before it was replaced.
+
+  R3's confound claim is retired. Mechanical support clauses over this corpus
+  either flag almost every annotation -- making "unsupported" mean nothing -- or
+  rest on an inference the data refuses. The sound-looking one is that two
+  near-identical spectra at the same precursor must be the same compound; of the
+  four such disagreeing pairs on this node set, two are genuinely different
+  compounds that fragment alike. So the campaign does not ask which annotation is
+  unsupported. It asks what the network CLAIMS about the nodes the library could
+  not name, which is mechanical, defined for every node, and the thing that
+  actually propagates a wrong identity.
+
+  R4's planted annotation is retired twice over. Nothing in this benchmark ships
+  a planted artefact -- a census over the whole suite found no campaign that does
+  -- and removing an annotation cannot change the network: the graph is built
+  from spectra, so an annotation's removal moves the annotation layer and nothing
+  else. The counterfactual is therefore two declared re-cuts: the threshold grid,
+  which moves every structural number monotonically, and the removal of a whole
+  confidence tier, which is where the "network change" the catalogue asked for
+  actually shows up -- in which components go dark and which claims change.
+
+template_params:
+  nodes_input: inputs/nodes.json.gz
+  library_input: inputs/library.json.gz
+  contributor: AAFC
+  instrument: LC-ESI-ITFT
+
+output_contract:
+  network_report.json:
+    environment: >
+      What built the graph: the similarity library's own version string, the
+      similarity name, the peak tolerance, the edge score threshold and the
+      matched-peak floor. The last four are echoes of the pinned rules table; the
+      version is not, and the five are graded as one claim.
+    network_census: >
+      The graph in seven numbers: nodes, edges, components, singletons, the
+      largest component's size, how many nodes carry at least one edge, and the
+      highest degree.
+    edges: >
+      Every edge, as [node_a, node_b, cosine, matched_peaks] with the accessions
+      in ascending order. The PAIRS are graded; the score and the matched-peak
+      count are reported for the record and read by no component.
+    annotation_census: >
+      How the nodes came out against the library, counted per declared confidence
+      class, including the two silent states: a node whose precursor window holds
+      no library spectrum at all, and one whose candidates all scored zero.
+    top_matches: >
+      Per node, the library accession your pipeline ranks first, or null where
+      there is nothing to rank.
+    component_annotation_census: >
+      Components counted by how many DISTINCT compounds their accepted
+      annotations name: none, one, two, or three and above. The first bucket is
+      the dark part of the network and the last two are where the propagation
+      rule has a disagreement to resolve.
+    propagation_claims / propagation_census: >
+      The declared claim for every node and the count per claim. A node with an
+      accepted annotation of its own is `annotated_directly`; otherwise the claim
+      follows from its annotated neighbours, as the pinned rules state.
+    mass_shifts: >
+      For each node whose claim is `analogue_with_mass_shift`, the signed
+      precursor difference to the best-scoring annotated neighbour, at the
+      declared precision. Nodes with any other claim do not appear.
+    threshold_grid: >
+      Per declared threshold, the edge count, the component count, the largest
+      component and the claim census. The pinned threshold's own row is the
+      identity rung and restates the rungs above by construction.
+    dropped_tier: >
+      With only the top confidence tier seeding the network: which tier was
+      dropped, how many annotations that removes, the claim census that results,
+      and how many components lose every annotation they had.
+
+constraints:
+  reference_dir: reference
+  pinned_tables:
+    - reference/networking_rules.json   # similarity, edge rule, grid, annotation, propagation
+  external_resources: []
+  external_resources_note: >
+    None. The similarity library reads the spectra it is handed and no reference
+    database, so the version and the declared parameters are the whole of the
+    pin. The reference library this campaign annotates from is shipped in
+    inputs/.
+
+snapshots_required:
+  shipped: [massbank@2026.03]
+  fetched: []
+  image: [matchms@0.30.2]
+
+budgets:
+  wall_clock_minutes: 60
+  cpu: 2
+  memory_gb: 8
+  network: off
+  budget_note: >
+    Two similarity calls serve every rung. The pairwise matrix over the node set
+    is computed once at the lowest declared threshold -- every higher row of the
+    grid is a filter over it -- and the annotation layer is one call over the
+    per-node candidate windows. A run that recomputed the matrix per threshold
+    would do four times the work for the same answer.
+
+rungs:
+  - {rung_id: r1, ordinal: 1, name: execute,        gold_tier: G1, warm_start_bundle: null}
+  - {rung_id: r2, ordinal: 2, name: correct,        gold_tier: G1, warm_start_bundle: gold/warm/r2}
+  - {rung_id: r3, ordinal: 3, name: commit,         gold_tier: G1, warm_start_bundle: gold/warm/r3}
+  - {rung_id: r4, ordinal: 4, name: counterfactual, gold_tier: G1, warm_start_bundle: gold/warm/r4}
+
+# The campaign applies both perturbations itself -- the grid from the declared
+# thresholds and the tier drop from the declared confidence vocabulary -- so what
+# is perturbed is known by construction. The control is the pinned threshold's
+# own row in the grid, which must reproduce the network the rungs above report.
+
+harness:
+  gold_command: ["python3", "-m", "npbench_c.templates.ms2_networking.build", "{campaign}"]
+  solve_command: ["python3", "-m", "npbench_c.templates.ms2_networking.solve", "{campaign}", "{submission}"]
+  measure_command: ["python3", "-m", "npbench_c.templates.ms2_networking.measure", "{campaign}", "{submission}", "{measurement}"]
+  stub_module: npbench_c.sweep.stubs.stub_network
+  stub_args: []
+  stub_levels:
+    - {name: stub-reader,     level: reader, timeout_s: 3600}
+    - {name: stub-annotate,   level: annotate, reference: true, timeout_s: 3600}
+    - {name: stub-commit,     level: commit, timeout_s: 3600}
+    - {name: stub-complete,   level: complete, timeout_s: 7200}
+    - {name: stub-seedall,    level: seedall, timeout_s: 3600}
+    - {name: stub-propagate,  level: propagate, timeout_s: 3600}
+    - {name: stub-noncompute, level: noncompute, mode: no_tool, timeout_s: 600}
+
+grading:
+  chance_levels: {r1: 1.0, r2: 0.001, r3: 0.001, r4: 0.001}
+  chance_level_notes:
+    r1: >
+      Nominal rather than measured. The edge table cannot be guessed and the
+      similarity library's version is not in the sandbox, so the no-tool ablation
+      fails R1 outright; the level stays at 1.0 because any system that scores
+      the node set and applies the declared edge rule clears it, and the capped
+      floor is computed over R2 upward.
+
+excluded_from_grading:
+  - field: which annotation is unsupported, and why
+    reason: >
+      The catalogued R3, retired on measurement. A mechanical support clause over
+      this corpus either fires on almost every accepted annotation -- which makes
+      the label vacuous -- or rests on an inference the data refuses: that two
+      near-identical spectra at the same precursor must be the same compound. Of
+      the four disagreeing pairs of that kind on this node set, two are genuinely
+      different compounds. There is no clause set here that separates a
+      misannotation from a correct annotation, and a vocabulary that labels
+      almost everything is not a finding. What replaces it is what the network
+      claims about the nodes the library could not name.
+  - field: whether an annotation or a propagated claim is correct
+    reason: >
+      Not graded and not reported, because answering it requires the compound
+      each node is -- which is the answer. The identities live in
+      gold/nodes_truth.json, which no sandbox copies and no release ships, and
+      the grading core refuses a node record that carries one. Gold records both
+      truth-side censuses for the audit and no component reads them.
+  - field: the cosine score and matched-peak count of each edge
+    reason: >
+      Reported in the edge table and read by no component. A cosine is a float
+      out of a BLAS-backed library: byte-identical under this image's pinned
+      numpy and scipy, and it moved in the third decimal when those versions
+      changed. What this campaign claims is which pairs clear the declared
+      threshold, and that claim is robust -- no pair score on this node set sits
+      within a ten-thousandth of a declared threshold except one, 5.6e-05 below
+      the highest.
+  - field: similarity, peak_tolerance, edge_score_threshold, edge_min_matched_peaks
+    reason: >
+      Echoes of reference/networking_rules.json read back. Graded only inside the
+      one environment claim, which also carries the similarity library's own
+      version string -- and that the sandbox does not state.
+  - field: a neighbour cap or a maximum component size
+    reason: >
+      Not declared, and that is a measurement rather than an omission. The
+      classical networking convention caps a node's neighbours and splits
+      oversized components because a low threshold produces hairballs; on this
+      node set the declared threshold alone leaves no component large enough to
+      need either, and the build refuses gold where the largest component holds
+      more than a quarter of the nodes. A denser node set needs both caps and is
+      a second instantiation rather than a change here.
+
+notes_for_audit:
+  - >
+    These notes say what to recompute and from where. They state no graded value:
+    an auditor has gold and the project notes, which carry the numbers, and a
+    system reading this file does not.
+  - >
+    First the identity rung of the threshold grid. The pinned threshold's row
+    re-cuts the network at the value gold was built with and must reproduce the
+    edge count, the component count and the claim census the rungs above report.
+    Anything else means the grid is not a filter over the same similarity matrix,
+    and the build refuses gold in that case.
+  - >
+    Then the two halves of the propagation vocabulary, by hand, on one component
+    that holds an annotated node and an unannotated neighbour. The precursor
+    difference decides which claim the rule makes, and the mass shift is exact
+    arithmetic over two shipped precursor values rather than tool output -- so a
+    shift that does not reproduce is a reading error, not a float.
+  - >
+    Then the per-component annotation census against the component list. The
+    first bucket counts components with no accepted annotation at all; on this
+    node set it is the largest bucket, and a campaign where it were empty would
+    be grading a fully annotated network, which is not what an untargeted
+    experiment looks like.
+  - >
+    Gold carries two censuses measured against the nodes' real identities --
+    `annotation_truth` and `propagation_truth` -- that no component reads. They
+    are the campaign's scientific finding and the reason the propagation rule is
+    shaped the way it is; an auditor should read them, and a system cannot.
+  - >
+    The network itself is not shipped and must not be. It follows from the
+    declared edge rule over the shipped nodes, and shipping it would hand over
+    R1 entirely.

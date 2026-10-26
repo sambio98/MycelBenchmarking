@@ -115,7 +115,6 @@ def measure(campaign: pathlib.Path, submission_dir: pathlib.Path) -> dict:
     matches = matches if isinstance(matches, dict) else {}
     out["top_matches"] = {accession: _str(matches.get(accession))
                           for accession in accessions}
-    out["correct_queries"] = _query_set(sub.get("correct_queries"))
 
     # ---- R3: the declared class per query, and the ambiguity admitted to
     classified = sub.get("confidence_by_query")

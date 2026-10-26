@@ -43,6 +43,8 @@ import yaml
 from npbench_c.grading.grade import grade
 from npbench_c.sweep.stubs.stub_derep import _peaks_first
 from npbench_c.templates.ms2_dereplication import analyse as derep
+from npbench_c.templates.ms2_dereplication import core as core_module
+from npbench_c.templates.ms2_dereplication import prepare_input
 from npbench_c.templates.ms2_dereplication.build import (
     COMMITMENT_KEYS,
     COUNTERFACTUAL_KEYS,
@@ -129,14 +131,17 @@ def test_the_queries_carry_no_annotation_of_their_own_identity(corpus):
 
 def test_every_query_compound_is_in_the_library(corpus):
     blocks = {row["compound_block"] for row in corpus.library}
-    assert all(query["compound_block"] in blocks for query in corpus.queries)
+    assert corpus.truth, "the build side reads the identities"
+    assert all(block in blocks for block in corpus.truth.values())
 
 
 def test_no_query_is_answerable_from_its_own_contributor(corpus):
-    """The campaign's whole construct, checked on the shipped files."""
+    """The campaign's whole construct, checked on the shipped files. The query's
+    compound comes from the gold-side truth, because the query record does not
+    carry it."""
     for query in corpus.queries:
         own = [row for row in corpus.library
-               if row["compound_block"] == query["compound_block"]]
+               if row["compound_block"] == corpus.truth[query["accession"]]]
         assert own, query["accession"]
         assert not [row for row in own
                     if row["contributor"] == query["contributor"]]
@@ -148,13 +153,18 @@ def test_the_loader_refuses_a_corpus_answerable_from_its_own_contributor(tmp_pat
     params = derep.load_params(CAMPAIGN)
     queries = json.loads(gzip.open(CAMPAIGN / params["queries_input"], "rt").read())
     library = json.loads(gzip.open(CAMPAIGN / params["library_input"], "rt").read())
+    truth = json.loads((CAMPAIGN / "gold" / "queries_truth.json").read_text())
     victim = queries[0]
     replicate = dict(victim)
     replicate["accession"] = victim["accession"] + "-REPLICATE"
+    replicate["compound_block"] = truth[victim["accession"]]
+    replicate["formula"] = ""
 
     campaign = tmp_path / "campaign"
     (campaign / "inputs").mkdir(parents=True)
     (campaign / "reference").mkdir()
+    (campaign / "gold").mkdir()
+    (campaign / "gold" / "queries_truth.json").write_text(json.dumps(truth))
     (campaign / "reference" / "dereplication_rules.json").write_text(
         (CAMPAIGN / "reference" / "dereplication_rules.json").read_text())
     with gzip.open(campaign / "inputs" / "queries.json.gz", "wt") as handle:
@@ -378,15 +388,29 @@ def test_the_tolerance_grid_is_the_declared_one():
         sorted(f"{tolerance}" for tolerance in rules.tolerance_grid)
 
 
-def test_the_adduct_census_covers_every_query_and_nothing_survives():
-    """The measured shape, and the reason the rung grades a census: a misassigned
-    adduct makes the search silent rather than wrong, so the per-query survival
-    bit the catalogue asked for has one answer."""
+def test_the_adduct_census_is_about_the_pipeline_and_not_about_the_truth():
+    """The graded census compares the shifted answer with the pipeline's own
+    unshifted one, because the truth is not in the sandbox. Gold also records the
+    same perturbation against the truth, and on this corpus the two coincide:
+    every query that keeps a candidate names a different compound AND is wrong,
+    and nothing survives."""
     gold = _gold()
     census = gold["adduct_misassignment_census"]
-    assert sum(census.values()) == gold["corpus_census"]["graded_queries"]
-    assert census["survives"] == 0
-    assert census["no_candidate"] > census["lost"] > 0
+    graded = gold["corpus_census"]["graded_queries"]
+    assert sorted(census) == sorted(derep.ADDUCT_OUTCOMES)
+    assert sum(census.values()) == graded
+    assert census["unchanged"] == 0
+    assert census["no_candidate"] > census["changed"] > 0
+
+    truth = gold["adduct_against_the_truth"]
+    assert sum(truth.values()) == graded
+    assert truth["still_correct"] == 0
+    assert truth["silenced"] == census["no_candidate"]
+    assert truth["wrong"] == census["changed"]
+    graded_paths = {component["args"]["gold"] for rung in _spec()["rungs"]
+                    for component in rung["components"]
+                    if isinstance(component["args"]["gold"], str)}
+    assert "gold:adduct_against_the_truth" not in graded_paths
 
 
 def test_the_adduct_shift_is_the_declared_mass_difference(corpus):
@@ -425,11 +449,84 @@ def test_the_echoes_are_reported_and_not_graded():
               for component in rung["components"]
               if isinstance(component["args"]["gold"], str)}
     assert "gold:corpus_census" not in graded
-    assert "gold:misannotated_queries" not in graded
-    assert {"corpus_census", "misannotated_queries"} <= set(render(_gold()))
+    assert "corpus_census" in set(render(_gold()))
     excluded = {entry["field"] for entry in _task()["excluded_from_grading"]}
     assert "corpus_census" in excluded
-    assert "misannotated_queries" in excluded
+
+
+def test_the_truth_is_in_gold_and_graded_nowhere():
+    """The defect this campaign shipped once: the queries carried their own
+    compound block, InChIKey and formula while provenance said they carried no
+    annotation, and a graded component asked which retrievals were correct."""
+    from npbench_c.sweep.runner import PUBLIC_CAMPAIGN_PATHS, SECRET_CAMPAIGN_PATHS
+
+    truth = pathlib.Path("gold") / "queries_truth.json"
+    assert (CAMPAIGN / truth).is_file()
+    assert truth.parts[0] in SECRET_CAMPAIGN_PATHS
+    assert truth.parts[0] not in PUBLIC_CAMPAIGN_PATHS
+
+    gold = _gold()
+    assert len(json.loads((CAMPAIGN / truth).read_text())) == \
+        gold["corpus_census"]["graded_queries"]
+    # Gold keeps both sets for the audit; no component reads either.
+    assert {"correct_queries", "misannotated_queries"} <= set(gold)
+    graded = {component["args"]["gold"] for rung in _spec()["rungs"]
+              for component in rung["components"]
+              if isinstance(component["args"]["gold"], str)}
+    assert "gold:correct_queries" not in graded
+    assert "gold:misannotated_queries" not in graded
+    # And neither reaches the submission the oracle writes.
+    assert "correct_queries" not in render(gold)
+
+
+def test_a_shipped_query_carries_no_identity(corpus):
+    params = derep.load_params(CAMPAIGN)
+    shipped = json.loads(gzip.open(CAMPAIGN / params["queries_input"], "rt").read())
+    for row in shipped:
+        assert sorted(row) == sorted(prepare_input.QUERY_FIELDS)
+        assert not [field for field in core_module.IDENTITY_FIELDS if field in row]
+    # The library does carry them: a reference library without identities is not
+    # a reference library.
+    library = json.loads(gzip.open(CAMPAIGN / params["library_input"], "rt").read())
+    assert all("compound_block" in row for row in library)
+
+
+def test_the_loader_refuses_a_query_that_names_its_own_compound(tmp_path):
+    params = derep.load_params(CAMPAIGN)
+    queries = json.loads(gzip.open(CAMPAIGN / params["queries_input"], "rt").read())
+    truth = json.loads((CAMPAIGN / "gold" / "queries_truth.json").read_text())
+    library = json.loads(gzip.open(CAMPAIGN / params["library_input"], "rt").read())
+    for row in queries:
+        row["compound_block"] = truth[row["accession"]]
+
+    campaign = tmp_path / "campaign"
+    (campaign / "inputs").mkdir(parents=True)
+    (campaign / "reference").mkdir()
+    (campaign / "reference" / "dereplication_rules.json").write_text(
+        (CAMPAIGN / "reference" / "dereplication_rules.json").read_text())
+    with gzip.open(campaign / "inputs" / "queries.json.gz", "wt") as handle:
+        json.dump(queries, handle)
+    with gzip.open(campaign / "inputs" / "library.json.gz", "wt") as handle:
+        json.dump(library[:200], handle)
+
+    with pytest.raises(DereplicationError, match="which name the compound each"):
+        Corpus.load(campaign, "inputs/queries.json.gz", "inputs/library.json.gz")
+
+
+def test_a_sandbox_corpus_loads_without_the_truth_and_claims_no_correctness(
+        tmp_path):
+    """What a stub and a measurer see: the same corpus with `correct` absent."""
+    params = derep.load_params(CAMPAIGN)
+    campaign = tmp_path / "campaign"
+    (campaign / "inputs").mkdir(parents=True)
+    (campaign / "reference").mkdir()
+    (campaign / "reference" / "dereplication_rules.json").write_text(
+        (CAMPAIGN / "reference" / "dereplication_rules.json").read_text())
+    for name in ("queries_input", "library_input"):
+        target = campaign / params[name]
+        target.write_bytes((CAMPAIGN / params[name]).read_bytes())
+    sandbox = Corpus.load(campaign, params["queries_input"], params["library_input"])
+    assert sandbox.truth is None
 
 
 def test_the_oracle_submission_scores_one(tmp_path):
@@ -471,15 +568,16 @@ def test_a_set_answer_is_normalised_by_order_only(tmp_path):
     query twice is a different claim from the one gold makes."""
     gold = _gold()
     report = render(gold)
-    report["correct_queries"] = list(reversed(gold["correct_queries"]))
+    report["ambiguous_queries"] = list(reversed(gold["ambiguous_queries"]))
     submission = tmp_path / "submission"
     submission.mkdir()
     (submission / REPORT).write_text(json.dumps(report))
     assert grade(measure(CAMPAIGN, submission), gold, _spec())["score"] == 1.0
 
-    report["correct_queries"] = gold["correct_queries"] + gold["correct_queries"][:1]
+    report["ambiguous_queries"] = (gold["ambiguous_queries"]
+                                   + gold["ambiguous_queries"][:1])
     (submission / REPORT).write_text(json.dumps(report))
-    assert grade(measure(CAMPAIGN, submission), gold, _spec())["depth"] == 1
+    assert grade(measure(CAMPAIGN, submission), gold, _spec())["depth"] == 2
 
 
 # ----------------------------------------------------------- build refusals
@@ -609,14 +707,14 @@ def _a_grid_that_moves_nothing() -> dict:
 
 def _a_miscounted_adduct_census() -> dict:
     gold = copy.deepcopy(_gold())
-    gold["adduct_misassignment_census"]["lost"] += 1
+    gold["adduct_misassignment_census"]["changed"] += 1
     return gold
 
 
 def _an_adduct_shift_that_silences_nobody() -> dict:
     gold = copy.deepcopy(_gold())
     census = gold["adduct_misassignment_census"]
-    census["lost"] += census["no_candidate"]
+    census["changed"] += census["no_candidate"]
     census["no_candidate"] = 0
     return gold
 
@@ -624,9 +722,9 @@ def _an_adduct_shift_that_silences_nobody() -> dict:
 def _an_adduct_shift_that_costs_nothing() -> dict:
     gold = copy.deepcopy(_gold())
     graded = gold["corpus_census"]["graded_queries"]
-    survives = len(gold["correct_queries"])
+    annotated = gold["retrieval_census"]["annotated"]
     gold["adduct_misassignment_census"] = {
-        "no_candidate": 5, "lost": graded - survives - 5, "survives": survives}
+        "no_candidate": graded - annotated, "changed": 0, "unchanged": annotated}
     return gold
 
 

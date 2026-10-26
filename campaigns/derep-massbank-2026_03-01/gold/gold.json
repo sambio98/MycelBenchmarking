@@ -1,8 +1,13 @@
 {
+  "adduct_against_the_truth": {
+    "silenced": 74,
+    "still_correct": 0,
+    "wrong": 26
+  },
   "adduct_misassignment_census": {
-    "lost": 26,
+    "changed": 26,
     "no_candidate": 74,
-    "survives": 0
+    "unchanged": 0
   },
   "ambiguous_queries": [
     "MSBNK-ACES_SU-AS000272",

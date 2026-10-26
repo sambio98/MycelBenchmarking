@@ -229,4 +229,5 @@ def test_only_the_slow_version_queries_are_memoised():
     memoised = sorted(
         path.parent.name for path in templates.glob("*/core.py")
         if "memoize_version" in path.read_text())
-    assert memoised == ["bgc_detection", "gcf_cutoff", "ms2_dereplication"], memoised
+    assert memoised == ["bgc_detection", "gcf_cutoff", "ms2_dereplication",
+                        "ms2_networking"], memoised

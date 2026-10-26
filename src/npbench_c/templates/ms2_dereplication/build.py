@@ -24,9 +24,11 @@ DEFAULT_CHANCE_LEVELS = {"r1": 1.0, "r2": 0.001, "r3": 0.001, "r4": 0.001}
 
 #: R1's report, and therefore exactly what R2's warm bundle may hand over.
 EXECUTE_KEYS = ("environment", "corpus_census", "candidate_census")
-#: R2's answers: what the search retrieved for each query.
-RETRIEVAL_KEYS = ("retrieval_census", "top_matches", "correct_queries",
-                  "misannotated_queries")
+#: R2's answers: what the search retrieved for each query. NOT which of them are
+#: right: that needs the compound each query is, which is the answer and is not
+#: in the sandbox. Gold carries `correct_queries` and `misannotated_queries` for
+#: the audit and no component reads them.
+RETRIEVAL_KEYS = ("retrieval_census", "top_matches")
 #: R3's answers: the declared confidence class, and the ambiguity admitted to.
 COMMITMENT_KEYS = ("confidence_by_query", "confidence_census", "margin_summary",
                    "ambiguous_queries")
@@ -150,15 +152,15 @@ def _assert_has_content(campaign: pathlib.Path, gold: dict) -> None:
         raise DereplicationError(
             "the misassigned adduct leaves every query a candidate window, so "
             "the counterfactual this campaign measures does not occur")
-    # Not "every annotation survives": that is unreachable past the check above,
-    # since surviving everything means emptying no window. The reachable
-    # degeneracy is a perturbation that costs nothing -- as many right answers
-    # after the shift as before it -- which makes R4's census a copy of R2's.
-    if adduct["survives"] >= len(correct):
+    # The reachable degeneracy: a perturbation that leaves every annotation
+    # naming the same compound it named before, which would make R4's census a
+    # restatement of R2's answer.
+    if adduct["unchanged"] >= retrieval["annotated"]:
         raise DereplicationError(
-            f"{adduct['survives']} annotations survive the misassigned adduct "
-            f"and {len(correct)} are correct without it, so the perturbation "
-            "costs the search nothing and R4's census restates R2's")
+            f"{adduct['unchanged']} annotations name the same compound after the "
+            f"misassigned adduct as before it and {retrieval['annotated']} "
+            "queries were annotated, so the perturbation costs the search "
+            "nothing and R4's census restates R2's")
 
 
 def write_warm_bundles(campaign: pathlib.Path, gold: dict) -> None:
@@ -192,10 +194,10 @@ def build_grading(campaign: pathlib.Path, gold: dict) -> dict:
            "args": {"pred": "pred:present.report", "gold": 1}},
           ex("environment"), ex("candidate_census")]
 
-    # `misannotated_queries` is reported and not graded: it is the arithmetic
-    # complement of `correct_queries` inside the annotated set, so grading it
-    # adds a component and no claim.
-    r2 = [ex("retrieval_census"), ex("top_matches"), ex("correct_queries")]
+    # Which retrievals are RIGHT is not graded and not reported: it needs the
+    # compound each query is, the queries ship without it, and a component no
+    # system can compute is not a component. Gold keeps both sets for the audit.
+    r2 = [ex("retrieval_census"), ex("top_matches")]
     r3 = [ex("confidence_by_query"), ex("confidence_census"), ex("margin_summary"),
           ex("ambiguous_queries")]
     r4 = [ex("tolerance_movement"), ex("adduct_misassignment_census")]
@@ -242,15 +244,17 @@ def main(argv: list[str] | None = None) -> int:
           f"{env['matchms_version']} {env['similarity']} at "
           f"{env['peak_tolerance']} Da")
     print(f"  candidate sets: {gold['candidate_census']}")
-    print(f"  retrieval: {gold['retrieval_census']}, correct "
-          f"{len(gold['correct_queries'])}, misannotated "
-          f"{len(gold['misannotated_queries'])}")
+    print(f"  retrieval: {gold['retrieval_census']}; of those, not graded: "
+          f"{len(gold['correct_queries'])} correct, "
+          f"{len(gold['misannotated_queries'])} misannotated")
     print(f"  confidence: {gold['confidence_census']}")
     print(f"  margins: {gold['margin_summary']}, ambiguous "
           f"{len(gold['ambiguous_queries'])}")
     print("  tolerance movement: "
           f"{ {k: len(v) for k, v in gold['tolerance_movement'].items()} }")
     print(f"  adduct misassignment: {gold['adduct_misassignment_census']}")
+    print(f"  adduct against the truth (not graded): "
+          f"{gold['adduct_against_the_truth']}")
     print(f"  grading.json: {sum(len(r['components']) for r in spec['rungs'])} "
           "components")
     return 0

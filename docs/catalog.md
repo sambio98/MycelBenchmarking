@@ -997,7 +997,7 @@ and every variant moves the total (595 / 749 / 636 / 640 against 620); the build
 | # | Template | Data | Build |
 |---|---|---|---|
 | T-L4-1 ×2 | MS² dereplication vs reference standards | **verified** | **BUILT ×1** |
-| T-L4-2 | Molecular networking, mis-seeded annotation | **verified** | image (matchms) |
+| T-L4-2 | Molecular networking, mis-seeded annotation | **verified** | **BUILT** |
 | T-L4-3 ×2 | Mass balance & route validation (NRPS) | verified | **BUILT** |
 | T-L4-4 | Chemical space / scaffold analysis | verified | **BUILT** |
 
@@ -1055,6 +1055,24 @@ since the scores are floats).
 unconfirmed annotation. R1 network edge table · R2 matches gold · R3 claim:
 which annotation is unsupported and why, closed enum from the confound
 vocabulary · R4 the planted annotation is removed — predict the network change.
+
+**Built: `campaigns/network-massbank-2026_03-01`** — one laboratory's 478 spectra
+on one instrument (AAFC, LC-ESI-ITFT: aflatoxins, AAL toxin, mellein), annotated
+from 1,195 cross-contributor library spectra. 12 graded components over four
+rungs, gate 25/0/5.
+
+*Two rungs were rescoped during the grounding, each on a measurement; the full
+numbers are in `docs/npbench-c.md` under "T-L4-2".* The confound vocabulary is
+retired: five mechanical support clauses flag 121 of 131 accepted annotations
+(recall 0.94, precision 0.25 against a 0.24 base rate), and the one sound-looking
+inference behind them — two near-identical spectra at the same precursor must be
+the same compound — is false on this data, where two of the four such disagreeing
+pairs are genuinely different compounds. What is graded instead is what the
+network CLAIMS about the nodes the library could not name, from a closed
+vocabulary; measured against the truth, all 44 analogue claims are borne out and
+4 of 7 same-compound claims are wrong, which is the mis-seeding the row is named
+for. And nothing is planted: removing an annotation cannot change a network built
+from spectra, so R4 re-cuts the threshold grid and drops a confidence tier.
 
 **T-L4-3** **Built**: `campaigns/massbalance-nrps-malleobactin-01` (BGC0000386,
 4 modules, 4 congeners including a dimer). Oracle 1.0 on all four rungs, stub

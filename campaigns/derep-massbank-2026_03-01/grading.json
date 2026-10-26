@@ -63,14 +63,6 @@
             "pred": "pred:top_matches",
             "gold": "gold:top_matches"
           }
-        },
-        {
-          "name": "correct_queries",
-          "scorer": "exact",
-          "args": {
-            "pred": "pred:correct_queries",
-            "gold": "gold:correct_queries"
-          }
         }
       ]
     },

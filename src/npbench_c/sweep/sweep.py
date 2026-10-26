@@ -237,6 +237,46 @@ def sweep_campaign(
                   + (f"; rungs never cleared by any system: {dead_rungs}" if dead_rungs else ""),
     }
 
+    # --- two gates that apply to a STUB sweep only --------------------------
+    #
+    # Both exist because of one typo. A stub level called a template function
+    # whose signature had changed; twelve of eighty-four runs crashed, the
+    # `complete` fixture produced no submission at all, R4 was cleared by
+    # nobody -- and every gate above passed, because a crash is an infra
+    # failure the headline deliberately excludes and a never-cleared rung is a
+    # legitimate finding about a hard campaign. Both of those are true of a
+    # sweep over REAL systems and neither is true of a sweep over fixtures:
+    # a stub is deterministic code in this repository, so it cannot crash for
+    # an environmental reason, and the top fixture exists precisely to show the
+    # ladder is clearable.
+    stubs = [s for s in systems if s.is_stub]
+    if stubs:
+        stub_names = {s.name for s in stubs}
+        broken = sorted({r.system for r in results
+                         if r.system in stub_names and r.status in INFRA_STATUSES})
+        checks["stub_systems_do_not_crash"] = {
+            "pass": not broken,
+            "detail": (f"{len(stubs)} fixture(s), "
+                       f"{sum(1 for r in results if r.system in stub_names and r.status in INFRA_STATUSES)}"
+                       " crashed or timed-out run(s)"
+                       + (f": {broken}" if broken else
+                          "; a fixture that crashes is a harness bug, not a "
+                          "finding")),
+        }
+        cleared = {rung for rung in rungs
+                   for r in results
+                   if r.status == COMPLETED and r.cleared(rung)}
+        never = [rung for rung in rungs if rung not in cleared]
+        checks["every_rung_is_cleared_by_some_fixture"] = {
+            "pass": not never,
+            "detail": ("every rung is cleared by at least one fixture"
+                       if not never else
+                       f"no fixture ever clears {never}; the ladder's top level "
+                       "exists to show the ladder is clearable, so this is a "
+                       "fixture or campaign defect rather than a difficulty "
+                       "measurement"),
+        }
+
     # --- headline -----------------------------------------------------------
     clusters = defaultdict(list)
     for r in scored:

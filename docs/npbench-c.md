@@ -4367,6 +4367,254 @@ T-L4-1's gold is byte-identical after all of it — same gate, 25 pass / 0 fail 
 byte for byte against what is committed. The numbers in the campaign were right;
 what was wrong was the claim that only the pinned image could produce them.
 
+## The queries carried their own answer
+
+Found while designing T-L4-2's inputs, which must not ship the identity of the
+spectra they ask about: T-L4-1's already did.
+
+`inputs/queries.json.gz` carried `compound_block` and `formula` on every query
+record, while `inputs/provenance.json` said, in the campaign's own words:
+
+> No annotation of the queries: the compound each query IS is the answer.
+
+The first block of an InChIKey **is** the compound, and the molecular formula
+names it almost uniquely inside a precursor window of ten millidaltons. So the
+answer to "which compound is this spectrum?" was in the sandbox, on the record
+being asked about.
+
+### What it cost, exactly
+
+Not a cleared rung, which is why no gate check saw it. R2 grades the per-query
+top match, and a system exploiting the leak — score only the library spectra of
+the query's own compound, report the best one — reproduces gold for the 89
+queries whose retrieval is correct and differs on the 9 that are not, so the
+exact-match component still fails. The leak handed over 89 of 98 answers without
+clearing the rung that asks for them.
+
+It also made one component unaskable-but-asked. `correct_queries` — the set of
+queries whose top match is a spectrum of the query's own compound — cannot be
+computed without knowing what the query is. Grading it **required** the
+disclosure. That is the tell worth remembering: a component whose answer needs
+the truth to be in the sandbox is not a component, it is a reason the sandbox
+holds the truth.
+
+### The fix, and the knock-on it forced
+
+A query record now carries what an experimental spectrum carries — accession,
+contributor, instrument type, precursor m/z, precursor type, peaks — and nothing
+else. The identities go to `gold/queries_truth.json`, inside a secret campaign
+path that no sandbox copies and no release ships. `library.json.gz` is unchanged
+and byte-identical: a reference library without identities is not a reference
+library.
+
+Three refusals keep it that way, in the grading core rather than in prose:
+
+- a query record carrying `compound_block`, `inchikey`, `formula`, `smiles` or
+  `compound_name` is refused outright;
+- a truth file that does not cover every shipped query is refused, so a stale one
+  cannot silently make an answer undefined;
+- the split's two refusals — the query's compound is in the library, and never
+  from the query's own contributor — now run where the truth is readable, which
+  is the build and the oracle. That is exactly where they matter: a system cannot
+  reintroduce a split defect it cannot see.
+
+R2 lost a component with the disclosure (12 graded components, now 11) and grades
+what the search answered: the retrieval census and the per-query top match. Gold
+still records `correct_queries` and `misannotated_queries` for the audit, and no
+component reads them.
+
+**And R4's census had to be redefined, which improved it.** The adduct census
+counted `survives` = "still names the right compound", which needs the truth and
+was therefore only computable because of the leak. It now compares the shifted
+search against the pipeline's **own unshifted answer**: `no_candidate`,
+`changed`, `unchanged`. Measured, the two readings coincide on this corpus —
+
+| | graded, against the pipeline | gold-side, against the truth |
+|---|---|---|
+| window emptied | 74 | 74 silenced |
+| kept a candidate, different answer | 26 | 26 wrong |
+| kept a candidate, same answer | 0 | 0 still correct |
+
+— so the campaign's claim is unchanged and is now one a system can check: every
+query that keeps a candidate under the wrong adduct names a different compound,
+and none of them is right. Gold keeps the truth-side census as
+`adduct_against_the_truth`, graded nowhere, because the prose rests on it and a
+claim in prose should have a number an auditor can find.
+
+### Two defects of one shape, in one campaign
+
+The split's claim and the identity claim were both sentences in `provenance.json`
+that the shipped artefact contradicted, and both were written by the same hand in
+the same week. Neither the gate nor the oracle can see that class of defect: the
+prose is not an input to anything, and gold is whatever the code computes. What
+found them was reading the shipped records — two accessions one apart with the
+same contributor, and a `compound_block` key where the provenance said there was
+none.
+
+So both are refusals now. A declaration that no code reads is a decoration, and
+this campaign shipped two.
+
+## T-L4-2: the network was buildable, two of its four rungs were not
+
+The catalogued ladder: R1 a network edge table · R2 matches gold · R3 which
+annotation is unsupported and why, from a closed confound vocabulary · R4 the
+planted annotation is removed, predict the network change. Grounded against
+MassBank 2026.03 before any oracle was written, R1 and R2 hold as catalogued and
+the other two do not.
+
+### Choosing a node set is choosing the campaign
+
+A molecular network is one experiment: spectra acquired together, most of them
+unidentified. So the node-set rule is one contributor on one instrument type, and
+the choice of which was a survey of all 38 contributors in the release.
+
+| node set | spectra / compounds | edges at 0.7/6 | analogue edges | largest component | verdict |
+|---|---|---|---|---|---|
+| **AAFC / LC-ESI-ITFT** | 478 / 121 | 676 | 383 | 61 | **built** — aflatoxins, AAL toxin, mellein: fungal secondary metabolism |
+| Eawag / LC-ESI-ITFT | 3,256 / 299 | 10,123 | 3,667 | 110 | the second instantiation: cyanobacterial peptides, and four components over 90 nodes, which needs the neighbour and component-size caps this template does not declare |
+| Antwerp_Univ | 688 / 169 | 1,840 | 1,060 | 153 | rejected: citrate and trimellitate plasticizers, and one 153-node hairball |
+| BGC_Munich | 557 / 195 | 455 | 343 | 38 | rejected: free amino acids — primary metabolism, not natural products |
+| Washington_State_Univ | 544 / 228 | 150 | 70 | 10 | rejected: on-theme alkaloids, too few edges |
+| MPI_for_Chemical_Ecology | 249 / 62 | 266 | **22** | 12 | rejected: almost every edge joins replicates of one compound |
+| RIKEN | 4,658 / 828 | — | — | — | rejected: pantothenate, glycerol, shikimate — primary metabolites |
+
+The library is every OTHER contributor's spectra, which is what makes an
+annotation cross-laboratory, filtered to the declared precursor window: 1,195 of
+54,101 cross-contributor spectra, because a spectrum outside every node's window
+cannot be a candidate for any node by the definition of the filter. That keeps 13
+MB of unreachable spectra out of the repository and changes no answer.
+
+### R3's confound vocabulary does not survive the data
+
+The catalogued question is which annotation is unsupported and why. Five
+mechanical clauses were written and measured over the accepted annotations:
+
+| clause | fires | of which wrong | precision |
+|---|---|---|---|
+| `single_lab_support` | 112 | 29 | 0.26 |
+| `unopposed_in_the_window` | 53 | 9 | 0.17 |
+| `contradicted_by_a_neighbour` | 12 | 4 | 0.33 |
+| `contradicted_across_a_near_identical_edge` | 4 | 2 | 0.50 |
+| nothing fires | 10 | 2 | 0.20 |
+
+The base rate of wrong annotations is 0.24, and the union of the clauses flags
+**121 of 131** — recall 0.94 at precision 0.25. A label that applies to
+ninety-two per cent of the annotations is not a finding, and the two clauses that
+beat the base rate cover a dozen cases between them.
+
+**And the one sound-looking inference is false.** "Two near-identical spectra at
+the same precursor must be the same compound" is the argument a network adds to a
+library search. There are four such disagreeing pairs on this node set, and **two
+of them are genuinely different compounds** — one pair at cosine 0.909 with 26
+matched peaks, both annotations correct, different InChIKey skeletons. Isomers
+fragment alike. So the inference that would have made the confound vocabulary
+work is the one the data refuses.
+
+### What replaced it: what the network CLAIMS
+
+Not whether an annotation is right — the nodes ship without their identities, so
+that is gold's business — but what the declared rule says about the nodes the
+library could not name. Four cases, and the distinction between the middle two is
+the campaign:
+
+| claim | nodes | what the truth says |
+|---|---|---|
+| `annotated_directly` | 121 | 94 right, 27 wrong (not graded) |
+| `no_annotated_neighbour` | 304 | — |
+| `analogue_with_mass_shift` | 44 | **44 of 44** are indeed a different compound, as the claim says |
+| `same_compound` | 7 | 3 right, **4 wrong** |
+| `conflicting_neighbours` | 2 | — |
+
+That asymmetry is the campaign's subject. An analogue claim — "this node is a
+relative of that compound, shifted by this mass" — is borne out every time it is
+made here. A same-compound claim is wrong more often than right, and the naive
+rule that networking practice invites, inheriting identity across every edge
+regardless of the precursor difference, is wrong on **51 of the 53** nodes it
+reaches. The declared rule separates the two cases; the probe in the stub ladder
+conflates them.
+
+### R4's planted annotation is retired twice over
+
+Nothing in this benchmark ships a planted artefact — the census that retired
+`structural_elements` found eleven campaigns claiming `planted` and none doing it
+— and **removing an annotation cannot change a network**: the graph is built from
+spectra. What a removal moves is the annotation layer. So the counterfactual is
+two declared re-cuts, and both move:
+
+| threshold | edges | components | largest | nodes the annotations reach |
+|---|---|---|---|---|
+| 0.6 | 902 | 160 | 97 | 55 |
+| **0.7** | **676** | **196** | **61** | **51** |
+| 0.8 | 410 | 259 | 26 | 30 |
+| 0.9 | 190 | 344 | 21 | 18 |
+
+and dropping the lower accepted confidence tier removes 48 annotations, changes
+every claim count and leaves **28 components with no annotation at all**.
+
+The pinned threshold's own row is the grid's identity rung: it must reproduce the
+network the rungs above report, and the build refuses gold otherwise.
+
+### The edge pairs are graded and the edge scores are not
+
+A cosine is a float out of a BLAS-backed library. What the campaign claims is
+which pairs clear the declared threshold, which is a comparison — and measured on
+this node set, no pair score sits within 1e-4 of 0.6, 0.7 or 0.8, and exactly one
+sits 5.6e-05 below 0.9. That is the closest call in the campaign and still three
+orders of magnitude above the noise this image's pinned numpy and scipy produce,
+which is why the pair set is safe to grade and the scores are reported and read
+by nothing.
+
+### Where it stands
+
+Gate: **25 pass / 0 fail / 5 pending**. Twelve graded components over four rungs.
+Two similarity calls serve every rung, including the whole R4 grid: the pairwise
+matrix is computed once at the lowest declared threshold and every higher row is
+a filter over it.
+
+Stub sweep: **0 gates failing**, 84 runs and no crash, cold depths 1 / 2 / 3 / 4
+for the four ladder levels, 1 for `seedall` (seeds from every library match
+rather than the declared tiers, so R2's component census fails), 2 for
+`propagate` (inherits identity across every edge, so R3 fails), 0 for the no-tool
+ablation. R1 clear rate 1.0, cold mean score 0.54.
+
+A third plausible slip is recorded rather than fixtured: dropping the declared
+matched-peak floor from the edge rule takes the network from 676 edges to 822. It
+fails R1, and a fixture that fails the first rung drags the harness's own R1
+clear-rate gate below its floor and reports a fixture artefact as a campaign
+defect.
+
+## The sweep passed every gate while twelve runs crashed
+
+Worth recording because it was my own typo that found it, and because the hole it
+found is one a real campaign could fall into.
+
+A stub level called a template function whose signature had changed one commit
+earlier. Twelve of eighty-four runs crashed, the `complete` fixture produced no
+submission at all, R4 was cleared by nobody — and the sweep reported **0 gates
+failing**. Each gate was behaving as designed:
+
+- a crash is an INFRA failure, which the headline deliberately excludes so that
+  the score is not measuring our own container;
+- a rung no system clears is a legitimate finding about a hard campaign, so
+  `discrimination` named it in its detail text (`rungs never cleared by any
+  system: ['r4']`) and passed.
+
+Both of those are right for a sweep over real systems and wrong for a sweep over
+fixtures. A stub is deterministic code in this repository: it cannot crash for an
+environmental reason, and the top fixture exists precisely to show that the
+ladder is clearable. So a stub sweep now carries two gates of its own:
+
+- **`stub_systems_do_not_crash`** — any crashed or timed-out fixture run fails
+  the sweep, with the fixture named. A fixture that crashes is a harness bug, not
+  a finding.
+- **`every_rung_is_cleared_by_some_fixture`** — a rung no fixture ever clears
+  fails the sweep. With real systems that would be a difficulty measurement; with
+  fixtures built to reach preset depths it is a defect in the fixture or the
+  campaign.
+
+Neither applies to a sweep without stubs, which is the sweep whose numbers get
+published.
+
 ## Open items
 
 1. ~~CAI table provenance.~~ **Closed.** The tables are derived from two pinned
@@ -4398,8 +4646,9 @@ what was wrong was the claim that only the pinned image could produce them.
    reproduce, and a library pin probed through PATH reports itself missing on an
    image that has it. See "Item 4" above. **T-L4-1's first instantiation is
    now built** — see "T-L4-1 built" above, including the split defect the
-   assembly found — and T-L4-1 ×2 and T-L4-2 are the next builds rather than
-   decisions.
+   assembly found — and **T-L4-2 is built too**. T-L4-1's second instantiation
+   is the only matchms row left, and it needs an instantiation axis decided
+   (item 14).
 
 5. ~~Reprocess the MIBiG reference set with the pinned antiSMASH, or declare
    that a T-L3-2 campaign takes both sides from the published `as8b1` set.~~
@@ -4418,10 +4667,9 @@ what was wrong was the claim that only the pinned image could produce them.
    bacterial variant values. Nothing is blocked on licensing.
 7. **Three rows are retired on measurement, so the reachable count is 26.**
    T-L2-4 (×2), T-L5-2 and now T-L6-3 all ground out, each with its numbers
-   recorded above. Against that: **24 campaigns are built**, and T-L4-1's
-   second instantiation and T-L4-2 are buildable now that the image carries
-   matchms, which makes **26 reachable** — 27 if T-L5-2 is re-scoped rather than
-   dropped. The headline "32 campaigns from 24 templates" in this file and in `docs/catalog.md` is the
+   recorded above. Against that: **25 campaigns are built**, and T-L4-1's
+   second instantiation is the one remaining matchms row, which makes **26
+   reachable** — 27 if T-L5-2 is re-scoped rather than dropped. The headline "32 campaigns from 24 templates" in this file and in `docs/catalog.md` is the
    *catalogued* target and still has not been restated downward, because two
    things are the owner's call: whether to re-scope the retired rows, and how to
    count T-L3-5a, which is a built replacement for a re-tiered row rather than a
@@ -4481,3 +4729,19 @@ what was wrong was the claim that only the pinned image could produce them.
    scalar boundary both checks now share. Scope is the set shipped together:
    the gate passes every built campaign, `audit_release` passes the release's
    own subset. See "Check 23" above.
+14. **T-L4-1's second instantiation needs an axis, and it is the owner's call.**
+   The catalogue names no instantiation axis for the dereplication row, and the
+   alternative sources it lists are not interchangeable with MassBank: NIST14 is
+   unshippable, the GNPS reference-standard sets and Bruker MetaboBASE need
+   licence checks, and CASMI 2022 is a difficulty anchor rather than a library.
+   Within MassBank the honest axes are a different assumed adduct -- which also
+   re-points R4 -- a negative-mode corpus, or a different release tag for a
+   reproducibility-style pair. Nothing is blocked on code: the template takes an
+   entry file and two build commands.
+15. **T-L4-2's second instantiation is a build, not a decision**, and the node
+   set is chosen: Eawag on LC-ESI-ITFT, 3,256 spectra of cyanobacterial peptides.
+   It needs the two caps this template deliberately does not declare -- a
+   neighbour cap and a maximum component size -- because four of its components
+   hold more than ninety nodes, and the build refuses a hairball on purpose. So
+   the work is declaring both caps with the measurement that sets them, not
+   another corpus hunt.
