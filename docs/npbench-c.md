@@ -1,8 +1,14 @@
 # NPBench-C — build notes (Phase 0 / 0.5)
 
-Benchmark for natural-product and BGC computational agents. 32 campaigns from
-24 templates, four-rung ladders, deterministic grading, no LLM anywhere in the
+Benchmark for natural-product and BGC computational agents. **25 campaigns from
+20 templates**, four-rung ladders, deterministic grading, no LLM anywhere in the
 scoring path.
+
+The suite is frozen at 25: that is the owner's decision of 2026-10-27 and it
+closes open item 7. The catalogue describes 32 campaigns from 24 templates; three
+rows were retired on measurement with their numbers recorded below, and the two
+remaining instantiations (T-L4-1 x2, T-L4-2 x2) are deliberately not built. 25
+campaigns x 4 rungs = **100 graded rungs** and **560 graded components**.
 
 ## What exists
 
@@ -16,8 +22,8 @@ scoring path.
 | Readiness gate | `src/npbench_c/readiness/gate.py` | 25 mechanical checks, 5 pending-on-agent-runs |
 | Template: construct design | `src/npbench_c/templates/construct_design/` | shared engine, 2 ladders |
 | Campaign: construct design | `campaigns/construct-ecoli-rebh-01/` | oracle 1.0, gate 25/0/5 |
-| Campaign: constraint conflict | `campaigns/constraint-conflict-ecoli-rebh-01/` | oracle 1.0, gate 25/0/5 |
-| Campaign: feasible control | `campaigns/constraint-feasible-ecoli-rebh-01/` | oracle 1.0, gate 25/0/5 |
+| Campaign: constraint conflict | `campaigns/constraint-gc62-ecoli-rebh-01/` | oracle 1.0, gate 25/0/5 |
+| Campaign: feasible control | `campaigns/constraint-gc55-ecoli-rebh-01/` | oracle 1.0, gate 25/0/5 |
 | Template: NRPS mass balance | `src/npbench_c/templates/mass_balance_nrps/` | shared oracle, 2 instantiations |
 | Campaign: malleobactin | `campaigns/massbalance-nrps-malleobactin-01/` | oracle 1.0, gate 25/0/5 |
 | Campaign: sevadicin | `campaigns/massbalance-nrps-sevadicin-01/` | oracle 1.0, gate 25/0/5 |
@@ -25,7 +31,7 @@ scoring path.
 | Refusal contract | `tests/unit/test_build_refusals.py` | every one of 149 build refusals across 12 templates named by a test |
 | Release packager | `src/npbench_c/release/package.py` | builds the shippable tree; refuses gold, the oracle, `docs/`, the grading spec or any graded answer; assembles attribution |
 | Cold-sandbox scan | `src/npbench_c/readiness/cold_sandbox.py` | gate check 22 and a project-wide test on one implementation; declared collisions in `audit/`, outside every sandbox, checked for staleness |
-| Catalog | `docs/catalog.md` | 24 templates / 32 campaigns, grounded |
+| Catalog | `docs/catalog.md` | the design catalogue: 32 campaigns from 24 templates, grounded. 25 of them are built and the suite is frozen there |
 | Provisioning | `docs/environment.md` | tools, DBs, sandbox contract |
 | Template: MIBiG release diff | `src/npbench_c/templates/mibig_diff/` | shared oracle |
 | Campaign: MIBiG 3.1→4.0 diff | `campaigns/mibig-diff-3_1-to-4_0-01/` | oracle 1.0, gate 25/0/5 |
@@ -77,8 +83,9 @@ PYTHONPATH=src python3 -m npbench_c.readiness.gate campaigns/construct-ecoli-reb
 
 ## The rung ladder
 
-The graded unit is the rung, not the campaign. 32 campaigns x 4 rungs = 128
-graded (prompt, gold) pairs.
+The graded unit is the rung, not the campaign. 25 campaigns x 4 rungs = **100
+graded (prompt, gold) pairs**, carrying 560 graded components in all -- a median
+of 23 per campaign, from 11 to 38.
 
 | Rung | Measures | Target clear rate |
 |---|---|---|
@@ -203,7 +210,7 @@ A campaign is ready when `npbench_c.readiness.gate` returns all-pass — not whe
 someone believes it is. Checks requiring internal agent runs report **PENDING**,
 never PASS: the gate does not launder an unmeasured property into a green tick.
 
-Current state, every campaign: **25 pass / 0 fail / 5 pending**.
+Current state, every campaign: **26 pass / 0 fail / 5 pending**.
 
 The five pending checks (monotonicity, R1 clear rate, no-tool leakage,
 difficulty gate, discrimination) are satisfied by an `internal_sweep.json` from
@@ -220,7 +227,9 @@ on bytes nobody pinned.
 **Never audit before calibrating.** A campaign dropped for non-discrimination
 after a domain expert spent three hours on it has burned the scarcest resource
 in the project. Order is: build → internal sweep → drop/fix → audit → ship.
-Author ~44 to ship 32.
+The catalogue budgeted ~44 authored to ship 32; what it took to ship 25 was 28
+designs, of which 3 ground out on measurement and 2 x2 instantiations were left
+unbuilt by the freeze.
 
 ## Campaign solvability
 
@@ -297,8 +306,8 @@ and a test asserts the *Streptomyces* gold values are absent.
 ### Statistics at n=3
 
 Three repeats cannot support a claim if the unit of analysis is the campaign.
-With a ladder the unit is the rung-run — 32 campaigns x 4 rungs x 3 repeats =
-384 observations — and CIs come from a **cluster bootstrap resampling
+With a ladder the unit is the rung-run — 25 campaigns x 4 rungs x 3 repeats =
+300 observations — and CIs come from a **cluster bootstrap resampling
 campaigns**, which absorbs correlation between rungs of one campaign and
 between repeats of one run. Once campaigns are instantiated from templates,
 resample at the **template** level: four instantiations share an oracle and a
@@ -343,7 +352,9 @@ no sweep, because its numbers look authoritative.
 A stub-based sweep therefore marks itself `stub_based: true`, and the readiness
 gate keeps all five checks **PENDING** with the harness result shown but not
 promoted. `ready_to_audit` stays `False` until real systems run. With the stub
-sweep on record the gate reports **16 pass / 0 fail / 5 pending**.
+sweep on record the gate reports **26 pass / 0 fail / 5 pending** — the count
+that line carried when it was written was 16, which was the number of mechanical
+checks at the time.
 
 Harness self-test result (fixtures, not evidence): clear rates 1.00 / 0.75 /
 0.50 / 0.25 across R1-R4, cold depths 1/2/3/4, all five gates green.
@@ -405,7 +416,7 @@ must be 0, which is the Output-Fabrication failure mode made measurable.
 
 **The control, now built.** Abstention scored on its own rewards reflexive
 abstention — a system that always answers "infeasible" would score full marks on
-the conflict campaign. `constraint-feasible-ecoli-rebh-01` differs from it by
+the conflict campaign. `constraint-gc55-ecoli-rebh-01` differs from it by
 **one number** (GC floor 0.55 rather than 0.62); everything else is identical.
 Precision and recall are reported separately across the pair, never F1 alone.
 
@@ -1623,8 +1634,8 @@ campaigns**, four of them written in earlier sessions:
 | `ecaudit-fmn-dh-1_1_3_15-01` | `sequences_total`, in an exclusion's reason |
 | `selectivity-saureus-topoisomerase-01` | `activities_of_declared_type`, in the scope note |
 | `transfer-ec1_14-uniprot-01` | `partial_ec_mentions` and `queries_with_a_hit`, twice each |
-| `constraint-conflict-ecoli-rebh-01` | `unrestricted_gc_max`, `restricted_gc_max`, and most of R4 |
-| `constraint-feasible-ecoli-rebh-01` | `restricted_gc_max`, and most of R4 |
+| `constraint-gc62-ecoli-rebh-01` | `unrestricted_gc_max`, `restricted_gc_max`, and most of R4 |
+| `constraint-gc55-ecoli-rebh-01` | `restricted_gc_max`, and most of R4 |
 | `mibig-diff-3_1-to-4_0-01` | `shared_entries` and both raw difference counts |
 
 The constraint pair is the worst of them: the task description contains a worked
@@ -3035,8 +3046,8 @@ all twenty are now dropped with the exclusion recorded:
 | `bgcdetect-scoelicolor-01` | `accession`, `coordinate_convention` | 10 / 2 / 6 / 1 |
 | `ecaudit-fmn-dh-1_1_3_15-01` | `release`, `ec_number` | 7 / 4 / 5 / 2 |
 | `gcfcutoff-mibig-32-01` | `corpus_size`, `baseline_cutoff`, `include_gbk` | 6 / 2 / 5 / 2 |
-| `constraint-conflict-ecoli-rebh-01` | `witness_required` | 4 / 5 / 4 / 14 |
-| `constraint-feasible-ecoli-rebh-01` | `witness_required` | 4 / 5 / 3 / 14 |
+| `constraint-gc62-ecoli-rebh-01` | `witness_required` | 4 / 5 / 4 / 14 |
+| `constraint-gc55-ecoli-rebh-01` | `witness_required` | 4 / 5 / 3 / 14 |
 | `pocket-rebh-01` | `pdb_id`, `accession`, `contact_cutoff` | 8 / 6 / 8 / 6 |
 | `residues-prna-01` | `accession`, `swap_structure` | 8 / 8 / 9 / 6 |
 | `selectivity-saureus-topoisomerase-01` | `release`, `focal_target`, `reference_target` | 5 / 5 / 5 / 4 |
@@ -3550,8 +3561,8 @@ a four-campaign job. Built against scratch copies, then again in place:
 |---|---|
 | `construct-ecoli-rebh-01` | 20 of 41 |
 | `construct-ecoli-prna-01` | 17 of 41 |
-| `constraint-conflict-ecoli-rebh-01` | **0 of 62** |
-| `constraint-feasible-ecoli-rebh-01` | **0 of 71** |
+| `constraint-gc62-ecoli-rebh-01` | **0 of 62** |
+| `constraint-gc55-ecoli-rebh-01` | **0 of 71** |
 
 The two constraint campaigns are byte-identical because they read the table for
 which codons encode which residue and what GC each can reach, and never read the
@@ -3775,8 +3786,8 @@ drifts to whatever sounded good.
 ### And one of them was answer-adjacent
 
 This is what settled it rather than merely argued it. The constraint control
-pair grades one verdict each: `constraint-conflict-ecoli-rebh-01` answers
-`infeasible_gc_unreachable` and `constraint-feasible-ecoli-rebh-01` answers
+pair grades one verdict each: `constraint-gc62-ecoli-rebh-01` answers
+`infeasible_gc_unreachable` and `constraint-gc55-ecoli-rebh-01` answers
 `feasible`. The conflict half declared `abstention` in its sandbox-facing
 `task.yaml`; the feasible half declared `control`. The label told a reader which
 half of a two-verdict pair they were holding — in a field added for tidiness,
@@ -4615,6 +4626,79 @@ ladder is clearable. So a stub sweep now carries two gates of its own:
 Neither applies to a sweep without stubs, which is the sweep whose numbers get
 published.
 
+## Check 26: three campaigns were shipping their verdict in one word
+
+Found while cleaning up metadata before the freeze, by asking a question none of
+checks 21, 22 or 23 asks: **where a graded component's whole answer is one term
+of a published vocabulary, is that term anywhere in the cold sandbox?**
+
+Checks 21 and 22 pair a graded value with a label — the label inside the value,
+or the label in the gold PATH. Neither reaches a term stated against some
+*other* label. So this passed every scan, in `template_params`, for as long as
+the campaign had existed:
+
+```yaml
+conflict:
+  forbidden_codons: [CCC, CCG, CGC, CGG, GCC, GCG, GGC, GGG]
+  gc_global_min: 0.55
+  expect: feasible          # <- R3's entire answer
+```
+
+### What the scan found, across all 25 campaigns
+
+Eighteen components whose whole answer is one declared term. Three campaigns were
+genuinely stating it:
+
+- **the constraint control pair** — `expect:` in `template_params` on both
+  halves, plus prose on each (`"The correct answer to this campaign is that no
+  design exists"`, `"This is the feasible half of a control pair"`, a chance-level
+  note naming the most guessable verdict, and an `excluded_from_grading` reason
+  copied from the wrong half);
+- **`massbalance-nrps-sevadicin-01`** — two audit notes and a chance-level note
+  stating both the verdict and the residual it follows from.
+
+And one campaign was grading two **echoes**: `ecaudit`'s `canonical_model` and
+`threshold` are declared verbatim in `reference/`, because the campaign cannot be
+posed without naming the domain model it audits for and the cutoff to run it at.
+Both are now excluded from grading with the reason recorded, which is the same
+treatment `release` and `ec_number` already had in that campaign.
+
+The remaining twelve are collisions, declared in
+`audit/cold_sandbox_exemptions.json` with the collision named: a verdict
+PRECEDENCE rule has to name the terms it orders (`mibig-diff`, both mass-balance
+instantiations), the six construct constraint NAMES are the published contract
+and one of them is also R3's answer, and a corpus statistic that one of 43
+admissible entries is exactly balanced identifies none of them.
+
+### The campaign names were part of the leak
+
+`constraint-conflict-ecoli-rebh-01` and `constraint-feasible-ecoli-rebh-01`. The
+campaign id is in `task.yaml`, which every sandbox gets, so the directory name
+answered R3 before the agent read a single constraint. They are
+**`constraint-gc62-ecoli-rebh-01`** and **`constraint-gc55-ecoli-rebh-01`** now —
+named for the parameter under test, which each objective already states.
+
+### And the pair could not say that its halves disagree
+
+The subtler one. Both halves wanted to explain why a control pair exists, and
+every honest phrasing of it ("a system that always answers one way scores full
+marks on one half and zero on the other") states that the two verdicts differ.
+A higher GC floor is never easier, so *that sentence answers both campaigns at
+once* — no computation required. Both halves now carry the same
+`control_pair_note`, which says the pair exists so abstention can be scored as
+precision and recall, and says nothing about the relationship. Identical prose in
+both halves is the structural fix: identical text cannot tell you which half you
+are holding.
+
+### What the fix cost, and what it did not
+
+The verdict is now derived from the arithmetic rather than from the authored
+expectation (`"feasible" if reachable else "infeasible_gc_unreachable"`), the
+expectation moved to `gold/expectation.json` outside every sandbox, and the build
+refuses a `task.yaml` that declares it or a campaign that has no expectation file
+at all. **Both halves' gold is byte-identical after all of it** — the answers were
+right, and what was wrong was that the sandbox told you them.
+
 ## Open items
 
 1. ~~CAI table provenance.~~ **Closed.** The tables are derived from two pinned
@@ -4665,16 +4749,15 @@ published.
    on-theme data (counts above); the owner picks between HIV-1 RT with the theme
    drift, a re-scoped census ladder, and waiting for a release that fills the
    bacterial variant values. Nothing is blocked on licensing.
-7. **Three rows are retired on measurement, so the reachable count is 26.**
-   T-L2-4 (×2), T-L5-2 and now T-L6-3 all ground out, each with its numbers
-   recorded above. Against that: **25 campaigns are built**, and T-L4-1's
-   second instantiation is the one remaining matchms row, which makes **26
-   reachable** — 27 if T-L5-2 is re-scoped rather than dropped. The headline "32 campaigns from 24 templates" in this file and in `docs/catalog.md` is the
-   *catalogued* target and still has not been restated downward, because two
-   things are the owner's call: whether to re-scope the retired rows, and how to
-   count T-L3-5a, which is a built replacement for a re-tiered row rather than a
-   catalogued campaign of its own. The arithmetic is settled; the number to
-   publish is not. This must be decided before the audit packet quotes one.
+7. ~~The published count.~~ **Decided: the suite is 25 campaigns from 20
+   templates, frozen there** (owner, 2026-10-27). Restated in this file's
+   headline, in `docs/catalog.md`'s title and in `docs/environment.md`, with the
+   difference from the catalogue recorded rather than dropped: three rows ground
+   out on measurement (T-L2-4 ×2, T-L5-2, T-L6-3, numbers above), and the two
+   remaining second instantiations — T-L4-1 ×2 and T-L4-2 ×2 — are buildable and
+   deliberately not built (items 14 and 15). T-L3-5a counts as one of the 25: it
+   is a built campaign whatever it replaced. 25 campaigns × 4 rungs = 100 graded
+   rungs carrying 560 graded components.
 8. ~~Sweep cost: the tool memo covers the tool, not the work around it.~~
    **Closed, and the diagnosis in this item was wrong.** Profiled per phase, the
    sandbox copy it blamed costs 0.01s and the parse was only one of three causes:
@@ -4729,7 +4812,8 @@ published.
    scalar boundary both checks now share. Scope is the set shipped together:
    the gate passes every built campaign, `audit_release` passes the release's
    own subset. See "Check 23" above.
-14. **T-L4-1's second instantiation needs an axis, and it is the owner's call.**
+14. **Not built, by the freeze.** T-L4-1's second instantiation needs an axis,
+   and it is the owner's call.
    The catalogue names no instantiation axis for the dereplication row, and the
    alternative sources it lists are not interchangeable with MassBank: NIST14 is
    unshippable, the GNPS reference-standard sets and Bruker MetaboBASE need
@@ -4738,8 +4822,8 @@ published.
    re-points R4 -- a negative-mode corpus, or a different release tag for a
    reproducibility-style pair. Nothing is blocked on code: the template takes an
    entry file and two build commands.
-15. **T-L4-2's second instantiation is a build, not a decision**, and the node
-   set is chosen: Eawag on LC-ESI-ITFT, 3,256 spectra of cyanobacterial peptides.
+15. **Not built, by the freeze.** T-L4-2's second instantiation is a build
+   rather than a decision, and the node set is chosen: Eawag on LC-ESI-ITFT, 3,256 spectra of cyanobacterial peptides.
    It needs the two caps this template deliberately does not declare -- a
    neighbour cap and a maximum component size -- because four of its components
    hold more than ninety nodes, and the build refuses a hairball on purpose. So

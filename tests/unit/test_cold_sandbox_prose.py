@@ -463,3 +463,101 @@ def test_the_cross_scan_catches_the_leak_that_forced_it(tmp_path, sandboxes):
     assert cold_sandbox.findings(mall, sandbox, _resolve_gold) == []
     assert cold_sandbox.cross_findings(mall, sandbox, [sev], _resolve_gold) == [
         "massbalance-nrps-sevadicin-01:verdict_sevadicin@sevadicin = 'balanced'"]
+
+# ------------------------------------------------- check 26: one-word answers
+
+
+@pytest.mark.parametrize("campaign", _campaigns(), ids=lambda c: c.name)
+def test_no_single_term_answer_is_stated_in_the_cold_sandbox(campaign, sandboxes):
+    hits = cold_sandbox.single_term_findings(
+        campaign, sandboxes[campaign.name], _resolve_gold)
+    assert not hits, (
+        f"{campaign.name}: a component whose WHOLE answer is one declared term "
+        f"has that term stated in the cold sandbox:\n"
+        + "\n".join(f"  {hit}" for hit in sorted(hits))
+        + "\n\nThree campaigns shipped this: the constraint control pair (one of "
+          "them as a template parameter, `expect: feasible`, and both in their "
+          "campaign NAMES) and a mass-balance instantiation whose audit notes "
+          "stated its verdict. Fix the sandbox, or -- only for a genuine "
+          "collision, where no sentence attaches the term to the case it "
+          "answers -- declare it under single_term_exemptions."
+    )
+
+
+@pytest.mark.parametrize("campaign", _campaigns(), ids=lambda c: c.name)
+def test_every_declared_single_term_collision_still_collides(campaign, sandboxes):
+    stale = cold_sandbox.stale_single_term_exemptions(
+        campaign, sandboxes[campaign.name], _resolve_gold)
+    assert not stale, (
+        f"{campaign.name}: {len(stale)} declared single-term collision(s) no "
+        "longer describe anything:\n" + "\n".join(f"  {s}" for s in stale))
+
+
+def test_a_vocabulary_declaration_is_not_a_disclosure():
+    """The three shapes a campaign publishes its vocabulary in, none of which is
+    the leak: a flow list, a block list, and a term keyed to its definition."""
+    text = """
+verdict_vocabulary: [balanced, cyclisation_only, additional_chemistry_required]
+accepted:
+  - confirmed
+  - tentative
+verdict_rules:
+  substantive_change: the values differ after normalisation
+"""
+    left = cold_sandbox.declarations_removed(text)
+    for term in ("balanced", "cyclisation_only", "additional_chemistry_required",
+                 "confirmed", "tentative", "substantive_change"):
+        assert term not in left, term
+
+
+def test_a_term_stated_against_any_label_is_found(tmp_path):
+    """The gap this check closes. Check 22's third shape pairs a term with the
+    label in its gold PATH; `expect: feasible` states R3's whole answer against
+    a label that appears in no path, and passed every scan for months."""
+    campaign = tmp_path / "campaign"
+    (campaign / "gold").mkdir(parents=True)
+    (campaign / "gold" / "gold.json").write_text(json.dumps({"verdict": "feasible"}))
+    (campaign / "grading.json").write_text(json.dumps({"rungs": [{
+        "rung_id": "r3",
+        "components": [{"name": "verdict", "scorer": "exact",
+                        "args": {"pred": "pred:verdict", "gold": "gold:verdict"}}],
+    }]}))
+    sandbox = tmp_path / "sandbox"
+    (sandbox / "reference").mkdir(parents=True)
+    (sandbox / "reference" / "rules.json").write_text(
+        json.dumps({"verdict_vocabulary": ["feasible", "infeasible"]}))
+
+    # The vocabulary alone is not a hit.
+    (sandbox / "task.yaml").write_text("objective: assess the constraint set\n")
+    assert not cold_sandbox.single_term_findings(campaign, sandbox, _resolve_gold)
+
+    # The answer against an unrelated label is.
+    (sandbox / "task.yaml").write_text("template_params:\n  expect: feasible\n")
+    hits = cold_sandbox.single_term_findings(campaign, sandbox, _resolve_gold)
+    assert hits == ["verdict = 'feasible'"], hits
+
+    # And so is the answer in prose.
+    (sandbox / "task.yaml").write_text(
+        "objective: >\n  the constraint set here is feasible, so supply a design\n")
+    assert cold_sandbox.single_term_findings(campaign, sandbox, _resolve_gold)
+
+
+def test_a_multi_term_answer_is_not_this_check_s_business(tmp_path):
+    """Scope: this check is for a component whose ENTIRE answer is one word. A
+    per-item table of the same terms is check 22's shape two, where the pairing
+    with a label is what matters."""
+    campaign = tmp_path / "campaign"
+    (campaign / "gold").mkdir(parents=True)
+    (campaign / "gold" / "gold.json").write_text(
+        json.dumps({"table": {"a": "feasible", "b": "infeasible"}}))
+    (campaign / "grading.json").write_text(json.dumps({"rungs": [{
+        "rung_id": "r3",
+        "components": [{"name": "table", "scorer": "exact",
+                        "args": {"pred": "pred:table", "gold": "gold:table"}}],
+    }]}))
+    sandbox = tmp_path / "sandbox"
+    (sandbox / "reference").mkdir(parents=True)
+    (sandbox / "reference" / "rules.json").write_text(
+        json.dumps({"verdict_vocabulary": ["feasible", "infeasible"]}))
+    (sandbox / "task.yaml").write_text("objective: both feasible and infeasible\n")
+    assert not cold_sandbox.single_term_findings(campaign, sandbox, _resolve_gold)

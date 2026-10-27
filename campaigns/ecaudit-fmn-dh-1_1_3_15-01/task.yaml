@@ -167,6 +167,17 @@ grading:
       is computed over R2 upward.
 
 excluded_from_grading:
+  - field: canonical_model, threshold
+    reason: >
+      Both are declared verbatim in reference/, because the campaign cannot be
+      posed without naming the domain model it audits for and the cutoff to run
+      it at. Grading them back measures a copy out of the cold sandbox rather
+      than any work, which is the same reason `release` and `ec_number` are
+      excluded below. They were graded at R1 until an audit of every single-term
+      graded answer against the cold sandbox found them stated there; what it
+      takes to USE them is still graded, at R1 in the panel size and the
+      sequence counts and at R2 in the per-section presence.
+
   - field: release and ec_number
     reason: >
       The snapshot is named in snapshots_required and the EC number is what this

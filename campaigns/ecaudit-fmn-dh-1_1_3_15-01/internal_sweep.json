@@ -1379,6 +1379,10 @@
     "detail": "distinct cold depths [1, 2, 3, 4], mean score 0.55; needs >=2 depths and 0 < mean < 1",
     "pass": true
   },
+  "every_rung_is_cleared_by_some_fixture": {
+    "detail": "every rung is cleared by at least one fixture",
+    "pass": true
+  },
   "leakage_no_tool_ablation": {
     "detail": "no-tool score 0.0000 vs chance floor 0.2505, SE 0.0000, z -inf; kill above z=2.0",
     "pass": true
@@ -1389,6 +1393,10 @@
   },
   "r1_clear_rate": {
     "detail": "R1 pass@1 for generic tooled systems = 1.0; minimum 0.8 (below this the campaign measures environment setup, not science)",
+    "pass": true
+  },
+  "stub_systems_do_not_crash": {
+    "detail": "6 fixture(s), 0 crashed or timed-out run(s); a fixture that crashes is a harness bug, not a finding",
     "pass": true
   }
 }

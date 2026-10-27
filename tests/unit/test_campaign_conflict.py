@@ -24,7 +24,7 @@ from npbench_c.templates.construct_design.params import (
 )
 
 CAMPAIGN = (pathlib.Path(__file__).resolve().parents[2]
-            / "campaigns" / "constraint-conflict-ecoli-rebh-01")
+            / "campaigns" / "constraint-gc62-ecoli-rebh-01")
 pytestmark = pytest.mark.skipif(not (CAMPAIGN / "gold" / "gold.json").is_file(),
                                 reason="campaign gold not generated")
 
@@ -149,6 +149,8 @@ def test_build_refuses_a_non_pairwise_or_satisfiable_conflict(tmp_path):
         (campaign / "reference" / name).write_text(src.read_text())
     (campaign / "inputs" / "rebh.faa").write_text(
         (CAMPAIGN / "inputs" / "rebh.faa").read_text())
+    (campaign / "gold").mkdir()
+    (campaign / "gold" / "expectation.json").write_text('{"expect": "infeasible"}')
 
     task = (CAMPAIGN / "task.yaml").read_text()
     # A requirement already reachable under the forbidden set is not infeasible.
@@ -165,15 +167,21 @@ def test_build_refuses_a_non_pairwise_or_satisfiable_conflict(tmp_path):
         conflict_build.analyse(campaign)
 
 
-def test_required_sibling_is_recorded():
-    """Abstention measured without a sufficient-evidence control rewards
-    reflexive abstention: a system always answering "infeasible" would score
-    full marks here. The requirement must be in the artifact, not just intent.
+def test_required_sibling_is_recorded_without_stating_either_verdict():
+    """Abstention measured without a control rewards a reflexive verdict, so the
+    requirement must be in the artifact rather than in intent -- and the artifact
+    must not say how the two verdicts relate. A higher GC floor is never easier,
+    so one such sentence would answer both campaigns at once. It did, in this
+    campaign's own `required_sibling`, until the gate learned to look.
     """
     import yaml
     task = yaml.safe_load((CAMPAIGN / "task.yaml").read_text())
     assert "required_sibling" in task
-    assert "feasible" in task["required_sibling"]
+    assert "constraint-gc55-ecoli-rebh-01" in task["required_sibling"]
+    assert "control_pair_note" in task
+    for text in (task["required_sibling"], task["control_pair_note"],
+                 (CAMPAIGN / "task.yaml").read_text()):
+        assert "infeasible_gc_unreachable" not in text
 
 
 # ---------------------------------------------------------- isolation
@@ -202,7 +210,7 @@ def test_campaign_is_solvable_from_its_sandbox(tmp_path, engine):
 # =============================================================== control pair
 
 FEASIBLE = (pathlib.Path(__file__).resolve().parents[2]
-            / "campaigns" / "constraint-feasible-ecoli-rebh-01")
+            / "campaigns" / "constraint-gc55-ecoli-rebh-01")
 pair_ready = pytest.mark.skipif(not (FEASIBLE / "gold" / "gold.json").is_file(),
                                 reason="feasible sibling not built")
 
@@ -221,8 +229,17 @@ def test_the_pair_differs_by_exactly_one_number():
     assert a["host"] == b["host"] and a["strategy"] == b["strategy"]
     assert a["conflict"]["forbidden_codons"] == b["conflict"]["forbidden_codons"]
     assert a["conflict"]["gc_global_min"] != b["conflict"]["gc_global_min"]
-    assert a["conflict"]["expect"] == "infeasible"
-    assert b["conflict"]["expect"] == "feasible"
+    # And the authored expectation is NOT in either task.yaml: it is R3's verdict
+    # in one word, and task.yaml reaches every sandbox. It shipped there until
+    # the gate learned to look for a single-term answer stated against any label.
+    assert "expect" not in a["conflict"]
+    assert "expect" not in b["conflict"]
+    from npbench_c.templates.construct_design.params import ConflictSpec
+    assert ConflictSpec.load(CAMPAIGN).expect == "infeasible"
+    assert ConflictSpec.load(FEASIBLE).expect == "feasible"
+    for campaign in (CAMPAIGN, FEASIBLE):
+        assert (campaign / ConflictSpec.EXPECTATION).is_file()
+        assert pathlib.PurePath(ConflictSpec.EXPECTATION).parts[0] == "gold"
 
 
 @pair_ready
@@ -322,6 +339,8 @@ def test_build_refuses_to_contradict_its_declared_expectation(tmp_path):
     (campaign / "inputs" / "rebh.faa").write_text(
         (CAMPAIGN / "inputs" / "rebh.faa").read_text())
     task = (CAMPAIGN / "task.yaml").read_text()
+    (campaign / "gold").mkdir()
+    (campaign / "gold" / "expectation.json").write_text('{"expect": "infeasible"}')
 
     # Declared infeasible, but the requirement is reachable.
     (campaign / "task.yaml").write_text(
@@ -331,7 +350,39 @@ def test_build_refuses_to_contradict_its_declared_expectation(tmp_path):
 
     # Declared feasible, but the requirement is out of reach.
     (campaign / "task.yaml").write_text(
-        task.replace("gc_global_min: 0.62", "gc_global_min: 0.60")
-            .replace("expect: infeasible", "expect: feasible"))
+        task.replace("gc_global_min: 0.62", "gc_global_min: 0.60"))
+    (campaign / "gold" / "expectation.json").write_text('{"expect": "feasible"}')
     with pytest.raises(OracleFailure, match="declared feasible"):
         conflict_build.analyse(campaign)
+
+
+@pair_ready
+def test_the_build_refuses_an_expectation_inside_the_sandbox(tmp_path):
+    """The defect itself: `expect: feasible` as a template parameter is R3's
+    whole answer, in a file every sandbox gets."""
+    import yaml
+
+    from npbench_c.templates.construct_design.core import OracleFailure
+    from npbench_c.templates.construct_design.params import ConflictSpec
+
+    campaign = tmp_path / "leaky"
+    campaign.mkdir()
+    task = yaml.safe_load((CAMPAIGN / "task.yaml").read_text())
+    task["template_params"]["conflict"]["expect"] = "infeasible"
+    (campaign / "task.yaml").write_text(yaml.safe_dump(task))
+    with pytest.raises(OracleFailure, match="reaches every sandbox"):
+        ConflictSpec.load(campaign)
+
+
+@pair_ready
+def test_the_build_refuses_without_the_gold_side_expectation(tmp_path):
+    import shutil
+
+    from npbench_c.templates.construct_design.core import OracleFailure
+    from npbench_c.templates.construct_design.params import ConflictSpec
+
+    campaign = tmp_path / "unexpecting"
+    campaign.mkdir()
+    shutil.copy(CAMPAIGN / "task.yaml", campaign / "task.yaml")
+    with pytest.raises(OracleFailure, match="no gold/expectation.json"):
+        ConflictSpec.load(campaign)

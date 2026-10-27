@@ -1,4 +1,8 @@
-# Tools, reference data and databases for the 32 campaigns
+# Tools, reference data and databases for the campaigns
+
+*(Written against the catalogued 32; the suite is frozen at the 25 that were
+built. Every pin below is in the image and verified against it -- the count in
+the title was the only thing the freeze changed here.)*
 
 What the container must contain, what each campaign needs, and — the part that
 decides whether the numbers mean anything — **what the agent is given versus
@@ -694,10 +698,11 @@ a later MAFFT regression would not change the HMMER results computed from it.
    the four S2 campaigns — it may dominate the image.
 3. **ChEMBL share-alike** needs a licensing decision before L5 is authored.
 4. **CASMI 2022** distribution terms and file layout need a probe.
-5. **Container parallelism target.** A full sweep at 32 campaigns × cold+warm ×
-   n=3 × the chosen surfaces runs into thousands of container-hours; at 100
-   parallel containers that is days, at 10 it is weeks. This determines the
-   orchestration design and cannot be retrofitted cheaply.
+5. **Container parallelism target.** A full sweep at the built 25 campaigns ×
+   cold+warm × n=3 × the chosen surfaces is 300 rung-runs per system; at three
+   systems that is 900 agent sessions, which is still hundreds of
+   container-hours. At 100 parallel containers that is hours, at 10 it is days.
+   This determines the orchestration design and cannot be retrofitted cheaply.
 6. **`MIBiG quality` semantics.** 2,710 of 3,013 entries are `questionable`,
    which appears to track curation status rather than scientific doubt. Confirm
    with MIBiG curators before the field is cited anywhere; meanwhile all

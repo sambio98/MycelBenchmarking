@@ -136,6 +136,17 @@ def exemptions(campaign_name: str, path: pathlib.Path | None = None) -> dict[str
             for entry in declared.get(campaign_name, [])}
 
 
+def single_term_exemptions(campaign_name: str,
+                           path: pathlib.Path | None = None) -> dict[str, str]:
+    """Declared collisions for check 26, as {component: reason}."""
+    source = path or EXEMPTIONS
+    if not source.is_file():
+        return {}
+    declared = json.loads(source.read_text()).get("single_term_exemptions") or {}
+    return {entry["component"]: entry["reason"]
+            for entry in declared.get(campaign_name, [])}
+
+
 def cross_exemptions(campaign_name: str,
                      path: pathlib.Path | None = None) -> dict[tuple[str, str], str]:
     """Declared cross-campaign collisions for one READER campaign.
@@ -485,6 +496,95 @@ def stale_exemptions(campaign: pathlib.Path, sandbox: pathlib.Path,
             out.append(f"{name} (no longer collides; drop the exemption)")
     return out
 
+
+
+# ------------------------------------------------- a whole answer in one word
+
+#: A YAML or JSON list of bare scalars -- `[a, b, c]`, possibly across lines --
+#: which is how a campaign DECLARES a closed vocabulary.
+_FLOW_LIST = re.compile(r"\[[^\[\]{}]*\]", re.S)
+#: A YAML block list item whose value is a bare scalar: `  - confirmed`.
+_BLOCK_ITEM = re.compile(r"^[ \t]*-[ \t]+[A-Za-z0-9_.+-]+[ \t]*$", re.M)
+
+
+#: A term in KEY position with its own definition as the value --
+#: `"substantive_change": "the values differ after normalisation"`. Declaring
+#: what a term means is not stating which case it applies to.
+_DEFINITION_KEY = re.compile(r'^([ \t]*)"?([A-Za-z0-9_.+-]+)"?[ \t]*:', re.M)
+
+
+def declarations_removed(text: str) -> str:
+    """The sandbox's text with every vocabulary DECLARATION taken out.
+
+    A campaign has to publish the vocabulary it grades against, and what each
+    term MEANS -- an answer from a closed enum is unanswerable otherwise -- so
+    neither the list nor the definition is ever the leak. Three shapes come out:
+    a flow list, a block list of bare scalars, and a term in key position with
+    its definition as the value. What is left is prose and scalar assignments,
+    and a graded term appearing THERE is the answer stated against something.
+    """
+    stripped = _BLOCK_ITEM.sub("", _FLOW_LIST.sub("[]", text))
+    return _DEFINITION_KEY.sub(lambda m: f"{m.group(1)}_:", stripped)
+
+
+def single_term_findings(campaign: pathlib.Path, sandbox: pathlib.Path,
+                         resolve) -> list[str]:
+    """Check 26: a component whose WHOLE answer is one declared term, stated.
+
+    The gap this closes, measured. Check 22's third shape pairs a graded term
+    with the label in its gold PATH, so it catches `hosts.ecoli.binding_constraint`
+    stated against "ecoli". It cannot catch a term stated against a DIFFERENT
+    label -- and the constraint control pair shipped `expect: feasible` as a
+    template parameter, which is R3's entire answer, in the sandbox, for as long
+    as the campaign has existed. Two more campaigns stated their single-term
+    verdict in prose.
+
+    So where a component's whole answer is one word from a published vocabulary,
+    the rule is stronger than a window: that word may appear in the sandbox's
+    vocabulary declarations and nowhere else. Collisions -- a term the campaign
+    must also name for another reason -- are declared in
+    `audit/cold_sandbox_exemptions.json` under `single_term_exemptions`.
+    """
+    spec = json.loads((campaign / "grading.json").read_text())
+    gold = json.loads((campaign / "gold" / "gold.json").read_text())
+    terms = vocabularies(sandbox)
+    waived = single_term_exemptions(campaign.name)
+    prose = declarations_removed(sandbox_prose(sandbox))
+
+    hits = []
+    for name, _path, value in _graded(spec, gold, resolve):
+        if name in waived or not isinstance(value, str) or value not in terms:
+            continue
+        if re.search(r"(?<![\w-])" + re.escape(value) + r"(?![\w-])", prose):
+            hits.append(f"{name} = {value!r}")
+    return hits
+
+
+def stale_single_term_exemptions(campaign: pathlib.Path, sandbox: pathlib.Path,
+                                 resolve) -> list[str]:
+    """Declared single-term collisions that no longer collide."""
+    waived = single_term_exemptions(campaign.name)
+    if not waived:
+        return []
+    spec = json.loads((campaign / "grading.json").read_text())
+    gold = json.loads((campaign / "gold" / "gold.json").read_text())
+    terms = vocabularies(sandbox)
+    prose = declarations_removed(sandbox_prose(sandbox))
+
+    graded, live = set(), set()
+    for name, _path, value in _graded(spec, gold, resolve):
+        graded.add(name)
+        if (name in waived and isinstance(value, str) and value in terms
+                and re.search(r"(?<![\w-])" + re.escape(value) + r"(?![\w-])",
+                              prose)):
+            live.add(name)
+    out = []
+    for name in sorted(waived):
+        if name not in graded:
+            out.append(f"{name} (not a graded component)")
+        elif name not in live:
+            out.append(f"{name} (no longer collides; drop the exemption)")
+    return out
 
 
 # ------------------------------------------------------------ across campaigns

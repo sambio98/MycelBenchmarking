@@ -232,16 +232,16 @@ def test_the_check_fires_on_a_dangling_campaign_reference(tmp_path):
 
 def test_the_check_fires_on_a_one_way_control_pair(tmp_path):
     """A control pair whose halves do not name each other is two campaigns."""
-    pair = ROOT / "constraint-conflict-ecoli-rebh-01"
+    pair = ROOT / "constraint-gc62-ecoli-rebh-01"
     if not (pair / "task.yaml").is_file():
         pytest.skip("the constraint control pair is not built")
     campaign = tmp_path / "conflict"
     shutil.copytree(pair, campaign)
     # The copy keeps the pairing, but it is no longer the campaign its partner
     # names -- which is exactly the asymmetry the check looks for.
-    (tmp_path / "constraint-feasible-ecoli-rebh-01").mkdir()
-    shutil.copy(ROOT / "constraint-feasible-ecoli-rebh-01" / "task.yaml",
-                tmp_path / "constraint-feasible-ecoli-rebh-01" / "task.yaml")
+    (tmp_path / "constraint-gc55-ecoli-rebh-01").mkdir()
+    shutil.copy(ROOT / "constraint-gc55-ecoli-rebh-01" / "task.yaml",
+                tmp_path / "constraint-gc55-ecoli-rebh-01" / "task.yaml")
     result = _design_claims_are_checkable(campaign)
     assert result.status != PASS
     assert "names" in result.detail
@@ -249,15 +249,15 @@ def test_the_check_fires_on_a_one_way_control_pair(tmp_path):
 
 def test_a_campaign_naming_its_real_partner_passes(tmp_path):
     """The other side of the pairing test: a symmetric pair is fine."""
-    for name in ("constraint-conflict-ecoli-rebh-01",
-                 "constraint-feasible-ecoli-rebh-01"):
+    for name in ("constraint-gc62-ecoli-rebh-01",
+                 "constraint-gc55-ecoli-rebh-01"):
         source = ROOT / name
         if not (source / "task.yaml").is_file():
             pytest.skip("the constraint control pair is not built")
         (tmp_path / name).mkdir()
         shutil.copy(source / "task.yaml", tmp_path / name / "task.yaml")
     result = _design_claims_are_checkable(
-        tmp_path / "constraint-conflict-ecoli-rebh-01")
+        tmp_path / "constraint-gc62-ecoli-rebh-01")
     assert result.status == PASS, result.detail
 
 

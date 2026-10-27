@@ -1,0 +1,4 @@
+{
+ "expect": "infeasible",
+ "_what_this_is": "The authored expectation for this campaign's feasibility verdict. The build cross-checks it against the arithmetic and refuses gold if they disagree, so a campaign cannot silently become the opposite of what it was authored to be. It lives here rather than in task.yaml because it is R3's verdict in one word."
+}

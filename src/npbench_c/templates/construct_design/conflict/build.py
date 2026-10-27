@@ -118,11 +118,14 @@ def analyse(campaign: pathlib.Path) -> dict:
         "restricted_gc_min": restricted["gc_min"],
         "restricted_gc_max": restricted["gc_max"],
         "admissible_codon_counts": restricted["admissible_codon_counts"],
-        "verdict": ("infeasible_gc_unreachable" if spec.expect == "infeasible"
-                    else "feasible"),
+        # Derived from the ARITHMETIC, not from the authored expectation. The
+        # two cannot disagree -- the check above refuses gold if they do -- and
+        # deriving it here means gold would still be right if the expectation
+        # file were wrong, rather than merely consistent with it.
+        "verdict": "feasible" if reachable else "infeasible_gc_unreachable",
         "expect": spec.expect,
-        "conflicting_constraints": (sorted(["forbidden_codons", "gc_global_min"])
-                                    if spec.expect == "infeasible" else []),
+        "conflicting_constraints": ([] if reachable else
+                                    sorted(["forbidden_codons", "gc_global_min"])),
         "constructive_witness": witness_design,
         "witness": {
             "required_gc_min": spec.gc_global_min,

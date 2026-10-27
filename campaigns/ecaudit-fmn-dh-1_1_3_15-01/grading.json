@@ -21,22 +21,6 @@
           }
         },
         {
-          "name": "canonical_model",
-          "scorer": "exact",
-          "args": {
-            "pred": "pred:canonical_model",
-            "gold": "gold:canonical_model"
-          }
-        },
-        {
-          "name": "threshold",
-          "scorer": "exact",
-          "args": {
-            "pred": "pred:threshold",
-            "gold": "gold:threshold"
-          }
-        },
-        {
           "name": "sequences_total",
           "scorer": "exact",
           "args": {

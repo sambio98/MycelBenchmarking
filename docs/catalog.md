@@ -1,8 +1,17 @@
-# NPBench-C campaign catalog — 32 campaigns from 24 templates
+# NPBench-C campaign catalog — 32 catalogued, 25 built and frozen
 
 Authoring unit is the **template** (one oracle, one contract, one ladder); a
-campaign is a template instantiated on specific data. 24 templates, 8 of them
-instantiated twice, gives 32 campaigns and 128 graded rungs.
+campaign is a template instantiated on specific data. The catalogue below
+describes 24 templates, 8 of them instantiated twice: 32 campaigns and 128
+graded rungs.
+
+**What was built is 25 campaigns from 20 templates, 5 of them instantiated
+twice, giving 100 graded rungs and 560 graded components, and the suite is frozen
+there** (owner's decision, 2026-10-27). The difference from the catalogue is
+recorded rather than quietly dropped: three rows ground out on measurement
+(T-L2-4 x2, T-L5-2, T-L6-3, each with its numbers in `docs/npbench-c.md`), and
+the two remaining second instantiations -- T-L4-1 x2 and T-L4-2 x2 -- are
+buildable and deliberately not built. A row's `Build` column says which it is.
 
 The 8 doubled templates are the ones with a clean instantiation axis, and they
 carry the **private split**, because that is where variant regeneration is
@@ -1275,7 +1284,11 @@ code, so the second instantiation — PrnA (UniProt P95480, 538 aa, reviewed) �
 a data change plus one build command. Gold was verified byte-identical across
 the factoring.
 
-**T-L6-2** **Built**: `campaigns/constraint-conflict-ecoli-rebh-01`. The
+**T-L6-2** **Built**: `campaigns/constraint-gc62-ecoli-rebh-01`. (Renamed from
+`constraint-conflict-...`: the campaign id reaches every sandbox, so a name that
+says "conflict" answered R3 before the agent read a constraint. Both halves are
+named for the GC floor under test, which each objective states anyway. See
+"Check 26" in `docs/npbench-c.md`.) The
 declared constraint set is unsatisfiable and the correct answer is to abstain on
 the design, name the conflicting pair and prove it.
 
@@ -1300,7 +1313,7 @@ requirement becomes reachable. Only the two GC-relevant constraints move it; the
 five composition constraints restrict which sequences are admissible without
 changing what GC any sequence can reach, and R4 tests exactly that distinction.
 
-**The control pair, now built.** `campaigns/constraint-feasible-ecoli-rebh-01`
+**The control pair, now built.** `campaigns/constraint-gc55-ecoli-rebh-01`
 is the sufficient-evidence control, and it differs from the conflict campaign by
 **one number**: the GC floor is 0.55 rather than 0.62. Same protein, same
 forbidden-codon set, same host, same composition constraints. Reflexive

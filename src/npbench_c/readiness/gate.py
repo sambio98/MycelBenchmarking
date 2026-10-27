@@ -769,6 +769,37 @@ def _antismash_versions_are_not_mixed(campaign: pathlib.Path) -> Check:
     return _check("antismash_versions_are_not_mixed", not problems, detail)
 
 
+def _single_term_answers_are_not_stated(campaign: pathlib.Path) -> Check:
+    """Check 26: a component whose whole answer is one declared term, stated.
+
+    Measured gap. Check 22's shapes pair a graded term with the label in its gold
+    path or inside the graded value; neither reaches a term stated against a
+    DIFFERENT label. The constraint control pair shipped `expect: feasible` as a
+    template parameter -- R3's entire answer, in the sandbox -- and two more
+    campaigns stated their single-term verdict in prose. All three passed checks
+    21, 22 and 23 every time they ran.
+    """
+    import tempfile
+
+    from npbench_c.readiness import cold_sandbox
+    from npbench_c.sweep.runner import build_sandbox
+
+    with tempfile.TemporaryDirectory() as tmp:
+        sandbox = build_sandbox(campaign, pathlib.Path(tmp) / "cold", None)
+        hits = cold_sandbox.single_term_findings(campaign, sandbox, _resolve_gold)
+        stale = cold_sandbox.stale_single_term_exemptions(
+            campaign, sandbox, _resolve_gold)
+        waived = cold_sandbox.single_term_exemptions(campaign.name)
+
+    problems = ([f"stated: {h}" for h in sorted(hits)]
+                + [f"stale exemption: {s}" for s in stale])
+    detail = (f"{len(waived)} declared collision(s)" if waived
+              else "no declared collisions")
+    detail += ("; " + "; ".join(problems) if problems
+               else "; no single-term answer stated outside its vocabulary")
+    return _check("single_term_answers_are_not_stated", not problems, detail)
+
+
 def _integrity(campaign: pathlib.Path) -> list[Check]:
     hits = []
     for path in sorted(campaign.rglob("*")):
@@ -823,6 +854,7 @@ def run(campaign_dir: pathlib.Path) -> list[Check]:
     checks.append(_cold_sandbox_withholds_other_campaigns_answers(campaign))
     checks.append(_design_claims_are_checkable(campaign))
     checks.append(_antismash_versions_are_not_mixed(campaign))
+    checks.append(_single_term_answers_are_not_stated(campaign))
     checks += _integrity(campaign)
     checks += _pending_agent_runs(campaign)
     return checks

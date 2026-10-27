@@ -4,6 +4,12 @@ track: EX
 family: construct_and_sequence_design
 layer: L6_translation_and_design
 version: 1.0.0
+np_class: alkaloid
+min_tool_surface: S0
+tool_surface_note: >
+  Pure computation over the pinned tables this campaign ships. No tool is
+  needed at any rung, which is also what makes the campaign reproducible
+  without the image.
 horizon_tier: T-short
 license_class: open
 grader_version: "2.0.0+9fc95658"
@@ -15,6 +21,32 @@ objective: >
   version 1, 538 aa), then analyse which of the declared design constraints
   actually binds for this protein, and how that changes when the expression
   host changes.
+
+scope_note: >
+  Gold is exact arithmetic over pinned codon weight tables and the declared
+  projection of a deterministic design engine's output. Tier G1.
+
+  Four things are load-bearing.
+
+  THE SEQUENCE IS NOT GRADED. Many ORFs satisfy the declared constraints, so the
+  measurer recomputes the invariants the contract names -- protein identity, each
+  constraint's violation count by the published counting rule, the CAI floor --
+  rather than comparing an agent's sequence to the oracle's.
+
+  THE CODON TABLES ARE DERIVED, NOT ASSERTED. Both hosts' tables come from pinned
+  INSDC records under a declared ribosomal-protein rule, the reference gene set
+  is hashed and enforced, and the per-codon counts ship in audit/. A table nobody
+  can re-derive would make every CAI number here an opinion.
+
+  TWO QUANTITIES ARE EXCLUDED FROM GRADING ON A MEASUREMENT, not on taste.
+  Running four legitimate optimiser policies moved them further than the gap they
+  would have to resolve, so one is reported and not graded and the other is
+  graded as a floor set below the worst legitimate policy. The numbers are in
+  excluded_from_grading, and a different valid optimiser is never penalised.
+
+  THE COUNTERFACTUAL IS A HOST SWAP, recomputed from the second host's own pinned
+  table. What the swap does to the analysis is the question, and nothing in this
+  file answers it.
 
 method_guidance: partial
 

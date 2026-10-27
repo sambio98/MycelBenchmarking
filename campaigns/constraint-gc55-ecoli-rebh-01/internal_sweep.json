@@ -6,8 +6,8 @@
     "cold_mean_score": 0.625
   },
   "_meta": {
-    "campaign_id": "constraint-conflict-ecoli-rebh-01",
-    "chance_floor": 0.252525,
+    "campaign_id": "constraint-gc55-ecoli-rebh-01",
+    "chance_floor": 0.25255,
     "infra_failures": 0,
     "note": "Scores exclude infra failures (timeout/crash); run_status_counts reports them so the headline is not measuring the container.",
     "repeats": 3,
@@ -20,7 +20,7 @@
       "stub-bounds",
       "stub-analyst",
       "stub-complete",
-      "stub-optimist"
+      "stub-pessimist"
     ],
     "stub_warning": "A stub-based sweep validates the harness, not the campaign: stub systems are built to reach preset depths, so difficulty, discrimination and monotonicity numbers from one are fixtures. The readiness gate keeps these checks PENDING until a sweep runs real systems.",
     "systems": [
@@ -28,7 +28,7 @@
       "stub-bounds",
       "stub-analyst",
       "stub-complete",
-      "stub-optimist"
+      "stub-pessimist"
     ],
     "tool_cache_note": "Stub systems in tooled mode share a memo of tool output keyed on the input digest, the library fingerprint, the tool version and the flags, so a tool-running campaign's stub sweep does not recompute the same call once per rung-repeat. The wall clock of such a sweep is therefore NOT a timing measurement of the campaign. No real system and no no-tool ablation is given a memo; the runner refuses.",
     "tool_cache_systems": [
@@ -157,7 +157,7 @@
         }
       }
     },
-    "stub-optimist": {
+    "stub-pessimist": {
       "cold_depths": [
         1,
         1,
@@ -969,7 +969,7 @@
       "score": 0.25,
       "status": "completed",
       "stderr_tail": "",
-      "system": "stub-optimist"
+      "system": "stub-pessimist"
     },
     {
       "depth": 1,
@@ -985,7 +985,7 @@
       "score": 0.25,
       "status": "completed",
       "stderr_tail": "",
-      "system": "stub-optimist"
+      "system": "stub-pessimist"
     },
     {
       "depth": 1,
@@ -1001,7 +1001,7 @@
       "score": 0.25,
       "status": "completed",
       "stderr_tail": "",
-      "system": "stub-optimist"
+      "system": "stub-pessimist"
     },
     {
       "depth": 1,
@@ -1017,7 +1017,7 @@
       "score": 0.25,
       "status": "completed",
       "stderr_tail": "",
-      "system": "stub-optimist"
+      "system": "stub-pessimist"
     },
     {
       "depth": 1,
@@ -1033,7 +1033,7 @@
       "score": 0.25,
       "status": "completed",
       "stderr_tail": "",
-      "system": "stub-optimist"
+      "system": "stub-pessimist"
     },
     {
       "depth": 1,
@@ -1049,7 +1049,7 @@
       "score": 0.25,
       "status": "completed",
       "stderr_tail": "",
-      "system": "stub-optimist"
+      "system": "stub-pessimist"
     },
     {
       "depth": 1,
@@ -1065,7 +1065,7 @@
       "score": 0.25,
       "status": "completed",
       "stderr_tail": "",
-      "system": "stub-optimist"
+      "system": "stub-pessimist"
     },
     {
       "depth": 1,
@@ -1081,7 +1081,7 @@
       "score": 0.25,
       "status": "completed",
       "stderr_tail": "",
-      "system": "stub-optimist"
+      "system": "stub-pessimist"
     },
     {
       "depth": 1,
@@ -1097,7 +1097,7 @@
       "score": 0.25,
       "status": "completed",
       "stderr_tail": "",
-      "system": "stub-optimist"
+      "system": "stub-pessimist"
     },
     {
       "depth": 1,
@@ -1113,7 +1113,7 @@
       "score": 0.25,
       "status": "completed",
       "stderr_tail": "",
-      "system": "stub-optimist"
+      "system": "stub-pessimist"
     },
     {
       "depth": 1,
@@ -1129,7 +1129,7 @@
       "score": 0.25,
       "status": "completed",
       "stderr_tail": "",
-      "system": "stub-optimist"
+      "system": "stub-pessimist"
     },
     {
       "depth": 1,
@@ -1145,7 +1145,7 @@
       "score": 0.25,
       "status": "completed",
       "stderr_tail": "",
-      "system": "stub-optimist"
+      "system": "stub-pessimist"
     }
   ],
   "difficulty_gate": {
@@ -1154,6 +1154,10 @@
   },
   "discrimination": {
     "detail": "distinct cold depths [1, 2, 3, 4], mean score 0.625; needs >=2 depths and 0 < mean < 1",
+    "pass": true
+  },
+  "every_rung_is_cleared_by_some_fixture": {
+    "detail": "every rung is cleared by at least one fixture",
     "pass": true
   },
   "leakage_no_tool_ablation": {
@@ -1166,6 +1170,10 @@
   },
   "r1_clear_rate": {
     "detail": "R1 pass@1 for generic tooled systems = 1.0; minimum 0.8 (below this the campaign measures environment setup, not science)",
+    "pass": true
+  },
+  "stub_systems_do_not_crash": {
+    "detail": "5 fixture(s), 0 crashed or timed-out run(s); a fixture that crashes is a harness bug, not a finding",
     "pass": true
   }
 }

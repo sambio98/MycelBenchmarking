@@ -122,10 +122,13 @@ def build_grading(campaign: pathlib.Path, gold: dict) -> dict:
 
     r1 = [{"name": "report_present", "scorer": "exact",
            "args": {"pred": "pred:present.report", "gold": 1}},
-          # `release` and `ec_number` are reported and NOT graded: task.yaml
-          # names the snapshot and the EC number is what the campaign IS, so
-          # both are readable out of the cold sandbox. See excluded_from_grading.
-          ex("canonical_model"), ex("threshold"),
+          # `release`, `ec_number`, `canonical_model` and `threshold` are
+          # reported and NOT graded: task.yaml names the snapshot, the EC number
+          # is what the campaign IS, and the canonical model and the cutoff are
+          # declared verbatim in reference/, so all four are readable out of the
+          # cold sandbox. Grading one measures a copy. The last two were graded
+          # until the gate learned to look for a single-term answer stated
+          # against any label at all. See excluded_from_grading.
           ex("sequences_total"), ex("sequences_by_section"),
           ex("model_panel_size"), ex("environment")]
 

@@ -14,7 +14,7 @@ from dataclasses import dataclass
 
 import yaml
 
-from npbench_c.templates.construct_design.core import CONSTANTS
+from npbench_c.templates.construct_design.core import CONSTANTS, OracleFailure
 
 
 def load_task(campaign: pathlib.Path) -> dict:
@@ -58,19 +58,40 @@ class ConflictSpec:
     host: str
     strategy: str
     protein_input: str
-    expect: str          # "infeasible" | "feasible", verified against the arithmetic
+    #: "infeasible" | "feasible". The authored expectation, cross-checked against
+    #: the arithmetic so a campaign cannot silently become the opposite of what
+    #: it was authored to be -- and read from GOLD, not from `task.yaml`, because
+    #: it is R3's verdict in one word. It sat in `template_params` as
+    #: `expect: feasible` until the gate learned to look for a single-term answer
+    #: stated against any label at all.
+    expect: str
+
+    #: Where the authored expectation lives: a secret campaign path, so no
+    #: sandbox copies it and no release ships it.
+    EXPECTATION = "gold/expectation.json"
 
     @classmethod
     def load(cls, campaign: pathlib.Path) -> "ConflictSpec":
         params = load_task(campaign)["template_params"]
         conflict = params["conflict"]
+        if "expect" in conflict:
+            raise OracleFailure(
+                f"{campaign.name}'s task.yaml declares conflict.expect, which is "
+                "R3's verdict in one word and reaches every sandbox. It belongs "
+                f"in {cls.EXPECTATION}")
+        path = pathlib.Path(campaign) / cls.EXPECTATION
+        if not path.is_file():
+            raise OracleFailure(
+                f"{campaign.name} has no {cls.EXPECTATION}; gold cannot be built "
+                "without the authored expectation to cross-check the arithmetic "
+                "against")
         return cls(
             forbidden_codons=tuple(sorted(conflict["forbidden_codons"])),
             gc_global_min=float(conflict["gc_global_min"]),
             host=params["host"],
             strategy=params["strategy"],
             protein_input=params["protein_input"],
-            expect=conflict["expect"],
+            expect=json.loads(path.read_text())["expect"],
         )
 
     def write_reference(self, campaign: pathlib.Path) -> None:

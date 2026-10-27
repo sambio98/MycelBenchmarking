@@ -22,11 +22,12 @@ method_guidance: partial
 
 scope_note: >
   MIBiG annotates the enzymatic module count, which is not in general the number
-  of monomer incorporations in the final product. For this entry the two do
-  coincide and the residual is exactly zero, which is the uncommon case: across
-  the 43 entries meeting this template's admission filter only this one is
-  exactly balanced and four differ by a single water. The campaign does not ask
-  which chemistry closes a gap -- that would be judgement, not computation.
+  of monomer incorporations in the final product. Across the 43 entries meeting
+  this template's admission filter, one is exactly balanced, four differ by a
+  single water, and the rest need chemistry the module table does not annotate --
+  so the size of the gap is the question rather than a formality. The campaign
+  does not ask which chemistry closes a gap: that would be judgement, not
+  computation.
 
 # Identical in substance to the other instantiation of this template; the shared
 # oracle enforces the same conventions, and reference/ ships the pinned tables.
@@ -109,13 +110,11 @@ grading:
       is not meaningful for an S0 campaign, so the ablation withholds
       computation instead.
     r3: >
-      Higher than the malleobactin instantiation's 0.004 for an honest reason:
-      this entry annotates a single compound whose residual is exactly zero, so
-      R3 reduces to one residual vector plus one five-way verdict. A system that
-      assumes a curated assembly line accounts for its product guesses
-      'balanced' and the empty residual correctly. That is a real weakness of
-      this instantiation, and it is why the template needs at least one
-      non-balanced instantiation in the shipped set.
+      Higher than the malleobactin instantiation's 0.004: this entry annotates a
+      single compound, so R3 reduces to one residual vector plus one five-way
+      verdict, and a five-way verdict is guessable on its own. The residual
+      vector is what makes R3 real here, and the template ships a second
+      instantiation so that no single entry's verdict branch stands alone.
 
 excluded_from_grading:
   - field: the per-monomer molecular formulas
@@ -147,8 +146,12 @@ excluded_from_grading:
       supply, is graded instead.
 
 notes_for_audit:
-  - Residual is exactly zero, so this is the template's only 'balanced' case so
-    far and the verdict branch it exercises is otherwise untested.
-  - Both epimerase domains (modules 1 and 2) are stereochemical and do not change
-    the molecular formula, which is why a balanced residual is correct here
-    rather than evidence of missing annotation.
+  - >
+    Recompute the residual from the module table and the compound formula. The
+    verdict follows from it by the precedence declared in reference/, so the
+    residual is the thing to check and this file states nothing about it.
+  - >
+    Both epimerase domains (modules 1 and 2) are stereochemical: they do not
+    change the molecular formula, so they do not enter the residual at all. That
+    is the one convention worth confirming by hand before trusting the module
+    table.
