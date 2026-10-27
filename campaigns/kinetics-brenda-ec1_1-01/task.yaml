@@ -74,10 +74,19 @@ template_params:
 output_contract:
   kinetics_report.json:
     release / ec_prefix / distinct_ec_numbers: From the shipped input.
-    declared_units: The unit per field, echoed from the pinned rules.
+    declared_units: >
+      The unit per field, echoed from the pinned rules.
+
+      Keys, exactly: `kcat_km_value`, `km_value`, `turnover_number`.
     records_by_field / parsed_by_field / sentinel_by_field / unparsed_by_field: >
       Per field, never summed across fields: they carry different units and
       different sentinel rates. A record is one entry in a field's array.
+
+      Keys, exactly: `parsed_by_field` keys `kcat_km_value`, `km_value`,
+      `turnover_number`; `records_by_field` keys `kcat_km_value`, `km_value`,
+      `turnover_number`; `sentinel_by_field` keys `kcat_km_value`, `km_value`,
+      `turnover_number`; `unparsed_by_field` keys `kcat_km_value`, `km_value`,
+      `turnover_number`.
     triple_keys_total / completeness_counts: >
       Distinct (EC, proteins, substrate, references) keys, and how many carry one,
       two or three of the fields.
@@ -89,14 +98,25 @@ output_contract:
     band_counts: >
       Per declared band, how many triples fall in it, under the declared
       first-match-wins order. Bands outside the list are "other".
+
+      Keys, exactly: `agree`, `factor_1000`, `factor_60`, `near`, `other`.
     agreement_rate: agree divided by checked, to six decimals.
     unit_mixup_total: factor_60 plus factor_1000.
     unit_error_variants: >
       Per declared variant, the factors applied and the resulting checked count
       and agreement rate.
+
+      Keys, exactly: `v0_identity`, `v1_km_in_micromolar`, `v2_kcat_per_minute`,
+      `v3_both_mistakes`; `v0_identity`, `v1_km_in_micromolar`, `v2_kcat_per_minute`,
+      `v3_both_mistakes` each keys `agree`, `agreement_rate`, `checked`, `kcat_factor`,
+      `km_factor`.
     band_examples: >
       A few triples from each unit-mix-up band, for a reader to see what is being
       claimed. Reported for audit; see excluded_from_grading.
+
+      Keys, exactly: one entry per band, each a list whose rows carry `ec`,
+      `substrate`, `kcat_per_s`, `km_mM`, `stored_kcat_km`, `computed_kcat_km` and
+      `ratio`.
 
 constraints:
   reference_dir: reference

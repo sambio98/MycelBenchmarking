@@ -129,6 +129,12 @@ output_contract:
       Relaxing gc_global_min removes the requirement, so it is vacuously
       reachable while the bound itself does not move.
 
+
+      Keys, exactly: `direct_repeat`, `forbidden_codons`, `forbidden_sites`,
+      `gc_global_min`, `gc_window`, `homopolymer`, `internal_rbs`; `direct_repeat`,
+      `forbidden_codons`, `forbidden_sites`, `gc_global_min`, `gc_window`,
+      `homopolymer`, `internal_rbs` each keys `gc_requirement_reachable`,
+      `max_achievable_gc`.
 constraints:
   reference_dir: reference
   pinned_tables:

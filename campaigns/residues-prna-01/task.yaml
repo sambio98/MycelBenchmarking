@@ -88,24 +88,50 @@ output_contract:
     record_class_counts: >
       Per feature type, records per evidence class. A record's class is the
       strongest among its citations; a record with no citations is class none.
+
+      Keys, exactly: one entry per key the data supplies, each carrying `experimental`,
+      `inferred`, `none`, `structural`.
     binding_positions_by_ligand: Per ChEBI id, sorted binding-site positions.
     pdb_evidence_index: >
       Per PDB id cited under ECO:0007744, the sorted positions citing it.
     unevidenced_records / inferred_only_records: >
       Records of class none and of class inferred, as TYPE@POSITION labels.
-    focal_structure: Atom and ligand-copy inventory of the focal entry.
+    focal_structure: >
+      Atom and ligand-copy inventory of the focal entry.
+
+      Keys, exactly: `ligand_copies`, `pdb_id`, `polymer_atom_records`.
     confirmation: >
       For the focal structure: the numbering offsets read from _struct_ref_seq,
       and per ligand the positions annotated as citing this entry, the geometric
       contact positions, how many are confirmed, and the two disagreement sets.
       Plus the active-site position, its residue, and which ligands it contacts.
+
+      Keys, exactly: `active_site_contacts`, `active_site_position`,
+      `active_site_residue`, `chain`, `numbering`, `per_ligand`, `structure`, `totals`;
+      `numbering` keys `auth_to_uniprot`, `label_to_uniprot`; `per_ligand` one entry per
+      key the data supplies, each carrying `annotated_citing_this_structure`,
+      `annotated_not_in_contact`, `component_id`, `confirmed`, `contact_not_annotated`,
+      `contact_positions`, `copies_in_chain`; `totals` keys
+      `annotated_citing_this_structure`, `confirmed`, `unconfirmed`.
     structure_swap: >
       The same confirmation recomputed on the alternate entry, with the
       per-ligand change in confirmed count.
+
+      Keys, exactly: `confirmed_delta_by_ligand`, `numbering`, `per_ligand`,
+      `structure`; `numbering` keys `auth_to_uniprot`, `label_to_uniprot`; `per_ligand`
+      one entry per key the data supplies, each carrying
+      `annotated_citing_this_structure`, `annotated_not_in_contact`, `component_id`,
+      `confirmed`, `contact_not_annotated`, `contact_positions`, `copies_in_chain`.
     policy_variants: >
       Per declared variant, the records admitted under that set of accepted
       evidence classes, by feature type and by ligand.
 
+
+      Keys, exactly: `v1_experimental_only`, `v2_structural_only`,
+      `v3_include_inferred`, `v4_inferred_only`; `v1_experimental_only`,
+      `v2_structural_only`, `v3_include_inferred`, `v4_inferred_only` each keys
+      `accepted_classes`, `admitted_binding_positions_by_ligand`,
+      `admitted_record_counts`, `admitted_total`.
 constraints:
   reference_dir: reference
   pinned_tables:

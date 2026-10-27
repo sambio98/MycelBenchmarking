@@ -72,39 +72,24 @@ output_contract:
     sequence_agreement: >
       Over all resolved residues mapped into UniProt numbering, how many agree
       with the sequence at that position and how many do not.
-    shells:
-      contact_cutoff_angstrom: The pinned cutoff, echoed.
-      contacts_by_copy: >
-        Per ligand copy, the sorted contact residues as CHAIN:RESIDUE:ONELETTER.
-      contact_counts_by_copy: Per ligand copy, the number of contact residues.
-      nearest_contact_by_copy: >
-        Per ligand copy, the single closest contact residue under the declared
-        tie-break: smallest distance, then smallest label.
-      nearest_contact_distance_by_copy: >
-        The matching distance, to the declared number of decimals.
-      contact_positions_by_copy: >
-        Per ligand copy, the same-chain contacts as UniProt positions.
-      chain_symmetry: >
-        Per chemical component present in more than one copy, the copies
-        compared, whether their position sets are identical, and the symmetric
-        difference.
-    descriptors:
-      focal_copy / focal_ligand / heavy_atoms: The copy the descriptors describe.
-      centroid / radius_of_gyration: Per descriptor_rules.
-      grid_census: >
-        grid_points_near_ligand, grid_points_rejected_clash and
-        grid_points_rejected_bulk, which together account for every lattice
-        point the volume rule visits.
-      pocket_grid_points / pocket_volume_a3: Per pocket_volume_rule.
-      contact_positions_uniprot / annotated_positions_uniprot: >
-        The computed shell, and the binding-site positions UniProt annotates for
-        the focal ligand while citing THIS entry as structural evidence.
-      confirmation_sets: >
-        confirmed, annotated_not_in_contact and contact_not_annotated over those
-        two sets.
-      annotation_precision / annotation_recall: >
-        Of the annotation set against the geometric shell, to six decimals.
-        Reported for audit; see excluded_from_grading.
+
+      Keys, exactly: `agreements`, `disagreements`.
+    shells: >
+
+      Keys, exactly: `chain_symmetry`, `contact_counts_by_copy`,
+      `contact_cutoff_angstrom`, `contact_positions_by_copy`, `contacts_by_copy`,
+      `nearest_contact_by_copy`, `nearest_contact_distance_by_copy`; `chain_symmetry`
+      one entry per key the data supplies, each carrying `copies_compared`,
+      `position_sets_identical`, `symmetric_difference`.
+    descriptors: >
+
+      Keys, exactly: `annotated_positions_uniprot`, `annotation_precision`,
+      `annotation_recall`, `centroid`, `confirmation_sets`, `contact_positions_uniprot`,
+      `focal_copy`, `focal_ligand`, `grid_census`, `heavy_atoms`, `pocket_grid_points`,
+      `pocket_volume_a3`, `radius_of_gyration`; `centroid` keys `x`, `y`, `z`;
+      `confirmation_sets` keys `annotated_not_in_contact`, `confirmed`,
+      `contact_not_annotated`; `grid_census` keys `grid_points_near_ligand`,
+      `grid_points_rejected_bulk`, `grid_points_rejected_clash`.
     counterfactuals:
       cutoff_sweep_counts / cutoff_sweep_positions: >
         Per declared cutoff variant, the focal copy's contact count and its

@@ -116,6 +116,9 @@ output_contract:
       Over the whole unfragmented contig: calls, the split by strand, the
       shortest, median and longest call length, the coding bases and their
       fraction of the contig.
+
+      Keys, exactly: `calls`, `coding_bases`, `coding_fraction`, `longest`,
+      `median_length`, `on_the_forward_strand`, `on_the_reverse_strand`, `shortest`.
     partial_census / start_type_census: >
       The caller's own `partial` flag over the declared four-term vocabulary, and
       the start codons it chose. The start types are open-ended: the keys are
@@ -125,9 +128,15 @@ output_contract:
     call_table: >
       Every call on the whole contig, in parent coordinates, sorted by start then
       end then strand, projected to the declared columns.
+
+      Keys, exactly: each row carries `end`, `fragment`, `partial`, `start`,
+      `start_type`, `strand`.
     call_span: >
       The first call's start, the last call's end, and the uncalled bases before
       and after them.
+
+      Keys, exactly: `bases_after_the_last_call`, `bases_before_the_first_call`,
+      `first_call_start`, `last_call_end`.
     fragmented_baseline_calls / fragmented_fragmented_calls / fragmented_retained / fragmented_lost / fragmented_gained / fragmented_retained_but_truncated: >
       At the declared baseline fragmentation: the calls on each side, how many
       survive with identical coordinates, how many are lost, how many are new,
@@ -137,20 +146,36 @@ output_contract:
     fragmented_loss_verdicts / fragmented_lost_table: >
       The count per declared loss verdict, and every lost call with its verdict,
       in the same order as the call table.
+
+      Keys, exactly: `fragmented_loss_verdicts` keys `crosses_a_cut`,
+      `distant_from_every_cut`, `near_a_cut`; `fragmented_lost_table` each row carries
+      `end`, `fragment`, `partial`, `start`, `start_type`, `strand`, `verdict`.
     fragmented_partial_census / fragmented_gained_partial_census / fragmented_call_census: >
       The partial flags over the whole fragmented run, the partial flags over the
       new calls alone, and the same census as R1 recomputed on the fragmented
       run.
+
+      Keys, exactly: `fragmented_call_census` keys `calls`, `coding_bases`,
+      `coding_fraction`, `longest`, `median_length`, `on_the_forward_strand`,
+      `on_the_reverse_strand`, `shortest`.
     fragmentation_grid: >
       One cell per (mode, fragment count), keyed `mode|count`, each comparing
       that mode's fragmented run against that mode's OWN unfragmented run --
       not against the baseline mode's, which would add the mode difference to
       the fragmentation difference and report the sum as fragmentation.
+
+      Keys, exactly: one entry per key the data supplies, each carrying
+      `baseline_calls`, `fragmented_calls`, `gained`, `loss_verdicts`, `lost`,
+      `retained`, `retained_but_truncated`; `loss_verdicts` keys `crosses_a_cut`,
+      `distant_from_every_cut`, `near_a_cut`.
     mode_difference: >
       The two modes on the same unfragmented contig: shared calls, and the calls
       only one of them makes. This is the comparison that isolates the flag from
       the assembly, because the input bytes are identical on both sides.
 
+
+      Keys, exactly: `single_vs_meta`; `single_vs_meta` keys `only_in_meta`,
+      `only_in_single`, `shared`.
 constraints:
   reference_dir: reference
   pinned_tables:

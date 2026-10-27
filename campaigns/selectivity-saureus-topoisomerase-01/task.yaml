@@ -89,6 +89,10 @@ output_contract:
     rejected_by_target: >
       Per target, rejections broken down by the FIRST declared reason that
       applies, so the counts partition the rejected set exactly.
+
+      Keys, exactly: one entry per key the data supplies, each carrying
+      `censored_or_missing_relation`, `flagged_by_chembl`, `low_confidence_assay`,
+      `no_value`, `non_positive`, `potential_duplicate`, `unconvertible_units`.
     aggregated_pairs / aggregated_by_target: >
       (molecule, target) pairs carrying an aggregated value, and the count per
       target.
@@ -104,12 +108,20 @@ output_contract:
     admission_variants: >
       Per declared variant, the admitted count, the eligible-molecule count and
       the selective counts, recomputed.
+
+      Keys, exactly: `v0_baseline`, `v1_admit_censored`, `v2_admit_flagged`,
+      `v3_admit_duplicates`, `v4_minimum_not_median`; `v0_baseline`,
+      `v1_admit_censored`, `v2_admit_flagged`, `v3_admit_duplicates`,
+      `v4_minimum_not_median` each keys `admitted_total`, `aggregator`,
+      `eligible_molecules`, `focal_selective_counts`, `reference_selective_counts`.
     ratio_extremes: >
       The five most focal-selective and the five most reference-selective
       molecules, each as a (ratio, identifier) pair. Reported for the record and
       NOT graded: the per-molecule ratios are excluded, and these are the same
       numbers for the two ends of that distribution.
 
+
+      Keys, exactly: `most_focal_selective`, `most_reference_selective`.
 constraints:
   reference_dir: reference
   pinned_tables:

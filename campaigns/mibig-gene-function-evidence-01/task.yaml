@@ -98,6 +98,11 @@ output_contract:
       Keyed by variant name, each with admissible_by_function and its total,
       recomputed under that variant's accepted evidence methods and status rule.
 
+
+      Keys, exactly: `v1_knockout_only`, `v2_plus_activity_assay`,
+      `v3_any_locus_evidence`, `v4_include_inactive`; `v1_knockout_only`,
+      `v2_plus_activity_assay`, `v3_any_locus_evidence`, `v4_include_inactive` each keys
+      `admissible_by_function`, `total`.
 constraints:
   reference_dir: reference
   pinned_tables:

@@ -100,13 +100,18 @@ output_contract:
     cross_entry_duplicates: >
       Per identity key, how many keys appear in more than one distinct
       accession. A key repeated inside one entry does not count.
+
+      Keys, exactly: `compound`, `connectivity`, `scaffold`.
     records_per_class / distinct_compounds_per_class / distinct_scaffolds_per_class: >
       Per class, under the per_class counting rule: a record contributes to
       every class its entry carries, so these sum above the corpus total.
     scaffold_ring_count_histogram: >
       Scaffold ring count to record count, as string keys. Acyclic compounds are
       bucket "0".
-    informative_rule: The two thresholds in force, echoed.
+    informative_rule: >
+      The two thresholds in force, echoed.
+
+      Keys, exactly: `min_heavy_atom_coverage`, `min_ring_count`.
     informative_records / informative_scaffold_keys: >
       Records clearing both floors, and the distinct scaffold keys among them.
     shared_scaffolds: >
@@ -121,15 +126,29 @@ output_contract:
     most_shared_informative_scaffold: >
       The informative scaffold key carried by the most accessions, with that
       count, under the declared tie-break: most accessions, then smallest key.
+
+      Keys, exactly: `entries`, `scaffold_inchikey`.
     threshold_variants: >
       Per declared variant, informative_records, informative_scaffold_keys,
       shared_scaffolds and cross_class_scaffolds recomputed.
+
+      Keys, exactly: `t1_unfiltered`, `t2_rings_only`, `t3_coverage_only`, `t4_strict`;
+      `t1_unfiltered`, `t2_rings_only`, `t3_coverage_only`, `t4_strict` each keys
+      `cross_class_informative`, `informative_records`, `informative_scaffold_keys`,
+      `min_heavy_atom_coverage`, `min_ring_count`, `naive_cross_class_informative`,
+      `shared_informative`.
     evidence_gate: >
       The same statistics over only those entries with accepted locus evidence:
       entries, compound_records, distinct_compound_keys, informative_records,
       shared_scaffolds, cross_class_scaffolds and the cross-class informative
       scaffold keys.
 
+
+      Keys, exactly: `compound_records`, `cross_class_informative_keys`,
+      `cross_class_scaffolds`, `distinct_compound_keys`, `distinct_scaffold_keys`,
+      `entries`, `informative_records`, `informative_scaffold_keys`, `shared_scaffolds`;
+      `cross_class_scaffolds` keys `all`, `informative`, `naive_all`,
+      `naive_informative`; `shared_scaffolds` keys `all`, `informative`.
 constraints:
   reference_dir: reference
   pinned_tables:

@@ -137,6 +137,9 @@ output_contract:
       Per declared target length, the baseline call selected for it: start, end,
       strand, its actual length, and the 1-based position this campaign deletes
       inside it.
+
+      Keys, exactly: one entry per key the data supplies, each carrying `deleted_at`,
+      `end`, `length`, `start`, `strand`.
     target_length_summary: >
       How many targets, and the shortest and longest actual length among them.
     response_table: >
@@ -145,9 +148,18 @@ output_contract:
       how many of the target's bases are still called, the call totals before and
       after, and the calls elsewhere that moved -- which a single deleted base
       can cost.
+
+      Keys, exactly: one entry per key the data supplies, each carrying
+      `bases_of_the_target_still_called`, `calls_after`, `calls_before`, `deleted_at`,
+      `new_call_lengths`, `other_calls_gained`, `other_calls_lost`,
+      `overlapping_new_calls`, `target_end`, `target_length`, `target_start`,
+      `target_strand`, `verdict`.
     verdict_census / verdict_by_length: >
       The count per declared verdict, and the verdict for each declared target
       length in order.
+
+      Keys, exactly: `verdict_census` keys `abolished`, `split_into_two`,
+      `truncated_to_one`, `unchanged`.
     verdict_is_monotone_in_length: >
       Whether each verdict occupies one contiguous block as the targets get
       longer, so that the per-length list is recoverable from its cut points.
@@ -157,11 +169,19 @@ output_contract:
       One declared target with the deletion walked across it: per declared
       fraction, where the base was deleted, how far into the gene that is, the
       verdict, and the overlapping call lengths.
+
+      Keys, exactly: one entry per key the data supplies, each carrying
+      `bases_into_the_gene`, `bases_of_the_target_still_called`, `deleted_at`,
+      `new_call_lengths`, `verdict`.
     noise_arm: >
       The declared subset of targets re-run under the caller's other mode: the
       verdict, how many moved calls the target itself explains, how many moved
       elsewhere, and the ratio. Null where the target explains none.
 
+
+      Keys, exactly: one entry per key the data supplies, each carrying
+      `calls_explained_by_the_target`, `deleted_at`, `noise_to_signal`,
+      `other_calls_moved`, `verdict`.
 constraints:
   reference_dir: reference
   pinned_tables:

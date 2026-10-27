@@ -129,10 +129,16 @@ output_contract:
       similarity name, the peak tolerance, the edge score threshold and the
       matched-peak floor. The last four are echoes of the pinned rules table; the
       version is not, and the five are graded as one claim.
+
+      Keys, exactly: `edge_min_matched_peaks`, `edge_score_threshold`,
+      `matchms_version`, `peak_tolerance`, `similarity`.
     network_census: >
       The graph in seven numbers: nodes, edges, components, singletons, the
       largest component's size, how many nodes carry at least one edge, and the
       highest degree.
+
+      Keys, exactly: `components`, `edges`, `largest_component`, `max_degree`, `nodes`,
+      `nodes_with_an_edge`, `singletons`.
     edges: >
       Every edge, as [node_a, node_b, cosine, matched_peaks] with the accessions
       in ascending order. The PAIRS are graded; the score and the matched-peak
@@ -141,6 +147,9 @@ output_contract:
       How the nodes came out against the library, counted per declared confidence
       class, including the two silent states: a node whose precursor window holds
       no library spectrum at all, and one whose candidates all scored zero.
+
+      Keys, exactly: `confirmed`, `no_candidate`, `no_match`, `tentative`,
+      `unsupported`.
     top_matches: >
       Per node, the library accession your pipeline ranks first, or null where
       there is nothing to rank.
@@ -153,6 +162,10 @@ output_contract:
       The declared claim for every node and the count per claim. A node with an
       accepted annotation of its own is `annotated_directly`; otherwise the claim
       follows from its annotated neighbours, as the pinned rules state.
+
+      Keys, exactly: `propagation_census` keys `analogue_with_mass_shift`,
+      `annotated_directly`, `conflicting_neighbours`, `no_annotated_neighbour`,
+      `same_compound`.
     mass_shifts: >
       For each node whose claim is `analogue_with_mass_shift`, the signed
       precursor difference to the best-scoring annotated neighbour, at the
@@ -161,11 +174,21 @@ output_contract:
       Per declared threshold, the edge count, the component count, the largest
       component and the claim census. The pinned threshold's own row is the
       identity rung and restates the rungs above by construction.
+
+      Keys, exactly: one entry per key the data supplies, each carrying `claims`,
+      `components`, `edges`, `largest_component`; `claims` keys
+      `analogue_with_mass_shift`, `annotated_directly`, `conflicting_neighbours`,
+      `no_annotated_neighbour`, `same_compound`.
     dropped_tier: >
       With only the top confidence tier seeding the network: which tier was
       dropped, how many annotations that removes, the claim census that results,
       and how many components lose every annotation they had.
 
+
+      Keys, exactly: `annotations_removed`, `claims`,
+      `components_losing_all_annotation`, `tier_dropped`; `claims` keys
+      `analogue_with_mass_shift`, `annotated_directly`, `conflicting_neighbours`,
+      `no_annotated_neighbour`, `same_compound`.
 constraints:
   reference_dir: reference
   pinned_tables:

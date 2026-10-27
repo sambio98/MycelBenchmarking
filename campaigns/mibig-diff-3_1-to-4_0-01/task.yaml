@@ -62,20 +62,39 @@ output_contract:
     shared_status_in_target: >
       For shared entries, a map from the 4.0 "status" value to its count.
       Classes with a zero count may be omitted.
+
+      Keys, exactly: `active`, `retired`.
     raw_difference_counts: >
       Per field, how many shared entries differ when the mapped values are
       compared with NO normalisation. This is what a direct JSON comparison
       reports.
+
+      Keys, exactly: `biosynthetic_class`, `compound_formulas`, `compound_names`,
+      `locus_accession`, `ncbi_tax_id`, `organism`.
     classified_verdict_counts: >
       Per field, a map from verdict class to count, after applying the field's
       declared normalisation and the declared verdict precedence. Classes with a
       zero count may be omitted.
+
+      Keys, exactly: `biosynthetic_class`, `compound_formulas`, `compound_names`,
+      `locus_accession`, `ncbi_tax_id`, `organism`; `biosynthetic_class` keys
+      `no_counterpart_in_target`, `representation_only`, `substantive_change`;
+      `compound_formulas` keys `absent_in_source`, `absent_in_target`,
+      `representation_only`, `substantive_change`, `unchanged`; `compound_names` keys
+      `representation_only`, `substantive_change`, `unchanged`; `locus_accession` keys
+      `unchanged`; `ncbi_tax_id` keys `representation_only`, `substantive_change`;
+      `organism` keys `substantive_change`, `unchanged`.
     retired_class_terms: >
       Source-vocabulary class terms with no counterpart in the target vocabulary.
     perturbations: >
       Keyed by case name, each with the "verdict" for that case's field after
       the declared operation is applied to the base record's source version.
 
+
+      Keys, exactly: `p1_taxid_type_only`, `p2_taxid_value`, `p3_formula_altered`,
+      `p4_class_retired`, `p5_organism_removed`; `p1_taxid_type_only`, `p2_taxid_value`,
+      `p3_formula_altered`, `p4_class_retired`, `p5_organism_removed` each keys
+      `verdict`.
 constraints:
   reference_dir: reference
   pinned_tables:

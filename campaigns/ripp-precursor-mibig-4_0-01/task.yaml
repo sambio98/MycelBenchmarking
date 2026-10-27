@@ -125,16 +125,28 @@ output_contract:
       entries with no reference record, reference records shipped, precursor
       records named, records whose gene is not in its record, and the entries and
       records that survive.
+
+      Keys, exactly: `corpus_entries`, `corpus_records`,
+      `entries_absent_from_reference_set`, `entries_excluded_by_both`,
+      `entries_excluded_by_status`, `entries_in_class`,
+      `entries_with_a_named_precursor`, `records_named`,
+      `records_with_an_unresolved_gene`, `reference_records_shipped`.
     core_sequence_shape_census / core_sequence_case_census: >
       The JSON shapes and the letter cases the field arrives in over the corpus,
       against the declared vocabularies. Shapes and cases with no members are
       omitted.
+
+      Keys, exactly: `core_sequence_case_census` keys `lower`, `upper`;
+      `core_sequence_shape_census` keys `bare_string`, `list_of_one`, `list_of_several`,
+      `printed_list_in_a_string`.
     records_declaring_a_cleavage_location: >
       How many corpus records carry a leader_cleavage_location at all.
     ripp_type_census / status_census: >
       Per RiPP type and per entry status, how many corpus records. Open-ended:
       the keys are whichever terms the selected entries carry, and an unstated
       ripp_type is reported as "(unstated)".
+
+      Keys, exactly: `status_census` keys `active`, `pending`.
     precursor_length_summary: >
       Count, minimum, median and maximum translation length over the corpus.
     localisation_table: >
@@ -143,6 +155,9 @@ output_contract:
       0-based start, the leader and follower lengths that follow from it, and the
       declared verdict. The last four are null wherever the core has no single
       position.
+
+      Keys, exactly: each row carries `bgc`, `core_length`, `core_start`, `cores`,
+      `follower_length`, `gene`, `leader_length`, `occurrences`, `verdict`.
     localisation_census / leader_length_summary: >
       The count per declared verdict, and count/min/median/max over the leader
       lengths that could be derived.
@@ -150,28 +165,52 @@ output_contract:
       Per declared reading of the cleavage coordinate, how many declaring records
       it agrees with, disagrees with, and cannot be checked against; and the
       reading that agrees with the most, tie-broken by the declared order.
+
+      Keys, exactly: `convention_tally` keys `from_as_0based_core_start`,
+      `from_as_1based_core_start`, `to_as_0based_core_start`, `to_as_1based_core_start`;
+      `from_as_0based_core_start`, `from_as_1based_core_start`,
+      `to_as_0based_core_start`, `to_as_1based_core_start` each keys `agrees`,
+      `disagrees`, `underivable`.
     cleavage_table: >
       Per declaring record, in (cluster, gene) order: the declared bounds, the
       core start the elected reading implies, the start measured from the
       translation, and the verdict.
+
+      Keys, exactly: each row carries `bgc`, `declared_from`, `declared_to`,
+      `derived_core_start`, `gene`, `implied_core_start`, `verdict`.
     domain_table / panel_census / records_with_a_panel_hit: >
       Every panel hit on the corpus as shipped, with its envelope, where that
       envelope sits relative to the measured boundary, and the signed offset
       between the envelope's end and the leader's length; plus the count per
       declared model and the number of records carrying any hit.
+
+      Keys, exactly: `domain_table` each row carries `bgc`, `boundary_offset`,
+      `env_from`, `env_to`, `gene`, `model`, `relation`.
     boundary_relation_census / boundary_offset_summary: >
       The count per declared relation, and count/min/median/max over the offsets
       plus how many are exactly zero -- a model whose envelope stops precisely
       where the leader does.
+
+      Keys, exactly: `boundary_offset_summary` keys `count`, `exactly_at_the_boundary`,
+      `max`, `median`, `min`; `boundary_relation_census` keys `core_not_located`,
+      `core_only`, `leader_only`, `spans_boundary`.
     policy_sweep: >
       Per declared ingestion policy: the localisation census, how many cores were
       located, and how many cores the policy read in total.
+
+      Keys, exactly: `p0_strict`, `p1_case_folded`, `p2_repair_printed_list`;
+      `p0_strict`, `p1_case_folded`, `p2_repair_printed_list` each keys
+      `cores_declared`, `located`, `verdict_census`.
     deletion_table / deletion_census: >
       Each record's declared leader removed and the panel re-run: the models
       before, the models after, and the declared outcome. The table carries the
       records whose outcome is neither the negative control nor inapplicable; the
       census counts every record.
 
+
+      Keys, exactly: `deletion_census` keys `changed`, `gained`, `lost`,
+      `not_applicable`, `retained`, `unchanged_absent`; `deletion_table` each row
+      carries `after`, `before`, `bgc`, `gene`, `outcome`.
 constraints:
   reference_dir: reference
   pinned_tables:

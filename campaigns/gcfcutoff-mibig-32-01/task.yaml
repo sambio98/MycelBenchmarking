@@ -118,9 +118,15 @@ output_contract:
       Per chemistry-derived family: the declared verdict, how many groups its
       members span, those group sizes descending, and any outsiders sharing a
       group with them.
+
+      Keys, exactly: one entry per key the data supplies, each carrying `group_sizes`,
+      `groups_spanned`, `outsiders`, `verdict`.
     verdict_census / families_exact: >
       The count per declared verdict, and how many families are recovered
       exactly.
+
+      Keys, exactly: `verdict_census` keys `absorbed`, `dissolved`, `exact`,
+      `fragmented`, `fragmented_and_absorbed`.
     controls_absorbed: >
       Negative controls that have joined a multi-member group.
     designed_pairs / co_clustered_pairs / recovered_pairs / missed_pairs / false_join_pairs / pair_jaccard: >
@@ -128,6 +134,12 @@ output_contract:
     cutoff_sweep: >
       Per declared cutoff, the same partition shape, pair counts, exact-family
       count, absorbed controls and per-family verdicts.
+
+      Keys, exactly: one entry per key the data supplies, each carrying
+      `clustered_records`, `co_clustered_pairs`, `controls_absorbed`, `designed_pairs`,
+      `false_join_pairs`, `families_exact`, `family_verdicts`, `groups`,
+      `largest_group`, `missed_pairs`, `pair_jaccard`, `recovered_pairs`, `singletons`,
+      `size_census`.
     best_cutoff / best_pair_jaccard: >
       The cutoff maximising pair agreement under the declared tie-break, and that
       agreement.

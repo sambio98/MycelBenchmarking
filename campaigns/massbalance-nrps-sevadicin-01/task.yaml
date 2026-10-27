@@ -54,6 +54,8 @@ output_contract:
       (product minus naive assembly, element by element, signed; elements with a
       zero difference may be omitted) and "verdict" from the closed vocabulary.
       This entry annotates one compound; other instantiations annotate several.
+
+      Keys, exactly: `sevadicin`; `sevadicin` keys `residual`, `verdict`.
     single_module_deletions: >
       Keyed by the 1-based module index as a string, each carrying the Hill-order
       "formula" of the assembly remaining after that module is deleted and the

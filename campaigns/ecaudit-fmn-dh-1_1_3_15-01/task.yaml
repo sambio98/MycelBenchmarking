@@ -105,8 +105,14 @@ output_contract:
     length_profile: >
       Count, minimum, median, maximum and the per-band short-sequence counts for
       the canonical-present and canonical-absent sides.
+
+      Keys, exactly: `canonical_absent`, `canonical_present`; `canonical_absent`,
+      `canonical_present` each keys `count`, `max`, `median`, `min`, `shorter_than`.
     misannotated_by_policy: >
       Per declared policy, how many sequences carry no accepted architecture.
+
+      Keys, exactly: `p0_canonical_only`, `p1_accept_fad_oxidase`,
+      `p2_accept_any_flavin`.
     threshold_absent: >
       Per declared threshold variant, the size of the canonical-absent set.
 

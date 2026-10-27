@@ -129,6 +129,9 @@ output_contract:
       member sharing ANY family with the query. Measured here they differ on
       every declared query, and reading one for the other would make the recovery
       rate look wrong.
+
+      Keys, exactly: one entry per key the data supplies, each carrying `accession`,
+      `family_members`, `family_name`, `length`.
     baseline_hits / baseline_band_sizes: >
       How many hits each query has, and how they fall across the declared
       identity bands. Every loss rate in the ladder is a fraction of one of
@@ -137,14 +140,29 @@ output_contract:
       Per query: how many corpus members InterPro places in a family with it, how
       many of those the search found, how many it missed, the rate, and how many
       hits it found that are not asserted at family level.
+
+      Keys, exactly: one entry per key the data supplies, each carrying `hits`,
+      `recovery_rate`, `same_family_asserted`, `same_family_detected`,
+      `same_family_missed`, `superfamily_only_detected`.
     band_census: >
       Per query and declared band, how many hits carry each of the three labels.
+
+      Keys, exactly: one entry per query, each carrying one entry per declared band,
+      each of those carrying `same_family`, `superfamily_only`, `unclassified_pair`.
     band_verdicts / verdict_census: >
       The declared verdict per query and band, and the count per verdict.
+
+      Keys, exactly: `verdict_census` keys `overlapping`, `search_only`, `separable`,
+      `unresolved`.
     shuffle_ladder: >
       Per declared window and query: how many hits survive, how many were lost,
       the loss count and rate per band OF THE BASELINE HIT, and whether the rates
       fall from the distant band to the close one.
+
+      Keys, exactly: one entry per declared window, each carrying one entry per
+      query, each of those carrying `hits`, `lost`, `lost_by_band`,
+      `loss_rate_by_band` and `band_order_held`, where the two by-band maps carry
+      one entry per declared band.
 
 constraints:
   reference_dir: reference

@@ -115,6 +115,17 @@ DISTINCTIVE_DECIMALS = 4
 EXEMPTIONS = (pathlib.Path(__file__).resolve().parents[3]
               / "audit" / "cold_sandbox_exemptions.json")
 
+#: How much of each file check 28 reads. A sandbox input runs to tens of
+#: megabytes and the scan wants its identifiers, not its sequence.
+READ_BYTES = 80_000_000
+ARCHIVE_MEMBER_BYTES = 200_000
+
+#: How many rows of a list the scans sample. Every row of a table carries the
+#: same keys, so reading all 1,136 of them finds nothing the first few do not.
+LIST_SAMPLE = 5
+
+_IDENTIFIER = re.compile(r"[A-Za-z_][A-Za-z0-9_]*")
+
 #: A JSON string shorter than this is a key, a label or an identifier rather
 #: than a sentence. Shape three runs over sentences only: a nested structure
 #: necessarily states a field name inside its container's key, so scanning the
@@ -675,3 +686,96 @@ def stale_cross_exemptions(campaign: pathlib.Path, sandbox: pathlib.Path,
         elif (other, name) not in live:
             out.append(f"{other}:{name} (no longer collides; drop the exemption)")
     return out
+
+
+# ---- check 28: the names INSIDE a field -------------------------------------
+#
+# Check 27 reaches as deep as the contract names keys. Below that the contract
+# described the shape in prose and gave no names, and the names are load-bearing:
+# measured on arch-pks, renaming one key inside `selection_census` takes an
+# otherwise perfect answer from depth 4 to depth 0, one inside
+# `reconciliation_table` to depth 2, and one inside a `policy_sweep` cell to
+# depth 3. So every key name the answer uses has to be findable in the sandbox.
+
+KEY_NAMES = (pathlib.Path(__file__).resolve().parents[3]
+             / "audit" / "contract_key_names.json")
+
+#: A key shorter than this, or not a lower-case identifier, is a value rather
+#: than a field name -- an accession, a sweep cell, a formula, a numeric bucket.
+_STRUCTURAL_KEY = re.compile(r"[a-z][a-z0-9_]{2,}$")
+
+
+def key_name_exemptions(campaign_name: str,
+                        path: pathlib.Path | None = None) -> dict[str, str]:
+    """Declared data-supplied key names for one campaign, as {key: reason}."""
+    source = path or KEY_NAMES
+    if not source.is_file():
+        return {}
+    declared = json.loads(source.read_text()).get("exemptions") or {}
+    return {entry["key"]: entry["reason"]
+            for entry in declared.get(campaign_name, [])}
+
+
+def _sandbox_words(sandbox: pathlib.Path) -> set[str]:
+    """Every identifier a system can read in its sandbox, archives included.
+
+    The compressed inputs are read rather than skipped: a name inside a .gz or a
+    .tar.gz IS available, and treating those as unreadable made data-supplied
+    names (a product name, a record status) look like undeclared contract keys.
+    """
+    import gzip
+    import tarfile
+
+    words: set[str] = set()
+    for path in sorted(sandbox.rglob("*")):
+        if not path.is_file():
+            continue
+        chunks: list[str] = []
+        try:
+            if path.name.endswith((".tar.gz", ".tar")):
+                with tarfile.open(path) as tar:
+                    for member in tar.getmembers():
+                        handle = tar.extractfile(member) if member.isfile() else None
+                        if handle:
+                            chunks.append(handle.read(ARCHIVE_MEMBER_BYTES)
+                                          .decode("utf-8", "ignore"))
+            elif path.name.endswith(".gz"):
+                with gzip.open(path, "rt", errors="ignore") as handle:
+                    chunks.append(handle.read(READ_BYTES))
+            else:
+                chunks.append(path.read_text(errors="ignore"))
+        except (OSError, tarfile.TarError, EOFError, UnicodeDecodeError):
+            continue
+        for chunk in chunks:
+            words |= set(_IDENTIFIER.findall(chunk))
+    return words
+
+
+def key_names_required(campaign: pathlib.Path) -> set[str]:
+    """Every structural key name the oracle's own submission uses, at any depth."""
+    found: set[str] = set()
+
+    def walk(node: object) -> None:
+        if isinstance(node, dict):
+            for key, value in node.items():
+                if _STRUCTURAL_KEY.match(str(key)):
+                    found.add(str(key))
+                walk(value)
+        elif isinstance(node, list):
+            for value in node[:LIST_SAMPLE]:
+                walk(value)
+
+    for path in sorted((campaign / "oracle_submission").iterdir()):
+        if path.suffix != ".json" or path.name == "measurement.json":
+            continue
+        try:
+            walk(json.loads(path.read_text()))
+        except json.JSONDecodeError:
+            continue
+    return found
+
+
+def key_name_findings(campaign: pathlib.Path, sandbox: pathlib.Path) -> set[str]:
+    """Key names the answer requires that no sandbox file states."""
+    return {name for name in key_names_required(campaign)
+            if name not in _sandbox_words(sandbox)}

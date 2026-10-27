@@ -938,6 +938,45 @@ def _contract_names_what_is_graded(campaign: pathlib.Path) -> Check:
     return _check("contract_names_what_is_graded", same and not problems, detail)
 
 
+def _every_key_name_is_findable(campaign: pathlib.Path) -> Check:
+    """Check 28: a key name the answer requires, that no sandbox file states.
+
+    Check 27 reaches as deep as the contract names keys. Below that a contract
+    described its shape in prose -- "entries carrying curated modules, modules,
+    modules naming more than one gene" -- and never gave the key names, which are
+    load-bearing: measured on arch-pks, renaming one key inside
+    `selection_census` takes an otherwise perfect answer from depth 4 to depth 0.
+    227 such names across 18 campaigns were findable nowhere a system can read.
+
+    A name the campaign's own DATA supplies -- a product name the tool emitted, a
+    status the records carry -- is declared in audit/contract_key_names.json
+    instead, because a contract that listed those would be listing an answer.
+    """
+    import tempfile
+
+    from npbench_c.readiness import cold_sandbox
+    from npbench_c.sweep.runner import build_sandbox
+
+    with tempfile.TemporaryDirectory() as tmp:
+        sandbox = build_sandbox(campaign, pathlib.Path(tmp) / "cold", None)
+        required = cold_sandbox.key_names_required(campaign)
+        words = cold_sandbox._sandbox_words(sandbox)
+    waived = cold_sandbox.key_name_exemptions(campaign.name)
+    unfindable = {name for name in required if name not in words}
+    undeclared = sorted(unfindable - set(waived))
+    stale = sorted(name for name in waived if name in words)
+
+    problems = ([f"unfindable: {name}" for name in undeclared]
+                + [f"stale exemption: {name}" for name in stale])
+    detail = (f"{len(required)} key name(s) required, "
+              f"{len(waived)} declared as supplied by the data")
+    detail += ("; " + "; ".join(problems[:6]) if problems
+               else "; every one of them stated in the sandbox")
+    if len(problems) > 6:
+        detail += f"; and {len(problems) - 6} more"
+    return _check("every_key_name_is_findable", not problems, detail)
+
+
 def _integrity(campaign: pathlib.Path) -> list[Check]:
     hits = []
     for path in sorted(campaign.rglob("*")):
@@ -994,6 +1033,7 @@ def run(campaign_dir: pathlib.Path) -> list[Check]:
     checks.append(_antismash_versions_are_not_mixed(campaign))
     checks.append(_single_term_answers_are_not_stated(campaign))
     checks.append(_contract_names_what_is_graded(campaign))
+    checks.append(_every_key_name_is_findable(campaign))
     checks += _integrity(campaign)
     checks += _pending_agent_runs(campaign)
     return checks

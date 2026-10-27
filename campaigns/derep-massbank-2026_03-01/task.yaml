@@ -124,21 +124,30 @@ output_contract:
       similarity name, the peak tolerance and the precursor window. The last
       three are echoes of the pinned rules table; the version is not, and the
       four are graded as one claim.
+
+      Keys, exactly: `matchms_version`, `peak_tolerance`, `precursor_window`,
+      `similarity`.
     corpus_census: >
       The two files as you parsed them -- graded queries, library spectra,
       distinct library compounds. Reported for the record and NOT graded: all
       three are in inputs/provenance.json, which you are given.
+
+      Keys, exactly: `graded_queries`, `library_compounds`, `library_spectra`.
     candidate_census: >
       The precursor filter applied to the whole library: the median and the
       maximum candidate-set size over the graded queries, and the total across
       all of them. The total is reported with the other two because a median
       alone cannot distinguish a library that filters tightly from one that
       filters tightly in the middle of the distribution.
+
+      Keys, exactly: `max`, `median`, `total`.
     retrieval_census: >
       How the queries came out: annotated, no candidate in the window at all, or
       candidates that all scored zero. The third is a real state and not the
       second: a sparse score matrix omits a zero-scoring pair rather than
       reporting it.
+
+      Keys, exactly: `annotated`, `no_candidate`, `no_match`.
     top_matches: >
       Per graded query, the library accession your pipeline ranks first, or null
       where there is nothing to rank.
@@ -146,11 +155,17 @@ output_contract:
       The declared confidence class of every query, and the count per class. The
       rule is a pair of floors -- a score AND a matched-peak count -- and the
       first row that meets BOTH wins.
+
+      Keys, exactly: `confidence_census` keys `confirmed`, `no_candidate`, `no_match`,
+      `tentative`, `unsupported`.
     margin_summary: >
       How many queries have a competing compound in their candidate window at
       all, the median margin between the top match and the best competitor of a
       different compound, and how many sit inside the declared margin. The median
       is reported at the declared precision.
+
+      Keys, exactly: `median`, `queries_with_a_competing_compound`,
+      `within_the_declared_margin`.
     ambiguous_queries: >
       The queries whose nearest different-compound competitor is within the
       declared margin. Undefined where no competitor exists, which is a query
@@ -166,6 +181,8 @@ output_contract:
       The comparison is against your own unshifted answer, not against the truth:
       the compound a query is, is the answer, and it is not in the sandbox.
 
+
+      Keys, exactly: `changed`, `no_candidate`, `unchanged`.
 constraints:
   reference_dir: reference
   pinned_tables:
