@@ -60,6 +60,11 @@ def main(argv: list[str] | None = None) -> int:
                          "measurements")
     ap.add_argument("--repeats", type=int, default=REPEATS)
     ap.add_argument("--sandbox-root", default=None)
+    ap.add_argument("--no-record", action="store_true",
+                    help="do not write internal_sweep.json into the campaign. For "
+                         "a trial run: the readiness gate READS that file, and a "
+                         "non-stub sweep in it is promoted to a measurement, so a "
+                         "smoke test left there becomes the campaign's evidence")
     args = ap.parse_args(argv)
 
     campaign = pathlib.Path(args.campaign).resolve()
@@ -82,7 +87,8 @@ def main(argv: list[str] | None = None) -> int:
         from npbench_c.sweep.systems import real_systems
 
         chosen = real_systems(campaign, pathlib.Path(args.systems))
-    report = sweep_campaign(campaign, chosen, sandbox, args.repeats)
+    report = sweep_campaign(campaign, chosen, sandbox, args.repeats,
+                            write=not args.no_record)
 
     meta = report["_meta"]
     print(f"campaign: {meta['campaign_id']}  repeats={meta['repeats']}")
@@ -100,7 +106,7 @@ def main(argv: list[str] | None = None) -> int:
         print(f"  {name:<18} mode={p['mode']:<8} depths={p['cold_depths']}")
     print("\ngates:")
     gates = sorted((k, v) for k, v in report.items() if not k.startswith("_"))
-    width = max(len(k) for k, _ in gates)
+    width = max((len(k) for k, _ in gates), default=1)
     for name, c in gates:
         mark = "  ok  " if c["pass"] else " FAIL "
         print(f"[{mark}] {name:<{width}}  {c['detail']}")

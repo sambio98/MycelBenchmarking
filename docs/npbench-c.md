@@ -4800,10 +4800,26 @@ raised before it reached a shell. Substitution is explicit now -- four names,
 every other brace left alone -- with a test for `${HOME}` and a JSON literal in
 one command line.
 
-**Smoke-tested end to end**: two trivial systems against one campaign, 8 runs
-(cold plus three warm), prompts written, submissions measured, graded, and three
-sweep gates correctly failing because a system that writes `{}` clears nothing.
-The path works; what it needs now is an agent.
+**Smoke-tested end to end**: trivial systems against one campaign, cold plus
+three warm, prompts written, submissions measured, graded, and three sweep gates
+correctly failing because a system that writes `{}` clears nothing. The path
+works; what it needs now is an agent.
+
+### The near-miss that flag exists for
+
+`sweep_campaign` records into the campaign by default, which is right for a real
+sweep and wrong for a trial. The first smoke run wrote its result into
+`constraint-gc62-ecoli-rebh-01/internal_sweep.json` marked `stub_based: false` --
+and the readiness gate READS that file and promotes a non-stub sweep to a
+measurement. Two throwaway systems that write `{}` had become the campaign's
+evidence, with three gates failing, and it was committed before it was noticed.
+
+Restored from the previous commit, and `--no-record` exists now so a trial run
+cannot touch the record at all. A test holds the flag by asserting what the CLI
+passes through, because the failure mode is silent: the sweep prints the same
+summary either way, and the damage is in a file nobody re-reads until the gate
+does. Hardened on the way past: the summary printer raised on a report with no
+gates.
 
 ## Open items
 

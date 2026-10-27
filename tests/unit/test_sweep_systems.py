@@ -254,3 +254,38 @@ def test_the_cli_says_what_a_sweep_needs_when_given_neither(capsys):
     code = cli.main([str(_campaigns()[0])])
     assert code == 2
     assert "--systems" in capsys.readouterr().err
+
+
+def test_a_trial_run_cannot_become_the_campaign_s_evidence(tmp_path, monkeypatch):
+    """The near-miss this flag exists for.
+
+    `sweep_campaign` records into the campaign by default, which is right for a
+    real sweep. The first smoke test of the real-system path used two throwaway
+    systems that write `{}` -- and wrote the result into
+    `constraint-gc62-ecoli-rebh-01/internal_sweep.json`, marked `stub_based:
+    false`. The readiness gate READS that file and promotes a non-stub sweep to a
+    measurement, so a smoke test had quietly become a campaign's evidence, with
+    three gates failing. It was committed before it was noticed.
+    """
+    from npbench_c.sweep import cli
+
+    seen = {}
+
+    def fake_sweep(campaign, systems, sandbox_root, repeats, write=True):
+        seen["write"] = write
+        return {"a_gate": {"pass": True, "detail": "fixture"},
+                "_meta": {"campaign_id": "x", "repeats": repeats,
+                          "chance_floor": 0.0, "systems": [], "stub_systems": [],
+                          "stub_based": False, "run_status_counts": {}},
+                "_headline": {"cold_mean_score": None, "ci_low": None,
+                              "ci_high": None},
+                "_per_rung_clear_rates": {}, "_per_system": {}}
+
+    monkeypatch.setattr(cli, "sweep_campaign", fake_sweep)
+    config = _config(tmp_path, SOUND)
+    campaign = str(_campaigns()[0])
+
+    cli.main([campaign, "--systems", str(config), "--no-record"])
+    assert seen["write"] is False
+    cli.main([campaign, "--systems", str(config)])
+    assert seen["write"] is True
