@@ -27,6 +27,12 @@ artifacts:
       - type: identifier_f1
       - type: macro_f1
         column: type
+      - type: macro_f1
+        column: accession
+      - type: lins_ccc
+        column: length_bp
+        log_transform: false
+        pseudocount: null
       - type: lins_ccc
         column: n_distinct_domains
         log_transform: false
@@ -60,6 +66,14 @@ artifacts:
       - type: identifier_f1
       - type: macro_f1
         column: boundary
+      - type: macro_f1
+        column: accession
+      - type: macro_f1
+        column: sequence_id
+      - type: lins_ccc
+        column: contig_length_bp
+        log_transform: false
+        pseudocount: null
 
   # Depth 2. Every staged assembly gets a row, so a dropped genome shows up as
   # a missing identifier rather than hiding in an aggregate.
@@ -78,6 +92,14 @@ artifacts:
     value_aliases: {}
     metrics:
       - type: identifier_f1
+      - type: lins_ccc
+        column: n_clusters
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: assembly_bp
+        log_transform: false
+        pseudocount: null
       - type: lins_ccc
         column: n_edge_clusters
         log_transform: false
@@ -108,6 +130,14 @@ artifacts:
         none: unknown
     metrics:
       - type: identifier_f1
+      - type: lins_ccc
+        column: n_clusters
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: n_genomes
+        log_transform: false
+        pseudocount: null
       - type: lins_ccc
         column: n_species
         log_transform: false
@@ -184,5 +214,13 @@ artifacts:
       - type: identifier_f1
       - type: lins_ccc
         column: n_clusters
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: n_genomes
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: n_species
         log_transform: false
         pseudocount: null
