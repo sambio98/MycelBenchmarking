@@ -8542,100 +8542,100 @@
   },
   "policy_sweep": {
     "--cut_ga|keep_all|ali": {
-      "a_domain_agreement": 398,
       "distinct_architectures": 364,
       "domains_total": 7839,
-      "genes_differing_from_baseline": 399
+      "genes_differing_from_baseline": 399,
+      "primary_domain_agreement": 398
     },
     "--cut_ga|keep_all|env": {
-      "a_domain_agreement": 398,
       "distinct_architectures": 370,
       "domains_total": 7839,
-      "genes_differing_from_baseline": 399
+      "genes_differing_from_baseline": 399,
+      "primary_domain_agreement": 398
     },
     "--cut_ga|resolve_by_score|ali": {
-      "a_domain_agreement": 398,
       "distinct_architectures": 276,
       "domains_total": 5954,
-      "genes_differing_from_baseline": 0
+      "genes_differing_from_baseline": 0,
+      "primary_domain_agreement": 398
     },
     "--cut_ga|resolve_by_score|env": {
-      "a_domain_agreement": 398,
       "distinct_architectures": 276,
       "domains_total": 5953,
-      "genes_differing_from_baseline": 1
+      "genes_differing_from_baseline": 1,
+      "primary_domain_agreement": 398
     },
     "--cut_nc|keep_all|ali": {
-      "a_domain_agreement": 398,
       "distinct_architectures": 368,
       "domains_total": 7878,
-      "genes_differing_from_baseline": 399
+      "genes_differing_from_baseline": 399,
+      "primary_domain_agreement": 398
     },
     "--cut_nc|keep_all|env": {
-      "a_domain_agreement": 398,
       "distinct_architectures": 375,
       "domains_total": 7878,
-      "genes_differing_from_baseline": 399
+      "genes_differing_from_baseline": 399,
+      "primary_domain_agreement": 398
     },
     "--cut_nc|resolve_by_score|ali": {
-      "a_domain_agreement": 398,
       "distinct_architectures": 276,
       "domains_total": 5962,
-      "genes_differing_from_baseline": 8
+      "genes_differing_from_baseline": 8,
+      "primary_domain_agreement": 398
     },
     "--cut_nc|resolve_by_score|env": {
-      "a_domain_agreement": 398,
       "distinct_architectures": 276,
       "domains_total": 5961,
-      "genes_differing_from_baseline": 9
+      "genes_differing_from_baseline": 9,
+      "primary_domain_agreement": 398
     },
     "--cut_tc|keep_all|ali": {
-      "a_domain_agreement": 398,
       "distinct_architectures": 365,
       "domains_total": 7778,
-      "genes_differing_from_baseline": 399
+      "genes_differing_from_baseline": 399,
+      "primary_domain_agreement": 398
     },
     "--cut_tc|keep_all|env": {
-      "a_domain_agreement": 398,
       "distinct_architectures": 371,
       "domains_total": 7778,
-      "genes_differing_from_baseline": 399
+      "genes_differing_from_baseline": 399,
+      "primary_domain_agreement": 398
     },
     "--cut_tc|resolve_by_score|ali": {
-      "a_domain_agreement": 398,
       "distinct_architectures": 276,
       "domains_total": 5893,
-      "genes_differing_from_baseline": 58
+      "genes_differing_from_baseline": 58,
+      "primary_domain_agreement": 398
     },
     "--cut_tc|resolve_by_score|env": {
-      "a_domain_agreement": 398,
       "distinct_architectures": 276,
       "domains_total": 5892,
-      "genes_differing_from_baseline": 58
+      "genes_differing_from_baseline": 58,
+      "primary_domain_agreement": 398
     },
     "-E 1e-5|keep_all|ali": {
-      "a_domain_agreement": 328,
       "distinct_architectures": 421,
       "domains_total": 11083,
-      "genes_differing_from_baseline": 445
+      "genes_differing_from_baseline": 445,
+      "primary_domain_agreement": 328
     },
     "-E 1e-5|keep_all|env": {
-      "a_domain_agreement": 328,
       "distinct_architectures": 426,
       "domains_total": 11083,
-      "genes_differing_from_baseline": 445
+      "genes_differing_from_baseline": 445,
+      "primary_domain_agreement": 328
     },
     "-E 1e-5|resolve_by_score|ali": {
-      "a_domain_agreement": 394,
       "distinct_architectures": 332,
       "domains_total": 6335,
-      "genes_differing_from_baseline": 247
+      "genes_differing_from_baseline": 247,
+      "primary_domain_agreement": 394
     },
     "-E 1e-5|resolve_by_score|env": {
-      "a_domain_agreement": 397,
       "distinct_architectures": 331,
       "domains_total": 6319,
-      "genes_differing_from_baseline": 242
+      "genes_differing_from_baseline": 242,
+      "primary_domain_agreement": 397
     }
   },
   "present": {
