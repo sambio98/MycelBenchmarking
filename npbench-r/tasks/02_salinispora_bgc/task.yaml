@@ -22,6 +22,14 @@ truth_provenance: >-
   correctly, which is what PROJECT.md section 3 calls grading artifacts rather
   than answers. It does not measure agreement with the published figures.
 
+determinism: >-
+  Verified, not assumed. Two independent GECCO runs of GCF_000016425.1 produced
+  byte-identical clusters.tsv (sha256
+  b2f153eb816cd732d4cbb3e168974f70302a0af02f8dbbd316d33273276e9a02). Gene
+  calling via pyrodigal and the CRF prediction are both deterministic, so truth
+  is stable across re-runs and an agent that follows the method guidance can
+  reach it exactly.
+
 categories:
   - bgc_detection
   - comparative_genomics

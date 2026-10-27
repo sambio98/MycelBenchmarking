@@ -15,7 +15,10 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["pytest>=8.0"]
+# The grading library and validator are deliberately light. Inspect AI pulls in
+# over a hundred packages, so it is only needed to run evals, not to grade.
+harness = ["inspect_ai>=0.3.285"]
+dev = ["pytest>=8.0", "inspect_ai>=0.3.285"]
 
 [project.scripts]
 npbench = "npbench.cli:main"

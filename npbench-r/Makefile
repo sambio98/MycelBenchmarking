@@ -33,6 +33,6 @@ lock:
 	@echo "Locks are per task: see tasks/<id>/environment/README.md"
 	@exit 2
 
-eval:
-	@echo "'eval' needs the Inspect AI harness (CLAUDE.md build order, step 4)."
-	@exit 2
+eval: require-task
+	@test -n "$(MODEL)" || { echo "usage: make eval TASK=<dir> MODEL=<provider/model>"; exit 2; }
+	inspect eval npbench/harness/task.py -T task_dir=$(TASK_DIR) --model $(MODEL)

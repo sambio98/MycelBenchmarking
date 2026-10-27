@@ -14,31 +14,37 @@ Build order is set out in `CLAUDE.md`. Steps 1 and 2 are done and verified.
 
 | Step | | |
 |---|---|---|
-| 1 | Grading library | done, 132 tests |
+| 1 | Grading library | done |
 | 2 | Bundle validator | done |
-| 3 | One task end to end (Crüsemann) | not started, blocked |
-| 4 | Inspect AI harness | not started |
-| 5 | Tasks 2 to 6 | not started |
+| 3 | One task end to end | task 02 bundle built; truth generation in progress |
+| 4 | Inspect AI harness | built; docker sandbox path unverified |
+| 5 | Remaining tasks | not started |
 | 6 | Difficulty calibration | not started |
 
-Step 3 is blocked on the unverified items listed under *Known unresolved items*
-in `CLAUDE.md`: the Crüsemann supplementary file format and MassIVE download
-size are unconfirmed, so no data has been fetched and no task bundle exists yet.
+Build order was reordered: **task 02 (Salinispora, BGC detection) was built
+before task 01 (Crüsemann)**. MassIVE MSV000078836 turned out to be 311 GB
+across 1,125 mzXML files, which is 15x the 20 GB target in PROJECT.md §10, so
+task 01 cannot be staged as specified and needs a subsetting decision. Task 02
+stages from NCBI RefSeq in 191 MB.
 
 ## Usage
 
 ```bash
-pip install -e ".[dev]"
+pip install -e ".[dev]"                       # graders, validator, harness
+T=02_salinispora_bgc
 
-make test                       # graders and validator
-make validate TASK=01           # bundle contract check
-make grade TASK=01 OUTPUTS=...  # grade an outputs directory against truth/
+make test                                      # 198 tests
+make validate TASK=$T                          # bundle contract check
+make fetch TASK=$T                             # stage and checksum 191 MB of genomes
+make truth TASK=$T                             # run the reference solution into truth/
+make selfgrade TASK=$T                         # expect 1.00
+make grade TASK=$T OUTPUTS=<dir>               # grade any outputs directory
+make eval TASK=$T MODEL=anthropic/claude-opus-5
 ```
 
-`lock`, `fetch`, `truth`, `selfgrade` and `eval` are declared in the `Makefile`
-and exit with a pointer to the build step that implements them. They are not
-stubbed, because a command that pretends to fetch data is worse than one that
-is absent.
+Grading needs only numpy, pandas and pyyaml. Inspect AI is an extra
+(`pip install -e ".[harness]"`) so the graders stay installable without
+pulling in a hundred packages.
 
 ## Grading model
 
