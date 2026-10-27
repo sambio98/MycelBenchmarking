@@ -18,7 +18,7 @@ Build order is set out in `CLAUDE.md`. Steps 1 and 2 are done and verified.
 | 2 | Bundle validator | done |
 | 3 | One task end to end | **done**: task 02 validates clean and self-grades 1.00 |
 | 4 | Inspect AI harness | built; docker sandbox path unverified |
-| 5 | Remaining tasks | 2 of 6 built (02, 03) |
+| 5 | Remaining tasks | 3 of 6 built (02, 03, 04) |
 | 6 | Difficulty calibration | needs model runs; a proxy measurement exists |
 
 Build order was reordered: **task 02 (Salinispora, BGC detection) was built
@@ -32,10 +32,27 @@ stages from NCBI RefSeq in 191 MB.
 | | |
 |---|---|
 | `02_salinispora_bgc` | BGC inventory and gene cluster families across 120 *Salinispora* assemblies with GECCO 0.11.0. 191 MB staged, 2,935 clusters, 7 artifacts, 30 metric instances, depth 2–4. |
-| `03_mibig_cheminformatics` | Scaffolds, isomers, stereochemistry collapse and similarity families over the MIBiG 4.0 compound set with RDKit. 936 KB staged, 4,397 compounds, 8 artifacts, 31 metric instances, depth 2–4. **Discriminates less well than task 02** — see its `NOTES.md`. |
+| `03_mibig_cheminformatics` | Scaffolds, isomers, stereochemistry collapse and similarity families over the MIBiG 4.0 compound set with RDKit. 936 KB staged, 4,397 compounds, 8 artifacts, 31 metric instances, depth 2–4. **Discriminates less well than the others** — see its `NOTES.md`. |
+| `04_mibig_nrps_pks_modules` | NRPS/PKS module architecture and adenylation-domain substrate specificity in MIBiG 4.0. 936 KB staged, 4,034 modules, 8 artifacts, 39 metric instances, depth 2–4. Artifacts share upstream dependencies by design; all 8 land in band. |
 
-Both validate clean and self-grade 1.00. Each task's `NOTES.md` records measured
-scale, reproducibility and difficulty, including what does *not* discriminate.
+All three validate clean and self-grade 1.00. Each task's `NOTES.md` records
+measured scale, reproducibility and difficulty, including what does *not*
+discriminate.
+
+### The main design finding so far
+
+A task discriminates when its artifacts **share upstream dependencies**, not
+when it has many artifacts. Measured across the three:
+
+| | artifacts in the 0.1–0.8 band | 3-mistake agent |
+|---|---|---|
+| 02, shared joins | 6 of 7 | 0.14 |
+| 03, independent artifacts | 3 of 8 | 0.62 |
+| 04, shared joins by design | 8 of 8 | 0.00 |
+
+Task 04 now carries the opposite risk: one scope mistake floors it at 0.00. A
+task that bottoms out loses information as surely as one that tops out. Both
+ends are written up in the respective `NOTES.md`.
 
 Task 01 (Crüsemann, MassIVE MSV000078836) is not built: the deposit is 311 GB
 across 1,125 mzXML files, 15x the 20 GB target in PROJECT.md §10, so it needs a
