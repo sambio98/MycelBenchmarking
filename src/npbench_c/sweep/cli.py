@@ -54,19 +54,35 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("campaign")
     ap.add_argument("--stubs", action="store_true",
                     help="run the harness self-test systems instead of real agents")
+    ap.add_argument("--systems", default=None,
+                    help="path to a real-system config (see npbench_c.sweep.systems); "
+                         "this is what turns the gate's five PENDING checks into "
+                         "measurements")
     ap.add_argument("--repeats", type=int, default=REPEATS)
     ap.add_argument("--sandbox-root", default=None)
     args = ap.parse_args(argv)
 
     campaign = pathlib.Path(args.campaign).resolve()
-    if not args.stubs:
-        print("no real systems configured; pass --stubs to self-test the harness",
-              file=sys.stderr)
+    if args.stubs and args.systems:
+        print("pass --stubs or --systems, not both: a sweep that mixes fixtures "
+              "with real systems reports neither", file=sys.stderr)
+        return 2
+    if not args.stubs and not args.systems:
+        print("no systems chosen. --stubs self-tests the harness; --systems "
+              "<config.json> runs real agents and is what the readiness gate's "
+              "five pending checks need. See npbench_c.sweep.systems for the "
+              "config and what it refuses.", file=sys.stderr)
         return 2
 
     sandbox = pathlib.Path(args.sandbox_root) if args.sandbox_root else \
         campaign.parent.parent / ".sweep_sandbox" / campaign.name
-    report = sweep_campaign(campaign, stub_systems(campaign), sandbox, args.repeats)
+    if args.stubs:
+        chosen = stub_systems(campaign)
+    else:
+        from npbench_c.sweep.systems import real_systems
+
+        chosen = real_systems(campaign, pathlib.Path(args.systems))
+    report = sweep_campaign(campaign, chosen, sandbox, args.repeats)
 
     meta = report["_meta"]
     print(f"campaign: {meta['campaign_id']}  repeats={meta['repeats']}")

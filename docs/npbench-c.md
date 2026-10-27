@@ -4735,6 +4735,76 @@ fixture's number to a measurement. So 1.0.0 is a complete, mechanically verified
 benchmark whose difficulty and discrimination are declared and unmeasured -- see
 open item 3, which is the whole of what remains.
 
+## The missing half of the sweep: a prompt, and a declared system set
+
+The readiness gate has kept five checks PENDING on every campaign since the
+harness existed, and the reason was recorded as "needs real systems". That was
+true and incomplete. The runner has always been agent-agnostic -- a system is a
+command, `SystemSpec` is a name, a command, a mode and a timeout -- so what was
+missing was never the runner. It was two things, and neither existed:
+
+**A stub reads `task.yaml` itself.** It is code in this repository, so it needs
+no instructions. A real agent does, and nothing in the harness produced any. A
+sweep over real systems would have handed each one an empty working directory and
+measured what it guessed.
+
+**A set of systems to run.** `--stubs` was the only path the CLI had; the other
+branch printed "no real systems configured" and exited 2.
+
+### `npbench_c.sweep.prompt`
+
+One generator for all 25 campaigns, with three properties that are the whole
+point of generating rather than writing 25 prompts:
+
+- **built from the SANDBOX, not the campaign** -- the only inputs are the files a
+  system already has, so it cannot leak what `task.yaml` does not. Verified the
+  same way the campaigns are: all 25 cold prompts pass checks 22 and 26's scans,
+  as a test, with the prompt rendered into the sandbox being scanned;
+- **identical for every system** -- a difficulty comparison between two systems
+  given different instructions measures the instructions;
+- **it states the contract and declines to state the method.** The objective, the
+  scope note, the output contract field by field, the pinned tables, the budget
+  and the tool surface are rendered. `notes_for_audit` is not: it is written for
+  someone holding gold, and in front of a system it reads as a procedure.
+
+A warm prompt additionally names the files handed over and says to take them as
+correct. 100 prompts render across the suite -- 25 cold and 75 warm -- and the
+first draft raised on two of them, because it assumed a warm bundle is JSON and
+the construct campaigns' R2 bundle is a FASTA.
+
+### `npbench_c.sweep.systems`
+
+The systems come from a config file, and the module's value is what it refuses:
+
+| refusal | why it exists |
+|---|---|
+| a command that never mentions `{submission}` | the run is scored on an empty directory and reads as a capability result |
+| no `no_tool` ablation, or two | the leakage check is computed against it; without it the gate fails rather than passing quietly |
+| no reference system, or two | the difficulty gate is judged on its per-rung profile |
+| every tooled system is the reference | the R1 clear rate is measured over the tooled systems that are NOT the reference, so the gate becomes uncomputable and reports `None` as a campaign defect |
+| a `no_tool` system that can still see the tool prefix | the ablation's whole claim is that it did not compute; the loader strips the prefix from its PATH and refuses a config that puts it back |
+| `is_stub` | a fixture in a real sweep is laundered into evidence |
+
+The **timeout is not configurable upward**: it is derived from each campaign's
+own `budgets.wall_clock_minutes`, so no system is silently given more wall clock
+than the campaign budgeted. A config may ask for less.
+
+`sweep_systems.example.json` is a template; `--systems <config>` is the CLI path.
+
+### And a harness defect only a real command could find
+
+`_format` substituted the harness's placeholders with `str.format`. A stub's argv
+is written in this repository and never contains a brace; a real agent's command
+plausibly contains several, and the smoke test's `printf '{}' > {submission}/r.json`
+raised before it reached a shell. Substitution is explicit now -- four names,
+every other brace left alone -- with a test for `${HOME}` and a JSON literal in
+one command line.
+
+**Smoke-tested end to end**: two trivial systems against one campaign, 8 runs
+(cold plus three warm), prompts written, submissions measured, graded, and three
+sweep gates correctly failing because a system that writes `{}` clears nothing.
+The path works; what it needs now is an agent.
+
 ## Open items
 
 1. ~~CAI table provenance.~~ **Closed.** The tables are derived from two pinned
@@ -4752,9 +4822,17 @@ open item 3, which is the whole of what remains.
    from each campaign's own statements. See the section above for the three
    exclusions that are less obvious than `gold/` and for the one campaign whose
    missing licence record it found.
-3. Real systems for the sweep. The harness is built and self-tested; it needs
-   `SystemSpec` entries for the actual agents (bash-only, general biomedical,
-   tool-equipped) before the five checks can go green.
+3. **Real systems for the sweep — the only thing between 1.0.0 and an auditable
+   benchmark.** The harness side is now complete: the prompt generator, the
+   validated system-set loader, the `--systems` CLI path and an end-to-end smoke
+   test are all in (see "The missing half of the sweep" above), and
+   `sweep_systems.example.json` is a template with three roles filled in. What
+   remains is not code: it is **which agents to run and the credential and
+   compute to run them**. The arithmetic, at the frozen 25 campaigns: 4
+   rung-modes x 25 campaigns = 100 runs per system per repeat, so three systems
+   at two repeats is 600 agent sessions. Expect some campaigns to FAIL
+   difficulty or discrimination on real agents and budget a rescope pass for
+   them -- that failure is the benchmark working.
 4. ~~matchms in the image.~~ **Done.** The prefix carries
    matchms 0.30.2 (46 packages added, nothing moved), `--verify` reports 9/9,
    the invariance suite measures it as an invocation like every other tool

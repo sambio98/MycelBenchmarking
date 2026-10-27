@@ -136,7 +136,22 @@ def build_sandbox(
 
 
 def _format(tokens: Sequence[str], **subs: str) -> list[str]:
-    return [t.format(**subs) for t in tokens]
+    """Substitute the harness's own placeholders and leave every other brace.
+
+    `str.format` was wrong here and only a stub ladder hid it: a stub's argv is
+    written in this repository and never contains a brace, while a real system's
+    command plausibly contains several -- a JSON literal, an awk program,
+    `${VAR}`. `printf '{}' > {submission}/report.json` raised on the `{}` before
+    it ever reached a shell. So the substitution is explicit: these four names
+    and nothing else.
+    """
+    out = []
+    for token in tokens:
+        text = str(token)
+        for name, value in subs.items():
+            text = text.replace("{" + name + "}", value)
+        out.append(text)
+    return out
 
 
 def _absolute_pythonpath(env: Mapping[str, str]) -> dict[str, str]:
@@ -177,6 +192,18 @@ def run_once(
     )
     submission = sandbox / "submission"
 
+    # A stub reads task.yaml itself, because it is code in this repository. A
+    # real system has to be told what to do, so the prompt is rendered into its
+    # sandbox -- from the sandbox, never from the campaign, so it cannot carry
+    # anything the system was not already given. Identical for every system that
+    # runs this campaign at this rung: a comparison between two systems given
+    # different instructions measures the instructions.
+    prompt_path = None
+    if not system.is_stub:
+        from npbench_c.sweep import prompt as prompt_module
+
+        prompt_path = prompt_module.write(sandbox, rung_mode)
+
     env = _absolute_pythonpath({**os.environ, **system.env,
                                 "NPBENCH_MODE": system.mode})
     env.pop(cache.ENV_VAR, None)
@@ -195,7 +222,8 @@ def run_once(
     try:
         proc = subprocess.run(
             _format(system.command, campaign=str(campaign),
-                    submission=str(submission), sandbox=str(sandbox)),
+                    submission=str(submission), sandbox=str(sandbox),
+                    prompt=str(prompt_path) if prompt_path else ""),
             cwd=sandbox, env=env, capture_output=True, timeout=system.timeout_s, text=True,
         )
     except subprocess.TimeoutExpired:
