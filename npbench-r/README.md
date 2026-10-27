@@ -18,7 +18,7 @@ Build order is set out in `CLAUDE.md`. Steps 1 and 2 are done and verified.
 | 2 | Bundle validator | done |
 | 3 | One task end to end | **done**: task 02 validates clean and self-grades 1.00 |
 | 4 | Inspect AI harness | built; docker sandbox path unverified |
-| 5 | Remaining tasks | not started |
+| 5 | Remaining tasks | 2 of 6 built (02, 03) |
 | 6 | Difficulty calibration | needs model runs; a proxy measurement exists |
 
 Build order was reordered: **task 02 (Salinispora, BGC detection) was built
@@ -31,7 +31,11 @@ stages from NCBI RefSeq in 191 MB.
 
 | | |
 |---|---|
-| `02_salinispora_bgc` | BGC inventory and gene cluster families across 120 *Salinispora* assemblies with GECCO 0.11.0. 191 MB staged, 2,935 clusters, 7 artifacts, 30 metric instances, depth 2–4. See its `NOTES.md` for measured scale and difficulty. |
+| `02_salinispora_bgc` | BGC inventory and gene cluster families across 120 *Salinispora* assemblies with GECCO 0.11.0. 191 MB staged, 2,935 clusters, 7 artifacts, 30 metric instances, depth 2–4. |
+| `03_mibig_cheminformatics` | Scaffolds, isomers, stereochemistry collapse and similarity families over the MIBiG 4.0 compound set with RDKit. 936 KB staged, 4,397 compounds, 8 artifacts, 31 metric instances, depth 2–4. **Discriminates less well than task 02** — see its `NOTES.md`. |
+
+Both validate clean and self-grade 1.00. Each task's `NOTES.md` records measured
+scale, reproducibility and difficulty, including what does *not* discriminate.
 
 Task 01 (Crüsemann, MassIVE MSV000078836) is not built: the deposit is 311 GB
 across 1,125 mzXML files, 15x the 20 GB target in PROJECT.md §10, so it needs a
