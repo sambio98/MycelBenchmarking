@@ -1,0 +1,58 @@
+task_id: 04_mibig_nrps_pks_modules
+title: NRPS and PKS module architecture and adenylation-domain substrate specificity in MIBiG 4.0
+
+source:
+  citation: >-
+    Zdouc MM, Blin K, Louwen NLL, Navarro J, Loureiro C, Bader CD, Bailey CB,
+    Barra L, Booth TJ, Bozhüyük KAJ, et al. MIBiG 4.0: advancing biosynthetic
+    gene cluster curation through global collaboration.
+    Nucleic Acids Research 53:D678-D690 (2024).
+  doi: 10.1093/nar/gkae1115
+
+truth_provenance: >-
+  Tool-generated. Every artifact in truth/ is produced by
+  solution/make_truth.py over the frozen MIBiG 4.0 release in
+  data.manifest.json, using the pinned RDKit build. The MIBiG paper describes
+  the repository; it does not report these analyses, so nothing here is
+  compared against a published table.
+
+determinism: >-
+  Verified. Two independent runs of the reference solution produce
+  byte-identical output for all eight artifacts.
+
+categories:
+  - nrps_pks_domains
+  - cheminformatics
+
+# PROJECT.md section 8. modules.csv is depth 2. The substrate table is depth 3.
+# Everything downstream of it is depth 4, and the class matrix is depth 4 over a
+# one-to-many join.
+depth: 4
+
+# Unlike task 03, the artifacts here are deliberately NOT independent.
+# modules.csv feeds all seven others and a_domain_substrates.csv feeds four, so
+# a single parse mistake propagates instead of stopping at one artifact. Task
+# 03's NOTES.md records why that matters: a task discriminates when its
+# artifacts share upstream dependencies, not when it has many artifacts.
+tool_versions:
+  rdkit: "2026.9.1"          # pip pin; rdkit.__version__ prints 2026.09.1
+  mibig: "4.0"
+  python: "3.13"
+
+solution:
+  steps:
+    - python {task}/solution/make_truth.py --task {task} --out {out}
+
+runtime:
+  vcpus: 4
+  ram_gb: 8
+  wall_clock_hours: 1
+  # Measured: the reference solution runs in 3 s.
+
+network:
+  deny_terms:
+    - 10.1093/nar/gkae1115
+    - gkae1115
+    - "MIBiG 4.0: advancing biosynthetic gene cluster curation"
+  deny_hosts:
+    - mibig.secondarymetabolites.org

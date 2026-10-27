@@ -1,0 +1,265 @@
+version: 1
+
+# The artifacts here share upstream dependencies on purpose: modules.csv feeds
+# all seven others, and a_domain_substrates.csv feeds four. A single parse
+# mistake is meant to propagate rather than stop at one artifact.
+#
+# Case is folded everywhere except the SMILES column in
+# nonproteinogenic_substrates.csv, where `c` is an aromatic carbon and `C` an
+# aliphatic one.
+
+artifacts:
+  # Depth 2. The base parse. The row key is the module's 1-based position in
+  # MIBiG's `modules` list, not its name: 12 names repeat within a BGC, and
+  # keying on position also forces the list order to be preserved.
+  - path: modules.csv
+    truth: modules.csv
+    format: csv
+    soft: false
+    row_key: [bgc_accession, module_index]
+    normalisers: [strip, collapse_whitespace, casefold]
+    column_aliases:
+      bgc_accession: [bgc, accession, bgc_id, mibig_id]
+      module_index: [index, position, module_position]
+      module_name: [name]
+      module_type: [type]
+      active: [is_active]
+      n_genes: [genes, gene_count]
+      has_a_domain: [a_domain, has_adenylation]
+      n_modification_domains: [modification_domains, n_mod_domains]
+      n_domains: [domains, domain_count]
+    value_aliases:
+      active: {"True": "true", "False": "false", "1": "true", "0": "false"}
+      has_a_domain: {"True": "true", "False": "false", "1": "true", "0": "false"}
+    metrics:
+      - type: identifier_f1
+      - type: macro_f1
+        column: module_name
+      - type: macro_f1
+        column: module_type
+      - type: macro_f1
+        column: active
+      - type: macro_f1
+        column: has_a_domain
+      - type: lins_ccc
+        column: n_genes
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: n_modification_domains
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: n_domains
+        log_transform: false
+        pseudocount: null
+
+  # Depth 3. Feeds the four artifacts below it. An A-domain carries 0 to 9
+  # substrates, so the row count does not follow from the module count.
+  - path: a_domain_substrates.csv
+    truth: a_domain_substrates.csv
+    format: csv
+    soft: false
+    row_key: [bgc_accession, module_index, substrate_name]
+    normalisers: [strip, collapse_whitespace, casefold]
+    column_aliases:
+      bgc_accession: [bgc, accession, bgc_id, mibig_id]
+      module_index: [index, position, module_position]
+      substrate_name: [substrate, name]
+      proteinogenic: [is_proteinogenic]
+      substrate_formula: [formula, molecular_formula]
+      best_evidence: [evidence, evidence_method, strongest_evidence]
+    value_aliases:
+      proteinogenic: {"True": "true", "False": "false", "1": "true", "0": "false"}
+    metrics:
+      - type: identifier_f1
+      - type: macro_f1
+        column: proteinogenic
+      - type: macro_f1
+        column: substrate_formula
+      - type: macro_f1
+        column: best_evidence
+
+  # Depth 4. n_distinct_structures is the artifact that notices MIBiG records D
+  # and L forms of nine substrates under one name.
+  - path: substrate_counts.csv
+    truth: substrate_counts.csv
+    format: csv
+    soft: false
+    row_key: [substrate_name]
+    normalisers: [strip, collapse_whitespace, casefold]
+    column_aliases:
+      substrate_name: [substrate, name]
+      n_modules: [modules, module_count]
+      n_bgcs: [bgcs, bgc_count]
+      proteinogenic: [is_proteinogenic]
+      n_distinct_structures: [distinct_structures, n_structures]
+    value_aliases:
+      proteinogenic: {"True": "true", "False": "false", "1": "true", "0": "false"}
+    metrics:
+      - type: identifier_f1
+      - type: macro_f1
+        column: proteinogenic
+      - type: lins_ccc
+        column: n_modules
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: n_bgcs
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: n_distinct_structures
+        log_transform: false
+        pseudocount: null
+
+  # Depth 4. Its row universe is the evidence ranking applied correctly.
+  - path: substrate_evidence_summary.csv
+    truth: substrate_evidence_summary.csv
+    format: csv
+    soft: false
+    row_key: [best_evidence]
+    normalisers: [strip, collapse_whitespace, casefold]
+    column_aliases:
+      best_evidence: [evidence, evidence_method, strongest_evidence]
+      n_assignments: [assignments, n_substrate_assignments, count]
+      n_distinct_substrates: [distinct_substrates, n_substrates]
+      n_bgcs: [bgcs, bgc_count]
+    value_aliases: {}
+    metrics:
+      - type: identifier_f1
+      - type: lins_ccc
+        column: n_assignments
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: n_distinct_substrates
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: n_bgcs
+        log_transform: false
+        pseudocount: null
+
+  # Depth 4. Needs the substrate table and RDKit on the substrate SMILES.
+  - path: nonproteinogenic_substrates.csv
+    truth: nonproteinogenic_substrates.csv
+    format: csv
+    soft: false
+    row_key: [substrate_name, canonical_smiles]
+    normalisers: [strip, collapse_whitespace, casefold]
+    column_normalisers:
+      canonical_smiles: [strip]
+    column_aliases:
+      substrate_name: [substrate, name]
+      canonical_smiles: [smiles, structure]
+      formula: [molecular_formula]
+      exact_mass: [mass, exact_mw, monoisotopic_mass]
+      n_heavy_atoms: [heavy_atoms, num_heavy_atoms]
+      n_modules: [modules, module_count]
+    value_aliases: {}
+    metrics:
+      - type: identifier_f1
+      - type: macro_f1
+        column: formula
+      - type: lins_ccc
+        column: exact_mass
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: n_heavy_atoms
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: n_modules
+        log_transform: false
+        pseudocount: null
+
+  # Depth 4 over a one-to-many join: a BGC carries several biosynthesis classes.
+  - path: class_substrate_matrix.csv
+    truth: class_substrate_matrix.csv
+    format: csv
+    soft: false
+    row_key: [biosynthesis_class, substrate_name]
+    normalisers: [strip, collapse_whitespace, casefold]
+    column_aliases:
+      biosynthesis_class: [class, bgc_class]
+      substrate_name: [substrate, name]
+      n_modules: [modules, module_count]
+      n_bgcs: [bgcs, bgc_count]
+    value_aliases: {}
+    metrics:
+      - type: identifier_f1
+      - type: lins_ccc
+        column: n_modules
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: n_bgcs
+        log_transform: false
+        pseudocount: null
+
+  # Depth 3. The architecture string only comes out right if the module list
+  # order was preserved, so this is where an agent that sorted or dict-keyed
+  # the modules shows up.
+  - path: module_architecture.csv
+    truth: module_architecture.csv
+    format: csv
+    soft: false
+    row_key: [bgc_accession]
+    normalisers: [strip, collapse_whitespace, casefold]
+    column_aliases:
+      bgc_accession: [bgc, accession, bgc_id, mibig_id]
+      n_modules: [modules, module_count]
+      n_a_domains: [a_domains, n_adenylation]
+      architecture: [module_architecture, module_order, arch]
+      domain_composition: [domains, composition]
+    value_aliases: {}
+    metrics:
+      - type: identifier_f1
+      - type: macro_f1
+        column: architecture
+      - type: macro_f1
+        column: domain_composition
+      - type: lins_ccc
+        column: n_modules
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: n_a_domains
+        log_transform: false
+        pseudocount: null
+
+  # Depth 4. Exact grouping on the ordered architecture, not a clustering:
+  # the domain vocabulary is too small for a similarity threshold to separate
+  # anything. representative_bgc is content-derived, so it only comes out right
+  # if the grouping does.
+  - path: architecture_counts.csv
+    truth: architecture_counts.csv
+    format: csv
+    soft: false
+    row_key: [architecture]
+    normalisers: [strip, collapse_whitespace, casefold]
+    column_aliases:
+      architecture: [module_architecture, module_order, arch]
+      n_bgcs: [bgcs, bgc_count]
+      n_modules: [modules, module_count]
+      n_a_domains: [a_domains, n_adenylation]
+      representative_bgc: [representative, example_bgc, smallest_bgc]
+    value_aliases: {}
+    metrics:
+      - type: identifier_f1
+      - type: macro_f1
+        column: representative_bgc
+      - type: lins_ccc
+        column: n_bgcs
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: n_modules
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: n_a_domains
+        log_transform: false
+        pseudocount: null

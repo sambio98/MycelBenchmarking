@@ -1,0 +1,9 @@
+[
+  {
+    "path": "data/mibig_json_4.0.tar.gz",
+    "url": "https://dl.secondarymetabolites.org/mibig/mibig_json_4.0.tar.gz",
+    "release": "MIBiG 4.0",
+    "bytes": 954258,
+    "sha256": "986f1a69fb5eeb84fd7c0175ae921304c22fd5f8ed04c96d8c1c0c95a145837b"
+  }
+]
