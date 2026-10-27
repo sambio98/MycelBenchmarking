@@ -31,6 +31,11 @@ VENDOR_TOKENS = ("mycel",)
 
 PASS, FAIL, PENDING = "PASS", "FAIL", "PENDING"
 
+#: The gold-side files each campaign's build may read, with the reason each one
+#: is not in the sandbox. Outside campaigns/, where no sandbox can reach it.
+GOLD_SIDE_INPUTS = (pathlib.Path(__file__).resolve().parents[3]
+                    / "audit" / "gold_side_inputs.json")
+
 #: What a campaign may declare about the licence of the data it ships.
 #:
 #:   open         no downstream condition beyond attribution (CC BY, CC0, public
@@ -140,26 +145,82 @@ def _oracle_and_purity(campaign: pathlib.Path) -> list[Check]:
     return checks
 
 
-def _oracle_determinism(campaign: pathlib.Path) -> Check:
-    """Regenerate gold and require byte-identity with what is committed."""
+def gold_side_inputs(campaign_name: str,
+                     path: pathlib.Path | None = None) -> dict[str, str]:
+    """The gold-side files one campaign's build may read, as {file: reason}."""
+    source = path or GOLD_SIDE_INPUTS
+    if not source.is_file():
+        return {}
+    declared = json.loads(source.read_text()).get("inputs") or {}
+    return {entry["file"]: entry["reason"]
+            for entry in declared.get(campaign_name, [])}
+
+
+def _rebuild_gold(campaign: pathlib.Path, into: pathlib.Path,
+                  restore: tuple[str, ...]) -> tuple[bool, str]:
+    """Rebuild gold in a tree holding only the sandbox plus `restore`."""
+    import shutil
+
     import yaml
+
+    from npbench_c.sweep.runner import build_sandbox
 
     task = yaml.safe_load((campaign / "task.yaml").read_text())
     gold_command = ((task.get("harness") or {}).get("gold_command")
                     or [sys.executable, "oracle/generate_gold.py"])
-    gold_path = campaign / "gold" / "gold.json"
-    before = gold_path.read_bytes()
+    sandbox = build_sandbox(campaign, into, None)
+    (sandbox / "gold").mkdir(exist_ok=True)
+    for name in restore:
+        shutil.copyfile(campaign / "gold" / name, sandbox / "gold" / name)
     try:
-        subprocess.run([tok.format(campaign=str(campaign)) for tok in gold_command],
-                       cwd=campaign, env=_absolute_pythonpath(os.environ),
-                       check=True, capture_output=True, timeout=3600)
+        subprocess.run([tok.format(campaign=str(sandbox)) for tok in gold_command],
+                       cwd=sandbox, env=_absolute_pythonpath(os.environ),
+                       check=True, capture_output=True, timeout=7200)
     except (subprocess.CalledProcessError, subprocess.TimeoutExpired, OSError) as exc:
-        return Check("oracle_determinism", FAIL, f"regeneration failed: {exc}")
-    after = gold_path.read_bytes()
-    if before != after:
-        gold_path.write_bytes(before)
-        return Check("oracle_determinism", FAIL, "regenerated gold differs from committed gold")
-    return Check("oracle_determinism", PASS, "gold byte-identical on regeneration")
+        return False, str(exc)[-200:]
+    produced = sandbox / "gold" / "gold.json"
+    if not produced.is_file():
+        return False, "the build wrote no gold.json"
+    if produced.read_bytes() != (campaign / "gold" / "gold.json").read_bytes():
+        return False, "the rebuilt gold differs from the committed gold"
+    return True, "byte-identical"
+
+
+def _oracle_determinism(campaign: pathlib.Path) -> Check:
+    """Regenerate gold from the SANDBOX and require byte-identity.
+
+    This was a rebuild inside the campaign directory, which has everything --
+    so it could say the build is deterministic and could not say whether a
+    value a system is asked for depends on a file the system never sees. The
+    rebuild happens in a tree holding only the published sandbox, which answers
+    both with one build: 21 of 25 campaigns reproduce their gold from the
+    sandbox alone, and four need exactly one declared file --
+    audit/gold_side_inputs.json names them, and none of the four is graded.
+
+    Each declared file also has to be needed: the build must refuse without it,
+    which costs one extra rebuild on those four campaigns and nothing on the
+    other twenty-one. A declaration nothing requires is a hole in the check.
+    """
+    import tempfile
+
+    declared = gold_side_inputs(campaign.name)
+    restore = tuple(sorted(declared))
+    with tempfile.TemporaryDirectory() as tmp:
+        ok, detail = _rebuild_gold(campaign, pathlib.Path(tmp) / "cold", restore)
+        if not ok:
+            plus = f" plus {', '.join(restore)}" if restore else ""
+            return Check("oracle_determinism", FAIL,
+                         f"rebuilt from the sandbox{plus}: {detail}")
+        if restore:
+            bare, _ = _rebuild_gold(campaign, pathlib.Path(tmp) / "bare", ())
+            if bare:
+                return Check("oracle_determinism", FAIL,
+                             f"declared gold-side input(s) {', '.join(restore)} "
+                             "are not needed: the sandbox alone rebuilds this gold")
+    where = ("the sandbox alone" if not restore
+             else f"the sandbox plus {', '.join(restore)}, each of them required")
+    return Check("oracle_determinism", PASS,
+                 f"gold rebuilt from {where}, byte-identical")
 
 
 def _contract_and_provenance(campaign: pathlib.Path) -> list[Check]:

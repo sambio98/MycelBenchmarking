@@ -436,3 +436,63 @@ def test_conventions_are_not_read_as_fields(tmp_path):
     check = _contract_names_what_is_graded(copy)
     assert check.status != PASS
     assert "analysis.json.constraint_vocabulary declared, not written" in check.detail
+
+
+# --- the gold-side inputs a build may read ----------------------------------
+
+
+def test_every_declared_gold_side_input_exists():
+    """A declaration naming a file nothing ships would waive a check silently."""
+    from npbench_c.readiness.gate import GOLD_SIDE_INPUTS, gold_side_inputs
+
+    assert GOLD_SIDE_INPUTS.is_file(), GOLD_SIDE_INPUTS
+    declared = json.loads(GOLD_SIDE_INPUTS.read_text())["inputs"]
+    for campaign, entries in declared.items():
+        assert (ROOT / campaign).is_dir(), campaign
+        for name, reason in gold_side_inputs(campaign).items():
+            assert (ROOT / campaign / "gold" / name).is_file(), (campaign, name)
+            assert len(reason) > 80, (campaign, name)
+
+
+def test_no_graded_component_reads_a_gold_side_input():
+    """The point of the declaration: these files are not part of any answer.
+
+    A graded value derived from the queries' own identities would be a component
+    no system could reach, and the determinism check restores these files before
+    rebuilding -- so if one of them fed a graded path, that check would be
+    covering for an unanswerable campaign rather than catching it.
+    """
+    from npbench_c.readiness.gate import GOLD_SIDE_INPUTS, gold_side_inputs
+
+    declared = json.loads(GOLD_SIDE_INPUTS.read_text())["inputs"]
+    for campaign in declared:
+        spec = json.loads((ROOT / campaign / "grading.json").read_text())
+        paths = [arg for rung in spec["rungs"] for component in rung["components"]
+                 for arg in component["args"].values()
+                 if isinstance(arg, str) and arg.startswith("gold:")]
+        assert paths, campaign
+        for name in gold_side_inputs(campaign):
+            stem = pathlib.Path(name).stem            # queries_truth, expectation
+            root = stem.split("_")[0]                 # queries, expectation
+            for path in paths:
+                assert stem not in path, (campaign, path)
+                assert not path.startswith(f"gold:{root}"), (campaign, path)
+
+
+def test_an_unneeded_gold_side_declaration_is_refused(monkeypatch):
+    """The staleness half, without paying for two real gold rebuilds.
+
+    A campaign that passes says so: "the sandbox plus expectation.json, each of
+    them required" is only reachable when the rebuild WITHOUT the declared file
+    failed. This covers the other branch -- a declared file the build does not
+    need, which would waive the derivability question for that campaign.
+    """
+    from npbench_c.readiness import gate
+
+    monkeypatch.setattr(gate, "gold_side_inputs",
+                        lambda name, path=None: {"expectation.json": "planted"})
+    monkeypatch.setattr(gate, "_rebuild_gold",
+                        lambda campaign, into, restore: (True, "byte-identical"))
+    check = gate._oracle_determinism(SMALL)
+    assert check.status != PASS
+    assert "are not needed" in check.detail

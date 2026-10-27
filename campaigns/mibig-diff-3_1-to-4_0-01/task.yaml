@@ -76,14 +76,10 @@ output_contract:
       declared normalisation and the declared verdict precedence. Classes with a
       zero count may be omitted.
 
-      Keys, exactly: `biosynthetic_class`, `compound_formulas`, `compound_names`,
-      `locus_accession`, `ncbi_tax_id`, `organism`; `biosynthetic_class` keys
-      `no_counterpart_in_target`, `representation_only`, `substantive_change`;
-      `compound_formulas` keys `absent_in_source`, `absent_in_target`,
-      `representation_only`, `substantive_change`, `unchanged`; `compound_names` keys
-      `representation_only`, `substantive_change`, `unchanged`; `locus_accession` keys
-      `unchanged`; `ncbi_tax_id` keys `representation_only`, `substantive_change`;
-      `organism` keys `substantive_change`, `unchanged`.
+      Keys, exactly: one entry per declared field, each carrying one entry per
+      declared verdict class. Both vocabularies are in reference/field_mapping.json
+      and are not repeated here: which class a given field's comparison lands in
+      is the answer, so a per-field list of the classes it uses would state it.
     retired_class_terms: >
       Source-vocabulary class terms with no counterpart in the target vocabulary.
     perturbations: >

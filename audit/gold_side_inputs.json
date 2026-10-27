@@ -1,0 +1,32 @@
+{
+ "_note": "The gold-side files a campaign's own build legitimately reads, which the cold sandbox therefore does not carry. Read by the readiness gate's oracle_determinism check, which rebuilds gold in a tree holding ONLY the published sandbox plus these, and requires the result to be byte-identical to the committed gold.",
+ "_why_this_matters": "Determinism was checked by regenerating gold in the campaign directory, which has everything. That cannot tell whether a value a system is asked for depends on a file the system never sees. Rebuilding from the sandbox instead answers both questions with one rebuild: 21 of 25 campaigns reproduce their gold from the sandbox alone, and these four from the sandbox plus the one file named here.",
+ "_what_the_gate_checks": "That the rebuild is byte-identical, AND that every file declared here is genuinely needed -- the build must refuse without it. A declaration that is not needed is a hole in the check, the same way a stale exemption is.",
+ "_what_is_not_here": "Anything graded. Checked separately against each grading.json: of the 10, 11, 24 and 24 gold paths these four campaigns grade, none is derived from the files below.",
+ "inputs": {
+  "constraint-gc55-ecoli-rebh-01": [
+   {
+    "file": "expectation.json",
+    "reason": "The campaign's AUTHORED expectation -- feasible or infeasible -- which the build cross-checks against the verdict its own arithmetic reaches. It is a declaration about the design, not an input to the answer, and it lives gold-side because stating it in the sandbox would state R3's whole answer (check 26)."
+   }
+  ],
+  "constraint-gc62-ecoli-rebh-01": [
+   {
+    "file": "expectation.json",
+    "reason": "The same, for the infeasible half of the control pair: the authored expectation the build cross-checks against the verdict its arithmetic reaches, held gold-side because the pair's whole R3 answer is one term and stating it in either sandbox states it for both."
+   }
+  ],
+  "derep-massbank-2026_03-01": [
+   {
+    "file": "queries_truth.json",
+    "reason": "The queries' own compound identities. The shipped query records carry the six fields an experimental spectrum carries and nothing else, so the truth has to be held gold-side; the build reads it to refuse a corpus whose answers are unreachable and to census its own answer against the truth. Neither census is graded."
+   }
+  ],
+  "network-massbank-2026_03-01": [
+   {
+    "file": "nodes_truth.json",
+    "reason": "The node identities, for the same reason and to the same use: the truth-side propagation census, which is audit material rather than a graded component."
+   }
+  ]
+ }
+}

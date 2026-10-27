@@ -166,11 +166,11 @@ output_contract:
       it agrees with, disagrees with, and cannot be checked against; and the
       reading that agrees with the most, tie-broken by the declared order.
 
-      Keys, exactly: `convention_tally` keys `from_as_0based_core_start`,
-      `from_as_1based_core_start`, `to_as_0based_core_start`, `to_as_1based_core_start`;
-      `from_as_0based_core_start`, `from_as_1based_core_start`,
-      `to_as_0based_core_start`, `to_as_1based_core_start` each keys `agrees`,
-      `disagrees`, `underivable`.
+      Keys, exactly: `convention_tally` carries one entry per declared reading,
+      named as reference/precursor_rules.json names them -- not repeated here,
+      because `elected_convention` is one of those names and listing them beside
+      their tallies narrows it -- and each entry carries `agrees`, `disagrees`,
+      `underivable`.
     cleavage_table: >
       Per declaring record, in (cluster, gene) order: the declared bounds, the
       core start the elected reading implies, the start measured from the
