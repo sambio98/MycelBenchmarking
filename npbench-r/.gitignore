@@ -1,0 +1,16 @@
+# Raw data never enters git. Manifests are the record; payloads are fetched
+# and checksum-verified. Scoped to tasks/ so the test fixture's truth/ stays
+# committed -- it is hand-built, not generated.
+tasks/*/data/
+tasks/*/reference/
+tasks/*/truth/
+
+# The repo root ignores build/ as a Python packaging artifact, which also
+# matches our npbench/build package. Re-include it.
+!npbench/build/
+
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.venv/

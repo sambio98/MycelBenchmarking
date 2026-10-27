@@ -1,0 +1,28 @@
+version: 1
+artifacts:
+  - path: bgc_inventory.csv
+    truth: bgc_inventory.csv
+    format: csv
+    soft: false
+    row_key: [bgc_id]
+    normalisers: [strip, collapse_whitespace, casefold]
+    column_aliases:
+      bgc_id: [BGC_ID, cluster_id]
+      product_class: [product, bgc_class]
+    value_aliases:
+      product_class:
+        "Type I PKS": t1pks
+        "NRPS-like": nrps
+    metrics:
+      - type: identifier_f1
+      - type: macro_f1
+        column: product_class
+      - type: lins_ccc
+        column: length_bp
+        log_transform: true
+        pseudocount: null
+      - type: interval_overlap_f1
+        group_column: contig
+        start_column: start
+        end_column: end
+        min_reciprocal_overlap: 0.5

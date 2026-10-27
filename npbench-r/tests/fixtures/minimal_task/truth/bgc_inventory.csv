@@ -1,0 +1,5 @@
+bgc_id,product_class,contig,start,end,length_bp
+BGC0001,nrps,contig_1,1000,46000,45001
+BGC0002,t1pks,contig_1,88000,120000,32001
+BGC0003,terpene,contig_2,5000,26000,21001
+BGC0004,nrps,contig_3,2000,53000,51001

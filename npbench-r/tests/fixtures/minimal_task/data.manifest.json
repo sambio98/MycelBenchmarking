@@ -1,0 +1,16 @@
+[
+  {
+    "path": "data/genome.fna",
+    "url": "https://example.invalid/fixture/genome.fna",
+    "accession": "GCF_000000000.1",
+    "bytes": 5242880,
+    "sha256": "9cc030003a2fc7fe125bda67ae0e9f8fcbdcaae7b21c69e1cef5c4e7a167d6cd"
+  },
+  {
+    "path": "reference/mibig.tar.gz",
+    "url": "https://example.invalid/fixture/mibig.tar.gz",
+    "release": "MIBiG 3.1",
+    "bytes": 104857600,
+    "sha256": "6e939465f791b61420f6ff0932465c04c7598232c1018670b944785740ba956f"
+  }
+]

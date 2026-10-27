@@ -1,0 +1,17 @@
+# A hand-built minimal task, used only to exercise the bundle validator.
+# It is not a real NPBench-R task: the manifest points at nothing and the
+# solution script is a stub.
+task_id: minimal_task
+title: Minimal fixture task
+source:
+  citation: "Not a real study. Fixture for tests/test_validate.py."
+  doi: "10.0000/fixture"
+categories:
+  - bgc_detection
+depth: 2
+tool_versions:
+  antismash: "7.1.0"
+runtime:
+  vcpus: 32
+  ram_gb: 128
+  wall_clock_hours: 8

@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "npbench-r"
+version = "0.1.0"
+description = "NPBench-R: a computational reproducibility benchmark for natural products and biosynthetic gene clusters."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "numpy>=1.26",
+    "pandas>=2.0",
+    "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+
+[project.scripts]
+npbench = "npbench.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["npbench*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
