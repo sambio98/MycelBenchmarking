@@ -47,6 +47,7 @@ from npbench_c.tools.registry import (
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 LOCK = ROOT / "image" / "environment.lock.json"
+EXPLICIT = ROOT / "image" / "environment.explicit.txt"
 REPORT = ROOT / "image" / "thread_invariance.json"
 #: Where the image puts the binaries. An override keeps the suite usable from a
 #: different prefix without editing code.
@@ -182,7 +183,15 @@ def test_a_pin_is_claimed_as_installed_only_once_it_is():
     assert not (pending | installed) & set(NOT_IN_IMAGE), (
         "a tool cannot be installed, pending and declared absent at once")
     assert "matchms" in installed
-    assert "pyhdfd78af_1" in (ROOT / "image" / "Dockerfile").read_text()
+    # The build string used to be asserted against the Dockerfile's spec list.
+    # The build installs the locked closure now, so the pin lives in the lock's
+    # `requested` field and in the artifact the explicit file names -- asserting
+    # it against the Dockerfile would be asserting it against a comment.
+    lock = json.loads(LOCK.read_text())
+    assert lock["requested"]["matchms"].endswith("=pyhdfd78af_1")
+    artifact = next(p for p in lock["packages"] if p["name"] == "matchms")
+    assert artifact["build"] == "pyhdfd78af_1"
+    assert artifact["url"] in EXPLICIT.read_text()
 
 
 def test_the_pin_names_the_version_the_grounding_measured_and_is_in_the_closure():
@@ -191,9 +200,12 @@ def test_the_pin_names_the_version_the_grounding_measured_and_is_in_the_closure(
     pinning the version it was measured on -- and the lock has to show the
     version that is actually installed, not the version that was requested."""
     assert MATCHMS.pinned_version == "0.30.2"
-    dockerfile = (ROOT / "image" / "Dockerfile").read_text()
-    assert f"matchms={MATCHMS.pinned_version}=" in dockerfile
     lock = json.loads(LOCK.read_text())
+    # and the version the build actually links, which is the explicit file's
+    # business rather than the Dockerfile's
+    artifact = next(p for p in lock["packages"] if p["name"] == "matchms")
+    assert f"matchms-{MATCHMS.pinned_version}-" in artifact["url"]
+    assert artifact["url"] in EXPLICIT.read_text()
     assert lock["requested"]["matchms"].startswith(MATCHMS.pinned_version + "=")
     installed = [p for p in lock["packages"] if p["name"] == "matchms"]
     assert len(installed) == 1 and installed[0]["version"] == MATCHMS.pinned_version
