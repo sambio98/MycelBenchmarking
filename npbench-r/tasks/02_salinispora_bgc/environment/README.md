@@ -10,8 +10,13 @@ pip install --no-deps -r environment/requirements.lock
 gecco --version   # must print 0.11.0
 ```
 
-`requirements.lock` is the resolved dependency closure of `gecco`, recorded from
-a working install. To regenerate it after a deliberate version bump, install the
-new `gecco` into a clean environment and re-run the closure walk in
-`scripts/` — then regenerate `truth/` and re-run `make selfgrade`, because the
-old truth is no longer valid.
+`requirements.lock` is the runtime dependency closure of `gecco`, recorded from
+a working install. Regenerate it after a deliberate version bump with:
+
+```bash
+python scripts/lock_task_environment.py tasks/02_salinispora_bgc gecco gecco-tool
+```
+
+Then regenerate `truth/` and re-run `make selfgrade`: a version bump invalidates
+the old truth, because GECCO's cluster counts and type assignments move between
+releases.

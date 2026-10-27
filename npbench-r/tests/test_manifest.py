@@ -136,3 +136,25 @@ def test_sha256_file_matches_hashlib(tmp_path):
     path = tmp_path / "x"
     path.write_bytes(PAYLOAD)
     assert sha256_file(path) == hashlib.sha256(PAYLOAD).hexdigest()
+
+
+# The environment lock generator lives in scripts/, but the marker logic decides
+# what ends up pinned, so it is worth a test: following extras-gated
+# requirements once pulled pytest, setuptools and wheel into a task lock.
+def test_requirement_name_skips_extras_gated_requirements():
+    import sys
+    from pathlib import Path
+
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
+    from lock_task_environment import requirement_name
+
+    assert requirement_name("pyhmmer ~=0.10") == "pyhmmer"
+    assert requirement_name("scikit-learn<2,>=1.0") == "scikit-learn"
+    assert requirement_name("rich-argparse") == "rich-argparse"
+    assert requirement_name("numpy; python_version >= '3.9'") == "numpy"
+    assert requirement_name('pytest; extra == "test"') is None
+    assert requirement_name("wheel ; extra == 'dev'") is None
+    assert requirement_name(
+        'wheel ; (os_name == "nt" and implementation_name != "pypy") and extra == \'test\''
+    ) is None
+    assert requirement_name("statsmodels<0.15,>=0.13; extra == \"train\"") is None
