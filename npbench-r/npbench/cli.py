@@ -16,7 +16,7 @@ from pathlib import Path
 
 from .build.manifest import fetch, load_manifest
 from .build.validate import report, solution_steps, validate_task
-from .grading import load_grading_config, score_task
+from .grading import TruthError, load_grading_config, score_task
 
 
 def _validate(args: argparse.Namespace) -> int:
@@ -28,7 +28,20 @@ def _validate(args: argparse.Namespace) -> int:
 
 def _grade(args: argparse.Namespace) -> int:
     config = load_grading_config(args.task_dir / "grading.yaml")
-    result = score_task(config, args.task_dir / "truth", args.outputs)
+    truth = getattr(args, "truth", None) or args.task_dir / "truth"
+    if not truth.is_dir():
+        print(
+            f"{truth} does not exist. Run `make truth TASK={args.task_dir.name}` first.",
+            file=sys.stderr,
+        )
+        return 2
+    try:
+        result = score_task(config, truth, args.outputs)
+    except TruthError as exc:
+        # A truth-side fault is a bundle bug, not an agent failure, and must not
+        # be reported as a score of zero.
+        print(f"the task bundle is broken, not the submission:\n  {exc}", file=sys.stderr)
+        return 3
     print(result.summary())
     if args.expect_perfect and result.task_score < 1.0:
         print(
@@ -93,6 +106,10 @@ def main(argv: list[str] | None = None) -> int:
     grade = sub.add_parser("grade", help="grade an outputs directory against a task's truth")
     grade.add_argument("task_dir", type=Path)
     grade.add_argument("outputs", type=Path)
+    grade.add_argument(
+        "--truth", type=Path, default=None,
+        help="grade against this directory instead of <task_dir>/truth",
+    )
     grade.add_argument(
         "--expect-perfect",
         action="store_true",
