@@ -46,7 +46,7 @@ SELECTION_KEYS = ("entries_with_modules", "modules",
                   "drop_no_shipped_translation", "shipped_proteins",
                   "corpus_genes", "corpus_entries")
 SWEEP_CELL_KEYS = ("domains_total", "distinct_architectures",
-                   "a_domain_agreement", "genes_differing_from_baseline")
+                   "primary_domain_agreement", "genes_differing_from_baseline")
 
 
 def _int(value: object) -> int | None:

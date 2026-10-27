@@ -138,6 +138,11 @@ output_contract:
       modules naming more than one gene, genes a single-gene module names, the
       genes each clause of the selection rule removes, translations shipped, and
       the genes and clusters that survive.
+
+      Keys, exactly: `corpus_entries`, `corpus_genes`, `drop_excluded_by_status`,
+      `drop_no_shipped_translation`, `drop_other_module_type`, `entries_with_modules`,
+      `genes_named_by_a_single_gene_module`, `modules`,
+      `modules_spanning_several_genes`, `shipped_proteins`.
     curated_coordinate_usability / curated_active_flag: >
       Two properties of the curated record this campaign depends on and does not
       assume. How many typed domain blocks carry a usable location versus a
@@ -145,11 +150,16 @@ output_contract:
     curated_module_census / curated_domain_totals: >
       Over the corpus: how many genes carry each number of curated modules, and
       the total per declared typed domain block.
+
+      Keys, exactly: `curated_domain_totals` keys `a_domain`, `at_domain`, `c_domain`,
+      `ks_domain`.
     strata_census: >
       Per module stratum declared in architecture_rules.json#module_strata, how
       many corpus genes fall in it, under the key `mixed` for a gene whose curated
       modules span more than one stratum. A stratum with no gene is omitted rather
       than reported as zero.
+
+      Keys, exactly: `nrps_type1`.
     domains_by_module_type: >
       Per curated module type named anywhere in the release -- every type, not
       only the ones this instantiation accepts -- how many MODULES of that type
@@ -157,8 +167,13 @@ output_contract:
       gene, with the zeros omitted. The declared blocks span more than one module
       family, so this is the census that says which blocks a given module type
       uses at all.
+
+      Keys, exactly: one entry per key the data supplies, each carrying `a_domain`,
+      `at_domain`, `c_domain`, `ks_domain`.
     protein_length_summary: >
       Count, minimum, median, maximum and total residues over the corpus.
+
+      Keys, exactly: `count`, `max`, `median`, `min`, `residues`.
     panel_census: >
       Per declared Pfam model, how many hits at the baseline cutoff before any
       resolution.
@@ -167,21 +182,38 @@ output_contract:
       hits the resolution dropped, the architecture as a hyphen-joined family
       string in coordinate order, and the first and last domain coordinates.
       The last two are null for a gene with no domain.
+
+      Keys, exactly: each row carries `architecture`, `bgc`, `domains`,
+      `first_domain_start`, `gene`, `hits`, `last_domain_end`, `length`,
+      `resolved_away`.
     architecture_census: >
       Genes, genes with no domain, distinct architecture strings, total domains,
       and the per-gene domain count's minimum, median and maximum.
+
+      Keys, exactly: `distinct_architectures`, `domains_per_gene`, `domains_total`,
+      `genes`, `genes_with_no_domain`; `domains_per_gene` keys `max`, `median`, `min`.
     overlap_census: >
       Raw hits, overlapping hit pairs and genes carrying at least one overlap,
       all before resolution. This is the number the catalogued design assumed was
       zero.
+
+      Keys, exactly: `genes_with_an_overlap`, `hits_total`, `overlapping_pairs`.
     reconciliation_table: >
       Per gene: curated modules, curated and computed primary domains, the signed
       difference, the verdict, and the same for the secondary domain. A gene whose
       record names no secondary domain reports `not_curated` rather than a
       disagreement with zero.
+
+      Keys, exactly: each row carries `bgc`, `computed_primary`, `computed_secondary`,
+      `curated_modules`, `curated_primary`, `curated_secondary`, `gene`,
+      `primary_delta`, `primary_verdict`, `secondary_verdict`, `stratum`.
     primary_verdicts / secondary_verdicts: >
       The count per declared verdict for each of the two domain types, every
       verdict present including the ones nothing receives.
+
+      Keys, exactly: `primary_verdicts` keys `agrees`, `computed_fewer`,
+      `computed_more`, `not_curated`; `secondary_verdicts` keys `agrees`,
+      `computed_fewer`, `computed_more`, `not_curated`.
     primary_delta_census: >
       The distribution of the signed primary-domain difference, keyed by that
       difference written as a string, with the zero counts omitted.
@@ -192,6 +224,9 @@ output_contract:
       Reported separately because a stratum can decide whether the secondary
       domain is expected in the sequence at all, and an agreement rate pooled
       across strata that differ in that respect is not one claim.
+
+      Keys, exactly: `mixed`, `nrps_type1`; `mixed`, `nrps_type1` each keys `agrees`,
+      `computed_fewer`, `computed_more`, `not_curated`.
     module_table / module_verdicts / complete_modules_total: >
       Per gene, how many non-overlapping occurrences of the declared module
       pattern the architecture contains, against the curated module count, with a
@@ -201,14 +236,27 @@ output_contract:
       model -- so this is a different claim from the primary-domain count twice
       over: a gene can carry the right number of primary domains and not assemble
       into complete modules at all.
+
+      Keys, exactly: `module_table` each row carries `bgc`, `complete_modules`,
+      `curated_modules`, `gene`, `verdict`; `module_verdicts` keys `agrees`,
+      `computed_fewer`, `computed_more`, `not_curated`.
     policy_sweep: >
       One cell per (cutoff, resolution policy, coordinate span), keyed
       `cutoff|policy|span`: total domains, distinct architectures, primary-domain
       agreement, and how many genes differ from the baseline cell.
+
+      Keys, exactly: one entry per key the data supplies, each carrying
+      `primary_domain_agreement`, `distinct_architectures`, `domains_total`,
+      `genes_differing_from_baseline`.
     mapping_sweep: >
       Per declared family-to-domain mapping for the primary domain: the families
       it names and the verdict census it produces.
 
+
+      Keys, exactly: `amp_binding_both`, `amp_binding_c`, `amp_binding_n`;
+      `amp_binding_both`, `amp_binding_c`, `amp_binding_n` each keys `families`,
+      `verdicts`; `verdicts` keys `agrees`, `computed_fewer`, `computed_more`,
+      `not_curated`.
 constraints:
   reference_dir: reference
   pinned_tables:

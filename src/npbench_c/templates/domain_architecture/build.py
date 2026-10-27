@@ -165,7 +165,7 @@ def _assert_has_content(gold: dict) -> None:
             "no declared reading changes any architecture, so R4 has no axis and "
             "the three choices the campaign declares are all cosmetic")
     distinct = {(cell["domains_total"], cell["distinct_architectures"],
-                 cell["a_domain_agreement"]) for cell in sweep.values()}
+                 cell["primary_domain_agreement"]) for cell in sweep.values()}
     if len(distinct) < 3:
         raise ArchitectureError(
             f"the sweep's {len(sweep)} cells take {len(distinct)} distinct "
@@ -305,7 +305,7 @@ def main(argv: list[str] | None = None) -> int:
     for cell, block in sorted(gold["policy_sweep"].items()):
         print(f"    {cell:<40} domains={block['domains_total']:<6} "
               f"distinct={block['distinct_architectures']:<5} "
-              f"agree={block['a_domain_agreement']:<5} "
+              f"agree={block['primary_domain_agreement']:<5} "
               f"moved={block['genes_differing_from_baseline']}")
     print("  mapping sweep:")
     for name, block in sorted(gold["mapping_sweep"].items()):

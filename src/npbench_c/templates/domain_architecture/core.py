@@ -833,7 +833,7 @@ class Corpus:
                     out[f"{cutoff}|{policy}|{span}"] = {
                         "domains_total": census["domains_total"],
                         "distinct_architectures": census["distinct_architectures"],
-                        "a_domain_agreement": agree,
+                        "primary_domain_agreement": agree,
                         "genes_differing_from_baseline": moved,
                     }
         return out

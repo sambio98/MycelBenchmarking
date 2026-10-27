@@ -623,7 +623,7 @@ def test_the_build_refuses_a_cosmetic_counterfactual():
     with pytest.raises(ArchitectureError, match="no axis"):
         _assert_has_content({**gold, "policy_sweep": flat})
     same = {cell: {"domains_total": 1, "distinct_architectures": 1,
-                   "a_domain_agreement": 1, "genes_differing_from_baseline": 5}
+                   "primary_domain_agreement": 1, "genes_differing_from_baseline": 5}
             for cell in gold["policy_sweep"]}
     with pytest.raises(ArchitectureError, match="not independent"):
         _assert_has_content({**gold, "policy_sweep": same})
