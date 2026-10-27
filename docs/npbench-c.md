@@ -4837,14 +4837,16 @@ files matching `*truth*`, `expectation.json`, `gold*`, `grading.json`,
 MS2 campaigns' shipped query and node records carry only the six fields an
 experimental spectrum carries.
 
-**Rebuilt on 2026-10-27**, after check 27's finding. Nine `task.yaml` files
-changed and nothing else did: same 25 campaigns, same 171 files, same grader,
-new tarball digest `daf706cb...`. Verified on the rebuilt tree: the manifest
+**Rebuilt twice on 2026-10-27**, after the two contract findings. Nine
+`task.yaml` files moved for check 27 and twenty-two for check 28; nothing else
+in the tree did, either time. Same 25 campaigns, same 171 files, same grader,
+43 MB unpacked and 37 MB packed as before. Current tarball digest
+`48f8bb18...`. Verified on the rebuilt tree: the manifest
 matches it file by file with nothing unlisted, no path named `gold`, `oracle`,
 `oracle_submission`, `grading.json`, `internal_sweep.json`, `measurement.json`
 or `audit` appears anywhere in it, each released `task.yaml` is byte-identical
 to the repository's, and all 25 released campaigns render a prompt that names
-every artefact and every field their contract declares. The last of those is the
+every artefact and all 441 fields their contracts declare. The last of those is the
 property a release exists for: what ships is a sandbox a system can answer from,
 and before this rebuild five of them were not.
 
