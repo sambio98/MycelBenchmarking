@@ -862,6 +862,10 @@ def _contract_names_what_is_graded(campaign: pathlib.Path) -> Check:
     naming keys and describes the shape below in prose -- a table's columns, a
     map keyed by an identifier -- the projection keeps that subtree whole, so a
     column misnamed in prose is not something this can see.
+
+    The baseline is the committed measurement rather than a second solve run:
+    `_oracle_and_purity` regenerates it earlier in the same gate run and asserts
+    it scores 1.0, so running the oracle again here would measure nothing new.
     """
     import tempfile
 
@@ -932,6 +936,7 @@ def _contract_names_what_is_graded(campaign: pathlib.Path) -> Check:
         if len(problems) > 6:
             detail += f"; and {len(problems) - 6} more"
     return _check("contract_names_what_is_graded", same and not problems, detail)
+
 
 def _integrity(campaign: pathlib.Path) -> list[Check]:
     hits = []
