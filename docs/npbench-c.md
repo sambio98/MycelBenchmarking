@@ -19,7 +19,7 @@ campaigns x 4 rungs = **100 graded rungs** and **560 graded components**.
 | Rung ladders | `src/npbench_c/grading/ladder.py` | depth, monotonicity, chance floor |
 | Grader | `src/npbench_c/grading/grade.py` | pure declarative comparator |
 | Grader identity | `src/npbench_c/grading/version.py` | semver + content hash |
-| Readiness gate | `src/npbench_c/readiness/gate.py` | 27 mechanical checks, 5 pending-on-agent-runs |
+| Readiness gate | `src/npbench_c/readiness/gate.py` | 28 mechanical checks, 5 pending-on-agent-runs |
 | Template: construct design | `src/npbench_c/templates/construct_design/` | shared engine, 2 ladders |
 | Campaign: construct design | `campaigns/construct-ecoli-rebh-01/` | oracle 1.0, gate 25/0/5 |
 | Campaign: constraint conflict | `campaigns/constraint-gc62-ecoli-rebh-01/` | oracle 1.0, gate 25/0/5 |
@@ -211,7 +211,7 @@ someone believes it is. Checks requiring internal agent runs report **PENDING**,
 never PASS: the gate does not launder an unmeasured property into a green tick.
 
 Current state, measured over all 25 campaigns on 2026-10-27, one full gate run
-each: **27 pass / 0 fail / 5 pending, every campaign, no exceptions.**
+each: **28 pass / 0 fail / 5 pending, every campaign, no exceptions.**
 
 The five pending checks (monotonicity, R1 clear rate, no-tool leakage,
 difficulty gate, discrimination) are satisfied by an `internal_sweep.json` from
@@ -255,9 +255,84 @@ Contract keys that are not fields — a format, a closed vocabulary, a property 
 a FASTA record — live under a reserved `conventions` key, which is how the check
 tells a declaration about an artefact from a field of it, and how the prompt
 generator knows to render it as a convention rather than as something to report.
-The check reaches as deep as the contract names keys: where a contract stops
-naming keys and describes the shape below in prose (a table's columns, a map
-keyed by an identifier), a misnamed column is not something it can see.
+
+The twenty-eighth check, `every_key_name_is_findable`, covers what the
+twenty-seventh cannot. Check 27 reaches as deep as the contract names keys, and
+below that the contract described its shape in prose — "entries carrying curated
+modules, modules, modules naming more than one gene" — and never gave the key
+names. Those names are load-bearing. Measured on `arch-pks`, by taking the
+oracle's own perfect answer and renaming one key:
+
+| renamed | depth |
+| --- | --- |
+| `curated_primary`, inside a `reconciliation_table` row | 4 → **2** |
+| `a_domain_agreement`, inside a `policy_sweep` cell | 4 → **3** |
+| `corpus_genes`, inside `selection_census` | 4 → **0** |
+
+**227 such names across 18 of 25 campaigns** appeared nowhere a system can read
+— not in `task.yaml`, not in `reference/`, not in `inputs/`, whose `.gz` and
+`.tar.gz` are decompressed and read rather than skipped, which removed seven
+false positives. 109 contract fields across 22 campaigns now carry an exact key
+list, generated from the measurer's own view of the oracle submission so the
+list cannot drift from the thing it describes; three that nest deeper were
+written by hand. The check then asks of every structural key name the answer
+uses, at any depth, whether the cold sandbox states it anywhere.
+
+A name the campaign's own DATA supplies is declared in
+`audit/contract_key_names.json` instead — two antiSMASH product names, which the
+tool emits for regions it detected. A contract listing those would be listing an
+answer.
+
+Two of those key lists had to be rewritten as pointers rather than enumerations,
+because stating a per-field list of verdict *classes* beside each field's census
+narrows a single-term answer: check 26 caught `mibig-diff`'s perturbation
+verdicts and `ripp`'s elected convention becoming readable from their own
+contracts. Both vocabularies are declared in `reference/` already, so the
+contract points there — which satisfies check 28 without stating what check 26
+protects.
+
+Neither check reads below a key name. A column whose *meaning* is misdescribed
+in prose, or a value convention stated wrongly, is still an audit question.
+
+### Determinism, and whether the answer is reachable at all
+
+`oracle_determinism` regenerated gold inside the campaign directory, which has
+everything. So it could say the build is deterministic and could not say whether
+a value a system is asked for depends on a file the system never sees. It
+rebuilds in a tree holding only the published sandbox now, which answers both
+with one build and at no extra cost.
+
+Measured: **21 of 25 campaigns reproduce their committed gold, byte for byte,
+from the published sandbox alone.** Four need exactly one file each, declared
+with its reason in `audit/gold_side_inputs.json` — the constraint pair's
+authored expectation, which the build cross-checks against the verdict its own
+arithmetic reaches, and the two MS2 campaigns' query and node identities,
+without which the shipped records would carry their own answers. None of the
+four feeds a graded path: 0 of the 10, 11, 24 and 24 gold paths those campaigns
+grade, checked against each `grading.json` and held by a test. Each declaration
+must also be needed — the build has to refuse without it — because a
+declaration nothing requires is a hole in the check.
+
+### Does the answer cohere?
+
+Checks 27 and 28 are about whether an answer can be *written*. Nothing asked
+whether it is *right*. `tests/unit/test_gold_closure.py` holds 46 identities
+each campaign's own gold asserts about itself, all 25 covered, with a coverage
+test so a new campaign cannot join uncovered. The strongest re-derive the
+science rather than restating it: the naive assembly formula IS the sum of the
+monomers less one water per peptide bond, with its monoisotopic mass recomputed
+from atomic masses written out in the test rather than imported from the code
+under test; the constraint verdict IS the arithmetic, feasible exactly when the
+demanded GC floor lies inside the reachable range; `designed_pairs` IS the sum
+of C(n,2) over the designed families.
+
+The generic version was written first — scan every gold for negative counts,
+rates outside [0, 1], partitions that do not sum — and reported zero findings
+over all 25 golds. It was measured rather than believed: **four campaigns
+evaluated no assertions at all**, most fewer than five, and the partition rule
+never matched a single key pair. Vacuous, hence per-campaign identities. Six of
+them failed on the first run and all six were a wrong assumption of the author's
+rather than a defect; each is now a comment where the assumption was.
 
 **Never audit before calibrating.** A campaign dropped for non-discrimination
 after a domain expert spent three hours on it has burned the scarcest resource
@@ -387,7 +462,7 @@ no sweep, because its numbers look authoritative.
 A stub-based sweep therefore marks itself `stub_based: true`, and the readiness
 gate keeps all five checks **PENDING** with the harness result shown but not
 promoted. `ready_to_audit` stays `False` until real systems run. With the stub
-sweep on record the gate reports **27 pass / 0 fail / 5 pending** — the count
+sweep on record the gate reports **28 pass / 0 fail / 5 pending** — the count
 that line carried when it was written was 16, which was the number of mechanical
 checks at the time.
 
@@ -4849,6 +4924,39 @@ one command line.
 three warm, prompts written, submissions measured, graded, and three sweep gates
 correctly failing because a system that writes `{}` clears nothing. The path
 works; what it needs now is an agent.
+
+### Running a sweep over your own agents
+
+The real path has since been exercised over the whole suite, with a system that
+is not a stub: a program reading **only** `PROMPT.md` -- never `task.yaml`, which
+is what makes a stub a stub -- and answering it the way the prompt itself says to
+answer a field it cannot compute, present and null. **All 25 campaigns, 12 runs
+each (3 systems x 4 rung modes), `{'completed': 12}` on every one**: no crash, no
+timeout, no measurement failure. Two things fell out of it worth stating:
+
+* A system reading only the rendered prompt recovers **exactly** the field set
+  the contract declares, on all 25 campaigns, nesting included. That is the
+  agent-side confirmation of checks 27 and 28.
+* The gates that should fail for a system that computes nothing do fail --
+  difficulty, discrimination, R1 clear rate -- while leakage and monotonicity
+  pass. A sweep over such a system is a harness test, not a result, which is
+  why it ran with `--no-record`.
+
+To point it at real agents:
+
+```bash
+cp sweep_systems.example.json my-agents.json     # three roles, see the table above
+$EDITOR my-agents.json                           # one command per system
+python3 -m npbench_c.sweep.cli campaigns/<id> --systems my-agents.json
+```
+
+Each system's command is given `{prompt}`, `{submission}`, `{sandbox}` and
+`{campaign}`; the prompt is also written to `PROMPT.md` at the sandbox root.
+Grading needs this repository: the release tree deliberately ships no `gold/`
+and no `grading.json`, so the loop is agents against the sandboxes, scoring
+here. Drop `--no-record` only when the run is meant to become the campaign's
+evidence -- the gate reads `internal_sweep.json` and promotes a non-stub sweep
+to a measurement.
 
 ### The near-miss that flag exists for
 
