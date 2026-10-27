@@ -136,3 +136,25 @@ class TestRejections:
         path.write_text("version: 1\nartifacts: [\n")
         with pytest.raises(ConfigError, match="not valid YAML"):
             load_grading_config(path)
+
+
+class TestColumnNormalisers:
+    def test_override_is_parsed(self, load):
+        config = load(_mutate(column_normalisers={"bgc_id": ["strip"]}))
+        artifact = config.artifacts[0]
+        assert artifact.rules_for("bgc_id") == ("strip",)
+
+    def test_columns_without_an_override_use_the_artifact_default(self, load):
+        config = load(_mutate(column_normalisers={"bgc_id": ["strip"]}))
+        assert config.artifacts[0].rules_for("product_class") == ("strip", "casefold")
+
+    def test_override_is_optional(self, load):
+        assert load(VALID).artifacts[0].rules_for("bgc_id") == ("strip", "casefold")
+
+    def test_unknown_rule_in_an_override_is_rejected(self, load):
+        with pytest.raises(ConfigError, match="unknown rule"):
+            load(_mutate(column_normalisers={"bgc_id": ["lowercase"]}))
+
+    def test_override_must_be_a_mapping_of_lists(self, load):
+        with pytest.raises(ConfigError, match="must be a list"):
+            load(_mutate(column_normalisers={"bgc_id": "strip"}))

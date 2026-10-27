@@ -91,14 +91,17 @@ def resolve_columns(
 
 
 def _row_keys(frame: pd.DataFrame, spec: ArtifactSpec, resolved: dict[str, str]) -> list[str]:
-    columns = [normalise_all(frame[resolved[c]], spec.normalisers) for c in spec.row_key]
+    columns = [
+        normalise_all(frame[resolved[c]], spec.rules_for(c)) for c in spec.row_key
+    ]
     return [KEY_SEPARATOR.join(parts) for parts in zip(*columns)]
 
 
 def _values(frame: pd.DataFrame, header: str, column: str, spec: ArtifactSpec) -> list[str]:
     """Values of `header`, with the alias map declared for canonical name `column`."""
-    aliases = build_alias_map(spec.value_aliases.get(column, {}), spec.normalisers)
-    return normalise_all(frame[header], spec.normalisers, aliases)
+    rules = spec.rules_for(column)
+    aliases = build_alias_map(spec.value_aliases.get(column, {}), rules)
+    return normalise_all(frame[header], rules, aliases)
 
 
 def _intervals(
@@ -108,7 +111,8 @@ def _intervals(
     params: dict,
     side: str,
 ) -> list[tuple[str, int, int]]:
-    groups = normalise_all(frame[resolved[params["group_column"]]], spec.normalisers)
+    group_column = params["group_column"]
+    groups = normalise_all(frame[resolved[group_column]], spec.rules_for(group_column))
     out = []
     for group, start, end in zip(
         groups, frame[resolved[params["start_column"]]], frame[resolved[params["end_column"]]]

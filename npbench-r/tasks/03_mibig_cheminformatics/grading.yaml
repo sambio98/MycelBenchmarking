@@ -1,0 +1,215 @@
+version: 1
+
+# Case is NOT folded on any SMILES column. In a SMILES string `c` is an
+# aromatic carbon and `C` an aliphatic one, so casefolding a structure changes
+# the molecule. Compound names and formulas are folded, because there case is
+# a formatting slip rather than a difference in meaning.
+
+artifacts:
+  # Depth 2. The base table. Its row key is not unique in the raw input: four
+  # BGCs list the same compound name twice with different structures, so an
+  # agent that assumes uniqueness emits duplicate keys and scores zero here.
+  - path: compounds.csv
+    truth: compounds.csv
+    format: csv
+    soft: false
+    row_key: [bgc_accession, compound_name]
+    normalisers: [strip, collapse_whitespace, casefold]
+    column_normalisers:
+      canonical_smiles: [strip]
+    column_aliases:
+      bgc_accession: [bgc, accession, bgc_id, mibig_id]
+      compound_name: [compound, name]
+      canonical_smiles: [smiles, canonical_smile, structure]
+      formula: [molecular_formula, computed_formula]
+      exact_mass: [mass, exact_mw, monoisotopic_mass]
+      n_heavy_atoms: [heavy_atoms, num_heavy_atoms]
+      n_rings: [rings, num_rings, ring_count]
+    value_aliases: {}
+    metrics:
+      - type: identifier_f1
+      - type: macro_f1
+        column: canonical_smiles
+      - type: macro_f1
+        column: formula
+      - type: lins_ccc
+        column: exact_mass
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: n_heavy_atoms
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: n_rings
+        log_transform: false
+        pseudocount: null
+
+  # Depth 2, data quality. MIBiG states a formula per compound and it disagrees
+  # with the structure for dozens of entries. An agent that trusts the stated
+  # field instead of computing from the SMILES cannot produce this at all.
+  - path: formula_disagreements.csv
+    truth: formula_disagreements.csv
+    format: csv
+    soft: false
+    row_key: [bgc_accession, compound_name]
+    normalisers: [strip, collapse_whitespace, casefold]
+    column_aliases:
+      bgc_accession: [bgc, accession, bgc_id, mibig_id]
+      compound_name: [compound, name]
+      stated_formula: [mibig_formula, reported_formula]
+      computed_formula: [rdkit_formula, formula]
+    value_aliases: {}
+    metrics:
+      - type: identifier_f1
+      - type: macro_f1
+        column: stated_formula
+      - type: macro_f1
+        column: computed_formula
+
+  # Depth 3. Keyed on the distinct structure, not the MIBiG entry: the same
+  # molecule is reported by several BGCs and must be collapsed first.
+  - path: scaffolds.csv
+    truth: scaffolds.csv
+    format: csv
+    soft: false
+    row_key: [canonical_smiles]
+    normalisers: [strip, collapse_whitespace]
+    column_aliases:
+      canonical_smiles: [smiles, structure]
+      scaffold_smiles: [scaffold, murcko_scaffold, murcko_smiles]
+      n_scaffold_rings: [scaffold_rings, rings]
+      n_scaffold_atoms: [scaffold_atoms, scaffold_heavy_atoms]
+    value_aliases: {}
+    metrics:
+      - type: identifier_f1
+      - type: macro_f1
+        column: scaffold_smiles
+      - type: lins_ccc
+        column: n_scaffold_rings
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: n_scaffold_atoms
+        log_transform: false
+        pseudocount: null
+
+  # Depth 3. n_classes needs the scaffold grouped back through every BGC that
+  # reports any of its structures.
+  - path: scaffold_counts.csv
+    truth: scaffold_counts.csv
+    format: csv
+    soft: false
+    row_key: [scaffold_smiles]
+    normalisers: [strip, collapse_whitespace]
+    column_aliases:
+      scaffold_smiles: [scaffold, murcko_scaffold]
+      n_structures: [structures, n_compounds, count]
+      n_bgcs: [bgcs, n_clusters]
+      n_classes: [classes, n_biosynthesis_classes]
+    value_aliases: {}
+    metrics:
+      - type: identifier_f1
+      - type: lins_ccc
+        column: n_structures
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: n_bgcs
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: n_classes
+        log_transform: false
+        pseudocount: null
+
+  # Depth 3. Isomers sharing a molecular formula, named in PROJECT.md section 8
+  # as mess to leave in rather than clean.
+  - path: formula_collisions.csv
+    truth: formula_collisions.csv
+    format: csv
+    soft: false
+    row_key: [formula]
+    normalisers: [strip, collapse_whitespace, casefold]
+    column_aliases:
+      formula: [molecular_formula]
+      n_structures: [structures, n_compounds, count]
+      n_bgcs: [bgcs, n_clusters]
+    value_aliases: {}
+    metrics:
+      - type: identifier_f1
+      - type: lins_ccc
+        column: n_structures
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: n_bgcs
+        log_transform: false
+        pseudocount: null
+
+  # Depth 3. Stereochemistry collapsed by canonical SMILES, also named in
+  # section 8. Requires generating the flat form, not just comparing strings.
+  - path: stereo_collapse_groups.csv
+    truth: stereo_collapse_groups.csv
+    format: csv
+    soft: false
+    row_key: [flat_smiles, canonical_smiles]
+    normalisers: [strip, collapse_whitespace]
+    column_aliases:
+      flat_smiles: [flattened_smiles, achiral_smiles, stereo_stripped_smiles]
+      canonical_smiles: [smiles, structure]
+      group_size: [n_structures, size]
+    value_aliases: {}
+    metrics:
+      - type: identifier_f1
+      - type: lins_ccc
+        column: group_size
+        log_transform: false
+        pseudocount: null
+
+  # Depth 4. The partition: Morgan fingerprints, a Tanimoto threshold, single
+  # linkage, and a family named from the component's own members.
+  - path: similarity_families.csv
+    truth: similarity_families.csv
+    format: csv
+    soft: false
+    row_key: [canonical_smiles]
+    normalisers: [strip, collapse_whitespace]
+    column_aliases:
+      canonical_smiles: [smiles, structure]
+      family_id: [family, cluster_id, cluster]
+      family_size: [size, n_members]
+    value_aliases: {}
+    metrics:
+      - type: identifier_f1
+      - type: macro_f1
+        column: family_id
+      - type: lins_ccc
+        column: family_size
+        log_transform: false
+        pseudocount: null
+
+  # Depth 4. A cross-tabulation over a one-to-many join: a BGC carries several
+  # biosynthesis classes and a structure is reported by several BGCs.
+  - path: class_scaffold_summary.csv
+    truth: class_scaffold_summary.csv
+    format: csv
+    soft: false
+    row_key: [biosynthesis_class, n_scaffold_rings]
+    normalisers: [strip, collapse_whitespace, casefold]
+    column_aliases:
+      biosynthesis_class: [class, bgc_class]
+      n_scaffold_rings: [scaffold_rings, rings]
+      n_structures: [structures, n_compounds, count]
+      n_bgcs: [bgcs, n_clusters]
+    value_aliases: {}
+    metrics:
+      - type: identifier_f1
+      - type: lins_ccc
+        column: n_structures
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: n_bgcs
+        log_transform: false
+        pseudocount: null

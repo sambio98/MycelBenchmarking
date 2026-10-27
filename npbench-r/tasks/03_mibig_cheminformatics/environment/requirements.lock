@@ -1,0 +1,16 @@
+# Pinned runtime environment for tasks/03_mibig_cheminformatics.
+#
+# CLAUDE.md: environments are pinned or they are wrong. These are the exact
+# versions truth/ was produced under. GECCO's cluster counts and type
+# assignments are version-dependent, so truth is only valid against these.
+#
+# Regenerate with:
+#   python scripts/lock_task_environment.py tasks/03_mibig_cheminformatics rdkit
+# then regenerate truth/ and re-run `make selfgrade`, because a version bump
+# invalidates the old truth.
+#
+# Install with:
+#   pip install --no-deps -r environment/requirements.lock
+numpy==2.5.3
+pillow==12.3.0
+rdkit==2026.9.1

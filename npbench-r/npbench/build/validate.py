@@ -425,7 +425,7 @@ def _check_truth_file(path: Path, artifact) -> list[Finding]:
     findings = []
     keys = [
         "\x1f".join(parts)
-        for parts in zip(*(normalise_all(frame[resolved[c]], artifact.normalisers)
+        for parts in zip(*(normalise_all(frame[resolved[c]], artifact.rules_for(c))
                            for c in artifact.row_key))
     ]
     duplicates = sorted({k for k in keys if keys.count(k) > 1})[:3]

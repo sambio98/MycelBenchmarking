@@ -1,0 +1,69 @@
+task_id: 03_mibig_cheminformatics
+title: Scaffold, isomer and similarity structure of the MIBiG 4.0 compound set
+
+source:
+  citation: >-
+    Zdouc MM, Blin K, Louwen NLL, Navarro J, Loureiro C, Bader CD, Bailey CB,
+    Barra L, Booth TJ, Bozhüyük KAJ, et al. MIBiG 4.0: advancing biosynthetic
+    gene cluster curation through global collaboration.
+    Nucleic Acids Research 53:D678-D690 (2024).
+  doi: 10.1093/nar/gkae1115
+
+truth_provenance: >-
+  Tool-generated. Every artifact in truth/ is produced by
+  solution/make_truth.py over the frozen MIBiG 4.0 JSON release in
+  data.manifest.json, using the pinned RDKit build. The MIBiG paper describes
+  the repository; it does not report these analyses, so nothing here is
+  compared against a published table. The task measures whether an agent can
+  execute a prescribed cheminformatics pipeline over a messy real structure
+  set, which is what PROJECT.md section 3 calls grading artifacts rather than
+  answers.
+
+# MIBiG is the dataset under analysis here, not a database consulted during the
+# analysis, so it is staged under data/ rather than reference/. Its release is
+# recorded in tool_versions because the compound set changes between releases.
+determinism: >-
+  Verified. Two independent runs of the reference solution produce
+  byte-identical output for all eight artifacts. RDKit canonical SMILES,
+  Morgan fingerprints, Bemis-Murcko scaffolds and the single-linkage family
+  assignment are all deterministic, and every artifact is sorted on its row
+  key before writing.
+
+categories:
+  - cheminformatics
+  - dereplication
+
+# PROJECT.md section 8. The compound table is depth 2; scaffolds and the
+# collision and collapse artifacts are depth 3; the similarity families and the
+# class-by-scaffold cross-tabulation are depth 4.
+depth: 4
+
+tool_versions:
+  rdkit: "2026.9.1"          # pip pin; rdkit.__version__ prints 2026.09.1
+  mibig: "4.0"
+  python: "3.13"
+
+solution:
+  steps:
+    - python {task}/solution/make_truth.py --task {task} --out {out}
+
+runtime:
+  vcpus: 4
+  ram_gb: 8
+  wall_clock_hours: 1
+  # Measured: the whole reference solution runs in 14 s. This task carries
+  # almost no tool weight on purpose. PROJECT.md section 8 names installation
+  # pain as a confound rather than a difficulty lever, so pairing a fast task
+  # with task 02's 75-minute GECCO run separates analytical capability from
+  # infrastructure luck.
+
+network:
+  deny_terms:
+    - 10.1093/nar/gkae1115
+    - gkae1115
+    - "MIBiG 4.0: advancing biosynthetic gene cluster curation"
+  # The MIBiG website exposes per-BGC pages, and a precomputed structure
+  # download would hand over most of compounds.csv. The staged release is the
+  # only input the task needs, so the whole domain is denied.
+  deny_hosts:
+    - mibig.secondarymetabolites.org

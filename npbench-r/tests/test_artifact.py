@@ -320,3 +320,66 @@ def test_composite_row_key(write, spec_from):
         ],
     )
     assert score_artifact(spec, truth, pred).score == pytest.approx(1.0)
+
+
+class TestPerColumnNormalisers:
+    """Case is meaningful in some columns and noise in others.
+
+    In a SMILES string `c` is an aromatic carbon and `C` an aliphatic one, so
+    casefolding a structure changes the molecule. Casefolding a compound name
+    only forgives a formatting slip. One artifact can need both.
+    """
+
+    TRUTH = """
+        name,smiles,mass
+        Spumigin E,CC(C)C[C@H](N)C=O,241.1
+        Nocardicin A,c1ccccc1C(=O)N,489.2
+        Teixobactin,CC[C@@H](C)[C@H](N)C(=O)O,1241.7
+    """
+    SPEC = {
+        "path": "c.csv",
+        "truth": "c.csv",
+        "format": "csv",
+        "soft": False,
+        "row_key": ["name"],
+        "normalisers": ["strip", "collapse_whitespace", "casefold"],
+        "column_normalisers": {"smiles": ["strip"]},
+        "column_aliases": {},
+        "value_aliases": {},
+        "metrics": [{"type": "identifier_f1"}, {"type": "macro_f1", "column": "smiles"}],
+    }
+
+    @pytest.fixture
+    def truth(self, write):
+        return write("truth/c.csv", self.TRUTH)
+
+    def test_a_lowercased_name_still_matches(self, write, truth, spec_from):
+        pred = write("outputs/c.csv", self.TRUTH.replace("Spumigin E", "spumigin e"))
+        assert score_artifact(spec_from(self.SPEC), truth, pred).score == pytest.approx(1.0)
+
+    def test_a_lowercased_smiles_does_not_match(self, write, truth, spec_from):
+        # CC(C)C... lowercased is a different molecule, and must not be forgiven.
+        pred = write(
+            "outputs/c.csv", self.TRUTH.replace("CC(C)C[C@H](N)C=O", "cc(c)c[c@h](n)c=o")
+        )
+        result = score_artifact(spec_from(self.SPEC), truth, pred)
+        assert result.score < 1.0
+
+    def test_without_the_override_casefolding_would_hide_it(self, write, truth, spec_from):
+        # The same submission scores 1.00 if the artifact folds every column,
+        # which is why the override exists.
+        spec = spec_from({**self.SPEC, "column_normalisers": {}})
+        pred = write(
+            "outputs/c.csv", self.TRUTH.replace("CC(C)C[C@H](N)C=O", "cc(c)c[c@h](n)c=o")
+        )
+        assert score_artifact(spec, truth, pred).score == pytest.approx(1.0)
+
+    def test_the_override_applies_to_row_keys_too(self, write, spec_from):
+        truth = write("truth/k.csv", "smiles,n\nCCO,1\nCCC,2\n")
+        pred = write("outputs/k.csv", "smiles,n\ncco,1\nCCC,2\n")
+        spec = spec_from({
+            **self.SPEC, "path": "k.csv", "truth": "k.csv", "row_key": ["smiles"],
+            "metrics": [{"type": "identifier_f1"}],
+        })
+        # 'cco' is not 'CCO': one missing, one extra -> F1 = 0.5.
+        assert score_artifact(spec, truth, pred).score == pytest.approx(0.5)

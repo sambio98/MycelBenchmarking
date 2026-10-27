@@ -68,6 +68,7 @@ class ArtifactSpec:
     soft: bool                      # excluded from the headline score (PROJECT.md §9)
     row_key: tuple[str, ...]
     normalisers: tuple[str, ...]
+    column_normalisers: dict[str, tuple[str, ...]]
     column_aliases: dict[str, list[str]]
     value_aliases: dict[str, dict[str, str]]
     metrics: tuple[MetricSpec, ...]
@@ -75,6 +76,16 @@ class ArtifactSpec:
     @property
     def separator(self) -> str:
         return TABLE_FORMATS[self.format]
+
+    def rules_for(self, column: str) -> tuple[str, ...]:
+        """Normalisation rules for one column, falling back to the artifact's.
+
+        Needed because case is meaningful in some columns and noise in others:
+        in a SMILES string `c` is an aromatic carbon and `C` an aliphatic one,
+        so casefolding a structure changes the molecule, while casefolding a
+        compound name only forgives a formatting slip.
+        """
+        return self.column_normalisers.get(column, self.normalisers)
 
 
 @dataclass(frozen=True)
@@ -159,6 +170,21 @@ def _parse_artifact(block: object, index: int) -> ArtifactSpec:
             f"known rules: {', '.join(RULES)}"
         )
 
+    overrides = block.get("column_normalisers") or {}
+    if not isinstance(overrides, dict):
+        raise ConfigError(f"{where}: column_normalisers must be a mapping")
+    column_normalisers = {}
+    for column, rules in overrides.items():
+        if not isinstance(rules, list):
+            raise ConfigError(f"{where}: column_normalisers[{column!r}] must be a list")
+        unknown = [r for r in rules if r not in RULES]
+        if unknown:
+            raise ConfigError(
+                f"{where}: column_normalisers[{column!r}] has unknown rule(s) "
+                f"{', '.join(map(repr, unknown))}; known rules: {', '.join(RULES)}"
+            )
+        column_normalisers[column] = tuple(rules)
+
     column_aliases = _require(block, "column_aliases", where, (dict,))
     value_aliases = _require(block, "value_aliases", where, (dict,))
     for column, mapping in value_aliases.items():
@@ -176,6 +202,7 @@ def _parse_artifact(block: object, index: int) -> ArtifactSpec:
         soft=_require(block, "soft", where, (bool,)),
         row_key=tuple(row_key),
         normalisers=tuple(normalisers),
+        column_normalisers=column_normalisers,
         column_aliases={k: list(v) for k, v in column_aliases.items()},
         value_aliases={k: dict(v) for k, v in value_aliases.items()},
         metrics=tuple(_parse_metric(m, where) for m in metrics),
