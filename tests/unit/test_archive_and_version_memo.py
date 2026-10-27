@@ -231,3 +231,47 @@ def test_only_the_slow_version_queries_are_memoised():
         if "memoize_version" in path.read_text())
     assert memoised == ["bgc_detection", "gcf_cutoff", "ms2_dereplication",
                         "ms2_networking"], memoised
+
+
+# --- the explicit file the image builds from ---------------------------------
+
+
+def test_the_explicit_file_matches_the_lock():
+    """The image builds from this file, so it cannot be allowed to drift.
+
+    The Dockerfile used to create the prefix from eleven pinned specs and let
+    the solver resolve everything under them. Built for the first time, that
+    produced 232 packages against the lock's 231, with a dozen transitives at
+    newer versions -- while `registry --verify` passed, because every pinned
+    tool was still at its pin. The closure is what makes two runs comparable,
+    so the closure is what the build installs now.
+    """
+    import json
+
+    from npbench_c.tools.lockfile import DEFAULT_EXPLICIT, DEFAULT_OUT, explicit
+
+    lock = json.loads(DEFAULT_OUT.read_text())
+    assert DEFAULT_EXPLICIT.is_file(), DEFAULT_EXPLICIT
+    assert DEFAULT_EXPLICIT.read_text() == explicit(lock), (
+        "image/environment.explicit.txt is stale; regenerate it with "
+        "python -m npbench_c.tools.lockfile --explicit")
+
+    lines = [l for l in DEFAULT_EXPLICIT.read_text().splitlines()
+             if l and not l.startswith("#") and l != "@EXPLICIT"]
+    assert len(lines) == lock["package_count"] == len(lock["packages"])
+    for line in lines:
+        url, _, digest = line.partition("#")
+        assert url.startswith("https://"), line
+        assert len(digest) == 64 and digest == digest.lower(), line
+
+
+def test_the_dockerfile_builds_from_the_explicit_file():
+    """A pin nothing reads is a pin in prose. The build has to use it."""
+    import pathlib
+
+    dockerfile = (pathlib.Path(__file__).resolve().parents[2]
+                  / "image" / "Dockerfile").read_text()
+    assert "image/environment.explicit.txt" in dockerfile
+    assert "--file /tmp/environment.explicit.txt" in dockerfile
+    # and must not have gone back to resolving the specs itself
+    assert "'antismash=8.0.4=pyhdfd78af_1' \\" not in dockerfile

@@ -910,6 +910,49 @@ catalogue entries being hypotheses: **a probe's summary statistic is a hypothesi
 until the oracle recomputes it**, because a probe has no gate behind it.
 
 
+## The image, built: a lock that did not lock
+
+`image/Dockerfile` carried a STATUS note saying it had never been built end to
+end, because the host that wrote it had the Docker CLI and no daemon. It has now
+been built -- every layer except `download-antismash-databases`, which is
+roughly 10 GB against a host with 9 GB free -- and `registry --verify` passed
+inside the resulting image: 9/9 tools at their pinned version and build,
+`FastTreeMP` absent, matchms' run closure complete.
+
+The build found something `--verify` cannot see. Comparing the image's actual
+closure against `image/environment.lock.json`:
+
+| | packages |
+|---|---|
+| the lock records | 231 |
+| a fresh build of the same eleven pins produced | **232** |
+
+Every pinned tool was at its pin. Everything *underneath* drifted: `cpython`
+3.11.17 → 3.11.18, `curl` 8.22 → 8.23, `brotli` 1.2.0 → 1.2.1, plus
+`ca-certificates`, `fonttools`, `importlib-metadata`, `bitarray`, `c-ares`,
+`ld_impl_linux-64` and more. `--verify` checks the pins, so it passed and said
+nothing about it.
+
+The cause was a documented decision. `lockfile.py` said of itself: *"It is a
+RECORD, not a build input -- the Dockerfile builds from the spec list."* So the
+lock described a closure that rebuilding did not reproduce, and "a score is
+comparable only against a run of the same image" was a claim nothing could
+enforce.
+
+`lockfile --explicit` now renders the lock as a conda explicit file -- 231
+artifact URLs, each with the sha256 the lock recorded -- and the Dockerfile
+creates the prefix from that. No solver runs. The eleven specs stay in the
+lock's `requested` field, which is what they are: the intent. Rebuilt from the
+explicit file, the closure came out at **231 packages, set-identical to the
+lock**, and two tests hold it there: the explicit file must match the lock, and
+the Dockerfile must actually build from it.
+
+Two host-specific workarounds were needed and are deliberately *not* in the
+Dockerfile: this session's proxy tunnels HTTPS and answers plain HTTP with 405,
+and `ubuntu:24.04` ships no CA store at all, so apt's `Acquire::https::CaInfo`
+was pointed at the proxy bundle and the archive URIs moved to `https://`. On a
+host with direct network access neither is necessary.
+
 ## Phase 1: the pinned-tool image, and the two controls that were wrong
 
 The provisioning notes set the rule: every tool runs at 1 and 8 threads on fixed

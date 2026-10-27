@@ -32,20 +32,31 @@
 # `-s`, and `--verify` checks every library pin's declared run dependencies
 # against the prefix, so neither form of this can pass again.
 #
-# STATUS: this file has not been built end to end. The build host available while
-# it was written had the Docker CLI but no daemon. What HAS been run is every step
-# it performs, directly: the micromamba download and the tar form below, the
-# create with these exact version=build specs, `registry --verify` against the
-# resulting prefix, and the full invariance suite -- whose measured verdicts are in
-# image/thread_invariance.json. So the pins and the determinism results are real
-# and the layer sequence is not yet proven. Build it once before relying on it.
+# STATUS: built, with one layer skipped. 2026-10-27, on a host with 9 GB free
+# and an agent proxy in front of the network: every layer below built and
+# `registry --verify` passed inside the resulting image -- 9/9 tools at their
+# pinned version and build, FastTreeMP absent, matchms' run closure complete.
+# What is NOT yet proven is the `download-antismash-databases` layer, which is
+# roughly 10 GB and did not fit; it was commented out for that build and is the
+# one step still to run before relying on the S1/S2 campaigns. The build also
+# needed two host-specific workarounds that are NOT in this file and should not
+# be: the proxy tunnels HTTPS and answers plain HTTP with 405, and the base
+# image carries no CA store, so apt needed its CaInfo pointed at the proxy
+# bundle and the archive URIs moved to https. On a host with direct network
+# access neither is necessary.
 #
-# And the prefix was built in STAGES rather than in the one create below: six
-# tools on 2026-10-02, antiSMASH, BiG-SCAPE and the sqlalchemy bound on 10-06,
-# matchms on 10-21. Each step is recorded with its date in the lock file's
-# `build_history`, which is generated from the prefix rather than written here,
-# because a closure assembled over five solves is not guaranteed to equal what
-# one solve produces and the difference should be visible rather than implied.
+# What that build found is the reason the create step below reads the way it
+# does. The prefix had been built in STAGES rather than in one create: six tools
+# on 2026-10-02, antiSMASH, BiG-SCAPE and the sqlalchemy bound on 10-06, matchms
+# on 10-21, each step recorded with its date in the lock's `build_history`. The
+# comment here used to say that a closure assembled over five solves is not
+# guaranteed to equal what one solve produces, and that the difference should be
+# visible rather than implied. It is now measured: a single fresh solve of the
+# eleven pins produced 232 packages against the lock's 231, with cpython,
+# curl, brotli, ca-certificates, fonttools, importlib-metadata, bitarray and
+# c-ares all newer than the lock records. So this file no longer asks the solver
+# anything -- it installs the locked closure by URL and sha256, and a rebuild of
+# it was verified to produce those 231 packages exactly.
 # The matchms step was dry-run first and moved nothing already installed: 46 new
 # packages, no upgrade, no downgrade, no removal.
 
@@ -117,18 +128,28 @@ RUN curl -sSL \
 # gold-producing path. Deleting the binary is what makes the ban enforceable --
 # `registry --verify` below fails if it comes back. Single-threaded FastTree
 # stays, because both tools need it.
+#
+# The create below installs the LOCKED CLOSURE, not the eleven specs above: an
+# explicit file of 231 artifact URLs, each with the sha256 the lock recorded,
+# generated from environment.lock.json by
+# `python -m npbench_c.tools.lockfile --explicit`. The eleven specs stay in the
+# lock's `requested` field, which is what they are -- the intent -- and a test
+# fails if the explicit file and the lock disagree.
+#
+# This was a spec list until it was built. A fresh solve of the same eleven pins
+# resolved 232 packages against the lock's 231, with cpython 3.11.17 -> .18,
+# curl 8.22 -> 8.23, brotli 1.2.0 -> 1.2.1, ca-certificates, fonttools,
+# importlib-metadata, bitarray, c-ares and more all newer than the lock. Every
+# pinned tool was still at its pinned version and build, so `registry --verify`
+# passed and said nothing about it: the pins held and the closure under them
+# moved. A score is comparable only against a run of the same image, so the
+# closure is the thing that has to be reproducible, and a spec list does not
+# reproduce it.
+COPY image/environment.explicit.txt /tmp/environment.explicit.txt
 RUN micromamba create -y -p "${TOOL_PREFIX}" --no-rc \
       -c conda-forge -c bioconda \
-      'hmmer=3.4=h7d74f8d_5' \
-      'diamond=2.2.8=he361c42_0' \
-      'mmseqs2=18.8cc5c=hd6d6fdc_0' \
-      'prodigal=2.6.3=h577a1d6_11' \
-      'mafft=7.526=ha3fa977_0' \
-      'blast=2.17.0=hb02a186_1' \
-      'antismash=8.0.4=pyhdfd78af_1' \
-      'bigscape=2.0.3=pyhdfd78af_0' \
-      'sqlalchemy=2.0.54=py311h194be0f_1' \
-      'matchms=0.30.2=pyhdfd78af_1' \
+      --file /tmp/environment.explicit.txt \
+ && rm -f /tmp/environment.explicit.txt \
  && micromamba clean -a -y \
  && rm -f "${TOOL_PREFIX}/bin/FastTreeMP"
 

@@ -6,9 +6,15 @@ Usage:
 
 The lock records the closure the pins resolved to: every package with its
 artifact URL, sha256 and size, plus how the prefix was asked for. It is a
-RECORD, not a build input -- the Dockerfile builds from the spec list -- so the
-one thing it must never be is a hand-maintained approximation of a prefix nobody
-re-read. It was hand-assembled once and immediately went stale: the version
+record AND a build input: `--explicit` renders it as a conda explicit file, and
+the Dockerfile creates the prefix from that rather than from the eleven
+requested specs. It used to build from the specs and the difference was
+measured -- a fresh solve of the same eleven pins produced 232 packages against
+the lock's 231, with brotli, curl, cpython, fonttools, ca-certificates and a
+dozen more transitives at newer versions than the lock records. The eleven pins
+held; everything underneath them drifted, which is the whole of what a lock is
+for. So the one thing it must never be is a hand-maintained approximation of a
+prefix nobody re-read. It was hand-assembled once and immediately went stale: the version
 after it said, in prose, "THE NEXT BUILD MUST RE-SOLVE AND REGENERATE THIS FILE".
 This module is that regeneration, so the next person runs a command instead of
 reading an instruction.
@@ -154,13 +160,57 @@ def build(prefix: pathlib.Path, existing: dict) -> dict:
     return document
 
 
+EXPLICIT_HEADER = """# Generated from environment.lock.json by
+# `python -m npbench_c.tools.lockfile --explicit`. Do not edit: every line is a
+# recorded artifact URL with the sha256 the lock recorded for it, so a rebuild
+# links the closure the lock describes instead of whatever the solver resolves
+# today. Regenerate it when the lock changes; a test fails if the two disagree.
+@EXPLICIT
+"""
+
+
+def explicit(document: dict) -> str:
+    """The lock as a conda explicit file: no solver, one artifact per line."""
+    packages = document.get("packages") or []
+    if not packages:
+        raise LockError("the lock carries no packages, so there is nothing to pin")
+    missing = [p["name"] for p in packages if not p.get("url") or not p.get("sha256")]
+    if missing:
+        raise LockError(
+            f"{len(missing)} package(s) carry no url or no sha256, so an explicit "
+            f"file would be unverifiable: {sorted(missing)[:5]}")
+    lines = [f"{p['url']}#{p['sha256']}"
+             for p in sorted(packages, key=lambda p: p["name"])]
+    return EXPLICIT_HEADER + "\n".join(lines) + "\n"
+
+
+DEFAULT_EXPLICIT = (pathlib.Path(__file__).resolve().parents[3]
+                    / "image" / "environment.explicit.txt")
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--prefix", default=str(DEFAULT_PREFIX))
     parser.add_argument("--out", default=str(DEFAULT_OUT))
     parser.add_argument("--check", action="store_true",
                         help="regenerate in memory and report what would change")
+    parser.add_argument("--explicit", nargs="?", const=str(DEFAULT_EXPLICIT),
+                        default=None,
+                        help="render the committed lock as the conda explicit "
+                             "file the image builds from")
     args = parser.parse_args(argv)
+
+    if args.explicit:
+        source = pathlib.Path(args.out)
+        target = pathlib.Path(args.explicit)
+        rendered = explicit(json.loads(source.read_text()))
+        if args.check:
+            same = target.is_file() and target.read_text() == rendered
+            print(f"{target}: {'up to date' if same else 'STALE'}")
+            return 0 if same else 1
+        target.write_text(rendered)
+        print(f"wrote {target} ({len(rendered.splitlines()) - 6} artifacts)")
+        return 0
 
     out = pathlib.Path(args.out)
     existing = json.loads(out.read_text()) if out.is_file() else {}
