@@ -16,16 +16,26 @@ Build order is set out in `CLAUDE.md`. Steps 1 and 2 are done and verified.
 |---|---|---|
 | 1 | Grading library | done |
 | 2 | Bundle validator | done |
-| 3 | One task end to end | task 02 bundle built; truth generation in progress |
+| 3 | One task end to end | **done**: task 02 validates clean and self-grades 1.00 |
 | 4 | Inspect AI harness | built; docker sandbox path unverified |
 | 5 | Remaining tasks | not started |
-| 6 | Difficulty calibration | not started |
+| 6 | Difficulty calibration | needs model runs; a proxy measurement exists |
 
 Build order was reordered: **task 02 (Salinispora, BGC detection) was built
 before task 01 (Crüsemann)**. MassIVE MSV000078836 turned out to be 311 GB
 across 1,125 mzXML files, which is 15x the 20 GB target in PROJECT.md §10, so
 task 01 cannot be staged as specified and needs a subsetting decision. Task 02
 stages from NCBI RefSeq in 191 MB.
+
+## Tasks
+
+| | |
+|---|---|
+| `02_salinispora_bgc` | BGC inventory and gene cluster families across 120 *Salinispora* assemblies with GECCO 0.11.0. 191 MB staged, 2,935 clusters, 7 artifacts, 30 metric instances, depth 2–4. See its `NOTES.md` for measured scale and difficulty. |
+
+Task 01 (Crüsemann, MassIVE MSV000078836) is not built: the deposit is 311 GB
+across 1,125 mzXML files, 15x the 20 GB target in PROJECT.md §10, so it needs a
+subsetting decision before it can be staged.
 
 ## Usage
 
