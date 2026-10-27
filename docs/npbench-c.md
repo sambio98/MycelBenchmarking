@@ -210,7 +210,8 @@ A campaign is ready when `npbench_c.readiness.gate` returns all-pass — not whe
 someone believes it is. Checks requiring internal agent runs report **PENDING**,
 never PASS: the gate does not launder an unmeasured property into a green tick.
 
-Current state, every campaign: **26 pass / 0 fail / 5 pending**.
+Current state, measured over all 25 campaigns on 2026-10-27, one full gate run
+each: **26 pass / 0 fail / 5 pending, every campaign, no exceptions.**
 
 The five pending checks (monotonicity, R1 clear rate, no-tool leakage,
 difficulty gate, discrimination) are satisfied by an `internal_sweep.json` from
@@ -4698,6 +4699,41 @@ expectation moved to `gold/expectation.json` outside every sandbox, and the buil
 refuses a `task.yaml` that declares it or a campaign that has no expectation file
 at all. **Both halves' gold is byte-identical after all of it** — the answers were
 right, and what was wrong was that the sandbox told you them.
+
+## Release 1.0.0
+
+Generated, not committed: `npbench_c.release.package` builds the shippable tree
+and refuses to write it inside this repository, so that the next packaging run
+cannot package its own output. What is committed is the record --
+`release/MANIFEST-1.0.0.json` (every shipped file with its sha256, the grader
+version, the campaigns included, the paths withheld),
+`release/ATTRIBUTION-1.0.0.md` (assembled from each campaign's own
+`license_notice`) and the tarball's digest. `release/README.md` carries the
+command that regenerates it and a script that verifies a tarball against its
+manifest.
+
+| | |
+|---|---|
+| campaigns | 25 |
+| files | 171 |
+| grader | `2.0.0+9fc95658` |
+| size | 43 MB unpacked, 37 MB packed |
+| withheld per campaign | `gold/`, `oracle/`, `oracle_submission/`, `grading.json`, `internal_sweep.json` |
+| excluded trees | `docs/`, `src/`, `tests/`, `image/`, `audit/`, `oracle/` |
+
+A campaign in the release is `inputs/`, `reference/`, `task.yaml` and an empty
+`submission/` -- the cold sandbox and nothing else. Verified on this build: zero
+files matching `*truth*`, `expectation.json`, `gold*`, `grading.json`,
+`internal_sweep.json` or `measurement.json` anywhere in the tree, and the two
+MS2 campaigns' shipped query and node records carry only the six fields an
+experimental spectrum carries.
+
+**What the release is NOT yet.** Every campaign reports `ready_to_audit: False`,
+for one reason: the five agent-run checks are satisfied only by a sweep over real
+systems, and every sweep on record is stub-based. The gate will not promote a
+fixture's number to a measurement. So 1.0.0 is a complete, mechanically verified
+benchmark whose difficulty and discrimination are declared and unmeasured -- see
+open item 3, which is the whole of what remains.
 
 ## Open items
 

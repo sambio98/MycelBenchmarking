@@ -116,7 +116,7 @@
           }
         }
       ],
-      "chance_level_note": "Higher than the malleobactin instantiation's 0.004 for an honest reason: this entry annotates a single compound whose residual is exactly zero, so R3 reduces to one residual vector plus one five-way verdict. A system that assumes a curated assembly line accounts for its product guesses 'balanced' and the empty residual correctly. That is a real weakness of this instantiation, and it is why the template needs at least one non-balanced instantiation in the shipped set.\n"
+      "chance_level_note": "Higher than the malleobactin instantiation's 0.004: this entry annotates a single compound, so R3 reduces to one residual vector plus one five-way verdict, and a five-way verdict is guessable on its own. The residual vector is what makes R3 real here, and the template ships a second instantiation so that no single entry's verdict branch stands alone.\n"
     },
     {
       "rung_id": "r4",
