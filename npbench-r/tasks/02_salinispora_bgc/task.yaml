@@ -1,0 +1,63 @@
+task_id: 02_salinispora_bgc
+title: Biosynthetic gene cluster inventory across 120 Salinispora genomes
+
+source:
+  citation: >-
+    Letzel A-C, Li J, Amos GCA, Millán-Aguiñaga N, Ginigini J, Abdelmohsen UR,
+    Gaudêncio SP, Ziemert N, Moore BS, Jensen PR. Genomic insights into
+    specialized metabolism in the marine actinomycete Salinispora.
+    Environmental Microbiology 19:3660-3673 (2017).
+  doi: 10.1111/1462-2920.13867
+  # The study this task is modelled on, not the source of its truth. See
+  # truth_provenance below -- this distinction matters and is easy to misread.
+
+truth_provenance: >-
+  Tool-generated. Every artifact in truth/ is produced by solution/run_gecco.py
+  and solution/make_truth.py over the genomes in data.manifest.json, using the
+  pinned GECCO build. The paper's own BGC counts are NOT the truth: it analysed
+  119 draft genomes from JGI IMG whose per-strain IDs no longer resolve
+  one-to-one onto RefSeq, and it used a different detection tool, so its numbers
+  are not reproducible from any input we can stage. This task therefore measures
+  whether an agent can execute the prescribed pipeline and assemble its output
+  correctly, which is what PROJECT.md section 3 calls grading artifacts rather
+  than answers. It does not measure agreement with the published figures.
+
+categories:
+  - bgc_detection
+  - comparative_genomics
+
+# PROJECT.md section 8. Depth 1 is the raw GECCO call; the inventory is depth 2;
+# the contig-edge and species artifacts need joins back to the FASTA headers and
+# the strain table, so they sit at depth 3.
+depth: 3
+
+tool_versions:
+  gecco: "0.11.0"
+  pyrodigal: "3.7.1"
+  pyhmmer: "0.12.3"
+  python: "3.13"
+
+# How `npbench truth` and `npbench selfgrade` regenerate truth/. {task}, {out}
+# and {jobs} are substituted; every step runs from the npbench-r directory.
+solution:
+  steps:
+    - python {task}/solution/run_gecco.py --task {task} --jobs {jobs}
+    - python {task}/solution/make_truth.py --task {task} --out {out}
+
+runtime:
+  vcpus: 4
+  ram_gb: 8
+  wall_clock_hours: 3
+  # Measured: GECCO takes about 40 s per 5 Mb genome on 4 vCPUs, so the
+  # detection step is roughly 80 minutes for the 120 staged assemblies.
+
+network:
+  deny_terms:
+    - 10.1111/1462-2920.13867
+    - 1462-2920.13867
+    - Letzel
+    - "Genomic insights into specialized metabolism"
+  # Note: because this task's truth is our own tool output rather than a
+  # published table, it is not vulnerable to supplementary-file leakage the way
+  # a paper-reproduction task is. These terms are declared for consistency and
+  # to keep the agent from anchoring on the paper's own counts, which differ.

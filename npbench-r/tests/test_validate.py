@@ -138,6 +138,32 @@ class TestTaskYaml:
         assert any("source is missing 'doi'" in e.message for e in _errors(bundle))
 
 
+class TestNetworkPolicy:
+    def test_missing_network_block(self, bundle):
+        _edit_yaml(bundle / "task.yaml", lambda d: d.pop("network"))
+        assert any("declaring deny_terms" in e.message for e in _errors(bundle))
+
+    def test_empty_deny_terms(self, bundle):
+        _edit_yaml(bundle / "task.yaml", lambda d: d.update(network={"deny_terms": []}))
+        assert any("must be a non-empty list" in e.message for e in _errors(bundle))
+
+    def test_deny_terms_that_miss_the_source_doi(self, bundle):
+        # The leak check CLAUDE.md asks for: the paper must not be one search away.
+        _edit_yaml(
+            bundle / "task.yaml",
+            lambda d: d.update(network={"deny_terms": ["something-unrelated"]}),
+        )
+        assert any("does not cover the source DOI" in e.message for e in _errors(bundle))
+
+    def test_missing_solution_steps(self, bundle):
+        _edit_yaml(bundle / "task.yaml", lambda d: d.pop("solution"))
+        assert any("solution.steps" in e.message for e in _errors(bundle))
+
+    def test_missing_truth_provenance(self, bundle):
+        _edit_yaml(bundle / "task.yaml", lambda d: d.pop("truth_provenance"))
+        assert any("truth_provenance" in e.message for e in _errors(bundle))
+
+
 class TestPrompt:
     def test_missing_a_required_section(self, bundle):
         path = bundle / "prompt.md"

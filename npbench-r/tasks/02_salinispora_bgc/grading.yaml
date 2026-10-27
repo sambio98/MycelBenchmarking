@@ -1,0 +1,129 @@
+version: 1
+
+artifacts:
+  # Depth 2. The inventory every other artifact derives from.
+  - path: bgc_inventory.csv
+    truth: bgc_inventory.csv
+    format: csv
+    soft: false
+    row_key: [cluster_id]
+    normalisers: [strip, collapse_whitespace, casefold]
+    column_aliases:
+      cluster_id: [bgc_id, id, cluster]
+      sequence_id: [contig, contig_id, seqid, record_id]
+      length_bp: [length, size_bp]
+      type: [product_class, cluster_type, product]
+    value_aliases:
+      type:
+        NRPS: nrp
+        NRPS-like: nrp
+        PKS: polyketide
+        T1PKS: polyketide
+        RiPPs: ripp
+        none: unknown
+        "": unknown
+    metrics:
+      - type: identifier_f1
+      - type: macro_f1
+        column: type
+      - type: lins_ccc
+        column: length_bp
+        log_transform: false
+        pseudocount: null
+      - type: interval_overlap_f1
+        group_column: sequence_id
+        start_column: start
+        end_column: end
+        min_reciprocal_overlap: 0.5
+
+  # Depth 3. Needs contig lengths, which are only in the FASTA headers, so an
+  # agent that works from the GECCO table alone cannot produce this.
+  - path: contig_edge_clusters.csv
+    truth: contig_edge_clusters.csv
+    format: csv
+    soft: false
+    row_key: [cluster_id]
+    normalisers: [strip, collapse_whitespace, casefold]
+    column_aliases:
+      cluster_id: [bgc_id, id, cluster]
+      sequence_id: [contig, contig_id, seqid]
+      contig_length_bp: [contig_length, contig_len]
+      boundary: [edge, which_edge]
+    value_aliases:
+      boundary:
+        left: start
+        right: end
+        "5'": start
+        "3'": end
+    metrics:
+      - type: identifier_f1
+      - type: macro_f1
+        column: boundary
+
+  # Depth 2. Every staged assembly gets a row, so a dropped genome shows up as
+  # a missing identifier rather than hiding in an aggregate.
+  - path: clusters_per_genome.csv
+    truth: clusters_per_genome.csv
+    format: csv
+    soft: false
+    row_key: [accession]
+    normalisers: [strip, collapse_whitespace, casefold, strip_accession_version]
+    column_aliases:
+      accession: [assembly, assembly_accession, genome, genome_id]
+      n_clusters: [cluster_count, n_bgc, count]
+    value_aliases: {}
+    metrics:
+      - type: identifier_f1
+      - type: lins_ccc
+        column: n_clusters
+        log_transform: false
+        pseudocount: null
+
+  # Depth 2.
+  - path: type_counts.csv
+    truth: type_counts.csv
+    format: csv
+    soft: false
+    row_key: [type]
+    normalisers: [strip, collapse_whitespace, casefold]
+    column_aliases:
+      type: [product_class, cluster_type, product]
+      n_clusters: [cluster_count, count, n]
+      n_genomes: [genome_count, n_assemblies]
+    value_aliases:
+      type:
+        NRPS: nrp
+        PKS: polyketide
+        RiPPs: ripp
+        none: unknown
+    metrics:
+      - type: identifier_f1
+      - type: lins_ccc
+        column: n_clusters
+        log_transform: false
+        pseudocount: null
+
+  # Depth 3. A composite key over a join with data/strains.tsv, whose organism
+  # column records species inconsistently. Collapsing it correctly is the task.
+  - path: species_type_counts.csv
+    truth: species_type_counts.csv
+    format: csv
+    soft: false
+    row_key: [species, type]
+    normalisers: [strip, collapse_whitespace, casefold]
+    column_aliases:
+      species: [organism, taxon]
+      type: [product_class, cluster_type]
+      n_clusters: [cluster_count, count, n]
+    value_aliases:
+      type:
+        NRPS: nrp
+        PKS: polyketide
+        RiPPs: ripp
+        none: unknown
+    metrics:
+      - type: identifier_f1
+      - type: lins_ccc
+        column: n_clusters
+        log_transform: false
+        pseudocount: null

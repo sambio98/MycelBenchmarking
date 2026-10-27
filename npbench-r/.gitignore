@@ -4,6 +4,7 @@
 tasks/*/data/
 tasks/*/reference/
 tasks/*/truth/
+tasks/*/work/
 
 # The repo root ignores build/ as a Python packaging artifact, which also
 # matches our npbench/build package. Re-include it.
