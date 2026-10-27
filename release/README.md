@@ -16,12 +16,15 @@ What that produces, and what it withholds, is recorded here per release:
 | `ATTRIBUTION-<version>.md` | the attribution assembled from each campaign's own `license_notice` |
 | `npbench-c-<version>.tar.gz.sha256` | the digest of the packaged tarball |
 
-**Release 1.0.0** — 25 campaigns, 171 files, grader `2.0.0+9fc95658`. Withheld
-from every campaign: `gold/`, `oracle/`, `oracle_submission/`, `grading.json`,
-`internal_sweep.json`. Excluded trees: `docs/`, `src/`, `tests/`, `image/`,
-`audit/`, `oracle/`. A campaign in the release is `inputs/`, `reference/`,
-`task.yaml` and an empty `submission/` — the cold sandbox a system is given, and
-nothing else.
+**Release 1.0.0** — 25 campaigns, 171 files, grader `2.0.0+9fc95658`. Rebuilt
+on 2026-10-27 after the output-contract fix, which moved nine `task.yaml` files
+and nothing else.
+
+Withheld from every campaign: `gold/`, `oracle/`, `oracle_submission/`,
+`grading.json`, `internal_sweep.json`. Excluded trees: `docs/`, `src/`,
+`tests/`, `image/`, `audit/`, `oracle/`. A campaign in the release is
+`inputs/`, `reference/`, `task.yaml` and an empty `submission/` — the cold
+sandbox a system is given, and nothing else.
 
 Verify a tarball against its manifest:
 
