@@ -137,10 +137,16 @@ template_params:
 
 output_contract:
   architecture_report.json:
-    mibig_release / module_type / baseline_cutoff / baseline_resolution / baseline_span / baseline_mapping / panel_size: >
-      Reported for the record and NOT graded: each is fixed by the campaign's own
-      declaration, so grading it would add weight to a conjunctive product and no
-      information.
+    module_family / primary_domain / secondary_domain: >
+      Which module family this instantiation accepts, and which curated typed
+      domain block it reconciles as the primary one and which as the secondary,
+      echoed from architecture_rules.json. Reported for the record and NOT graded.
+    mibig_release / panel_size / baseline_cutoff / baseline_resolution: >
+      Reported for the record and NOT graded.
+    baseline_span / baseline_mapping: >
+      The rest of the baseline cell, also echoed and NOT graded. Each of these is
+      fixed by the campaign's own declaration, so grading it would add weight to a
+      conjunctive product and no information.
     hmmer_version / pfam_version / pfam_sha256: >
       What produced the domain calls. An architecture is only as pinned as the
       tool and the library behind it.
@@ -156,6 +162,18 @@ output_contract:
     curated_module_census / curated_domain_totals: >
       Over the corpus: how many genes carry each number of curated modules, and
       the total per declared typed domain block.
+    strata_census: >
+      Per module stratum declared in architecture_rules.json#module_strata, how
+      many corpus genes fall in it, under the key `mixed` for a gene whose curated
+      modules span more than one stratum. A stratum with no gene is omitted rather
+      than reported as zero.
+    domains_by_module_type: >
+      Per curated module type named anywhere in the release -- every type, not
+      only the ones this instantiation accepts -- how many MODULES of that type
+      record each declared typed domain block, counted per module rather than per
+      gene, with the zeros omitted. The declared blocks span more than one module
+      family, so this is the census that says which blocks a given module type
+      uses at all.
     protein_length_summary: >
       Count, minimum, median, maximum and total residues over the corpus.
     panel_census: >
@@ -174,28 +192,39 @@ output_contract:
       all before resolution. This is the number the catalogued design assumed was
       zero.
     reconciliation_table: >
-      Per gene: curated modules, curated and computed adenylation domains, the
-      signed difference, the verdict, and the same for condensation domains. A
-      gene whose record names no condensation domain reports `not_curated`
-      rather than a disagreement with zero.
-    a_domain_verdicts / c_domain_verdicts / a_delta_census: >
-      The count per declared verdict for each domain type, and the distribution
-      of the signed adenylation difference.
+      Per gene: curated modules, curated and computed primary domains, the signed
+      difference, the verdict, and the same for the secondary domain. A gene whose
+      record names no secondary domain reports `not_curated` rather than a
+      disagreement with zero.
+    primary_verdicts / secondary_verdicts: >
+      The count per declared verdict for each of the two domain types, every
+      verdict present including the ones nothing receives.
+    primary_delta_census: >
+      The distribution of the signed primary-domain difference, keyed by that
+      difference written as a string, with the zero counts omitted.
+    secondary_verdicts_by_stratum: >
+      The secondary-domain verdict census again, split by the module stratum the
+      gene falls in, with `mixed` for a gene spanning more than one. Every
+      declared stratum and `mixed` appear, even where the whole census is zeros.
+      Reported separately because a stratum can decide whether the secondary
+      domain is expected in the sequence at all, and an agreement rate pooled
+      across strata that differ in that respect is not one claim.
     module_table / module_verdicts / complete_modules_total: >
       Per gene, how many non-overlapping occurrences of the declared module
       pattern the architecture contains, against the curated module count, with a
-      verdict; plus the census and the total. The declared pattern is four
-      families long for a module with three catalytic domains, because the
-      adenylation domain is split -- so this is a different claim from the
-      adenylation count twice over: a gene can carry the right number of
-      adenylation domains and not assemble into complete modules at all.
+      verdict; plus the census and the total. The pattern declared in
+      architecture_rules.json#module_pattern is longer than the module's catalytic
+      domain count because the primary domain is split across more than one Pfam
+      model -- so this is a different claim from the primary-domain count twice
+      over: a gene can carry the right number of primary domains and not assemble
+      into complete modules at all.
     policy_sweep: >
       One cell per (cutoff, resolution policy, coordinate span), keyed
-      `cutoff|policy|span`: total domains, distinct architectures, adenylation
+      `cutoff|policy|span`: total domains, distinct architectures, primary-domain
       agreement, and how many genes differ from the baseline cell.
     mapping_sweep: >
-      Per declared family-to-domain mapping for the adenylation domain: the
-      families it names and the verdict census it produces.
+      Per declared family-to-domain mapping for the primary domain: the families
+      it names and the verdict census it produces.
 
 constraints:
   reference_dir: reference

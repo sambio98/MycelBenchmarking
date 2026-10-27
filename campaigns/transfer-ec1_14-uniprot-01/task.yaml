@@ -98,6 +98,11 @@ output_contract:
       Per declared identity band, how many queries' closest hit falls in it.
     agreement_by_depth: >
       Per graded EC level, the decidable count, the agreeing count and the rate.
+    constant_depth_agreement: >
+      The same three numbers at the EC levels above the graded ones, keyed by
+      level. Reported for the record and NOT graded: the query set is defined by
+      its EC prefix, so a hit inside the set shares those levels with every query
+      by construction.
     agreement_by_identity: >
       The same three numbers per identity band, at the deepest graded level.
     verdict_census: Per declared verdict, how many queries receive it.
@@ -106,6 +111,10 @@ output_contract:
     removal_census / removal_changed: >
       Per declared removal variant, the recomputed verdict census and how many
       queries' verdicts changed.
+    removal_transitions: >
+      Per removal variant, the full `before->after` verdict transition matrix,
+      zero cells omitted. Reported for the record and NOT graded: the count of
+      changed verdicts is the claim.
 
 constraints:
   reference_dir: reference

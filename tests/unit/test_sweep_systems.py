@@ -18,6 +18,7 @@ import yaml
 
 from npbench_c.readiness import cold_sandbox
 from npbench_c.readiness.gate import _resolve_gold
+from npbench_c.readiness import gate
 from npbench_c.sweep import prompt as prompt_module
 from npbench_c.sweep import systems as systems_module
 from npbench_c.sweep.runner import _format, build_sandbox
@@ -289,3 +290,39 @@ def test_a_trial_run_cannot_become_the_campaign_s_evidence(tmp_path, monkeypatch
     assert seen["write"] is False
     cli.main([campaign, "--systems", str(config)])
     assert seen["write"] is True
+
+
+@pytest.mark.parametrize("campaign", _campaigns(), ids=lambda c: c.name)
+def test_the_prompt_names_every_field_the_contract_declares(campaign, cold):
+    """Every graded field, at every depth the contract nests to.
+
+    The contract is what a system is told, so a field missing from the rendering
+    is a field no system will write -- and the gate's contract check would not
+    see it, because it reads `task.yaml` rather than the prompt.
+    """
+    task = yaml.safe_load((campaign / "task.yaml").read_text())
+    text = (cold[campaign.name] / prompt_module.PROMPT).read_text()
+    for artefact, declared in task["output_contract"].items():
+        for field in gate._contract_fields(declared):
+            assert f"`{field}`" in text, f"{artefact}: {field}"
+
+
+@pytest.mark.parametrize("campaign", _campaigns(), ids=lambda c: c.name)
+def test_the_prompt_separates_conventions_from_fields(campaign, cold):
+    """A convention is rendered, and rendered as something other than a field.
+
+    Four campaigns declare a format, a closed vocabulary or a property of a
+    FASTA record. Each is part of the contract and none of them is a key to
+    write, so the prompt says which it is -- the alternative is a system
+    reporting `formula_format` as an answer.
+    """
+    task = yaml.safe_load((campaign / "task.yaml").read_text())
+    text = (cold[campaign.name] / prompt_module.PROMPT).read_text()
+    declared = {artefact: (spec or {}).get(prompt_module.CONVENTIONS_KEY)
+                for artefact, spec in task["output_contract"].items()}
+    if not any(declared.values()):
+        pytest.skip("campaign declares no conventions")
+    assert "not fields to report" in text
+    for conventions in declared.values():
+        for name in conventions or {}:
+            assert f"`{name}`" in text, name

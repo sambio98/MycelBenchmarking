@@ -104,6 +104,11 @@ output_contract:
     admission_variants: >
       Per declared variant, the admitted count, the eligible-molecule count and
       the selective counts, recomputed.
+    ratio_extremes: >
+      The five most focal-selective and the five most reference-selective
+      molecules, each as a (ratio, identifier) pair. Reported for the record and
+      NOT graded: the per-molecule ratios are excluded, and these are the same
+      numbers for the two ends of that distribution.
 
 constraints:
   reference_dir: reference

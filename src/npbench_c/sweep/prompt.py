@@ -36,6 +36,12 @@ import yaml
 
 PROMPT = "PROMPT.md"
 
+#: Reserved key in an `output_contract` artefact: declarations ABOUT the artefact
+#: -- a format, a closed vocabulary, a property of a FASTA record -- rather than
+#: fields of it. The readiness gate's contract check reads every other key as
+#: a field the measurer must see.
+CONVENTIONS_KEY = "conventions"
+
 #: Keys rendered as prose sections, in this order, with the heading to use.
 #: Everything else in `task.yaml` is either machinery (harness, grading, rungs)
 #: or an auditor's note that would read as a hint.
@@ -95,6 +101,30 @@ def _warm_files(sandbox: pathlib.Path) -> list[str]:
                   if p.is_file() and p.name not in FURNITURE)
 
 
+def _names(field: str) -> str:
+    """A contract key, with each field name it declares separately quoted.
+
+    One key may name several fields that share a description (`a / b / c`). The
+    first draft quoted the key whole, which puts `a / b / c` in front of the
+    system as though it were one field name.
+    """
+    return " / ".join(f"`{part.strip()}`" for part in str(field).split("/"))
+
+
+def _value(description: object) -> str:
+    """One contract entry's description, as prose.
+
+    A description is usually a folded block of text, but a convention is often a
+    literal -- a boolean, or the closed vocabulary itself. `str()` renders those
+    as Python (`True`, `['a', 'b']`), so they are spelled out instead.
+    """
+    if isinstance(description, bool):
+        return "true" if description else "false"
+    if isinstance(description, (list, tuple)):
+        return ", ".join(f"`{item}`" for item in description)
+    return " ".join(str(description).split())
+
+
 def _fields(fields: Mapping, depth: int = 0) -> list[str]:
     """The contract, as a nested bullet list.
 
@@ -107,11 +137,10 @@ def _fields(fields: Mapping, depth: int = 0) -> list[str]:
     pad = "  " * depth
     for field, description in fields.items():
         if isinstance(description, Mapping):
-            out.append(f"{pad}- **`{field}`**")
+            out.append(f"{pad}- **{_names(field)}**")
             out += _fields(description, depth + 1)
         else:
-            text = " ".join(str(description).split())
-            out.append(f"{pad}- **`{field}`** — {text}")
+            out.append(f"{pad}- **{_names(field)}** — {_value(description)}")
     return out
 
 
@@ -152,10 +181,22 @@ def render(sandbox: pathlib.Path, rung_mode: str = "cold") -> str:
         "the difference between 'no answer' and 'this answer' is yours to state "
         "rather than ours to infer."))
     lines.append("")
-    for artefact, fields in contract.items():
+    for artefact, declared in contract.items():
+        declared = declared or {}
         lines += [f"### `submission/{artefact}`", ""]
-        lines += _fields(fields or {})
-        lines.append("")
+        conventions = declared.get(CONVENTIONS_KEY)
+        if conventions:
+            lines.append(_wrap(
+                "Conventions this artefact is read under, rather than fields to "
+                "report: they fix its format, its vocabulary, or the shape an "
+                "answer is compared in."))
+            lines.append("")
+            lines += _fields(conventions)
+            lines.append("")
+        fields = {k: v for k, v in declared.items() if k != CONVENTIONS_KEY}
+        if fields:
+            lines += _fields(fields)
+            lines.append("")
 
     # ---- what is in the directory
     inputs, reference = _tree(sandbox, "inputs"), _tree(sandbox, "reference")

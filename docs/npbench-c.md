@@ -19,7 +19,7 @@ campaigns x 4 rungs = **100 graded rungs** and **560 graded components**.
 | Rung ladders | `src/npbench_c/grading/ladder.py` | depth, monotonicity, chance floor |
 | Grader | `src/npbench_c/grading/grade.py` | pure declarative comparator |
 | Grader identity | `src/npbench_c/grading/version.py` | semver + content hash |
-| Readiness gate | `src/npbench_c/readiness/gate.py` | 25 mechanical checks, 5 pending-on-agent-runs |
+| Readiness gate | `src/npbench_c/readiness/gate.py` | 27 mechanical checks, 5 pending-on-agent-runs |
 | Template: construct design | `src/npbench_c/templates/construct_design/` | shared engine, 2 ladders |
 | Campaign: construct design | `campaigns/construct-ecoli-rebh-01/` | oracle 1.0, gate 25/0/5 |
 | Campaign: constraint conflict | `campaigns/constraint-gc62-ecoli-rebh-01/` | oracle 1.0, gate 25/0/5 |
@@ -211,7 +211,7 @@ someone believes it is. Checks requiring internal agent runs report **PENDING**,
 never PASS: the gate does not launder an unmeasured property into a green tick.
 
 Current state, measured over all 25 campaigns on 2026-10-27, one full gate run
-each: **26 pass / 0 fail / 5 pending, every campaign, no exceptions.**
+each: **27 pass / 0 fail / 5 pending, every campaign, no exceptions.**
 
 The five pending checks (monotonicity, R1 clear rate, no-tool leakage,
 difficulty gate, discrimination) are satisfied by an `internal_sweep.json` from
@@ -224,6 +224,40 @@ instead of copied: path, provider, version, sha256. The check resolves each one
 and verifies the fingerprint, because an unverifiable external resource is the
 solvability defect one step out: the sandbox looks complete and the answer depends
 on bytes nobody pinned.
+
+The twenty-seventh check, `contract_names_what_is_graded`, closes the gap
+between what a campaign publishes and what it grades. The oracle never goes
+through the published contract: `solve.py` renders a submission from gold's own
+key tuples, so a contract that named a field the measurer does not read — or
+failed to name one it does — still scored 1.0 while being unusable by any system
+that followed it. The check projects the oracle's own submission onto the field
+names `output_contract` declares and requires the projection to grade exactly as
+the oracle does.
+
+It was written because that projection, run for the first time over the frozen
+suite, failed on **5 of 25 campaigns**:
+
+| Campaign | Depth from the published contract | Cause |
+| --- | --- | --- |
+| `arch-nrps-mibig-4_0-01` | 0 | field names never updated when the template was generalised for PKS: `a_domain_verdicts`, `c_domain_verdicts`, `a_delta_census`, `module_type` against the measurer's `primary_verdicts`, `secondary_verdicts`, `primary_delta_census`, `primary_domain`/`secondary_domain`/`module_family`, plus three graded fields (`strata_census`, `domains_by_module_type`, `secondary_verdicts_by_stratum`) never declared at all |
+| `arch-pks-mibig-4_0-01` | 0 | the same contract, the same way |
+| `construct-ecoli-prna-01` | 2 | R3 and R4 answers live under `r3`/`r4` keys the contract never mentioned, so every analytical field was declared one level too high |
+| `construct-ecoli-rebh-01` | 2 | the same |
+| `residues-prna-01` | 0 | `mutagenesis_original_residue_agreements / _disagreements` — the second name abbreviated to a suffix no system can write |
+
+Two of those scored **zero at R1**: a perfect system that read the contract and
+reported exactly what it asked for would have been graded as having failed to
+execute. Four more campaigns wrote a field nothing declared, or declared one
+nothing read, without changing any score — cosmetic, and now fixed and checked
+for too.
+
+Contract keys that are not fields — a format, a closed vocabulary, a property of
+a FASTA record — live under a reserved `conventions` key, which is how the check
+tells a declaration about an artefact from a field of it, and how the prompt
+generator knows to render it as a convention rather than as something to report.
+The check reaches as deep as the contract names keys: where a contract stops
+naming keys and describes the shape below in prose (a table's columns, a map
+keyed by an identifier), a misnamed column is not something it can see.
 
 **Never audit before calibrating.** A campaign dropped for non-discrimination
 after a domain expert spent three hours on it has burned the scarcest resource
@@ -353,7 +387,7 @@ no sweep, because its numbers look authoritative.
 A stub-based sweep therefore marks itself `stub_based: true`, and the readiness
 gate keeps all five checks **PENDING** with the harness result shown but not
 promoted. `ready_to_audit` stays `False` until real systems run. With the stub
-sweep on record the gate reports **26 pass / 0 fail / 5 pending** — the count
+sweep on record the gate reports **27 pass / 0 fail / 5 pending** — the count
 that line carried when it was written was 16, which was the number of mechanical
 checks at the time.
 

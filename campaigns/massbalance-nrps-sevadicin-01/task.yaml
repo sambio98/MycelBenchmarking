@@ -33,15 +33,18 @@ scope_note: >
 # oracle enforces the same conventions, and reference/ ships the pinned tables.
 output_contract:
   route.json:
+    conventions:
+      formula_format: >
+        Hill order -- carbon, then hydrogen, then other elements alphabetically --
+        with the count omitted when it is 1. Element order is pinned in
+        reference/assembly_rules.json. A formula written in another order is
+        re-rendered before comparison, so presentation is not graded; chemistry is.
+      verdict_vocabulary: [balanced, cyclisation_only, additional_chemistry_required,
+                           deficit_unexplained, insufficient]
     modules: >
       One object per annotated module, in module order, each with the 1-based
       "module" index, the "monomer" name exactly as the entry's
       a_domain.substrates[].name gives it, and that monomer's "formula".
-    formula_format: >
-      Hill order -- carbon, then hydrogen, then other elements alphabetically --
-      with the count omitted when it is 1. Element order is pinned in
-      reference/assembly_rules.json. A formula written in another order is
-      re-rendered before comparison, so presentation is not graded; chemistry is.
     peptide_bonds: integer; n_modules - 1 for a linear assembly
     naive_assembly_formula: Hill-order formula of the linear assembly
     naive_assembly_monoisotopic_mass: daltons, 4 decimal places, tolerance 0.001
@@ -56,8 +59,6 @@ output_contract:
       "formula" of the assembly remaining after that module is deleted and the
       "mass_shift" in daltons relative to the full assembly. A map, not a list,
       so the answer is not order-dependent.
-    verdict_vocabulary: [balanced, cyclisation_only, additional_chemistry_required,
-                         deficit_unexplained, insufficient]
 
 constraints:
   reference_dir: reference

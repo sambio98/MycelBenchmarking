@@ -77,9 +77,11 @@ output_contract:
     annotated_positions: Sorted UniProt positions carrying any functional feature.
     ligand_vocabulary: ChEBI id to ligand name, over binding-site records.
     pdb_cross_references: Sorted PDB ids cross-referenced by the entry.
-    mutagenesis_original_residue_agreements / _disagreements: >
-      For each mutagenesis record, whether the residue it records as mutated
-      matches the sequence at that position.
+    mutagenesis_original_residue_agreements: >
+      Over the mutagenesis records, how many record an original residue that
+      matches the sequence at the position they name.
+    mutagenesis_original_residue_disagreements: >
+      Over the same records, how many do not.
     eco_code_citation_totals: >
       Per ECO code, the number of (record, code, source id) citations. A record
       citing two PubMed ids under one code contributes two.

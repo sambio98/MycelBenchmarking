@@ -23,6 +23,7 @@ from npbench_c.readiness.gate import (
     UNVALIDATED_DESIGN_LABELS,
     _antismash_versions_are_not_mixed,
     _contract_and_provenance,
+    _contract_names_what_is_graded,
     _design_claims_are_checkable,
     _resolve_gold,
     _warm_bundles_withhold_answers,
@@ -358,3 +359,80 @@ def test_a_note_mentioning_antismash_is_not_shipped_processed_data(tmp_path):
          "note": "The COMPLETE chromosome, unsliced. A slice truncates CDS "
                  "features at its edges, which antiSMASH refuses."})
     assert _antismash_versions_are_not_mixed(campaign).status == PASS
+
+
+# --- check 27: the published contract against what the measurer reads --------
+#
+# The failure this covers was found by projecting each oracle submission onto the
+# contract's own field names: five of twenty-five campaigns graded lower that way
+# than the oracle did, two of them at depth 0. The oracle never goes through the
+# contract -- `solve.py` renders from gold's key tuples -- so nothing in the gate
+# had ever compared the two.
+
+
+@pytest.mark.parametrize("campaign", CAMPAIGNS, ids=lambda p: p.name)
+def test_every_campaign_can_be_answered_from_its_published_contract(campaign):
+    check = _contract_names_what_is_graded(campaign)
+    assert check.status == PASS, check.detail
+
+
+def test_a_contract_naming_a_field_the_measurer_does_not_read_is_refused(tmp_path):
+    """The arch failure mode: a template generalised, its contract left behind."""
+    copy = tmp_path / SMALL.name
+    shutil.copytree(SMALL, copy)
+    task = (copy / "task.yaml").read_text()
+    assert "      binding_constraint: >" in task
+    (copy / "task.yaml").write_text(
+        task.replace("      binding_constraint: >", "      which_constraint_binds: >"))
+
+    check = _contract_names_what_is_graded(copy)
+    assert check.status != PASS
+    assert "r3.binding_constraint written, not declared" in check.detail
+    assert "r3.which_constraint_binds declared, not written" in check.detail
+
+
+def test_a_contract_silent_about_a_wrapper_key_is_refused(tmp_path):
+    """The construct failure mode: the answer lives a level down from the names.
+
+    Removing the `r3` and `r4` keys from the contract and promoting their fields
+    is exactly how both construct campaigns shipped: every field name correct,
+    and a system following them writes all of them one level too high.
+    """
+    import yaml
+
+    copy = tmp_path / SMALL.name
+    shutil.copytree(SMALL, copy)
+    task = yaml.safe_load((copy / "task.yaml").read_text())
+    analysis = task["output_contract"]["analysis.json"]
+    task["output_contract"]["analysis.json"] = {
+        "conventions": analysis["conventions"],
+        **analysis["r3"], **analysis["r4"],
+    }
+    (copy / "task.yaml").write_text(yaml.safe_dump(task, sort_keys=False))
+
+    check = _contract_names_what_is_graded(copy)
+    assert check.status != PASS
+    assert "analysis.json.r3 written, not declared" in check.detail
+    # R1 and R2 are read off the ORF files, which the promotion leaves alone, so
+    # the ladder stops exactly where the analytical claims start.
+    assert "depth=2" in check.detail
+
+
+def test_conventions_are_not_read_as_fields(tmp_path):
+    """A format, a closed vocabulary and a FASTA's properties are not fields.
+
+    Without the reserved key the check would demand that the oracle write a
+    `formula_format` key, and the only way to satisfy it would be to grade one.
+    """
+    import yaml
+
+    copy = tmp_path / SMALL.name
+    shutil.copytree(SMALL, copy)
+    task = yaml.safe_load((copy / "task.yaml").read_text())
+    conventions = task["output_contract"]["analysis.json"].pop("conventions")
+    task["output_contract"]["analysis.json"].update(conventions)
+    (copy / "task.yaml").write_text(yaml.safe_dump(task, sort_keys=False))
+
+    check = _contract_names_what_is_graded(copy)
+    assert check.status != PASS
+    assert "analysis.json.constraint_vocabulary declared, not written" in check.detail

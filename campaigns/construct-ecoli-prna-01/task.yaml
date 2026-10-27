@@ -54,41 +54,63 @@ method_guidance: partial
 # a convention the task never stated (audit form item 4).
 output_contract:
   orf_ecoli.fasta:
-    description: ORF for Escherichia coli BL21(DE3) in pET-28a(+), NdeI/XhoI
-    includes_start_codon: true
-    includes_stop_codon: true           # TAA, TAG or TGA as the final codon
-    includes_vector_tag: false          # the pET-28a His6 tag is NOT part of the ORF
-    alphabet: ACGT
-    strand: coding
+    conventions:
+      description: ORF for Escherichia coli BL21(DE3) in pET-28a(+), NdeI/XhoI
+      includes_start_codon: true
+      includes_stop_codon: true         # TAA, TAG or TGA as the final codon
+      includes_vector_tag: false        # the pET-28a His6 tag is NOT part of the ORF
+      alphabet: ACGT
+      strand: coding
   orf_streptomyces.fasta:
-    description: ORF for Streptomyces coelicolor A3(2) in pSET152, NdeI/XhoI
-    includes_start_codon: true
-    includes_stop_codon: true
-    includes_vector_tag: false
-    alphabet: ACGT
-    strand: coding
+    conventions:
+      description: ORF for Streptomyces coelicolor A3(2) in pSET152, NdeI/XhoI
+      includes_start_codon: true
+      includes_stop_codon: true
+      includes_vector_tag: false
+      alphabet: ACGT
+      strand: coding
   analysis.json:
-    description: per-rung analytical claims
-    constraint_vocabulary:                 # closed; the only admissible names
-      - forbidden_sites
-      - gc_window
-      - gc_global
-      - homopolymer
-      - direct_repeat
-      - internal_rbs
-    unconstrained_violations: >
-      Violation counts measured on the unconstrained optimum -- the sequence in
-      which every residue takes its single most-adapted codon under the pinned
-      host table, ties broken by lexicographically smallest codon. Counting
-      rules: forbidden_sites = site occurrences; gc_window = 50-nt windows
-      (step 1) outside the host range; gc_global = 1 if whole-ORF GC is outside
-      the host range else 0; homopolymer = maximal runs longer than the limit;
-      direct_repeat = distinct 11-mers occurring more than once;
-      internal_rbs = occurrences of AGGAGG.
-    non_binding_constraints: >
-      Constraints whose relaxation does not increase achievable CAI (cost <= 0).
-    flipped_constraints: >
-      Symmetric difference of the two hosts' non_binding_constraints sets.
+    conventions:
+      description: >
+        The analytical claims, under two keys. `r3` carries them for the host of
+        orf_ecoli.fasta and `r4` for the host of orf_streptomyces.fasta. The two
+        keys are not optional wrappers: a claim written at the top level instead
+        of inside its key is not read, and the claims for one host inside the
+        other's key are read as that other host's.
+      constraint_vocabulary:               # closed; the only admissible names
+        - forbidden_sites
+        - gc_window
+        - gc_global
+        - homopolymer
+        - direct_repeat
+        - internal_rbs
+    r3:
+      unconstrained_violations: >
+        Violation counts measured on the unconstrained optimum for this host --
+        the sequence in which every residue takes its single most-adapted codon
+        under the pinned host table, ties broken by lexicographically smallest
+        codon. One integer per name in the vocabulary. Counting rules:
+        forbidden_sites = site occurrences; gc_window = 50-nt windows (step 1)
+        outside the host range; gc_global = 1 if whole-ORF GC is outside the host
+        range else 0; homopolymer = maximal runs longer than the limit;
+        direct_repeat = distinct 11-mers occurring more than once;
+        internal_rbs = occurrences of AGGAGG.
+      binding_constraint: >
+        One name from the vocabulary: the constraint whose relaxation raises
+        achievable CAI the most for this host.
+      non_binding_constraints: >
+        Constraints whose relaxation does not increase achievable CAI (cost <= 0),
+        as a list of names from the vocabulary.
+    r4:
+      unconstrained_violations: >
+        As under `r3`, for the host of orf_streptomyces.fasta, under the same
+        counting rules and that host's own table and ranges.
+      binding_constraint: As under `r3`, for the other host.
+      non_binding_constraints: As under `r3`, for the other host.
+      flipped_constraints: >
+        Symmetric difference of the two hosts' non_binding_constraints sets. The
+        only claim that spans both hosts, and the only field declared under `r4`
+        alone.
 
 # Everything an agent needs to answer every rung is in reference/, which is
 # shipped into the sandbox. The oracle loads the same files, so the tables used

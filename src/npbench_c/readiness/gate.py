@@ -20,6 +20,7 @@ import sys
 from dataclasses import dataclass
 
 from npbench_c.grading.grade import grade, grade_json
+from npbench_c.sweep.prompt import CONVENTIONS_KEY
 from npbench_c.sweep.runner import _absolute_pythonpath
 from npbench_c.grading.ladder import MAX_CHANCE_FLOOR
 from npbench_c.grading.version import grader_version
@@ -799,6 +800,138 @@ def _single_term_answers_are_not_stated(campaign: pathlib.Path) -> Check:
                else "; no single-term answer stated outside its vocabulary")
     return _check("single_term_answers_are_not_stated", not problems, detail)
 
+def _contract_fields(declared: object) -> dict:
+    """{field: nested-spec-or-None} for one artefact's contract, recursively.
+
+    A contract key may name several fields at once (`a / b / c`), which is how
+    the suite declares a group of fields that share one description.
+    """
+    out: dict = {}
+    if not isinstance(declared, dict):
+        return out
+    for key, description in declared.items():
+        if key == CONVENTIONS_KEY:
+            continue
+        child = _contract_fields(description) if isinstance(description, dict) else None
+        for name in (part.strip() for part in str(key).split("/")):
+            if name:
+                out[name] = child
+    return out
+
+
+def _project(value: object, spec: dict | None) -> object:
+    """`value` with only the fields `spec` declares. A declared leaf keeps all
+    of its subtree: the contract stops naming fields where the answer becomes
+    data."""
+    if spec is None or not isinstance(value, dict):
+        return value
+    return {k: _project(v, spec[k]) for k, v in value.items() if k in spec}
+
+
+def _field_disagreements(written: object, spec: dict, where: str) -> list[str]:
+    """Every name one side has and the other does not, at every declared depth."""
+    if not isinstance(written, dict):
+        return [f"{where} is not an object, so its fields cannot be declared"]
+    out = [f"{where}.{k} written, not declared"
+           for k in sorted(written) if k not in spec]
+    out += [f"{where}.{k} declared, not written"
+            for k in sorted(spec) if k not in written]
+    for name, child in sorted(spec.items()):
+        if child and name in written:
+            out += _field_disagreements(written[name], child, f"{where}.{name}")
+    return out
+
+
+def _contract_names_what_is_graded(campaign: pathlib.Path) -> Check:
+    """Check 27: an answer written to the PUBLISHED contract scores what the
+    oracle scores.
+
+    The oracle does not go through the contract. `solve.py` renders a submission
+    from gold's own key tuples, so a contract that named a field the measurer
+    does not read -- or failed to name one it does -- still scored 1.0 while
+    being unusable by any system that followed it. Measured gap, five of
+    twenty-five campaigns: two whose field names were never updated when their
+    template was generalised (a system following them scored zero at R1), two
+    whose R3 and R4 answers live under wrapper keys the contract never mentioned,
+    and one whose field name was abbreviated into something unwritable.
+
+    So: project the oracle's own submission onto the field names the contract
+    declares, and require the projection to grade exactly as the oracle does.
+
+    The check reaches as deep as the contract names keys. Where a contract stops
+    naming keys and describes the shape below in prose -- a table's columns, a
+    map keyed by an identifier -- the projection keeps that subtree whole, so a
+    column misnamed in prose is not something this can see.
+    """
+    import tempfile
+
+    import yaml
+
+    task = yaml.safe_load((campaign / "task.yaml").read_text())
+    contract = task.get("output_contract") or {}
+    if not contract:
+        return Check("contract_names_what_is_graded", FAIL,
+                     "task.yaml declares no output_contract")
+    measure_command = (task.get("harness") or {}).get("measure_command")
+    if not measure_command:
+        return Check("contract_names_what_is_graded", FAIL,
+                     "task.yaml declares no harness.measure_command")
+
+    oracle = campaign / "oracle_submission"
+    written = sorted(p.name for p in oracle.iterdir()
+                     if p.is_file() and p.name != "measurement.json")
+    problems = [f"{name} written, no contract entry" for name in written
+                if name not in contract]
+    problems += [f"{name} declared, not written" for name in sorted(contract)
+                 if name not in written]
+
+    gold = json.loads((campaign / "gold" / "gold.json").read_text())
+    spec = json.loads((campaign / "grading.json").read_text())
+    baseline = grade(json.loads((oracle / "measurement.json").read_text()), gold, spec)
+
+    with tempfile.TemporaryDirectory() as tmp:
+        projected = pathlib.Path(tmp) / "submission"
+        projected.mkdir()
+        for name in written:
+            fields = _contract_fields(contract.get(name))
+            text = (oracle / name).read_text()
+            try:
+                raw = json.loads(text)
+            except json.JSONDecodeError:
+                # Not every artefact is JSON -- an ORF ships as FASTA, whose
+                # contract is conventions only. Nothing to project.
+                (projected / name).write_text(text)
+                continue
+            if not fields:
+                problems.append(f"{name} declares no field, so it cannot be written")
+                (projected / name).write_text(text)
+                continue
+            problems += _field_disagreements(raw, fields, name)
+            (projected / name).write_text(
+                json.dumps(_project(raw, fields), indent=2) + "\n")
+
+        measurement = pathlib.Path(tmp) / "measurement.json"
+        try:
+            subprocess.run(
+                [tok.format(campaign=str(campaign), submission=str(projected),
+                            measurement=str(measurement)) for tok in measure_command],
+                cwd=campaign, env=_absolute_pythonpath(os.environ),
+                check=True, capture_output=True, timeout=1800,
+            )
+        except (subprocess.CalledProcessError, subprocess.TimeoutExpired, OSError) as exc:
+            return Check("contract_names_what_is_graded", FAIL,
+                         f"measuring the contract-shaped submission failed: {exc}")
+        result = grade(json.loads(measurement.read_text()), gold, spec)
+
+    same = (result["depth"], result["score"]) == (baseline["depth"], baseline["score"])
+    detail = (f"contract-shaped submission: depth={result['depth']} "
+              f"score={result['score']} (oracle depth={baseline['depth']} "
+              f"score={baseline['score']})")
+    if problems:
+        detail += "; " + "; ".join(problems[:6])
+        if len(problems) > 6:
+            detail += f"; and {len(problems) - 6} more"
+    return _check("contract_names_what_is_graded", same and not problems, detail)
 
 def _integrity(campaign: pathlib.Path) -> list[Check]:
     hits = []
@@ -855,6 +988,7 @@ def run(campaign_dir: pathlib.Path) -> list[Check]:
     checks.append(_design_claims_are_checkable(campaign))
     checks.append(_antismash_versions_are_not_mixed(campaign))
     checks.append(_single_term_answers_are_not_stated(campaign))
+    checks.append(_contract_names_what_is_graded(campaign))
     checks += _integrity(campaign)
     checks += _pending_agent_runs(campaign)
     return checks
