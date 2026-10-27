@@ -12,6 +12,7 @@ artifacts:
       cluster_id: [bgc_id, id, cluster]
       sequence_id: [contig, contig_id, seqid, record_id]
       length_bp: [length, size_bp]
+      n_distinct_domains: [n_domains, domain_count, distinct_domains]
       type: [product_class, cluster_type, product]
     value_aliases:
       type:
@@ -27,7 +28,7 @@ artifacts:
       - type: macro_f1
         column: type
       - type: lins_ccc
-        column: length_bp
+        column: n_distinct_domains
         log_transform: false
         pseudocount: null
       - type: interval_overlap_f1
@@ -71,11 +72,18 @@ artifacts:
     column_aliases:
       accession: [assembly, assembly_accession, genome, genome_id]
       n_clusters: [cluster_count, n_bgc, count]
+      n_edge_clusters: [edge_clusters, n_contig_edge]
+      assembly_bp: [genome_bp, assembly_length, genome_length]
+      pct_bp_in_clusters: [percent_bp_in_clusters, pct_clustered]
     value_aliases: {}
     metrics:
       - type: identifier_f1
       - type: lins_ccc
-        column: n_clusters
+        column: n_edge_clusters
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: pct_bp_in_clusters
         log_transform: false
         pseudocount: null
 
@@ -90,6 +98,8 @@ artifacts:
       type: [product_class, cluster_type, product]
       n_clusters: [cluster_count, count, n]
       n_genomes: [genome_count, n_assemblies]
+      n_species: [species_count]
+      median_length_bp: [median_length, median_size_bp]
     value_aliases:
       type:
         NRPS: nrp
@@ -99,7 +109,11 @@ artifacts:
     metrics:
       - type: identifier_f1
       - type: lins_ccc
-        column: n_clusters
+        column: n_species
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: median_length_bp
         log_transform: false
         pseudocount: null
 
@@ -121,6 +135,51 @@ artifacts:
         PKS: polyketide
         RiPPs: ripp
         none: unknown
+    metrics:
+      - type: identifier_f1
+      - type: lins_ccc
+        column: n_clusters
+        log_transform: false
+        pseudocount: null
+
+  # Depth 4. The partition itself: distinct-domain sets, a Jaccard threshold,
+  # single linkage, and a family name derived from the component's own contents.
+  # Four independent places to go wrong, and the domains field is a multiset, so
+  # using it as given rather than deduplicating changes every similarity.
+  - path: gene_cluster_families.csv
+    truth: gene_cluster_families.csv
+    format: csv
+    soft: false
+    row_key: [cluster_id]
+    normalisers: [strip, collapse_whitespace, casefold]
+    column_aliases:
+      cluster_id: [bgc_id, id, cluster]
+      family_id: [gcf, gcf_id, family]
+      family_size: [size, n_members, members]
+    value_aliases: {}
+    metrics:
+      - type: identifier_f1
+      - type: macro_f1
+        column: family_id
+      - type: lins_ccc
+        column: family_size
+        log_transform: false
+        pseudocount: null
+
+  # Depth 4. Its row universe is the set of family names, so it only scores if
+  # the partition is right; and n_species needs the strain-table join on top.
+  - path: gcf_summary.csv
+    truth: gcf_summary.csv
+    format: csv
+    soft: false
+    row_key: [family_id]
+    normalisers: [strip, collapse_whitespace, casefold]
+    column_aliases:
+      family_id: [gcf, gcf_id, family]
+      n_clusters: [cluster_count, size, n_members]
+      n_genomes: [genome_count, n_assemblies]
+      n_species: [species_count]
+    value_aliases: {}
     metrics:
       - type: identifier_f1
       - type: lins_ccc

@@ -373,8 +373,22 @@ def _check_grading(config: GradingConfig) -> list[Finding]:
                     f"submission that dropped half the rows",
                 )
             )
-        if len(declared) != len(artifact.metrics):
-            findings.append(_error(where, "declares the same metric type twice"))
+        # Two CCCs on different columns are legitimate: an artifact can have more
+        # than one numeric column worth grading. Two on the SAME column are a
+        # copy-paste slip that would silently square that column's score.
+        signatures = [
+            (m.type, m.params.get("column") or m.params.get("start_column"))
+            for m in artifact.metrics
+        ]
+        for signature in {s for s in signatures if signatures.count(s) > 1}:
+            kind, column = signature
+            findings.append(
+                _error(
+                    where,
+                    f"declares {kind} twice on {column!r}" if column
+                    else f"declares {kind} twice",
+                )
+            )
     return findings
 
 

@@ -234,6 +234,36 @@ class TestTruthContents:
 
 
 class TestGradingConsistency:
+    def test_two_ccc_metrics_on_different_columns_are_allowed(self, bundle):
+        # An artifact can legitimately have more than one numeric column worth
+        # grading; the product combiner handles it.
+        def add_second_ccc(document):
+            document["artifacts"][0]["metrics"].append(
+                {"type": "lins_ccc", "column": "start",
+                 "log_transform": False, "pseudocount": None}
+            )
+
+        _edit_yaml(bundle / "grading.yaml", add_second_ccc)
+        assert _errors(bundle) == []
+
+    def test_two_ccc_metrics_on_the_same_column_are_rejected(self, bundle):
+        # A copy-paste slip that would silently square that column's score.
+        def duplicate_ccc(document):
+            metrics = document["artifacts"][0]["metrics"]
+            existing = next(m for m in metrics if m["type"] == "lins_ccc")
+            metrics.append(dict(existing))
+
+        _edit_yaml(bundle / "grading.yaml", duplicate_ccc)
+        assert any("lins_ccc twice on 'length_bp'" in e.message for e in _errors(bundle))
+
+    def test_two_identifier_f1_metrics_are_rejected(self, bundle):
+        _edit_yaml(
+            bundle / "grading.yaml",
+            lambda d: d["artifacts"][0]["metrics"].append({"type": "identifier_f1"}),
+        )
+        assert any("identifier_f1 twice" in e.message for e in _errors(bundle))
+
+
     def test_artifact_path_must_not_repeat_the_outputs_prefix(self, bundle):
         _edit_yaml(
             bundle / "grading.yaml",

@@ -76,18 +76,41 @@ Derive the artifacts from that output as follows.
 - Every staged assembly appears in `clusters_per_genome.csv`, including any
   assembly in which no cluster is detected.
 
+### Gene cluster families
+
+Group the clusters into families by domain composition, as follows. Every rule
+here is part of the method; none of it is open to choice.
+
+1. A cluster's **domain set** is the distinct Pfam accessions in its GECCO
+   `domains` field. That field lists a domain once per occurrence, so a cluster
+   with three copies of `PF00165` contributes `PF00165` once.
+2. Clusters with **fewer than 3 distinct domains** are not assignable. They
+   appear in no family and in neither family artifact.
+3. Two assignable clusters are **linked** when the Jaccard similarity of their
+   domain sets, `|A ∩ B| / |A ∪ B|`, is **0.50 or greater**.
+4. A **family** is a connected component of that link graph — single linkage.
+   Two clusters that are not similar to each other belong to the same family if
+   a chain of links connects them.
+5. A family's **`family_id` is the lexicographically smallest `cluster_id`
+   among its members.** Do not number families; derive the name from the
+   contents, so the result does not depend on any ordering you chose.
+6. A cluster linked to nothing is a family of one, named after itself.
+
 ## Required outputs
 
-Five CSV files in `outputs/`, each with a header row and the exact column names
+Seven CSV files in `outputs/`, each with a header row and the exact column names
 below. Column order is not graded; column names are. Row order is not graded.
 
 ### `bgc_inventory.csv`
 One row per detected cluster, over all 120 assemblies.
 
-`cluster_id`, `accession`, `sequence_id`, `start`, `end`, `length_bp`, `type`
+`cluster_id`, `accession`, `sequence_id`, `start`, `end`, `length_bp`,
+`n_distinct_domains`, `type`
 
 `cluster_id` is GECCO's own cluster identifier. `accession` is the RefSeq
 assembly accession the cluster came from, as named in `strains.tsv`.
+`n_distinct_domains` is the size of the cluster's domain set as defined under
+*Gene cluster families* below.
 
 ### `contig_edge_clusters.csv`
 One row per cluster that sits on a contig boundary, by the rule above.
@@ -99,16 +122,40 @@ One row per cluster that sits on a contig boundary, by the rule above.
 ### `clusters_per_genome.csv`
 One row per staged assembly.
 
-`accession`, `n_clusters`
+`accession`, `n_clusters`, `n_edge_clusters`, `assembly_bp`, `pct_bp_in_clusters`
+
+`assembly_bp` is the total length of all contigs in that assembly.
+`n_edge_clusters` counts that assembly's clusters on a contig boundary, by the
+rule above. `pct_bp_in_clusters` is the summed cluster length as a percentage
+of `assembly_bp`, rounded to 4 decimal places.
 
 ### `type_counts.csv`
 One row per distinct cluster type observed.
 
-`type`, `n_clusters`, `n_genomes`
+`type`, `n_clusters`, `n_genomes`, `n_species`, `median_length_bp`
 
-`n_genomes` is the number of distinct assemblies in which that type occurs.
+`n_genomes` and `n_species` are the distinct assemblies and distinct species in
+which that type occurs. `median_length_bp` is the median cluster length for that
+type, as an integer; for an even number of clusters take the mean of the two
+middle values, rounded down.
 
 ### `species_type_counts.csv`
 One row per observed species and cluster type combination.
 
 `species`, `type`, `n_clusters`
+
+### `gene_cluster_families.csv`
+One row per assignable cluster. Clusters with fewer than 3 distinct domains are
+excluded entirely.
+
+`cluster_id`, `family_id`, `family_size`
+
+`family_size` is the number of clusters in that cluster's family.
+
+### `gcf_summary.csv`
+One row per family.
+
+`family_id`, `n_clusters`, `n_genomes`, `n_species`
+
+`n_genomes` and `n_species` count the distinct assemblies and distinct species
+represented among the family's members.
