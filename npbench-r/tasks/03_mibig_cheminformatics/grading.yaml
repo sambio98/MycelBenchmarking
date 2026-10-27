@@ -107,9 +107,12 @@ artifacts:
       n_structures: [structures, n_compounds, count]
       n_bgcs: [bgcs, n_clusters]
       n_classes: [classes, n_biosynthesis_classes]
+      representative_smiles: [representative, example_smiles, smallest_smiles]
     value_aliases: {}
     metrics:
       - type: identifier_f1
+      - type: macro_f1
+        column: representative_smiles
       - type: lins_ccc
         column: n_structures
         log_transform: false
@@ -131,13 +134,18 @@ artifacts:
     soft: false
     row_key: [formula]
     normalisers: [strip, collapse_whitespace, casefold]
+    column_normalisers:
+      representative_smiles: [strip]
     column_aliases:
       formula: [molecular_formula]
       n_structures: [structures, n_compounds, count]
       n_bgcs: [bgcs, n_clusters]
+      representative_smiles: [representative, example_smiles, smallest_smiles]
     value_aliases: {}
     metrics:
       - type: identifier_f1
+      - type: macro_f1
+        column: representative_smiles
       - type: lins_ccc
         column: n_structures
         log_transform: false
@@ -197,14 +205,19 @@ artifacts:
     soft: false
     row_key: [biosynthesis_class, n_scaffold_rings]
     normalisers: [strip, collapse_whitespace, casefold]
+    column_normalisers:
+      representative_smiles: [strip]
     column_aliases:
       biosynthesis_class: [class, bgc_class]
       n_scaffold_rings: [scaffold_rings, rings]
       n_structures: [structures, n_compounds, count]
       n_bgcs: [bgcs, n_clusters]
+      representative_smiles: [representative, example_smiles, smallest_smiles]
     value_aliases: {}
     metrics:
       - type: identifier_f1
+      - type: macro_f1
+        column: representative_smiles
       - type: lins_ccc
         column: n_structures
         log_transform: false

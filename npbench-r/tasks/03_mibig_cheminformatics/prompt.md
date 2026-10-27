@@ -137,15 +137,20 @@ One row per distinct canonical structure.
 ### `scaffold_counts.csv`
 One row per distinct scaffold.
 
-`scaffold_smiles`, `n_structures`, `n_bgcs`, `n_classes`
+`scaffold_smiles`, `n_structures`, `n_bgcs`, `n_classes`, `representative_smiles`
 
 Counts are over distinct structures carrying that scaffold, the distinct BGCs
 reporting any of them, and the distinct biosynthesis classes of those BGCs.
+`representative_smiles` is the lexicographically smallest canonical SMILES
+among the structures carrying that scaffold.
 
 ### `formula_collisions.csv`
 One row per molecular formula carried by **two or more** distinct structures.
 
-`formula`, `n_structures`, `n_bgcs`
+`formula`, `n_structures`, `n_bgcs`, `representative_smiles`
+
+`representative_smiles` is the lexicographically smallest canonical SMILES
+among the structures sharing that formula.
 
 ### `stereo_collapse_groups.csv`
 One row per (flat form, structure) pair, for flat forms reached by **two or
@@ -163,4 +168,8 @@ One row per distinct canonical structure.
 ### `class_scaffold_summary.csv`
 One row per observed biosynthesis class and scaffold ring count.
 
-`biosynthesis_class`, `n_scaffold_rings`, `n_structures`, `n_bgcs`
+`biosynthesis_class`, `n_scaffold_rings`, `n_structures`, `n_bgcs`,
+`representative_smiles`
+
+`representative_smiles` is the lexicographically smallest canonical SMILES
+among that cell's structures.

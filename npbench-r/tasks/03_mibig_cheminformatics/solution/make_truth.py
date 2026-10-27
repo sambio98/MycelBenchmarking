@@ -252,10 +252,11 @@ def main() -> int:
             scaffold_classes[scaffold] |= set(classes_of[accession])
     write_csv(
         args.out / "scaffold_counts.csv",
-        ["scaffold_smiles", "n_structures", "n_bgcs", "n_classes"],
+        ["scaffold_smiles", "n_structures", "n_bgcs", "n_classes", "representative_smiles"],
         [
             {"scaffold_smiles": k, "n_structures": len(v),
-             "n_bgcs": len(scaffold_bgcs[k]), "n_classes": len(scaffold_classes[k])}
+             "n_bgcs": len(scaffold_bgcs[k]), "n_classes": len(scaffold_classes[k]),
+             "representative_smiles": min(v)}
             for k, v in sorted(per_scaffold.items())
         ],
     )
@@ -265,10 +266,11 @@ def main() -> int:
         by_formula[rdMolDescriptors.CalcMolFormula(structures[s])].add(s)
     write_csv(
         args.out / "formula_collisions.csv",
-        ["formula", "n_structures", "n_bgcs"],
+        ["formula", "n_structures", "n_bgcs", "representative_smiles"],
         [
             {"formula": f, "n_structures": len(group),
-             "n_bgcs": len({b for s in group for b in bgcs_of[s]})}
+             "n_bgcs": len({b for s in group for b in bgcs_of[s]}),
+             "representative_smiles": min(group)}
             for f, group in sorted(by_formula.items())
             if len(group) > 1
         ],
@@ -321,10 +323,12 @@ def main() -> int:
                 cell_bgcs[(klass, rings)].add(accession)
     write_csv(
         args.out / "class_scaffold_summary.csv",
-        ["biosynthesis_class", "n_scaffold_rings", "n_structures", "n_bgcs"],
+        ["biosynthesis_class", "n_scaffold_rings", "n_structures", "n_bgcs",
+         "representative_smiles"],
         [
             {"biosynthesis_class": klass, "n_scaffold_rings": rings,
-             "n_structures": len(group), "n_bgcs": len(cell_bgcs[(klass, rings)])}
+             "n_structures": len(group), "n_bgcs": len(cell_bgcs[(klass, rings)]),
+             "representative_smiles": min(group)}
             for (klass, rings), group in sorted(cell_structures.items())
         ],
     )
