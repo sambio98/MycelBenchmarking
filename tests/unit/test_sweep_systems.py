@@ -322,7 +322,9 @@ def test_the_prompt_separates_conventions_from_fields(campaign, cold):
                 for artefact, spec in task["output_contract"].items()}
     if not any(declared.values()):
         pytest.skip("campaign declares no conventions")
-    assert "not fields to report" in text
+    # The label itself, which is the whole of the property: a convention is
+    # rendered, and rendered as something other than a field.
+    assert "Conventions this artefact is read under" in text
     for conventions in declared.values():
         for name in conventions or {}:
             assert f"`{name}`" in text, name
