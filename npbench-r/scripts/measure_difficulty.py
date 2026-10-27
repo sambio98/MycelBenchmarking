@@ -188,10 +188,19 @@ def _families(domains: dict, mistakes: set[str]) -> dict[str, str]:
         domains if "keeps_thin_clusters" in mistakes
         else {c: d for c, d in domains.items() if counts[c] >= 3}
     )
+    # Candidates must share at least one domain, otherwise Jaccard is 0. Proven
+    # equivalent to all-pairs in tests/test_task02_solution.py, and it holds for
+    # the multiset variant too, since a disjoint pair scores 0 either way.
+    by_domain: dict[str, list[str]] = {}
+    for cluster in eligible:
+        for domain in set(domains[cluster]):
+            by_domain.setdefault(domain, []).append(cluster)
     jaccard = {}
-    for i, a in enumerate(eligible):
-        for b in eligible[i + 1:]:
-            if _similarity(domains[a], domains[b]) >= 0.50:
+    for a in eligible:
+        for b in {o for d in set(domains[a]) for o in by_domain[d]}:
+            if a >= b:
+                continue
+            if (a, b) not in jaccard and _similarity(domains[a], domains[b]) >= 0.50:
                 jaccard[(a, b)] = True
 
     if "pairwise_not_transitive" in mistakes:
