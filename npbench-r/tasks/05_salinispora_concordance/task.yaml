@@ -1,0 +1,63 @@
+task_id: 05_salinispora_concordance
+title: Taxonomy versus chemistry concordance across 120 Salinispora genomes
+
+source:
+  citation: >-
+    Letzel A-C, Li J, Amos GCA, Millán-Aguiñaga N, Ginigini J, Abdelmohsen UR,
+    Gaudêncio SP, Ziemert N, Moore BS, Jensen PR. Genomic insights into
+    specialized metabolism in the marine actinomycete Salinispora.
+    Environmental Microbiology 19:3660-3673 (2017).
+  doi: 10.1111/1462-2920.13867
+
+truth_provenance: >-
+  Tool-generated. Every artifact in truth/ is produced by
+  solution/run_gecco.py and solution/make_truth.py over the genomes in
+  data.manifest.json, using the pinned GECCO build. The source study asked the
+  same question -- whether Salinispora specialized metabolism tracks phylogeny
+  -- but its numbers are not the truth here: it used 119 JGI IMG genomes whose
+  IDs no longer map onto RefSeq one-to-one, and a different detection tool.
+  Nothing is compared against a published table.
+
+determinism: >-
+  Verified. Two independent runs produce byte-identical output for all seven
+  artifacts. The k-mer sketch is hash-free by design: it keeps every canonical
+  21-mer whose 2-bit encoding is divisible by 1000, so there is no hash
+  function for an agent to have to match.
+
+# Same genome set as task 02, a different question. Task 02 inventories the
+# clusters; this task asks whether genomic relatedness predicts biosynthetic
+# repertoire. The overlap is deliberate and noted in NOTES.md.
+categories:
+  - phylogenetics_concordance
+  - gcf_clustering
+
+# PROJECT.md section 8. The k-mer profiles and family table are depth 2; the
+# repertoires and family breadth depth 3; the pair matrix depth 4; the two
+# summaries depth 5, since each sits on both matrices.
+depth: 5
+
+tool_versions:
+  gecco: "0.11.0"
+  pyrodigal: "3.7.1"
+  pyhmmer: "0.12.3"
+  numpy: "2.5.3"
+  python: "3.13"
+
+solution:
+  steps:
+    - python {task}/solution/run_gecco.py --task {task} --jobs {jobs}
+    - python {task}/solution/make_truth.py --task {task} --out {out}
+
+runtime:
+  vcpus: 4
+  ram_gb: 8
+  wall_clock_hours: 3
+  # Measured: GECCO about 75 minutes for 120 assemblies on 4 vCPUs, the k-mer
+  # sketches about 3 minutes, everything after that seconds.
+
+network:
+  deny_terms:
+    - 10.1111/1462-2920.13867
+    - 1462-2920.13867
+    - Letzel
+    - "Genomic insights into specialized metabolism"

@@ -9,6 +9,12 @@ It runs every question in a JSONL file through Biomni and **collects the raw
 outputs** — Biomni's answer, its full execution trace, timing, and metadata —
 into a JSONL file so you can score them however you like afterward.
 
+> **Also in this repository:** [`npbench-r/`](npbench-r/) holds **NPBench-R**, a
+> computational reproducibility benchmark for natural products and biosynthetic
+> gene clusters. It is a separate, self-contained project with its own
+> `pyproject.toml`, test suite and task bundles — see
+> [`npbench-r/README.md`](npbench-r/README.md).
+
 ---
 
 ## Table of contents

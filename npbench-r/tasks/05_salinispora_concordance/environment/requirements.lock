@@ -1,0 +1,41 @@
+# Pinned runtime environment for tasks/02_salinispora_bgc.
+#
+# CLAUDE.md: environments are pinned or they are wrong. These are the exact
+# versions truth/ was produced under. GECCO's cluster counts and type
+# assignments are version-dependent, so truth is only valid against these.
+#
+# Regenerate with:
+#   python scripts/lock_task_environment.py tasks/02_salinispora_bgc gecco gecco-tool
+# then regenerate truth/ and re-run `make selfgrade`, because a version bump
+# invalidates the old truth.
+#
+# Install with:
+#   pip install --no-deps -r environment/requirements.lock
+archspec==0.2.6
+bcbio-gff==0.7.1
+biopython==1.88
+cloudpickle==3.1.2
+colorama==0.4.6
+gecco==0.11.0
+gecco-tool==0.10.0
+joblib==1.6.0
+markdown-it-py==4.2.0
+mdurl==0.1.2
+narwhals==2.28.0
+numpy==2.5.3
+polars==1.44.2
+polars-runtime-32==1.44.2
+psutil==7.2.2
+pygments==2.21.0
+pyhmmer==0.12.3
+pyrodigal==3.7.1
+python-crfsuite==0.9.12
+rich==15.0.0
+rich-argparse==1.8.0
+scikit-learn==1.9.1
+scipy==1.18.1
+six==1.17.0
+sklearn-crfsuite==0.5.0
+tabulate==0.10.0
+threadpoolctl==3.7.0
+tqdm==4.70.1

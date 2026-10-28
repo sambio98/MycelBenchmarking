@@ -1,0 +1,220 @@
+version: 1
+
+# The artifacts share upstream dependencies by design, following task 04. The
+# k-mer parse feeds genome_kmer_profiles and the genomic matrix; the families
+# feed the repertoires, the breadth table and the chemistry matrix; both
+# matrices feed genome_pair_distances, which feeds both summaries.
+
+artifacts:
+  # Depth 2. The k-mer parse. A wrong sketch shows up here and in every
+  # genomic distance downstream.
+  - path: genome_kmer_profiles.csv
+    truth: genome_kmer_profiles.csv
+    format: csv
+    soft: false
+    row_key: [accession]
+    normalisers: [strip, collapse_whitespace, casefold, strip_accession_version]
+    column_aliases:
+      accession: [assembly, assembly_accession, genome, genome_id]
+      n_contigs: [contigs, contig_count, n_sequences]
+      assembly_bp: [genome_bp, assembly_length, genome_length]
+      n_kept_kmers: [kept_kmers, sketch_size, n_kmers]
+    value_aliases: {}
+    metrics:
+      - type: identifier_f1
+      - type: lins_ccc
+        column: n_contigs
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: assembly_bp
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: n_kept_kmers
+        log_transform: false
+        pseudocount: null
+
+  # Depth 2. The same family rule as task 02, so the two tasks agree on what a
+  # family is; 226 families over 2,933 assignable clusters in both.
+  - path: bgc_families.csv
+    truth: bgc_families.csv
+    format: csv
+    soft: false
+    row_key: [cluster_id]
+    normalisers: [strip, collapse_whitespace, casefold, strip_accession_version]
+    column_aliases:
+      cluster_id: [bgc_id, id, cluster]
+      accession: [assembly, assembly_accession, genome, genome_id]
+      family_id: [gcf, gcf_id, family]
+      family_size: [size, n_members]
+    value_aliases: {}
+    metrics:
+      - type: identifier_f1
+      - type: macro_f1
+        column: accession
+      - type: macro_f1
+        column: family_id
+      - type: lins_ccc
+        column: family_size
+        log_transform: false
+        pseudocount: null
+
+  # Depth 3. n_unique_families needs the family table pivoted across all 120
+  # genomes, not just the one being reported.
+  - path: genome_repertoires.csv
+    truth: genome_repertoires.csv
+    format: csv
+    soft: false
+    row_key: [accession]
+    normalisers: [strip, collapse_whitespace, casefold, strip_accession_version]
+    column_aliases:
+      accession: [assembly, assembly_accession, genome, genome_id]
+      n_clusters: [clusters, cluster_count]
+      n_families: [families, family_count, repertoire_size]
+      n_unique_families: [unique_families, n_private_families]
+    value_aliases: {}
+    metrics:
+      - type: identifier_f1
+      - type: lins_ccc
+        column: n_clusters
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: n_families
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: n_unique_families
+        log_transform: false
+        pseudocount: null
+
+  # Depth 3. The taxonomy join: which families are confined to one species.
+  - path: family_taxonomic_breadth.csv
+    truth: family_taxonomic_breadth.csv
+    format: csv
+    soft: false
+    row_key: [family_id]
+    normalisers: [strip, collapse_whitespace, casefold, strip_accession_version]
+    column_aliases:
+      family_id: [gcf, gcf_id, family]
+      n_clusters: [clusters, cluster_count, size]
+      n_genomes: [genomes, genome_count]
+      n_species: [species, species_count]
+      breadth: [taxonomic_breadth, span]
+      representative_cluster: [representative, example_cluster, smallest_cluster]
+    value_aliases:
+      breadth:
+        single: single_species
+        multi: multi_species
+        species_specific: single_species
+    metrics:
+      - type: identifier_f1
+      - type: macro_f1
+        column: breadth
+      - type: macro_f1
+        column: representative_cluster
+      - type: lins_ccc
+        column: n_clusters
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: n_genomes
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: n_species
+        log_transform: false
+        pseudocount: null
+
+  # Depth 4. 7,140 rows sitting on both matrices at once. This is the artifact
+  # that any upstream mistake reaches.
+  - path: genome_pair_distances.csv
+    truth: genome_pair_distances.csv
+    format: csv
+    soft: false
+    row_key: [accession_a, accession_b]
+    normalisers: [strip, collapse_whitespace, casefold, strip_accession_version]
+    column_aliases:
+      accession_a: [genome_a, assembly_a, a]
+      accession_b: [genome_b, assembly_b, b]
+      genomic_distance: [kmer_distance, genome_distance, ani_distance]
+      chemistry_distance: [bgc_distance, repertoire_distance, family_distance]
+      same_species: [is_same_species, conspecific]
+    value_aliases:
+      same_species: {"True": "true", "False": "false", "1": "true", "0": "false"}
+    metrics:
+      - type: identifier_f1
+      - type: macro_f1
+        column: same_species
+      - type: lins_ccc
+        column: genomic_distance
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: chemistry_distance
+        log_transform: false
+        pseudocount: null
+
+  # Depth 5. Sits on the pair matrix and the species mapping.
+  - path: species_concordance.csv
+    truth: species_concordance.csv
+    format: csv
+    soft: false
+    row_key: [species]
+    normalisers: [strip, collapse_whitespace, casefold]
+    column_aliases:
+      species: [organism, taxon]
+      n_genomes: [genomes, genome_count]
+      n_pairs: [pairs, pair_count]
+      mean_genomic_distance: [mean_kmer_distance, avg_genomic_distance]
+      mean_chemistry_distance: [mean_bgc_distance, avg_chemistry_distance]
+    value_aliases: {}
+    metrics:
+      - type: identifier_f1
+      - type: lins_ccc
+        column: n_genomes
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: n_pairs
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: mean_genomic_distance
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: mean_chemistry_distance
+        log_transform: false
+        pseudocount: null
+
+  # Depth 5. The concordance trend itself: chemistry distance across deciles of
+  # genomic distance. n_pairs is not a column here because it is 714 by
+  # construction in every bin, and a constant column measures nothing.
+  - path: distance_concordance_bins.csv
+    truth: distance_concordance_bins.csv
+    format: csv
+    soft: false
+    row_key: [bin]
+    normalisers: [strip, collapse_whitespace, casefold]
+    column_aliases:
+      bin: [decile, bin_index]
+      mean_genomic_distance: [mean_kmer_distance, avg_genomic_distance]
+      mean_chemistry_distance: [mean_bgc_distance, avg_chemistry_distance]
+      n_same_species_pairs: [same_species_pairs, n_conspecific]
+    value_aliases: {}
+    metrics:
+      - type: identifier_f1
+      - type: lins_ccc
+        column: mean_genomic_distance
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: mean_chemistry_distance
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: n_same_species_pairs
+        log_transform: false
+        pseudocount: null
