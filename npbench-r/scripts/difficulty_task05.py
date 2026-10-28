@@ -86,19 +86,41 @@ def sketch(ref, archive: Path, mistakes: set[str]) -> np.ndarray:
     return np.unique(joined) if dedupe else np.sort(joined)
 
 
-def sketches_for(ref, task_dir: Path, accessions: list[str], mistakes: set[str]):
+def sketches_for(ref, task_dir: Path, accessions: list[str], mistakes: set[str],
+                 cache_dir: Path | None = None):
+    """Sketches for this variant's sketch configuration, cached in memory and on disk.
+
+    Sketching 120 assemblies takes about three minutes, and the 13 variants use
+    only four distinct configurations, so the in-memory cache already collapses
+    it. The on-disk cache matters because the sweep is long enough to be
+    interrupted: without it, a restart pays for every configuration again.
+    """
     key = (
         "no_canonical_kmers" in mistakes,
         "modulus_1024" in mistakes,
         "kmer_multiset" in mistakes,
     )
-    if key not in _SKETCH_CACHE:
-        print(f"    (sketching for config {key})", flush=True)
-        _SKETCH_CACHE[key] = {
-            a: sketch(ref, task_dir / "data" / "genomes" / f"{a}.fna.gz", mistakes)
-            for a in accessions
-        }
-    return _SKETCH_CACHE[key]
+    if key in _SKETCH_CACHE:
+        return _SKETCH_CACHE[key]
+
+    name = "sketches_" + "".join("1" if k else "0" for k in key) + ".npz"
+    on_disk = (cache_dir / name) if cache_dir else None
+    if on_disk is not None and on_disk.is_file():
+        print(f"    (reusing cached sketches for config {key})", flush=True)
+        with np.load(on_disk) as stored:
+            _SKETCH_CACHE[key] = {a: stored[a] for a in accessions}
+        return _SKETCH_CACHE[key]
+
+    print(f"    (sketching for config {key})", flush=True)
+    built = {
+        a: sketch(ref, task_dir / "data" / "genomes" / f"{a}.fna.gz", mistakes)
+        for a in accessions
+    }
+    if on_disk is not None:
+        on_disk.parent.mkdir(parents=True, exist_ok=True)
+        np.savez(on_disk, **built)
+    _SKETCH_CACHE[key] = built
+    return built
 
 
 def jaccard(a: np.ndarray, b: np.ndarray) -> float:
@@ -108,7 +130,8 @@ def jaccard(a: np.ndarray, b: np.ndarray) -> float:
     return 1.0 if union == 0 else 1.0 - shared / union
 
 
-def build(task_dir: Path, work: Path, out: Path, mistakes: set[str]) -> None:
+def build(task_dir: Path, work: Path, out: Path, mistakes: set[str],
+          cache_dir: Path | None = None) -> None:
     ref = load_solution(task_dir)
     with (task_dir / "strains.tsv").open() as handle:
         strains = list(csv.DictReader(handle, delimiter="\t"))
@@ -125,7 +148,7 @@ def build(task_dir: Path, work: Path, out: Path, mistakes: set[str]) -> None:
             with table.open() as handle:
                 _CLUSTERS[accession] = list(csv.DictReader(handle, delimiter="\t"))
 
-    sk = sketches_for(ref, task_dir, accessions, mistakes)
+    sk = sketches_for(ref, task_dir, accessions, mistakes, cache_dir)
     profiles = []
     for accession in accessions:
         contigs, total = ref.contig_stats(
@@ -330,7 +353,7 @@ def main() -> int:
     passes = Counter()
     for label, mistakes in VARIANTS.items():
         out = args.scratch / label.replace(" ", "_").replace(":", "").replace(",", "")
-        build(args.task, work, out, mistakes)
+        build(args.task, work, out, mistakes, args.scratch / "_sketch_cache")
         result = score_task(config, args.truth, out)
         row = f"{label:40}{result.task_score:6.2f}  "
         for artifact in result.artifacts:
