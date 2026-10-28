@@ -128,11 +128,15 @@ One row per assignable cluster.
 ### `genome_repertoires.csv`
 One row per assembly, including any with no clusters.
 
-`accession`, `n_clusters`, `n_families`, `n_unique_families`
+`accession`, `n_clusters`, `n_families`, `n_unique_families`,
+`largest_family_id`
 
 `n_clusters` counts every detected cluster, assignable or not.
 `n_unique_families` counts the families in that genome's repertoire that occur
-in no other genome.
+in no other genome. `largest_family_id` is the `family_id` of the most populous
+family in that genome's repertoire, counting members across all genomes, with
+ties going to the lexicographically smallest `family_id`; it is the empty
+string for a genome with an empty repertoire.
 
 ### `family_taxonomic_breadth.csv`
 One row per family.

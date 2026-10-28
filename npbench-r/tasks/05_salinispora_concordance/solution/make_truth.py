@@ -230,12 +230,22 @@ def main() -> int:
     for accession, found in repertoire.items():
         for family in found:
             genomes_of_family[family].add(accession)
+    family_members = Counter(families.values())
+
+    def largest_family(found: set[str]) -> str:
+        """The genome's most populous family, ties to the smallest family_id."""
+        if not found:
+            return ""
+        return min(found, key=lambda f: (-family_members[f], f))
+
     write_csv(args.out / "genome_repertoires.csv",
-              ["accession", "n_clusters", "n_families", "n_unique_families"],
+              ["accession", "n_clusters", "n_families", "n_unique_families",
+               "largest_family_id"],
               [{"accession": a, "n_clusters": clusters_per_genome.get(a, 0),
                 "n_families": len(repertoire[a]),
                 "n_unique_families": sum(
-                    1 for f in repertoire[a] if len(genomes_of_family[f]) == 1)}
+                    1 for f in repertoire[a] if len(genomes_of_family[f]) == 1),
+                "largest_family_id": largest_family(repertoire[a])}
                for a in accessions])
 
     clusters_of_family: dict[str, list[str]] = defaultdict(list)

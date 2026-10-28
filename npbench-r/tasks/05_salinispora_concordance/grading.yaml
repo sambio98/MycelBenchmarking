@@ -73,9 +73,12 @@ artifacts:
       n_clusters: [clusters, cluster_count]
       n_families: [families, family_count, repertoire_size]
       n_unique_families: [unique_families, n_private_families]
+      largest_family_id: [largest_family, dominant_family, biggest_family]
     value_aliases: {}
     metrics:
       - type: identifier_f1
+      - type: macro_f1
+        column: largest_family_id
       - type: lins_ccc
         column: n_clusters
         log_transform: false

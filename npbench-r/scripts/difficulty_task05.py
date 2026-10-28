@@ -206,11 +206,14 @@ def build(task_dir: Path, work: Path, out: Path, mistakes: set[str]) -> None:
     for accession, found in repertoire.items():
         for family in found:
             genomes_of[family].add(accession)
+    members = Counter(families.values())
     w(out / "genome_repertoires.csv",
-      ["accession", "n_clusters", "n_families", "n_unique_families"],
+      ["accession", "n_clusters", "n_families", "n_unique_families", "largest_family_id"],
       [{"accession": a, "n_clusters": clusters_per_genome.get(a, 0),
         "n_families": len(repertoire[a]),
-        "n_unique_families": sum(1 for f in repertoire[a] if len(genomes_of[f]) == 1)}
+        "n_unique_families": sum(1 for f in repertoire[a] if len(genomes_of[f]) == 1),
+        "largest_family_id": min(repertoire[a], key=lambda f: (-members[f], f))
+        if repertoire[a] else ""}
        for a in accessions])
 
     clusters_of: dict[str, list[str]] = defaultdict(list)
