@@ -1,0 +1,66 @@
+task_id: 06_streptomyces_ripp
+title: Lasso peptide and RiPP locus mining across 213 Streptomyces reference genomes
+
+source:
+  citation: >-
+    Tietz JI, Schwalen CJ, Patel PS, Maxson T, Blair PM, Tai H-C, Zakai UI,
+    Mitchell DA. A new genome-mining tool redefines the lasso peptide
+    biosynthetic landscape. Nature Chemical Biology 13:470-478 (2017).
+  doi: 10.1038/nchembio.2319
+
+truth_provenance: >-
+  Tool-generated. Every artifact in truth/ is produced by
+  solution/make_truth.py over the genomes in data.manifest.json, using the
+  pinned pyrodigal, pyhmmer and Pfam build. RODEO itself is not installable
+  offline, so the pipeline is rebuilt from its parts rather than run: gene
+  calling, an HMM panel, a cyclase-anchored neighbourhood rule, and a
+  similarity network over precursors. The paper's 1,419 lasso BGCs are NOT the
+  truth here -- that set came from a different genome collection, a different
+  tool and a curation step, and is not reproducible from any input we can
+  stage. The task measures execution of the prescribed pipeline.
+
+determinism: >-
+  Verified. Two independent runs produce byte-identical output for all seven
+  artifacts. pyrodigal gene calling, pyhmmer search and Biopython local
+  alignment scores are all deterministic. The similarity network uses alignment
+  SCORES only and never the traceback, because a score is stable across
+  Biopython versions in a way the chosen alignment path is not.
+
+categories:
+  - ripp_mining
+  - sequence_similarity_network
+
+# PROJECT.md section 8. The gene call and HMM hits are depth 2; the loci depth
+# 3; the precursors depth 4; the families and per-genome counts depth 5.
+depth: 5
+
+# Artifacts share upstream dependencies, following tasks 04 and 05: the gene
+# call feeds the hits, which feed the loci and the domain prevalence; the loci
+# feed the precursors, which feed the families and the per-genome counts.
+tool_versions:
+  pyrodigal: "3.7.1"
+  pyhmmer: "0.12.3"
+  biopython: "1.88"
+  gecco: "0.11.0"       # ships the Pfam 35.0 subset the HMM panel comes from
+  pfam: "35.0"
+  python: "3.13"
+
+solution:
+  steps:
+    - python {task}/solution/make_truth.py --task {task} --out {out}
+
+runtime:
+  vcpus: 4
+  ram_gb: 8
+  wall_clock_hours: 2
+  # Measured: about 7 s per 8.7 Mb genome for gene calling plus the HMM scan,
+  # so roughly 25 minutes for 213, and seconds for the network.
+
+network:
+  deny_terms:
+    - 10.1038/nchembio.2319
+    - nchembio.2319
+    - "A new genome-mining tool redefines the lasso peptide"
+    - RODEO
+  # RODEO is denied as a term: its web tool would hand over most of
+  # ripp_loci.csv for any accession, and the task is to run the analysis.

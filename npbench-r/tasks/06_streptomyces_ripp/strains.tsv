@@ -1,0 +1,214 @@
+accession	organism	species	strain	file
+GCF_000009765.2	Streptomyces avermitilis MA-4680 = NBRC 14893	Streptomyces avermitilis	MA-4680	data/genomes/GCF_000009765.2.fna.gz
+GCF_000220705.2	Streptomyces xinghaiensis S187	Streptomyces xinghaiensis	S187	data/genomes/GCF_000220705.2.fna.gz
+GCF_000261345.2	Streptomyces globisporus C-1027	Streptomyces globisporus	C-1027	data/genomes/GCF_000261345.2.fna.gz
+GCF_000331185.2	Streptomyces rimosus subsp. rimosus ATCC 10970	Streptomyces rimosus	ATCC 10970	data/genomes/GCF_000331185.2.fna.gz
+GCF_000802245.2	Streptomyces pluripotens	Streptomyces pluripotens	MUSC 135	data/genomes/GCF_000802245.2.fna.gz
+GCF_000830005.1	Streptomyces vietnamensis	Streptomyces vietnamensis	GIMV4.0001	data/genomes/GCF_000830005.1.fna.gz
+GCF_000993785.3	Streptomyces xiamenensis	Streptomyces xiamenensis	MCCC 1A01550	data/genomes/GCF_000993785.3.fna.gz
+GCF_001013905.1	Streptomyces leeuwenhoekii	Streptomyces leeuwenhoekii	type strain (C34 = DSM 42122 = NRRL B-24963)	data/genomes/GCF_001013905.1.fna.gz
+GCF_001267885.1	Streptomyces ambofaciens ATCC 23877	Streptomyces ambofaciens	ATCC 23877	data/genomes/GCF_001267885.1.fna.gz
+GCF_001542625.1	Streptomyces griseochromogenes	Streptomyces griseochromogenes	ATCC 14511	data/genomes/GCF_001542625.1.fna.gz
+GCF_001611795.1	Streptomyces qaidamensis	Streptomyces qaidamensis	S10	data/genomes/GCF_001611795.1.fna.gz
+GCF_001660045.1	Streptomyces parvulus	Streptomyces parvulus	2297	data/genomes/GCF_001660045.1.fna.gz
+GCF_001685355.1	Streptomyces lincolnensis	Streptomyces lincolnensis	NRRL 2936	data/genomes/GCF_001685355.1.fna.gz
+GCF_001735805.1	Streptomyces fodineus	Streptomyces fodineus	TW1S1	data/genomes/GCF_001735805.1.fna.gz
+GCF_001984445.1	Streptomyces lydicus	Streptomyces lydicus	GS93	data/genomes/GCF_001984445.1.fna.gz
+GCF_002082195.1	Streptomyces gilvosporeus	Streptomyces gilvosporeus	F607	data/genomes/GCF_002082195.1.fna.gz
+GCF_002803845.1	Streptomyces lavendulae subsp. lavendulae	Streptomyces lavendulae	CCM 3239	data/genomes/GCF_002803845.1.fna.gz
+GCF_002946835.1	Streptomyces dengpaensis	Streptomyces dengpaensis	XZHG99	data/genomes/GCF_002946835.1.fna.gz
+GCF_003054555.1	Streptomyces lunaelactis	Streptomyces lunaelactis	MM109	data/genomes/GCF_003054555.1.fna.gz
+GCF_003074055.1	Streptomyces nigra	Streptomyces nigra	452	data/genomes/GCF_003074055.1.fna.gz
+GCF_003097515.1	Streptomyces tirandamycinicus	Streptomyces tirandamycinicus	HNM0039	data/genomes/GCF_003097515.1.fna.gz
+GCF_003122365.1	Streptomyces spongiicola	Streptomyces spongiicola	HNM0071	data/genomes/GCF_003122365.1.fna.gz
+GCF_003261055.1	Streptomyces cadmiisoli	Streptomyces cadmiisoli	ZFG47	data/genomes/GCF_003261055.1.fna.gz
+GCF_003330865.1	Streptomyces atratus	Streptomyces atratus	SCSIO_ZH16	data/genomes/GCF_003330865.1.fna.gz
+GCF_003344965.1	Streptomyces paludis	Streptomyces paludis	GSSD-12	data/genomes/GCF_003344965.1.fna.gz
+GCF_003428925.1	Streptomyces koyangensis	Streptomyces koyangensis	VK-A60T	data/genomes/GCF_003428925.1.fna.gz
+GCF_003595235.1	Streptomyces griseorubiginosus	Streptomyces griseorubiginosus	3E-1	data/genomes/GCF_003595235.1.fna.gz
+GCF_003665435.1	Streptomyces fungicidicus	Streptomyces fungicidicus	TXX3120	data/genomes/GCF_003665435.1.fna.gz
+GCF_003675325.1	Streptomyces dangxiongensis	Streptomyces dangxiongensis	Z022	data/genomes/GCF_003675325.1.fna.gz
+GCF_003932715.1	Streptomyces tsukubensis	Streptomyces tsukubensis	NRRL 18488	data/genomes/GCF_003932715.1.fna.gz
+GCF_003955715.1	Streptomyces aquilus	Streptomyces aquilus	GGCR-6	data/genomes/GCF_003955715.1.fna.gz
+GCF_003963535.1	Streptomyces cyaneochromogenes	Streptomyces cyaneochromogenes	MK-45	data/genomes/GCF_003963535.1.fna.gz
+GCF_004328625.1	Streptomyces seoulensis	Streptomyces seoulensis	KCTC 9819	data/genomes/GCF_004328625.1.fna.gz
+GCF_004803895.1	Streptomyces hawaiiensis	Streptomyces hawaiiensis	ATCC 12236	data/genomes/GCF_004803895.1.fna.gz
+GCF_005517195.1	Streptomyces vilmorinianum	Streptomyces vilmorinianum	CGMCC.23383	data/genomes/GCF_005517195.1.fna.gz
+GCF_005519465.1	Streptomyces clavuligerus	Streptomyces clavuligerus	ATCC 27064	data/genomes/GCF_005519465.1.fna.gz
+GCF_006716135.1	Streptomyces calvus	Streptomyces calvus	DSM 41452	data/genomes/GCF_006716135.1.fna.gz
+GCF_007856155.1	Streptomyces qinzhouensis	Streptomyces qinzhouensis	SSL-25	data/genomes/GCF_007856155.1.fna.gz
+GCF_008639165.1	Streptomyces venezuelae ATCC 10712	Streptomyces venezuelae	ATCC 10712	data/genomes/GCF_008639165.1.fna.gz
+GCF_008704395.1	Streptomyces alboniger	Streptomyces alboniger	ATCC 12461	data/genomes/GCF_008704395.1.fna.gz
+GCF_008704425.1	Streptomyces fradiae ATCC 10745 = DSM 40063	Streptomyces fradiae	ATCC 10745	data/genomes/GCF_008704425.1.fna.gz
+GCF_008704445.1	Streptomyces prasinus	Streptomyces prasinus	ATCC 13879	data/genomes/GCF_008704445.1.fna.gz
+GCF_008704495.1	Streptomyces kanamyceticus	Streptomyces kanamyceticus	ATCC 12853	data/genomes/GCF_008704495.1.fna.gz
+GCF_008704515.1	Streptomyces viridosporus T7A	Streptomyces viridosporus	ATCC 39115	data/genomes/GCF_008704515.1.fna.gz
+GCF_008704535.1	Streptomyces subrutilus	Streptomyces subrutilus	ATCC 27467	data/genomes/GCF_008704535.1.fna.gz
+GCF_008704555.1	Streptomyces nitrosporeus	Streptomyces nitrosporeus	ATCC 12769	data/genomes/GCF_008704555.1.fna.gz
+GCF_008704715.1	Streptomyces chartreusis	Streptomyces chartreusis	ATCC 14922	data/genomes/GCF_008704715.1.fna.gz
+GCF_008704795.1	Streptomyces spectabilis	Streptomyces spectabilis	ATCC 27465	data/genomes/GCF_008704795.1.fna.gz
+GCF_008704855.1	Streptomyces platensis	Streptomyces platensis	ATCC 23948	data/genomes/GCF_008704855.1.fna.gz
+GCF_008704935.1	Streptomyces vinaceus	Streptomyces vinaceus	ATCC 27476	data/genomes/GCF_008704935.1.fna.gz
+GCF_008704995.1	Streptomyces nodosus	Streptomyces nodosus	ATCC 14899	data/genomes/GCF_008704995.1.fna.gz
+GCF_008705135.1	Streptomyces coeruleorubidus	Streptomyces coeruleorubidus	ATCC 13740	data/genomes/GCF_008705135.1.fna.gz
+GCF_009184865.1	Streptomyces phaeolivaceus	Streptomyces phaeolivaceus	GY16	data/genomes/GCF_009184865.1.fna.gz
+GCF_009299385.1	Streptomyces cinereoruber	Streptomyces cinereoruber	ATCC 19740	data/genomes/GCF_009299385.1.fna.gz
+GCF_009498275.1	Streptomyces fagopyri	Streptomyces fagopyri	QMT-28	data/genomes/GCF_009498275.1.fna.gz
+GCF_009739905.1	Streptomyces ficellus	Streptomyces ficellus	NRRL 8067	data/genomes/GCF_009739905.1.fna.gz
+GCF_009796285.1	Streptomyces broussonetiae	Streptomyces broussonetiae	T44	data/genomes/GCF_009796285.1.fna.gz
+GCF_011694815.1	Streptomyces liangshanensis	Streptomyces liangshanensis	QMT-12	data/genomes/GCF_011694815.1.fna.gz
+GCF_013046785.1	Streptomyces argyrophylli	Streptomyces argyrophylli	Jing01	data/genomes/GCF_013046785.1.fna.gz
+GCF_013364095.1	Streptomyces harbinensis	Streptomyces harbinensis	NA02264	data/genomes/GCF_013364095.1.fna.gz
+GCF_013364315.1	Streptomyces microflavus	Streptomyces microflavus	NA06532	data/genomes/GCF_013364315.1.fna.gz
+GCF_013394065.1	Streptomyces rectiverticillatus	Streptomyces rectiverticillatus	B15-08	data/genomes/GCF_013394065.1.fna.gz
+GCF_014070435.1	Streptomyces pristinaespiralis	Streptomyces pristinaespiralis	PR11	data/genomes/GCF_014070435.1.fna.gz
+GCF_014216335.1	Streptomyces rutgersensis	Streptomyces rutgersensis	NBH77	data/genomes/GCF_014216335.1.fna.gz
+GCF_014295035.1	Streptomyces buecherae	Streptomyces buecherae	AC541	data/genomes/GCF_014295035.1.fna.gz
+GCF_014489615.1	Streptomyces genisteinicus	Streptomyces genisteinicus	CRPJ-33	data/genomes/GCF_014489615.1.fna.gz
+GCF_014489635.1	Streptomyces roseirectus	Streptomyces roseirectus	CRXT-G-22	data/genomes/GCF_014489635.1.fna.gz
+GCF_014621695.1	Streptomyces xanthii	Streptomyces xanthii	CRXT-Y-14	data/genomes/GCF_014621695.1.fna.gz
+GCF_014673495.1	Streptomyces griseofuscus	Streptomyces griseofuscus	DSM 40191	data/genomes/GCF_014673495.1.fna.gz
+GCF_014701095.1	Streptomyces tuirus	Streptomyces tuirus	JCM 4255	data/genomes/GCF_014701095.1.fna.gz
+GCF_014701115.1	Streptomyces aurantiacus	Streptomyces aurantiacus	JCM 4677	data/genomes/GCF_014701115.1.fna.gz
+GCF_015160855.1	Streptomyces ferrugineus	Streptomyces ferrugineus	CCTCC AA2014009	data/genomes/GCF_015160855.1.fna.gz
+GCF_015160875.1	Streptomyces chromofuscus	Streptomyces chromofuscus	DSM 40273	data/genomes/GCF_015160875.1.fna.gz
+GCF_015244315.1	Streptomyces olivaceus	Streptomyces olivaceus	SCSIO T05	data/genomes/GCF_015244315.1.fna.gz
+GCF_015710995.1	Streptomyces gardneri	Streptomyces gardneri	ATCC 15439	data/genomes/GCF_015710995.1.fna.gz
+GCF_015910445.1	Streptomyces bathyalis	Streptomyces bathyalis	ASO4wet	data/genomes/GCF_015910445.1.fna.gz
+GCF_016598615.1	Streptomyces liliifuscus	Streptomyces liliifuscus	ZYC-3	data/genomes/GCF_016598615.1.fna.gz
+GCF_016906185.1	Streptomyces californicus	Streptomyces californicus	FDAARGOS_1209	data/genomes/GCF_016906185.1.fna.gz
+GCF_016917755.1	Streptomyces noursei	Streptomyces noursei	A-2-1	data/genomes/GCF_016917755.1.fna.gz
+GCF_017526105.1	Streptomyces cyanogenus	Streptomyces cyanogenus	S136	data/genomes/GCF_017526105.1.fna.gz
+GCF_017639205.1	Streptomyces nojiriensis	Streptomyces nojiriensis	JCM 3382	data/genomes/GCF_017639205.1.fna.gz
+GCF_018069625.1	Streptomyces yatensis	Streptomyces yatensis	DSM 41771	data/genomes/GCF_018069625.1.fna.gz
+GCF_018141485.1	Streptomyces alfalfae	Streptomyces alfalfae	XN-04	data/genomes/GCF_018141485.1.fna.gz
+GCF_018604545.1	Streptomyces koelreuteriae	Streptomyces koelreuteriae	MG62	data/genomes/GCF_018604545.1.fna.gz
+GCF_019599145.1	Streptomyces akebiae	Streptomyces akebiae	MG28	data/genomes/GCF_019599145.1.fna.gz
+GCF_019933235.1	Streptomyces angustmyceticus	Streptomyces angustmyceticus	JCM 4053	data/genomes/GCF_019933235.1.fna.gz
+GCF_020099395.1	Streptomyces mobaraensis	Streptomyces mobaraensis	DSM 40587	data/genomes/GCF_020099395.1.fna.gz
+GCF_020410765.1	Streptomyces marincola	Streptomyces marincola	SCSIO 64649	data/genomes/GCF_020410765.1.fna.gz
+GCF_020616555.1	Streptomyces longhuiensis	Streptomyces longhuiensis	BH-MK-02	data/genomes/GCF_020616555.1.fna.gz
+GCF_020740535.1	Streptomyces profundus	Streptomyces profundus	MA3_2.13	data/genomes/GCF_020740535.1.fna.gz
+GCF_021028635.1	Streptomyces huasconensis	Streptomyces huasconensis	D23	data/genomes/GCF_021028635.1.fna.gz
+GCF_021216675.1	Streptomyces gobiensis	Streptomyces gobiensis	1_25	data/genomes/GCF_021216675.1.fna.gz
+GCF_021441825.1	Streptomyces spinosirectus	Streptomyces spinosirectus	CRSS-Y-16	data/genomes/GCF_021441825.1.fna.gz
+GCF_022221585.1	Streptomyces inhibens	Streptomyces inhibens	NRRL30439	data/genomes/GCF_022221585.1.fna.gz
+GCF_022385335.1	Streptomyces deccanensis	Streptomyces deccanensis	KCTC 19241	data/genomes/GCF_022385335.1.fna.gz
+GCF_022647665.1	Streptomyces formicae	Streptomyces formicae	1H-GS9	data/genomes/GCF_022647665.1.fna.gz
+GCF_022699385.1	Streptomyces tubbatahanensis	Streptomyces tubbatahanensis	DSD3025	data/genomes/GCF_022699385.1.fna.gz
+GCF_023277745.1	Streptomyces halobius	Streptomyces halobius	3_2	data/genomes/GCF_023277745.1.fna.gz
+GCF_023498005.1	Streptomyces durmitorensis	Streptomyces durmitorensis	MS405	data/genomes/GCF_023498005.1.fna.gz
+GCF_023614235.1	Streptomyces kordofanensis	Streptomyces kordofanensis	MRC013	data/genomes/GCF_023614235.1.fna.gz
+GCF_023923245.1	Streptomyces phaeoluteigriseus	Streptomyces phaeoluteigriseus	Qhu-M197	data/genomes/GCF_023923245.1.fna.gz
+GCF_024298965.1	Streptomyces rapamycinicus NRRL 5491	Streptomyces rapamycinicus	NRRL 5491	data/genomes/GCF_024298965.1.fna.gz
+GCF_024600715.1	Streptomyces changanensis	Streptomyces changanensis	HL-66	data/genomes/GCF_024600715.1.fna.gz
+GCF_024666385.1	Streptomyces yangpuensis	Streptomyces yangpuensis	CM253	data/genomes/GCF_024666385.1.fna.gz
+GCF_024752535.1	Streptomyces albus	Streptomyces albus	DSM 40763	data/genomes/GCF_024752535.1.fna.gz
+GCF_025133285.1	Streptomyces carpaticus	Streptomyces carpaticus	SCPM-O-B-9993	data/genomes/GCF_025133285.1.fna.gz
+GCF_025231465.1	Streptomyces murinus	Streptomyces murinus	CR-43	data/genomes/GCF_025231465.1.fna.gz
+GCF_025642135.1	Streptomyces cynarae	Streptomyces cynarae	HUAS 13-4	data/genomes/GCF_025642135.1.fna.gz
+GCF_025642155.1	Streptomyces qianjiangensis	Streptomyces qianjiangensis	HUAS TT20	data/genomes/GCF_025642155.1.fna.gz
+GCF_025642175.1	Streptomyces albidicamelliae	Streptomyces albidicamelliae	HUAS 14-6	data/genomes/GCF_025642175.1.fna.gz
+GCF_025665295.1	Streptomyces explomaris	Streptomyces explomaris	Je 1-4	data/genomes/GCF_025665295.1.fna.gz
+GCF_025908395.1	Streptomyces milbemycinicus	Streptomyces milbemycinicus	SIPI-054	data/genomes/GCF_025908395.1.fna.gz
+GCF_026153355.1	Streptomyces endophytica	Streptomyces endophytica	HNM0140	data/genomes/GCF_026153355.1.fna.gz
+GCF_026427415.1	Streptomyces tanashiensis	Streptomyces tanashiensis	Kala	data/genomes/GCF_026427415.1.fna.gz
+GCF_027270315.1	Streptomyces cinnabarinus	Streptomyces cinnabarinus	DSM 40467	data/genomes/GCF_027270315.1.fna.gz
+GCF_027497495.1	Streptomyces tubercidicus	Streptomyces tubercidicus	DSM 40261	data/genomes/GCF_027497495.1.fna.gz
+GCF_027625935.1	Streptomyces camelliae	Streptomyces camelliae	HUAS 2-6	data/genomes/GCF_027625935.1.fna.gz
+GCF_027626975.1	Streptomyces nigrescens	Streptomyces nigrescens	DSM 40276	data/genomes/GCF_027626975.1.fna.gz
+GCF_027942015.1	Streptomyces goshikiensis	Streptomyces goshikiensis	CGMCC 4.1796	data/genomes/GCF_027942015.1.fna.gz
+GCF_027947575.1	Streptomyces rubrogriseus	Streptomyces rubrogriseus	NBRC 15455	data/genomes/GCF_027947575.1.fna.gz
+GCF_027947595.1	Streptomyces lienomycini	Streptomyces lienomycini	DSM 41475	data/genomes/GCF_027947595.1.fna.gz
+GCF_028421465.1	Streptomyces xanthophaeus	Streptomyces xanthophaeus	KPP03845	data/genomes/GCF_028421465.1.fna.gz
+GCF_029011865.1	Streptomyces yunnanensis	Streptomyces yunnanensis	P86	data/genomes/GCF_029011865.1.fna.gz
+GCF_029760955.1	Streptomyces cathayae	Streptomyces cathayae	HUAS 5	data/genomes/GCF_029760955.1.fna.gz
+GCF_030294945.1	Streptomyces graminofaciens	Streptomyces graminofaciens	A-8890	data/genomes/GCF_030294945.1.fna.gz
+GCF_030406905.1	Streptomyces chengbuensis	Streptomyces chengbuensis	HUAS CB01	data/genomes/GCF_030406905.1.fna.gz
+GCF_030719215.1	Streptomyces glycanivorans	Streptomyces glycanivorans	Alt3	data/genomes/GCF_030719215.1.fna.gz
+GCF_030719255.1	Streptomyces poriferorum	Streptomyces poriferorum	Alt1	data/genomes/GCF_030719255.1.fna.gz
+GCF_030719275.1	Streptomyces laculatispora	Streptomyces laculatispora	Mut2	data/genomes/GCF_030719275.1.fna.gz
+GCF_030719295.1	Streptomyces castrisilvae	Streptomyces castrisilvae	Mut1	data/genomes/GCF_030719295.1.fna.gz
+GCF_030845235.1	Streptomyces songxianensis	Streptomyces songxianensis	SX92	data/genomes/GCF_030845235.1.fna.gz
+GCF_030863865.1	Streptomyces rochei	Streptomyces rochei	JK1	data/genomes/GCF_030863865.1.fna.gz
+GCF_031348265.1	Streptomyces collinus	Streptomyces collinus	CGMCC 4.1623	data/genomes/GCF_031348265.1.fna.gz
+GCF_031583065.1	Streptomyces yaanensis	Streptomyces yaanensis	CGMCC 4.7035	data/genomes/GCF_031583065.1.fna.gz
+GCF_031679605.1	Streptomyces luomodiensis	Streptomyces luomodiensis	SCA4-21	data/genomes/GCF_031679605.1.fna.gz
+GCF_033109485.1	Streptomyces cyaneofuscatus	Streptomyces cyaneofuscatus	89-2-2	data/genomes/GCF_033109485.1.fna.gz
+GCF_033343995.1	Streptomyces solicathayae	Streptomyces solicathayae	HUAS YS2	data/genomes/GCF_033343995.1.fna.gz
+GCF_033406955.1	Streptomyces violaceoruber	Streptomyces violaceoruber	CGMCC 4.1801	data/genomes/GCF_033406955.1.fna.gz
+GCF_034297415.1	Streptomyces griseoincarnatus	Streptomyces griseoincarnatus	HNS054	data/genomes/GCF_034297415.1.fna.gz
+GCF_035917595.1	Streptomyces scopuliridis	Streptomyces scopuliridis	NBC 01786	data/genomes/GCF_035917595.1.fna.gz
+GCF_035917655.1	Streptomyces anthocyanicus	Streptomyces anthocyanicus	NBC 01777	data/genomes/GCF_035917655.1.fna.gz
+GCF_035918035.1	Streptomyces hirsutus	Streptomyces hirsutus	NBC 01753	data/genomes/GCF_035918035.1.fna.gz
+GCF_035957715.1	Streptomyces phaeochromogenes	Streptomyces phaeochromogenes	NBC_01328	data/genomes/GCF_035957715.1.fna.gz
+GCF_036014075.1	Streptomyces violaceus	Streptomyces violaceus	NBC_00450	data/genomes/GCF_036014075.1.fna.gz
+GCF_036035005.1	Streptomyces zaomyceticus	Streptomyces zaomyceticus	NBC_00415	data/genomes/GCF_036035005.1.fna.gz
+GCF_036073155.1	Streptomyces mirabilis	Streptomyces mirabilis	NBC_00379	data/genomes/GCF_036073155.1.fna.gz
+GCF_036170895.1	Streptomyces erythrochromogenes	Streptomyces erythrochromogenes	NBC_00303	data/genomes/GCF_036170895.1.fna.gz
+GCF_036172715.1	Streptomyces bobili	Streptomyces bobili	NBC_00302	data/genomes/GCF_036172715.1.fna.gz
+GCF_036177905.1	Streptomyces canus	Streptomyces canus	NBC_00277	data/genomes/GCF_036177905.1.fna.gz
+GCF_036178885.1	Streptomyces caniferus	Streptomyces caniferus	NBC_00270	data/genomes/GCF_036178885.1.fna.gz
+GCF_036189845.1	Streptomyces griseoaurantiacus	Streptomyces griseoaurantiacus	NBC_00521	data/genomes/GCF_036189845.1.fna.gz
+GCF_036204065.1	Streptomyces tauricus	Streptomyces tauricus	NBC_00189	data/genomes/GCF_036204065.1.fna.gz
+GCF_036227585.1	Streptomyces niveus	Streptomyces niveus	NBC_01447	data/genomes/GCF_036227585.1.fna.gz
+GCF_036250755.1	Streptomyces uncialis	Streptomyces uncialis	NBC_01365	data/genomes/GCF_036250755.1.fna.gz
+GCF_036287475.1	Streptomyces iakyrus	Streptomyces iakyrus	CGMCC 4.1912	data/genomes/GCF_036287475.1.fna.gz
+GCF_036345035.1	Streptomyces pseudovenezuelae	Streptomyces pseudovenezuelae	NBC_00598	data/genomes/GCF_036345035.1.fna.gz
+GCF_036345975.1	Streptomyces clavifer	Streptomyces clavifer	NBC_00558	data/genomes/GCF_036345975.1.fna.gz
+GCF_036346855.1	Streptomyces europaeiscabiei	Streptomyces europaeiscabiei	NBC_00515	data/genomes/GCF_036346855.1.fna.gz
+GCF_036607905.1	Streptomyces sediminicola	Streptomyces sediminicola	SCSIO 75703	data/genomes/GCF_036607905.1.fna.gz
+GCF_036967205.1	Streptomyces citrinus	Streptomyces citrinus	Q6	data/genomes/GCF_036967205.1.fna.gz
+GCF_037126205.1	Streptomyces hygroscopicus subsp. hygroscopicus	Streptomyces hygroscopicus	DSM 41954	data/genomes/GCF_037126205.1.fna.gz
+GCF_037414505.1	Streptomyces netropsis	Streptomyces netropsis	M-141	data/genomes/GCF_037414505.1.fna.gz
+GCF_040529335.1	Streptomyces tabacisoli	Streptomyces tabacisoli	HUAS MG91	data/genomes/GCF_040529335.1.fna.gz
+GCF_040746085.1	Streptomyces phytohabitans	Streptomyces phytohabitans	HBERC20821	data/genomes/GCF_040746085.1.fna.gz
+GCF_040782645.1	Streptomyces secundicynarae	Streptomyces secundicynarae	HUAS ZL42	data/genomes/GCF_040782645.1.fna.gz
+GCF_041080675.1	Streptomyces cyclosori	Streptomyces cyclosori	cg36	data/genomes/GCF_041080675.1.fna.gz
+GCF_041519305.1	Streptomyces luteireticuli	Streptomyces luteireticuli	ASG80	data/genomes/GCF_041519305.1.fna.gz
+GCF_042466515.1	Streptomyces iranensis	Streptomyces iranensis	DSM 41954	data/genomes/GCF_042466515.1.fna.gz
+GCF_044987285.1	Streptomyces thermolineatus	Streptomyces thermolineatus	NAK03196	data/genomes/GCF_044987285.1.fna.gz
+GCF_045039555.1	Streptomyces gougerotii	Streptomyces gougerotii	NBC_01103	data/genomes/GCF_045039555.1.fna.gz
+GCF_045039635.1	Streptomyces albidoflavus	Streptomyces albidoflavus	NBC_01110	data/genomes/GCF_045039635.1.fna.gz
+GCF_045040895.1	Streptomyces purpurascens	Streptomyces purpurascens	NBC_00017	data/genomes/GCF_045040895.1.fna.gz
+GCF_045041415.1	Streptomyces coelicoflavus	Streptomyces coelicoflavus	NBC_00099	data/genomes/GCF_045041415.1.fna.gz
+GCF_045160875.1	Streptomyces achromogenes	Streptomyces achromogenes	NBC_00156	data/genomes/GCF_045160875.1.fna.gz
+GCF_045161815.1	Streptomyces avidinii	Streptomyces avidinii	NBC_00832	data/genomes/GCF_045161815.1.fna.gz
+GCF_045161845.1	Streptomyces antimycoticus	Streptomyces antimycoticus	NBC_00839	data/genomes/GCF_045161845.1.fna.gz
+GCF_045162825.1	Streptomyces prunicolor	Streptomyces prunicolor	NBC_01021	data/genomes/GCF_045162825.1.fna.gz
+GCF_045207185.1	Streptomyces halstedii	Streptomyces halstedii	NBC 00641	data/genomes/GCF_045207185.1.fna.gz
+GCF_045208505.1	Streptomyces decoyicus	Streptomyces decoyicus	NBC_01584	data/genomes/GCF_045208505.1.fna.gz
+GCF_045209695.1	Streptomyces thermoviolaceus	Streptomyces thermoviolaceus	NBC 01629	data/genomes/GCF_045209695.1.fna.gz
+GCF_045276965.1	Streptomyces althioticus	Streptomyces althioticus	NBC 01666	data/genomes/GCF_045276965.1.fna.gz
+GCF_045348655.1	Streptomyces solicamelliae	Streptomyces solicamelliae	HUAS MG47	data/genomes/GCF_045348655.1.fna.gz
+GCF_045519255.1	Streptomyces okerensis	Streptomyces okerensis	DSM 116494	data/genomes/GCF_045519255.1.fna.gz
+GCF_045690365.1	Streptomyces sirii	Streptomyces sirii	BP-8	data/genomes/GCF_045690365.1.fna.gz
+GCF_045822005.1	Streptomyces stoeckheimensis	Streptomyces stoeckheimensis	DSM 116496	data/genomes/GCF_045822005.1.fna.gz
+GCF_046267975.1	Streptomyces flavusporus	Streptomyces flavusporus	HC307	data/genomes/GCF_046267975.1.fna.gz
+GCF_046628145.1	Streptomyces mutabilis	Streptomyces mutabilis	MPB24	data/genomes/GCF_046628145.1.fna.gz
+GCF_047456005.1	Streptoverticillium reticulum	Streptoverticillium reticulum	J-35	data/genomes/GCF_047456005.1.fna.gz
+GCF_048500665.1	Streptomyces tritici	Streptomyces tritici	CGMCC 4.7393	data/genomes/GCF_048500665.1.fna.gz
+GCF_048572725.1	Streptomyces boninensis	Streptomyces boninensis	TBRC7755	data/genomes/GCF_048572725.1.fna.gz
+GCF_049570255.1	Streptomyces manipurensis	Streptomyces manipurensis	JCM 17351	data/genomes/GCF_049570255.1.fna.gz
+GCF_049606955.1	Streptomyces dryopteridis	Streptomyces dryopteridis	BI20	data/genomes/GCF_049606955.1.fna.gz
+GCF_050235455.1	Streptomyces fildesensis	Streptomyces fildesensis	DSM 41987	data/genomes/GCF_050235455.1.fna.gz
+GCF_050871185.1	Streptomyces huangiella	Streptomyces huangiella	HD1123-B1	data/genomes/GCF_050871185.1.fna.gz
+GCF_051122705.1	Streptomyces ipomoeae	Streptomyces ipomoeae	NRRL_B-12321	data/genomes/GCF_051122705.1.fna.gz
+GCF_052828665.1	Streptomyces graminifolii	Streptomyces graminifolii	NBRC 109806	data/genomes/GCF_052828665.1.fna.gz
+GCF_052934925.1	Streptomyces hypolithicus	Streptomyces hypolithicus	DSM 41950	data/genomes/GCF_052934925.1.fna.gz
+GCF_052936015.1	Streptomyces rosealbus	Streptomyces rosealbus	DSM 41833	data/genomes/GCF_052936015.1.fna.gz
+GCF_052983195.1	Streptomyces hebeiensis	Streptomyces hebeiensis	JL9001	data/genomes/GCF_052983195.1.fna.gz
+GCF_053890455.1	Streptomyces yamdrokensis	Streptomyces yamdrokensis	QTS 137	data/genomes/GCF_053890455.1.fna.gz
+GCF_054055515.1	Streptomyces hydrogenans	Streptomyces hydrogenans	EM-F5	data/genomes/GCF_054055515.1.fna.gz
+GCF_054072135.1	Streptomyces kryoterrae	Streptomyces kryoterrae	QTS 52	data/genomes/GCF_054072135.1.fna.gz
+GCF_054072295.1	Streptomyces reniochalinae	Streptomyces reniochalinae	LHW50302	data/genomes/GCF_054072295.1.fna.gz
+GCF_055108415.1	Streptomyces parvus	Streptomyces parvus	BPA49	data/genomes/GCF_055108415.1.fna.gz
+GCF_055232075.1	Streptomyces diastaticus	Streptomyces diastaticus	GN02	data/genomes/GCF_055232075.1.fna.gz
+GCF_055395165.1	Streptomyces bungoensis	Streptomyces bungoensis	E-12	data/genomes/GCF_055395165.1.fna.gz
+GCF_055395945.1	Streptomyces artemisiae	Streptomyces artemisiae	JCM 19150	data/genomes/GCF_055395945.1.fna.gz
+GCF_055409605.1	Streptomyces saintjeani	Streptomyces saintjeani	LBUM3076	data/genomes/GCF_055409605.1.fna.gz
+GCF_055456435.1	Streptomyces acidicola	Streptomyces acidicola	TPS3	data/genomes/GCF_055456435.1.fna.gz
+GCF_055597465.1	Streptomyces yongxingensis	Streptomyces yongxingensis	Sy2-11	data/genomes/GCF_055597465.1.fna.gz
+GCF_056827815.1	Streptomyces flavofungini	Streptomyces flavofungini	HR77	data/genomes/GCF_056827815.1.fna.gz
+GCF_058693965.1	Streptomyces glaucescens	Streptomyces glaucescens	SM82514	data/genomes/GCF_058693965.1.fna.gz
+GCF_984686075.1	Streptomyces speibonae	Streptomyces speibonae		data/genomes/GCF_984686075.1.fna.gz

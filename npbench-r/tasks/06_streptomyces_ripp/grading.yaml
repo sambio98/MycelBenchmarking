@@ -1,0 +1,227 @@
+version: 1
+
+# Artifacts share upstream dependencies on purpose. Case is folded throughout:
+# unlike SMILES, protein sequence and Pfam accessions carry no meaning in case.
+
+artifacts:
+  # Depth 2. The gene call. Every other artifact sits on it.
+  - path: genome_proteins.csv
+    truth: genome_proteins.csv
+    format: csv
+    soft: false
+    row_key: [accession]
+    normalisers: [strip, collapse_whitespace, casefold, strip_accession_version]
+    column_aliases:
+      accession: [assembly, assembly_accession, genome, genome_id]
+      species: [organism, taxon]
+      n_contigs: [contigs, contig_count]
+      assembly_bp: [genome_bp, assembly_length]
+      n_proteins: [proteins, protein_count, n_cds]
+    value_aliases: {}
+    metrics:
+      - type: identifier_f1
+      - type: macro_f1
+        column: species
+      - type: lins_ccc
+        column: n_contigs
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: assembly_bp
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: n_proteins
+        log_transform: false
+        pseudocount: null
+
+  # Depth 2. The HMM panel applied to the called proteins. bitscore is graded
+  # because an agent that loosened the E-value or used a different panel build
+  # produces different scores, not just different rows.
+  - path: hmm_hits.csv
+    truth: hmm_hits.csv
+    format: csv
+    soft: false
+    row_key: [accession, protein_id, pfam]
+    normalisers: [strip, collapse_whitespace, casefold, strip_accession_version]
+    column_aliases:
+      accession: [assembly, genome, genome_id]
+      protein_id: [protein, cds_id, gene_id]
+      pfam: [pfam_accession, accession_pfam, hmm]
+      pfam_name: [hmm_name, family_name]
+      contig: [sequence_id, record_id, seqid]
+      bitscore: [score, bit_score]
+    value_aliases: {}
+    metrics:
+      - type: identifier_f1
+      - type: macro_f1
+        column: pfam_name
+      - type: macro_f1
+        column: contig
+      - type: macro_f1
+        column: strand
+      - type: lins_ccc
+        column: start
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: end
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: bitscore
+        log_transform: false
+        pseudocount: null
+
+  # Depth 3. The neighbourhood rule. Graded with interval overlap F1 rather
+  # than two coordinate CCCs: a locus is an interval on a contig, which is what
+  # that metric exists for (PROJECT.md section 7).
+  - path: ripp_loci.csv
+    truth: ripp_loci.csv
+    format: csv
+    soft: false
+    row_key: [locus_id]
+    normalisers: [strip, collapse_whitespace, casefold, strip_accession_version]
+    column_aliases:
+      locus_id: [locus, id, anchor_protein]
+      accession: [assembly, genome, genome_id]
+      contig: [sequence_id, record_id, seqid]
+      n_genes: [genes, gene_count]
+      n_precursors: [precursors, precursor_count]
+      locus_class: [class, completeness]
+      has_other_ripp_marker: [other_ripp_marker, other_markers]
+    value_aliases:
+      has_other_ripp_marker: {"True": "true", "False": "false", "1": "true", "0": "false"}
+    metrics:
+      - type: identifier_f1
+      - type: macro_f1
+        column: accession
+      - type: macro_f1
+        column: locus_class
+      - type: macro_f1
+        column: has_other_ripp_marker
+      - type: interval_overlap_f1
+        group_column: contig
+        start_column: start
+        end_column: end
+        min_reciprocal_overlap: 0.5
+      - type: lins_ccc
+        column: n_genes
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: n_precursors
+        log_transform: false
+        pseudocount: null
+
+  # Depth 4. The precursor peptides themselves, sequence included: an agent
+  # that got the length bounds or the translation wrong shows up here.
+  - path: precursor_candidates.csv
+    truth: precursor_candidates.csv
+    format: csv
+    soft: false
+    row_key: [precursor_id]
+    normalisers: [strip, collapse_whitespace, casefold, strip_accession_version]
+    column_aliases:
+      precursor_id: [precursor, protein_id, id]
+      locus_id: [locus, anchor_protein]
+      accession: [assembly, genome, genome_id]
+      length_aa: [length, aa_length, n_residues]
+      sequence: [protein_sequence, peptide, aa_sequence]
+    value_aliases: {}
+    metrics:
+      - type: identifier_f1
+      - type: macro_f1
+        column: locus_id
+      - type: macro_f1
+        column: accession
+      - type: macro_f1
+        column: sequence
+      - type: lins_ccc
+        column: length_aa
+        log_transform: false
+        pseudocount: null
+
+  # Depth 5. The sequence similarity network.
+  - path: precursor_families.csv
+    truth: precursor_families.csv
+    format: csv
+    soft: false
+    row_key: [precursor_id]
+    normalisers: [strip, collapse_whitespace, casefold, strip_accession_version]
+    column_aliases:
+      precursor_id: [precursor, protein_id, id]
+      family_id: [family, ssn_family, cluster_id]
+      family_size: [size, n_members]
+    value_aliases: {}
+    metrics:
+      - type: identifier_f1
+      - type: macro_f1
+        column: family_id
+      - type: lins_ccc
+        column: family_size
+        log_transform: false
+        pseudocount: null
+
+  # Depth 5. Sits on the loci, the precursors and the network at once.
+  - path: genome_locus_counts.csv
+    truth: genome_locus_counts.csv
+    format: csv
+    soft: false
+    row_key: [accession]
+    normalisers: [strip, collapse_whitespace, casefold, strip_accession_version]
+    column_aliases:
+      accession: [assembly, genome, genome_id]
+      species: [organism, taxon]
+      n_loci: [loci, locus_count]
+      n_precursors: [precursors, precursor_count]
+      n_families: [families, family_count]
+    value_aliases: {}
+    metrics:
+      - type: identifier_f1
+      - type: macro_f1
+        column: species
+      - type: lins_ccc
+        column: n_loci
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: n_precursors
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: n_families
+        log_transform: false
+        pseudocount: null
+
+  # Depth 3. Every panel family gets a row, including any with no hits, so a
+  # family an agent silently dropped from the panel is visible.
+  - path: domain_prevalence.csv
+    truth: domain_prevalence.csv
+    format: csv
+    soft: false
+    row_key: [pfam]
+    normalisers: [strip, collapse_whitespace, casefold]
+    column_aliases:
+      pfam: [pfam_accession, hmm]
+      pfam_name: [hmm_name, family_name]
+      n_hits: [hits, hit_count]
+      n_genomes: [genomes, genome_count]
+      n_loci: [loci, locus_count]
+    value_aliases: {}
+    metrics:
+      - type: identifier_f1
+      - type: macro_f1
+        column: pfam_name
+      - type: lins_ccc
+        column: n_hits
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: n_genomes
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: n_loci
+        log_transform: false
+        pseudocount: null
