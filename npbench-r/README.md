@@ -18,7 +18,7 @@ Build order is set out in `CLAUDE.md`. Steps 1 and 2 are done and verified.
 | 2 | Bundle validator | done |
 | 3 | One task end to end | **done**: task 02 validates clean and self-grades 1.00 |
 | 4 | Inspect AI harness | built; docker sandbox path unverified |
-| 5 | Remaining tasks | 4 of 6 built (02, 03, 04, 05) |
+| 5 | Remaining tasks | 5 of 6 built (02–06); task 01 blocked |
 | 6 | Difficulty calibration | machinery built (`npbench calibrate`); needs model runs |
 
 Build order was reordered: **task 02 (Salinispora, BGC detection) was built
@@ -34,7 +34,8 @@ stages from NCBI RefSeq in 191 MB.
 | `02_salinispora_bgc` | BGC inventory and gene cluster families across 120 *Salinispora* assemblies with GECCO 0.11.0. 191 MB staged, 2,935 clusters, 7 artifacts, 30 metric instances, depth 2–4. |
 | `03_mibig_cheminformatics` | Scaffolds, isomers, stereochemistry collapse and similarity families over the MIBiG 4.0 compound set with RDKit. 936 KB staged, 4,397 compounds, 8 artifacts, 31 metric instances, depth 2–4. **Discriminates less well than the others** — see its `NOTES.md`. |
 | `04_mibig_nrps_pks_modules` | NRPS/PKS module architecture and adenylation-domain substrate specificity in MIBiG 4.0. 936 KB staged, 4,034 modules, 8 artifacts, 39 metric instances, depth 2–4. Artifacts share upstream dependencies by design; all 8 land in band, but one scope mistake floors the task at 0.00. |
-| `05_salinispora_concordance` | Taxonomy versus chemistry concordance over the same 120 *Salinispora* assemblies as task 02: a k-mer genomic distance against a BGC-family chemistry distance over 7,140 pairs. 7 artifacts, 32 metric instances, depth 2–5. **Best-behaved task so far** — all 7 in band and no floor. |
+| `05_salinispora_concordance` | Taxonomy versus chemistry concordance over the same 120 *Salinispora* assemblies as task 02: a k-mer genomic distance against a BGC-family chemistry distance over 7,140 pairs. 7 artifacts, 32 metric instances, depth 2–5. **Best-behaved task** — all 7 in band and no floor. |
+| `06_streptomyces_ripp` | RODEO-style lasso peptide and RiPP locus mining across 213 *Streptomyces* reference genomes, with a sequence similarity network over the precursors. 517 MB staged, 171 loci, 798 precursors, 7 artifacts, 37 metric instances, depth 2–5. 4 of 7 in band; two artifacts are drop candidates — see its `NOTES.md`. |
 
 All three validate clean and self-grade 1.00. Each task's `NOTES.md` records
 measured scale, reproducibility and difficulty, including what does *not*
@@ -51,6 +52,7 @@ when it has many artifacts. Measured across the three:
 | 03, independent artifacts | 3 of 8 | 0.62 | 0.62 |
 | 04, shared joins by design | 8 of 8 | 0.00 | 0.00 |
 | 05, shared joins over two inputs | 7 of 7 | 0.29 | 0.00 |
+| 06, RiPP mining | 4 of 7 | 0.43 | 0.29 |
 
 Task 04 showed the opposite failure to task 03: one scope mistake floors it at
 0.00, and a task that bottoms out loses information as surely as one that tops
@@ -64,7 +66,15 @@ discrimination when some mistake actually gets the grouping or naming wrong. It
 moved task 05's weakest artifact into band and did nothing at all for task
 03's. Adding one on principle buys nothing.
 
-All four `NOTES.md` files record what does *not* discriminate as well as what
+A third finding, from task 06: some rules cannot discriminate no matter what,
+because the tools make them unreachable. Its 20-amino-acid precursor floor can
+never bite, since pyrodigal's own minimum gene length puts the shortest
+precursor at 29; and its E-value is dominated by HMMER's inclusion thresholds.
+Those rules stay in the method because the artifacts need a defined answer, not
+because they are hard, and its `NOTES.md` says so rather than counting them as
+difficulty.
+
+All five `NOTES.md` files record what does *not* discriminate as well as what
 does.
 
 Task 01 (Crüsemann, MassIVE MSV000078836) is not built: the deposit is 311 GB

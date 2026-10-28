@@ -25,6 +25,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
+import warnings  # noqa: E402
+
 import pyhmmer  # noqa: E402
 import pyrodigal  # noqa: E402
 from Bio import Align  # noqa: E402
@@ -78,7 +80,11 @@ def call_genes(ref, contigs, mistakes: set[str]) -> list[dict]:
         if "per_contig_training" in mistakes:
             finder = pyrodigal.GeneFinder(meta=False)
             try:
-                finder.train(sequence)
+                # Training on a short contig warns; that is the mistake behaving
+                # as it would for an agent, not something to fix.
+                with warnings.catch_warnings():
+                    warnings.simplefilter("ignore")
+                    finder.train(sequence)
             except Exception:
                 finder = pyrodigal.GeneFinder(meta=True)
         for index, gene in enumerate(finder.find_genes(sequence), start=1):
