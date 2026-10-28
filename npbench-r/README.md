@@ -18,8 +18,8 @@ Build order is set out in `CLAUDE.md`. Steps 1 and 2 are done and verified.
 | 2 | Bundle validator | done |
 | 3 | One task end to end | **done**: task 02 validates clean and self-grades 1.00 |
 | 4 | Inspect AI harness | built; docker sandbox path unverified |
-| 5 | Remaining tasks | 3 of 6 built (02, 03, 04) |
-| 6 | Difficulty calibration | needs model runs; a proxy measurement exists |
+| 5 | Remaining tasks | 4 of 6 built (02, 03, 04, 05) |
+| 6 | Difficulty calibration | machinery built (`npbench calibrate`); needs model runs |
 
 Build order was reordered: **task 02 (Salinispora, BGC detection) was built
 before task 01 (Crüsemann)**. MassIVE MSV000078836 turned out to be 311 GB
@@ -33,7 +33,8 @@ stages from NCBI RefSeq in 191 MB.
 |---|---|
 | `02_salinispora_bgc` | BGC inventory and gene cluster families across 120 *Salinispora* assemblies with GECCO 0.11.0. 191 MB staged, 2,935 clusters, 7 artifacts, 30 metric instances, depth 2–4. |
 | `03_mibig_cheminformatics` | Scaffolds, isomers, stereochemistry collapse and similarity families over the MIBiG 4.0 compound set with RDKit. 936 KB staged, 4,397 compounds, 8 artifacts, 31 metric instances, depth 2–4. **Discriminates less well than the others** — see its `NOTES.md`. |
-| `04_mibig_nrps_pks_modules` | NRPS/PKS module architecture and adenylation-domain substrate specificity in MIBiG 4.0. 936 KB staged, 4,034 modules, 8 artifacts, 39 metric instances, depth 2–4. Artifacts share upstream dependencies by design; all 8 land in band. |
+| `04_mibig_nrps_pks_modules` | NRPS/PKS module architecture and adenylation-domain substrate specificity in MIBiG 4.0. 936 KB staged, 4,034 modules, 8 artifacts, 39 metric instances, depth 2–4. Artifacts share upstream dependencies by design; all 8 land in band, but one scope mistake floors the task at 0.00. |
+| `05_salinispora_concordance` | Taxonomy versus chemistry concordance over the same 120 *Salinispora* assemblies as task 02: a k-mer genomic distance against a BGC-family chemistry distance over 7,140 pairs. 7 artifacts, 32 metric instances, depth 2–5. **Best-behaved task so far** — all 7 in band and no floor. |
 
 All three validate clean and self-grade 1.00. Each task's `NOTES.md` records
 measured scale, reproducibility and difficulty, including what does *not*
@@ -44,15 +45,27 @@ discriminate.
 A task discriminates when its artifacts **share upstream dependencies**, not
 when it has many artifacts. Measured across the three:
 
-| | artifacts in the 0.1–0.8 band | 3-mistake agent |
-|---|---|---|
-| 02, shared joins | 6 of 7 | 0.14 |
-| 03, independent artifacts | 3 of 8 | 0.62 |
-| 04, shared joins by design | 8 of 8 | 0.00 |
+| | artifacts in the 0.1–0.8 band | 3 slips | 5 slips |
+|---|---|---|---|
+| 02, shared joins | 6 of 7 | 0.14 | 0.14 |
+| 03, independent artifacts | 3 of 8 | 0.62 | 0.62 |
+| 04, shared joins by design | 8 of 8 | 0.00 | 0.00 |
+| 05, shared joins over two inputs | 7 of 7 | 0.29 | 0.00 |
 
-Task 04 now carries the opposite risk: one scope mistake floors it at 0.00. A
-task that bottoms out loses information as surely as one that tops out. Both
-ends are written up in the respective `NOTES.md`.
+Task 04 showed the opposite failure to task 03: one scope mistake floors it at
+0.00, and a task that bottoms out loses information as surely as one that tops
+out. Task 05 spreads the dependencies across two independent inputs — a k-mer
+parse and a cluster parse — and gets every artifact informative with a
+three-mistake agent at 0.29, nearest the 0.3–0.5 target in PROJECT.md §8.
+
+A second finding, from trying the same fix on two tasks: a content-derived
+column (a group's smallest member, its most populous family) only improves
+discrimination when some mistake actually gets the grouping or naming wrong. It
+moved task 05's weakest artifact into band and did nothing at all for task
+03's. Adding one on principle buys nothing.
+
+All four `NOTES.md` files record what does *not* discriminate as well as what
+does.
 
 Task 01 (Crüsemann, MassIVE MSV000078836) is not built: the deposit is 311 GB
 across 1,125 mzXML files, 15x the 20 GB target in PROJECT.md §10, so it needs a
