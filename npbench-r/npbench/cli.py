@@ -1,8 +1,11 @@
 """Command line entry points for the parts of NPBench-R that exist.
 
-`validate`, `fetch`, `truth`, `selfgrade` and `grade` all work. `eval` belongs
-to build-order step 4, the Inspect AI harness, and is deliberately absent rather
-than stubbed.
+`validate`, `fetch`, `truth`, `selfgrade`, `grade` and `calibrate` are all
+implemented here. Running an eval is `make eval`, which shells out to
+`inspect eval` against npbench/harness/task.py rather than wrapping it.
+
+`calibrate` reads the scored results of runs that already happened; it does not
+run models.
 """
 
 from __future__ import annotations
@@ -15,6 +18,7 @@ import tempfile
 from pathlib import Path
 
 from .build.manifest import fetch, load_manifest
+from .calibrate import CalibrationError, calibrate, load_runs, report as calibration_report
 from .build.validate import report, solution_steps, validate_task
 from .grading import TruthError, load_grading_config, score_task
 
@@ -95,6 +99,16 @@ def _selfgrade(args: argparse.Namespace) -> int:
         return _grade(args)
 
 
+def _calibrate(args: argparse.Namespace) -> int:
+    try:
+        runs = load_runs(args.runs_dir)
+    except CalibrationError as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
+    print(calibration_report(calibrate(runs)))
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="npbench", description=__doc__.splitlines()[0])
     sub = parser.add_subparsers(dest="command", required=True)
@@ -133,6 +147,13 @@ def main(argv: list[str] | None = None) -> int:
     selfgrade.add_argument("task_dir", type=Path)
     selfgrade.add_argument("--jobs", type=int, default=4)
     selfgrade.set_defaults(handler=_selfgrade)
+
+    calibration = sub.add_parser(
+        "calibrate",
+        help="per-artifact pass rates and drop recommendations over scored runs",
+    )
+    calibration.add_argument("runs_dir", type=Path)
+    calibration.set_defaults(handler=_calibrate)
 
     args = parser.parse_args(argv)
     return args.handler(args)

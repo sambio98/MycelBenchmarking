@@ -4,7 +4,7 @@ TASK_DIR = tasks/$(TASK)
 JOBS ?= 4
 PY = python -m npbench.cli
 
-.PHONY: test validate fetch truth selfgrade grade eval lock
+.PHONY: test validate fetch truth selfgrade grade eval lock calibrate
 .PHONY: require-task
 
 require-task:
@@ -32,6 +32,10 @@ grade: require-task
 lock:
 	@echo "Locks are per task: see tasks/<id>/environment/README.md"
 	@exit 2
+
+calibrate:
+	@test -n "$(RUNS)" || { echo "usage: make calibrate RUNS=<dir of scored run JSON>"; exit 2; }
+	$(PY) calibrate $(RUNS)
 
 eval: require-task
 	@test -n "$(MODEL)" || { echo "usage: make eval TASK=<dir> MODEL=<provider/model>"; exit 2; }
