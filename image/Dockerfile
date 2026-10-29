@@ -32,13 +32,18 @@
 # `-s`, and `--verify` checks every library pin's declared run dependencies
 # against the prefix, so neither form of this can pass again.
 #
-# STATUS: built and measured, 2026-10-27/29, on a host with 12 GB free and an
-# agent proxy in front of the network. What was run:
+# STATUS: built end to end and measured, 2026-10-27/29, on a host with 15 GB
+# free and an agent proxy in front of the network. What was run:
 #
-#   every layer below          built; `registry --verify` passes INSIDE the
-#                              image -- 9/9 tools at their pinned version and
-#                              build, FastTreeMP absent, matchms' run closure
-#                              complete
+#   all twelve steps           built, the database layer among them: step 7,
+#                              `download-antismash-databases`, DONE in 506s.
+#                              `registry --verify` passes INSIDE the image --
+#                              9/9 tools at their pinned version and build,
+#                              FastTreeMP absent, matchms' run closure
+#                              complete. That build used --output=cacheonly:
+#                              every layer executed, and the ~13 GB image was
+#                              not exported, because exporting it needs roughly
+#                              double and the allowance was 15 GB
 #   the locked closure         231 packages, set-identical to
 #                              environment.lock.json: nothing in the image the
 #                              lock does not record, nothing in the lock the
@@ -58,11 +63,10 @@
 #                              against a prefix assembled in stages outside any
 #                              image.
 #
-# What is still NOT proven is one thing: a LAYER holding those databases. The
-# image plus the database set is about 14 GB and the host had 12, so the
-# `download-antismash-databases` RUN below has never executed as part of a
-# build -- only as the same command in a container from the built image, with
-# its output on a mounted directory. Build it once on a host with ~15 GB free.
+# Nothing in this file is now unbuilt. What no run here has done is EXPORT the
+# finished image: a host that will `docker build -t` it, rather than build its
+# layers, wants about 30 GB free for the content store and the unpacked
+# snapshot together.
 #
 # The build also needed two host-specific workarounds that are NOT in this file
 # and should not be: the proxy tunnels HTTPS and answers plain HTTP with 405,

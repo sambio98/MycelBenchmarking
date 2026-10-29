@@ -914,10 +914,26 @@ until the oracle recomputes it**, because a probe has no gate behind it.
 
 `image/Dockerfile` carried a STATUS note saying it had never been built end to
 end, because the host that wrote it had the Docker CLI and no daemon. It has now
-been built -- every layer except `download-antismash-databases`, which is
-roughly 10 GB against a host with 9 GB free -- and `registry --verify` passed
-inside the resulting image: 9/9 tools at their pinned version and build,
-`FastTreeMP` absent, matchms' run closure complete.
+been built end to end -- **all twelve steps, the ~9.4 GB
+`download-antismash-databases` layer among them (step 7, 506 s)** -- and
+`registry --verify` passes inside the image: 9/9 tools at their pinned version
+and build, `FastTreeMP` absent, matchms' run closure complete.
+
+Three further things were measured once the databases existed. `antismash
+--check-prereqs` reports **all prerequisites satisfied**, where without them it
+raises on the MITE dataset. The **invariance suite was run in the image** --
+all 9 tools, 12 invocations -- and came back 9 pass / 0 fail, agreeing with
+`image/thread_invariance.json` down to diamond's documented `--no-reorder`
+xfail and mmseqs2 still needing its `sort_lines` canonicalisation; every verdict
+in that file had until then been measured against a prefix assembled in stages
+outside any image, so this is the first time the determinism claims have been
+checked where the benchmark pins them. And the closure reproduces: **231
+packages, set-identical to the lock in both directions.**
+
+The one thing no run here has done is EXPORT the finished image. The builds used
+`--output=cacheonly`, so every layer executed but the ~13 GB image was never
+packed: a host that will `docker build -t` it wants roughly 30 GB free for the
+content store and the unpacked snapshot together.
 
 The build found something `--verify` cannot see. Comparing the image's actual
 closure against `image/environment.lock.json`:
