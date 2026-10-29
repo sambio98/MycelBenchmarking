@@ -41,7 +41,7 @@ opinion; its `NOTES.md` states what it costs and what it keeps.
 | `05_salinispora_concordance` | Taxonomy versus chemistry concordance over the same 120 *Salinispora* assemblies as task 02: a k-mer genomic distance against a BGC-family chemistry distance over 7,140 pairs. 7 artifacts, 32 metric instances, depth 2–5. **Best-behaved task** — all 7 in band and no floor. |
 | `06_streptomyces_ripp` | RODEO-style lasso peptide and RiPP locus mining across 213 *Streptomyces* reference genomes, with a sequence similarity network over the precursors. 517 MB staged, 171 loci, 798 precursors, 7 artifacts, 37 metric instances, depth 2–5. 4 of 7 in band; two artifacts are drop candidates — see its `NOTES.md`. |
 | `07_npatlas_dereplication` | Exact-mass dereplication of task 01's molecular network against a frozen NP Atlas v2024_09, with adducts, isomer ambiguity and per-family annotation. 493 MB staged, 36,422 compounds, 3,811 queries, 10,953 candidate annotations, 8 artifacts, 35 metric instances, depth 2–5. 6 of 8 in band. |
-| `08_salinispora_ks_phylogeny` | Ketosynthase phylogeny across the 120 *Salinispora* assemblies: pyrodigal and pyhmmer to the domains, normalised local alignment to a distance matrix, UPGMA to a tree graded by its splits. 182 MB staged, 2,993 domains collapsing to 922 distinct sequences, 8 artifacts, 36 metric instances, depth 2–5. Difficulty sweep half measured; its `NOTES.md` has the finished table. |
+| `08_salinispora_ks_phylogeny` | Ketosynthase phylogeny across the 120 *Salinispora* assemblies: pyrodigal and pyhmmer to the domains, normalised local alignment to a distance matrix, UPGMA to a tree graded by its splits. 182 MB staged, 2,993 domains collapsing to 922 distinct sequences, 8 artifacts, 36 metric instances, depth 2–5. All 8 in band. |
 
 All eight validate clean and self-grade 1.00, and `npbench audit` reports no
 open findings across them. Each task's `NOTES.md` records
@@ -111,7 +111,7 @@ when it has many artifacts. Measured across the suite:
 | 05, shared joins over two inputs | 7 of 7 | 0.29 | 0.00 |
 | 06, RiPP mining | 4 of 7 | 0.43 | 0.29 |
 | 07, dereplication | 6 of 8 | 0.12 | 0.25 |
-| 08, KS phylogeny | partial — see its `NOTES.md` | 0.75 | |
+| 08, KS phylogeny | 8 of 8 | 0.75 | 0.00 |
 
 **Read the last two columns with care.** Task 07 scores *higher* at five
 slips than at three, and that is not noise: the headline is the fraction of
@@ -140,6 +140,13 @@ precursor at 29; and its E-value is dominated by HMMER's inclusion thresholds.
 Those rules stay in the method because the artifacts need a defined answer, not
 because they are hard, and its `NOTES.md` says so rather than counting them as
 difficulty.
+
+Task 08 independently replicated the E-value half of that on different genomes
+and a different Pfam model: searching at 1e-3 instead of 1e-5 changes nothing
+at all, and keeping every reported hit rather than only the included ones
+changes almost nothing. HMMER's own inclusion thresholds dominate. Two
+measurements agreeing is worth more than either alone, and it means an
+HMMER-based task should not count its E-value as a difficulty lever.
 
 A fourth finding, from task 01: **an above-band verdict is a claim about the
 variant set at least as much as about the artifact.** Its `spectra.csv` first

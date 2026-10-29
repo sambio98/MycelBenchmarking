@@ -99,56 +99,84 @@ Two independent runs produce byte-identical output for all eight artifacts.
 
 ## Measured difficulty
 
-`scripts/difficulty_task08.py`, 18 variants, all eight artifacts measured for
+`scripts/difficulty_task08.py`, 20 variants, all eight artifacts measured for
 every variant over the full dataset. That is only affordable because the tree
-is built over the 922 distinct sequences rather than all 2,993 domains.
+is built over the 922 distinct sequences rather than all 2,993 domains. Same
+cheap-proxy caveat as the other tasks.
 
-**This table is partial.** Ten of the eighteen variants had finished when these
-notes were written: every variant in the distance, tree, taxonomy and leaf-set
-layers. The eight still running are the seven domain-layer variants — which are
-the ones that move `ks_domains.csv`, at 1.00 across every variant measured so
-far — and the 5-slip composite. Each needs its own gene call and domain search,
-about 13 minutes apiece. Re-run the script to complete it; it caches extracted
-domain tables and raw alignment scores, so the finished variants cost nothing
-the second time.
+| variant | task score |
+|---|---|
+| reference (no mistakes) | 1.00 |
+| one slip: no clamp on the distance | 1.00 |
+| one slip: complete linkage | 1.00 |
+| one slip: E=1e-3 | 1.00 |
+| one slip: keeps all reported hits | 1.00 |
+| one slip: breadth counts genomes | 0.88 |
+| one slip: single linkage | 0.75 |
+| one slip: splits numbered | 0.75 |
+| one slip: meta-mode gene calling | 0.75 |
+| one slip: normalise by length | 0.62 |
+| one slip: normalise by max self-score | 0.62 |
+| one slip: species keeps the strain | 0.50 |
+| one slip: groups by length, not sequence | 0.50 |
+| one slip: no dereplication at all | 0.50 |
+| one slip: envelope coordinates | 0.25 |
+| one slip: trains per contig | 0.00 |
+| one slip: no 150 aa floor | 0.00 |
+| one slip: one domain per protein | 0.00 |
+| hasty agent (3 slips) | 0.75 |
+| careless agent (5 slips) | 0.00 |
 
-| variant | task score | measured |
+| artifact | pass rate | |
 |---|---|---|
-| reference (no mistakes) | 1.00 | yes |
-| one slip: no clamp on the distance | 1.00 | yes |
-| one slip: complete linkage | 1.00 | yes |
-| one slip: breadth counts genomes | 0.88 | yes |
-| one slip: single linkage | 0.75 | yes |
-| one slip: splits numbered | 0.75 | yes |
-| one slip: normalise by length | 0.62 | yes |
-| one slip: normalise by max self-score | 0.62 | yes |
-| one slip: species keeps the strain | 0.50 | yes |
-| one slip: groups by length, not sequence | 0.50 | yes |
-| one slip: no dereplication at all | | running |
-| one slip: meta-mode gene calling | | pending |
-| one slip: trains per contig | | pending |
-| one slip: E=1e-3 | | pending |
-| one slip: keeps all reported hits | | pending |
-| one slip: envelope coordinates | | pending |
-| one slip: no 150 aa floor | | pending |
-| one slip: one domain per protein | | pending |
-| hasty agent (3 slips) | 0.75 | yes |
-| careless agent (5 slips) | | pending |
+| `split_taxonomy.csv` | 0.30 | in band |
+| `tree_splits.csv` | 0.40 | in band |
+| `group_nearest_neighbour.csv` | 0.55 | in band |
+| `sequence_groups.csv` | 0.60 | in band |
+| `ks_domains.csv` | 0.70 | in band |
+| `multidomain_proteins.csv` | 0.70 | in band |
+| `genome_ks_counts.csv` | 0.75 | in band |
+| `species_domain_counts.csv` | 0.75 | in band |
 
-What the finished half shows:
+**All eight artifacts land in band**, 0.30 to 0.75, and the deepest artifact is
+the most discriminating — which is the shape the dependency argument predicts
+and the one tasks 03 and 06 did not achieve. The task also has floors: three
+single mistakes take it to 0.00, all of them in the domain layer.
 
-- **The dereplication step is load-bearing.** Grouping domains by length instead
-  of by exact sequence takes `sequence_groups.csv`, `group_nearest_neighbour.csv`
-  and `split_taxonomy.csv` to 0.00 and `tree_splits.csv` to 0.02. The rule the
-  rebuild introduced is not a free optimisation; getting it wrong destroys the
-  tree.
-- **Deriving the species is load-bearing.** Keeping the strain suffix turns 9
-  species into about 120 and reaches four artifacts at once, from 0.00 to 0.05.
+What the sweep establishes:
+
+- **The dereplication step is load-bearing, not an optimisation.** Grouping by
+  length instead of exact sequence, or not grouping at all, both score 0.50 and
+  drive `sequence_groups.csv` and `split_taxonomy.csv` to 0.00. Building the
+  tree over all 2,993 domains — the thing the first version of this task did —
+  is now a modelled mistake that fails half the task.
+- **The domain layer is where the floors are.** Training the gene finder per
+  contig, dropping the 150 aa floor, or keeping one domain per protein each
+  score 0.00. The last is the mistake the prompt warns about in its own words,
+  and it is the most expensive single slip here: a modular PKS is one
+  polypeptide carrying up to six ketosynthases, so one-per-protein discards
+  most of the data.
 - **The distance normaliser matters more than the linkage.** Normalising by
-  length rather than by the smaller self-score fails three artifacts outright
-  (0.00, 0.03, 0.04); normalising by the *larger* self-score lands at 0.78 to
-  0.79, just under the threshold. Complete linkage, by contrast, scores 0.83 on
-  both tree artifacts and passes.
+  length fails three artifacts outright (0.00, 0.03, 0.04); normalising by the
+  larger self-score lands at 0.78–0.79, just under threshold. Complete linkage
+  scores 0.83 on both tree artifacts and passes.
+- **The 3-slip composite scores 0.75, above eight of the single slips.** Same
+  non-monotonicity task 07 showed, and for the same reason: its three mistakes
+  are all in the tree and taxonomy layers, so they fail two artifacts between
+  them. The composite columns count artifacts clearing 0.80, not severity.
+
+### Four variants that cost nothing
+
+- **The clamp cannot bite.** Proven below.
+- **E = 1e-3 instead of 1e-5 changes nothing at all**, and **keeping every
+  reported hit rather than only the included ones changes almost nothing**
+  (0.98 on two artifacts, passing everywhere). This replicates task 06's
+  finding exactly, on different genomes and a different Pfam model: HMMER's own
+  inclusion thresholds dominate the E-value, so prescribing one is honest
+  documentation of what was run rather than a difficulty lever. Two independent
+  tasks now agree on that, which is worth more than either measurement alone.
+- **Complete linkage barely differs from average** over these distances, at
+  0.83 on both tree artifacts.
 
 ### The clamp cannot bite, and that is provable
 
@@ -174,6 +202,18 @@ difficulty.
 
 ### Across the eight tasks
 
-See the README for the current table, and its caution about the composite
-columns: they count artifacts clearing 0.80, so they are not monotone in the
-number of mistakes and not comparable across tasks.
+| | artifacts in band | 3 slips | 5 slips |
+|---|---|---|---|
+| 01, molecular networking | 5 of 5 hard | 0.20 | 0.00 |
+| 02, shared joins | 6 of 7 | 0.14 | 0.14 |
+| 03, independent artifacts | 3 of 8 | 0.62 | 0.62 |
+| 04, shared joins by design | 8 of 8 | 0.00 | 0.00 |
+| 05, shared joins, two inputs | 7 of 7 | 0.29 | 0.00 |
+| 06, RiPP mining | 4 of 7 | 0.43 | 0.29 |
+| 07, dereplication | 6 of 8 | 0.12 | 0.25 |
+| **08, this task** | **8 of 8** | **0.75** | 0.00 |
+
+Task 08 joins 04 and 05 as a task where every artifact is informative. Read the
+last two columns with the caution the README states: they count artifacts
+clearing 0.80, so they are not monotone in the number of mistakes and not
+comparable across tasks.
