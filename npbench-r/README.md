@@ -162,7 +162,7 @@ does.
 pip install -e ".[dev]"                       # graders, validator, harness
 T=02_salinispora_bgc
 
-make test                                      # 272 tests
+make test                                      # 274 tests
 make validate TASK=$T                          # bundle contract check
 make fetch TASK=$T                             # stage and checksum 191 MB of genomes
 make truth TASK=$T                             # run the reference solution into truth/
@@ -170,7 +170,8 @@ make selfgrade TASK=$T                         # expect 1.00
 make grade TASK=$T OUTPUTS=<dir>               # grade any outputs directory
 make eval TASK=$T MODEL=anthropic/claude-opus-5
 
-python -m npbench.cli audit tasks/*/           # the human curation checks
+make audit                                     # the human curation pass, all tasks
+make audit TASK=$T                             # one task's dossier
 ```
 
 Grading needs only numpy, pandas and pyyaml. Inspect AI is an extra

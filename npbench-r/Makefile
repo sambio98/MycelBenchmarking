@@ -4,7 +4,7 @@ TASK_DIR = tasks/$(TASK)
 JOBS ?= 4
 PY = python -m npbench.cli
 
-.PHONY: test validate fetch truth selfgrade grade eval lock calibrate
+.PHONY: test validate fetch truth selfgrade grade eval lock calibrate audit
 .PHONY: require-task
 
 require-task:
@@ -32,6 +32,11 @@ grade: require-task
 lock:
 	@echo "Locks are per task: see tasks/<id>/environment/README.md"
 	@exit 2
+
+# The human curation pass. With no TASK it covers every task, which is how a
+# reviewer reads it; exits non-zero on a finding nobody has judged yet.
+audit:
+	$(PY) audit $(if $(TASK),$(TASK_DIR),tasks/*/)
 
 calibrate:
 	@test -n "$(RUNS)" || { echo "usage: make calibrate RUNS=<dir of scored run JSON>"; exit 2; }
