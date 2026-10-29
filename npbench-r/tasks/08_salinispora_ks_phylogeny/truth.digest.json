@@ -1,0 +1,42 @@
+[
+  {
+    "path": "genome_ks_counts.csv",
+    "sha256": "9a4a63090f4ce84801df2e617e2c69500e0dc95ee300961dae9620774802fe8a",
+    "rows": 120
+  },
+  {
+    "path": "group_nearest_neighbour.csv",
+    "sha256": "7825d290948f5e18bb2ff745e0e25f6dfd931259c644b82b6ead7c77ed08441e",
+    "rows": 922
+  },
+  {
+    "path": "ks_domains.csv",
+    "sha256": "3bcda6e035137ee1ab593ba3eb0f933f81f0e5bf5a805fe6d68e90fada0b585a",
+    "rows": 2993
+  },
+  {
+    "path": "multidomain_proteins.csv",
+    "sha256": "9796c203db824de5c703cfdd315f066e06ca3a95ef7d89009329944a1a030013",
+    "rows": 342
+  },
+  {
+    "path": "sequence_groups.csv",
+    "sha256": "7103d27e68d8a5eca0a338256a4a8275e95d3b8c2de136bfcf88723973a0aa63",
+    "rows": 922
+  },
+  {
+    "path": "species_domain_counts.csv",
+    "sha256": "1784a1e55cdfb5c73a2fe487c72b1ca1471a737e9fff8f9eca1047420727b81f",
+    "rows": 9
+  },
+  {
+    "path": "split_taxonomy.csv",
+    "sha256": "70ea09f01a24b3b956dd4a51c200a18525121eeb87878c43af726b755c206099",
+    "rows": 921
+  },
+  {
+    "path": "tree_splits.csv",
+    "sha256": "c5e17614200b6402b1c21d5e0324e707587ec34b612d9c238495d58d2ce46626",
+    "rows": 921
+  }
+]

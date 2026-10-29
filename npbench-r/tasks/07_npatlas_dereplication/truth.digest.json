@@ -1,0 +1,42 @@
+[
+  {
+    "path": "annotations.csv",
+    "sha256": "585d9c18f4519fbb5791800c6f32e84035e15a0a96699101047256ed939a0982",
+    "rows": 10953
+  },
+  {
+    "path": "atlas_compounds.csv",
+    "sha256": "1cadbb7d7d22d152df41079be9d23e02e9bb8787eac2260b4e27d43603368da6",
+    "rows": 36422
+  },
+  {
+    "path": "best_annotation.csv",
+    "sha256": "0cfdf4664169d12c7bf6e2e686a9f258bc77442e75a84ed4933bd20c874d4b32",
+    "rows": 2058
+  },
+  {
+    "path": "component_annotations.csv",
+    "sha256": "ba5d49f5500f7e7871fc4e5b24ec78fd97a4284ec113a7c78845fddcc65e589e",
+    "rows": 325
+  },
+  {
+    "path": "formula_candidates.csv",
+    "sha256": "5c2cb8b715532e1f00c301856ff91d256dd992149f19dad2cdf42b0ad56cd321",
+    "rows": 1538
+  },
+  {
+    "path": "genus_annotations.csv",
+    "sha256": "6be0e355366165b2560f43cd6a74bb27ff226c2edfb29c14bcd54f05c90ffb47",
+    "rows": 462
+  },
+  {
+    "path": "pathway_counts.csv",
+    "sha256": "5d86681a7f7373e53f8d495a7155ee3b398608cd4444a6f6e517eba1fd7210c6",
+    "rows": 21
+  },
+  {
+    "path": "queries.csv",
+    "sha256": "be00fa28b9dca89b8bcdc50d8b078d660695e4cb4c3979a691bad2bd7c9ab788",
+    "rows": 3811
+  }
+]

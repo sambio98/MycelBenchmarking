@@ -4,7 +4,7 @@ TASK_DIR = tasks/$(TASK)
 JOBS ?= 4
 PY = python -m npbench.cli
 
-.PHONY: test validate fetch truth selfgrade grade eval lock calibrate audit
+.PHONY: test validate fetch truth selfgrade grade eval lock calibrate audit digest
 .PHONY: require-task
 
 require-task:
@@ -32,6 +32,12 @@ grade: require-task
 lock:
 	@echo "Locks are per task: see tasks/<id>/environment/README.md"
 	@exit 2
+
+# Rewrite the committed fingerprint of truth/ after deliberately regenerating
+# it. truth/ is gitignored, so this digest is the only committed record of the
+# answer key, and `make validate` checks it.
+digest:
+	$(PY) digest $(if $(TASK),$(TASK_DIR),tasks/*/)
 
 # The human curation pass. With no TASK it covers every task, which is how a
 # reviewer reads it; exits non-zero on a finding nobody has judged yet.

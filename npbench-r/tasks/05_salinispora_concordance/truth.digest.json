@@ -1,0 +1,37 @@
+[
+  {
+    "path": "bgc_families.csv",
+    "sha256": "8ebc27e774e3422323e38c9688550e1f944b41db88d50fbb4ea3b48ae9f41e09",
+    "rows": 2933
+  },
+  {
+    "path": "distance_concordance_bins.csv",
+    "sha256": "62d174aecb32b8e3474ea1ea41cc0cb59f4f18f9ed40d414546faf8c29209e03",
+    "rows": 10
+  },
+  {
+    "path": "family_taxonomic_breadth.csv",
+    "sha256": "bf078f1dbd8218fb117cc0ca78ceacd49b8dd8211463f21bdd32645d61ff3425",
+    "rows": 226
+  },
+  {
+    "path": "genome_kmer_profiles.csv",
+    "sha256": "8cb7baa3098aa93c42c27a08d887266cfc9d9d8a29f593afd50028f28ed7be3f",
+    "rows": 120
+  },
+  {
+    "path": "genome_pair_distances.csv",
+    "sha256": "bf7640fbee9fd9116d9a2254b5e4eb06246c808cc5ca453670ceece901b158e0",
+    "rows": 7140
+  },
+  {
+    "path": "genome_repertoires.csv",
+    "sha256": "1ea6df43eeabb09311fc1eec1e72194572dfb0af380b5f8ff634a104fcf053d3",
+    "rows": 120
+  },
+  {
+    "path": "species_concordance.csv",
+    "sha256": "3c2c8c114eee718e417e5f5fdcfed9fabb32838f36b66f7695a6f9233de75a2c",
+    "rows": 7
+  }
+]

@@ -1,0 +1,37 @@
+[
+  {
+    "path": "domain_prevalence.csv",
+    "sha256": "0672f6a06ee5a35d336e1536226bb1f09149a6248283d477205151bae45494aa",
+    "rows": 13
+  },
+  {
+    "path": "genome_locus_counts.csv",
+    "sha256": "c0a6488c8592d37c586dda05b9a33f2bc717c5fdffd9351e6598612f59f51ff0",
+    "rows": 213
+  },
+  {
+    "path": "genome_proteins.csv",
+    "sha256": "b3f06bb15a1275c5b49ba54aa961c1dc620b8480ca008222fd30c73d0a152b2b",
+    "rows": 213
+  },
+  {
+    "path": "hmm_hits.csv",
+    "sha256": "bcb142561178e59db5a7ed65466d461b8c5131a803f1cf3db6263a6549b083ac",
+    "rows": 8330
+  },
+  {
+    "path": "precursor_candidates.csv",
+    "sha256": "c3e604c63b88be05a25fffff5955a844c5bbee553c3ba3ffd0c58bce5267bcc8",
+    "rows": 798
+  },
+  {
+    "path": "precursor_families.csv",
+    "sha256": "21cc65e00a649e6fc7e0018bf78bc4625566e74e794b1ad43eb75e46d318d728",
+    "rows": 798
+  },
+  {
+    "path": "ripp_loci.csv",
+    "sha256": "64cf1aa49817cb1440e8780de8f7fabe457dcd9f05acb3574ad38a85d44ca3df",
+    "rows": 171
+  }
+]

@@ -1,0 +1,42 @@
+[
+  {
+    "path": "a_domain_substrates.csv",
+    "sha256": "bb08e4bd501e2aab949481bc48729ef61e48d0c17000acb2b4707262b4179e46",
+    "rows": 3182
+  },
+  {
+    "path": "architecture_counts.csv",
+    "sha256": "2ff6ed7c25e354ece624ba3a8c2a7c865b518dfcd7d5fa8f48a2b56e3fba7630",
+    "rows": 131
+  },
+  {
+    "path": "class_substrate_matrix.csv",
+    "sha256": "a62ac26ff3b3e674fb14f924064999a73bff3b2a3b801ad51170264c5e7193ae",
+    "rows": 434
+  },
+  {
+    "path": "module_architecture.csv",
+    "sha256": "d4426c0094fc101244f4bb3f83b1d5447d95cafaac37250fa6981d46bc8db32e",
+    "rows": 667
+  },
+  {
+    "path": "modules.csv",
+    "sha256": "a4e911c0609ce5019ac10783982a3a9945b0548ba3a97d9569f0490e257618ec",
+    "rows": 4034
+  },
+  {
+    "path": "nonproteinogenic_substrates.csv",
+    "sha256": "54b1121712b3bddd7909c2af0a8eb65a5cbdf448bd6e423e9e2b87902e7b0aa0",
+    "rows": 252
+  },
+  {
+    "path": "substrate_counts.csv",
+    "sha256": "1ca7bb66045816ca75b0fa15f8e1a6f6fd7257553b1d7cb4e714805ee37c8a23",
+    "rows": 269
+  },
+  {
+    "path": "substrate_evidence_summary.csv",
+    "sha256": "07f0dbd2a0026e7b5bee6aebef0c39fca55a2b57def2475a430d207e3a44ba86",
+    "rows": 11
+  }
+]

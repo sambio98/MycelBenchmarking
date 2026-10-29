@@ -1,0 +1,37 @@
+[
+  {
+    "path": "bgc_inventory.csv",
+    "sha256": "d685b1880f37c53d411de18a60daa2ecd7bf1df574a74c987105ba714122694b",
+    "rows": 2935
+  },
+  {
+    "path": "clusters_per_genome.csv",
+    "sha256": "1b850c9be6ab4ba3480985b8098328a3642e22fe0b2f20e1505ea810eb868064",
+    "rows": 120
+  },
+  {
+    "path": "contig_edge_clusters.csv",
+    "sha256": "aa9490a9486526cc22ee8d88d55a7e3dc9533d9097e2d02087738481981e5bf8",
+    "rows": 929
+  },
+  {
+    "path": "gcf_summary.csv",
+    "sha256": "5208bc7d0a5efb6f673b4c74e4aa799f6ba53a4b94816528ebf120b0af79b886",
+    "rows": 226
+  },
+  {
+    "path": "gene_cluster_families.csv",
+    "sha256": "16483d1d4276056d0c5a47b6d2f65387511a1719d6fb9d91d7ed55668d9217de",
+    "rows": 2933
+  },
+  {
+    "path": "species_type_counts.csv",
+    "sha256": "9f24107f3a0f8c71da9f07bff501980628bd446478ded309ed619e3a6e63f3e5",
+    "rows": 52
+  },
+  {
+    "path": "type_counts.csv",
+    "sha256": "b1d781a0944727a0bddcb32c391deddde8078f1c3d078c9fdf21d75e80f43a40",
+    "rows": 8
+  }
+]

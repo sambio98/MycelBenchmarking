@@ -19,6 +19,7 @@ from pathlib import Path
 
 from .audit import dossier, render
 from .build.manifest import fetch, load_manifest
+from .build.truthdigest import write as write_truth_digest
 from .calibrate import CalibrationError, calibrate, load_runs, report as calibration_report
 from .build.validate import report, solution_steps, validate_task
 from .grading import TruthError, load_grading_config, score_task
@@ -110,6 +111,21 @@ def _calibrate(args: argparse.Namespace) -> int:
     return 0
 
 
+def _digest(args: argparse.Namespace) -> int:
+    """Rewrite a task's committed fingerprint of truth/.
+
+    Run this after deliberately regenerating truth -- a new reference release,
+    a changed method -- and commit the result, so the change is visible in a
+    diff instead of being discovered later as an unexplained score shift.
+    """
+    for task_dir in args.task_dir:
+        entries = write_truth_digest(task_dir)
+        print(f"{task_dir.name}: {len(entries)} artifact(s) fingerprinted")
+        for entry in entries:
+            print(f"  {entry.path:34} {entry.rows:>8} rows  {entry.sha256[:12]}")
+    return 0
+
+
 def _audit(args: argparse.Namespace) -> int:
     """Per-task dossiers for the human curation pass.
 
@@ -172,6 +188,13 @@ def main(argv: list[str] | None = None) -> int:
     )
     audit.add_argument("task_dir", type=Path, nargs="+")
     audit.set_defaults(handler=_audit)
+
+    digest = sub.add_parser(
+        "digest",
+        help="rewrite the committed fingerprint of a task's truth/ (truth/ is gitignored)",
+    )
+    digest.add_argument("task_dir", type=Path, nargs="+")
+    digest.set_defaults(handler=_digest)
 
     calibration = sub.add_parser(
         "calibrate",

@@ -1,0 +1,32 @@
+[
+  {
+    "path": "components.csv",
+    "sha256": "056b9395725a90d9b6082267d12c85de0dcabe9524ea7b75f4ef5dd7d0cdaa06",
+    "rows": 325
+  },
+  {
+    "path": "edges.csv",
+    "sha256": "2085ca68acebce6ac7db5ec39492196e2b2d8fbae8ac1191f2b75b0979edee9b",
+    "rows": 3208
+  },
+  {
+    "path": "network_nodes.csv",
+    "sha256": "9e12def69eaffcd12654965b89eead4f7e4cddba83d2fc114fcaa462fe174e50",
+    "rows": 4081
+  },
+  {
+    "path": "precursor_mass_bins.csv",
+    "sha256": "5cd631d8a009845b867d252f4777aa2f98bbf1dded8133015194c36e8fd9bd56",
+    "rows": 13
+  },
+  {
+    "path": "singletons.csv",
+    "sha256": "1b100c73491c39f4d5dda3d534ae24b5dc92c245628e71f79b535e58e80704b9",
+    "rows": 2256
+  },
+  {
+    "path": "spectra.csv",
+    "sha256": "ada9550b14e9d1d39b2cf1d2f80c702388718dc1cac4101ebdcbc7cac01d48f4",
+    "rows": 4081
+  }
+]

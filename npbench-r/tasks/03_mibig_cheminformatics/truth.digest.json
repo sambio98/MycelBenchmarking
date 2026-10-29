@@ -1,0 +1,42 @@
+[
+  {
+    "path": "class_scaffold_summary.csv",
+    "sha256": "dc26997b10900fc9e1e0dde1a996b3f1630c73cdf11a24f577df06bedd119e92",
+    "rows": 95
+  },
+  {
+    "path": "compounds.csv",
+    "sha256": "e046ca1f3f0506c083c3283166544b2339ca03ea59ac81bab804046246328562",
+    "rows": 4395
+  },
+  {
+    "path": "formula_collisions.csv",
+    "sha256": "6fc196ef2721fa3449b67e52a46fba1bad75ebe864d4625647d2f4b33e8a34b1",
+    "rows": 533
+  },
+  {
+    "path": "formula_disagreements.csv",
+    "sha256": "b1d4ca8c3a014c1510589b64437b4ab68669b4919079fb62e2aa6d6881780ff1",
+    "rows": 56
+  },
+  {
+    "path": "scaffold_counts.csv",
+    "sha256": "e886cf8973d17e5cc0310e09d06fceb8282cadd354fdf2f0eefb3168e085b436",
+    "rows": 2251
+  },
+  {
+    "path": "scaffolds.csv",
+    "sha256": "02bf8f5cf32b534b564e28d0706d654fa65ca5a0713f568b864360c1c6aac41d",
+    "rows": 3923
+  },
+  {
+    "path": "similarity_families.csv",
+    "sha256": "cdc36d4f38e5c961c3943750c0789160e1a40394951b469251b1bf163731ba84",
+    "rows": 3923
+  },
+  {
+    "path": "stereo_collapse_groups.csv",
+    "sha256": "2d902d09cfb0bfef7355724313271768323fa366a8033872660f51b82facea8c",
+    "rows": 345
+  }
+]

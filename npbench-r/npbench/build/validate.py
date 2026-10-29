@@ -21,6 +21,7 @@ from pathlib import Path
 import pandas as pd
 import yaml
 
+from . import truthdigest
 from ..grading.config import ALIGNED_METRICS, ConfigError, GradingConfig, load_grading_config
 from ..grading.normalise import normalise_all
 
@@ -483,6 +484,17 @@ def _check_interval_columns(frame, resolved, metric, where) -> list[Finding]:
 # ----------------------------------------------------------------------- entry point
 
 
+def _check_truth_digest(task_dir: Path) -> list[Finding]:
+    """The committed fingerprint of truth/ against the truth/ on disk.
+
+    truth/ is gitignored, so this digest is the only committed record of what
+    the answer key contains. A mismatch means either the digest is stale or
+    something changed that invalidates every score computed against it.
+    """
+    return [_error(truthdigest.DIGEST_FILE, message)
+            for message in truthdigest.compare(task_dir)]
+
+
 def validate_task(task_dir: Path) -> list[Finding]:
     """Check one task bundle against the contract. An empty list means it passes."""
     findings = _check_layout(task_dir)
@@ -503,6 +515,7 @@ def validate_task(task_dir: Path) -> list[Finding]:
     if config is not None:
         findings.extend(_check_grading(config))
         findings.extend(_check_truth(task_dir, config))
+    findings.extend(_check_truth_digest(task_dir))
     return findings
 
 
