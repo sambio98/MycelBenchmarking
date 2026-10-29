@@ -99,31 +99,81 @@ Two independent runs produce byte-identical output for all eight artifacts.
 
 ## Measured difficulty
 
-Pending — `scripts/difficulty_task08.py` is written and runs the reference
-variant to an exact reproduction of `truth/`, but the full 18-variant sweep had
-not finished when these notes were written. The script measures all eight
-artifacts for every variant over the full dataset, which only became affordable
-after the dereplication rework above.
+`scripts/difficulty_task08.py`, 18 variants, all eight artifacts measured for
+every variant over the full dataset. That is only affordable because the tree
+is built over the 922 distinct sequences rather than all 2,993 domains.
 
-The variants it covers, by layer:
+**This table is partial.** Ten of the eighteen variants had finished when these
+notes were written: every variant in the distance, tree, taxonomy and leaf-set
+layers. The eight still running are the seven domain-layer variants — which are
+the ones that move `ks_domains.csv`, at 1.00 across every variant measured so
+far — and the 5-slip composite. Each needs its own gene call and domain search,
+about 13 minutes apiece. Re-run the script to complete it; it caches extracted
+domain tables and raw alignment scores, so the finished variants cost nothing
+the second time.
 
-- **Gene call**: meta mode, per-contig training.
-- **Domain search**: E = 1e-3, keeping all reported hits, envelope rather than
-  aligned coordinates, no 150 aa floor, one domain per protein.
-- **Leaf set**: no dereplication at all, grouping by length instead of by
-  sequence.
-- **Distance**: normalising by length, normalising by the larger self-score,
-  leaving the distance unclamped.
-- **Tree**: single linkage, complete linkage, splits numbered by merge order.
-- **Taxonomy**: species keeping the strain suffix, breadth counted on genomes
-  instead of species.
+| variant | task score | measured |
+|---|---|---|
+| reference (no mistakes) | 1.00 | yes |
+| one slip: no clamp on the distance | 1.00 | yes |
+| one slip: complete linkage | 1.00 | yes |
+| one slip: breadth counts genomes | 0.88 | yes |
+| one slip: single linkage | 0.75 | yes |
+| one slip: splits numbered | 0.75 | yes |
+| one slip: normalise by length | 0.62 | yes |
+| one slip: normalise by max self-score | 0.62 | yes |
+| one slip: species keeps the strain | 0.50 | yes |
+| one slip: groups by length, not sequence | 0.50 | yes |
+| one slip: no dereplication at all | | running |
+| one slip: meta-mode gene calling | | pending |
+| one slip: trains per contig | | pending |
+| one slip: E=1e-3 | | pending |
+| one slip: keeps all reported hits | | pending |
+| one slip: envelope coordinates | | pending |
+| one slip: no 150 aa floor | | pending |
+| one slip: one domain per protein | | pending |
+| hasty agent (3 slips) | 0.75 | yes |
+| careless agent (5 slips) | | pending |
 
-Run it with:
+What the finished half shows:
 
-```bash
-python scripts/difficulty_task08.py --task tasks/08_salinispora_ks_phylogeny \
-  --truth tasks/08_salinispora_ks_phylogeny/truth --scratch <dir>
-```
+- **The dereplication step is load-bearing.** Grouping domains by length instead
+  of by exact sequence takes `sequence_groups.csv`, `group_nearest_neighbour.csv`
+  and `split_taxonomy.csv` to 0.00 and `tree_splits.csv` to 0.02. The rule the
+  rebuild introduced is not a free optimisation; getting it wrong destroys the
+  tree.
+- **Deriving the species is load-bearing.** Keeping the strain suffix turns 9
+  species into about 120 and reaches four artifacts at once, from 0.00 to 0.05.
+- **The distance normaliser matters more than the linkage.** Normalising by
+  length rather than by the smaller self-score fails three artifacts outright
+  (0.00, 0.03, 0.04); normalising by the *larger* self-score lands at 0.78 to
+  0.79, just under the threshold. Complete linkage, by contrast, scores 0.83 on
+  both tree artifacts and passes.
 
-It caches extracted domain tables and raw alignment scores to `<dir>`, so a
-second run is minutes.
+### The clamp cannot bite, and that is provable
+
+`no_clamp` scores 1.00 on all eight artifacts, and this is not a sampling
+accident. The distance is `1 - score(a,b) / min(self(a), self(b))`, and for
+local alignment:
+
+- `score(a,b) <= min(self(a), self(b))`, because a local alignment of a against
+  b cannot score higher than the best local alignment of the shorter sequence
+  against itself, so the distance is never negative;
+- `score(a,b) >= 0`, because local alignment permits the empty alignment, so the
+  distance never exceeds 1.
+
+Measured over all 424,581 pairs: zero pairs exceed the floor, zero have a
+negative raw score, and the largest ratio seen is exactly 1.000000 — reached by
+the identical and substring pairs that give distance 0. The clamp is defensive,
+not a difficulty lever.
+
+Unlike task 07's `n_compounds_matched`, which was a provably redundant *column*
+and was removed, this is a line of method guidance that asks nothing extra of
+the agent. It stays, documented as a measured negative rather than counted as
+difficulty.
+
+### Across the eight tasks
+
+See the README for the current table, and its caution about the composite
+columns: they count artifacts clearing 0.80, so they are not monotone in the
+number of mistakes and not comparable across tasks.
