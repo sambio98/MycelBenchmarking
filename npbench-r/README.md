@@ -15,7 +15,7 @@ Build order is set out in `CLAUDE.md`. Steps 1 and 2 are done and verified.
 | Step | | |
 |---|---|---|
 | 1 | Grading library | done |
-| 2 | Bundle validator | done |
+| 2 | Bundle validator | done; `npbench audit` adds the checks for a human curation pass |
 | 3 | One task end to end | **done**: task 02 validates clean and self-grades 1.00 |
 | 4 | Inspect AI harness | built; docker sandbox path unverified |
 | 5 | Remaining tasks | all 6 built (01–06) |
@@ -40,15 +40,67 @@ opinion; its `NOTES.md` states what it costs and what it keeps.
 | `04_mibig_nrps_pks_modules` | NRPS/PKS module architecture and adenylation-domain substrate specificity in MIBiG 4.0. 936 KB staged, 4,034 modules, 8 artifacts, 39 metric instances, depth 2–4. Artifacts share upstream dependencies by design; all 8 land in band, but one scope mistake floors the task at 0.00. |
 | `05_salinispora_concordance` | Taxonomy versus chemistry concordance over the same 120 *Salinispora* assemblies as task 02: a k-mer genomic distance against a BGC-family chemistry distance over 7,140 pairs. 7 artifacts, 32 metric instances, depth 2–5. **Best-behaved task** — all 7 in band and no floor. |
 | `06_streptomyces_ripp` | RODEO-style lasso peptide and RiPP locus mining across 213 *Streptomyces* reference genomes, with a sequence similarity network over the precursors. 517 MB staged, 171 loci, 798 precursors, 7 artifacts, 37 metric instances, depth 2–5. 4 of 7 in band; two artifacts are drop candidates — see its `NOTES.md`. |
+| `07_npatlas_dereplication` | Exact-mass dereplication of task 01's molecular network against a frozen NP Atlas v2024_09, with adducts, isomer ambiguity and per-family annotation. 493 MB staged, 36,422 compounds, 3,811 queries, 10,953 candidate annotations, 8 artifacts, 35 metric instances, depth 2–5. 6 of 8 in band. |
+| `08_salinispora_ks_phylogeny` | Ketosynthase phylogeny across the 120 *Salinispora* assemblies: pyrodigal and pyhmmer to the domains, normalised local alignment to a distance matrix, UPGMA to a tree graded by its splits. 182 MB staged, 2,993 domains collapsing to 922 distinct sequences, 8 artifacts, 36 metric instances, depth 2–5. Difficulty sweep written; numbers pending. |
 
-All six validate clean and self-grade 1.00. Each task's `NOTES.md` records
+All eight validate clean and self-grade 1.00, and `npbench audit` reports no
+open findings across them. Each task's `NOTES.md` records
 measured scale, reproducibility and difficulty, including what does *not*
 discriminate.
 
-### The main design finding so far
+## Coverage of the eight analysis categories
+
+PROJECT.md §4 asks for six to eight tasks and forty to sixty graded artifacts
+covering eight categories. The suite is at **eight tasks, 59 artifacts and 267 metric instances**, the
+top of that range, with seven of the eight categories covered.
+
+| category | covered by |
+|---|---|
+| 1. BGC detection and annotation | 02 (GECCO), 06 (pyrodigal + pyhmmer) |
+| 2. Gene cluster family clustering | 02, 05, 06 |
+| 3. MS/MS molecular networking | 01, 07 |
+| 4. Dereplication and structure annotation | 07 |
+| 5. **Paired omics and link ranking** | **not covered — see below** |
+| 6. NRPS and PKS domain parsing | 04, 08 |
+| 7. Cheminformatics on NP structures | 03 |
+| 8. Phylogenetics and taxonomy/chemistry concordance | 05 (concordance), 08 (phylogeny) |
+
+Within category 2, *novelty scoring* specifically (BiG-SLiCE-style) is not
+covered; the clustering half is.
+
+### Why category 5 is not covered
+
+Metabologenomic link ranking needs a strain-resolved metabolome *and* a
+strain-resolved genome set for the same strains. The blocker is file discovery,
+not compute budget or method, and the evidence is worth recording because it
+is quick for a human with a browser to clear:
+
+- **MSV000078836's clustered spectra carry no per-strain provenance.** Every
+  one of the 100,263 spectra in the staged `.mgf` has `FILENAME=specs_ms.pklbin`,
+  so the file cannot say which strain a consensus spectrum came from.
+- **MassIVE's own endpoints are unreachable from this container.** Its HTTPS
+  chain roots in an emSign CA present in neither the system trust store nor
+  `certifi`, and the GNPS2 proxy that works instead serves only exact paths and
+  returns no directory listing. The GNPS cluster-info tables, which would carry
+  the per-file mapping, 404 at every documented name tried.
+- **MSV000098188 is partly reachable and is the better dataset.** Its
+  `ccms_parameters/params.xml` downloads and reveals 101 strain-resolved mzXML
+  samples named by collection code (CNZ-840, SNA-030, …) from the Castro-Falcón
+  "microscale" *Salinispora* survey — exactly candidate study 4 in PROJECT.md
+  §5. But its stored peak-file paths 404 at every layout tried, and its 101
+  strains have **zero** overlap with task 02's 120 sequenced genomes, so the
+  task would also need a fresh genome fetch for those strains.
+
+What would unblock it: a file listing for either deposit, or the GNPS
+cluster-info table for MSV000078836. Both are a minute's work from a browser
+with a MassIVE account and neither needs any decision about the benchmark.
+
+## What the difficulty measurements show
+
+### The main design finding
 
 A task discriminates when its artifacts **share upstream dependencies**, not
-when it has many artifacts. Measured across all six:
+when it has many artifacts. Measured across the suite:
 
 | | artifacts in the 0.1–0.8 band | 3 slips | 5 slips |
 |---|---|---|---|
@@ -58,6 +110,16 @@ when it has many artifacts. Measured across all six:
 | 04, shared joins by design | 8 of 8 | 0.00 | 0.00 |
 | 05, shared joins over two inputs | 7 of 7 | 0.29 | 0.00 |
 | 06, RiPP mining | 4 of 7 | 0.43 | 0.29 |
+| 07, dereplication | 6 of 8 | 0.12 | 0.25 |
+| 08, KS phylogeny | see its `NOTES.md` | | |
+
+**Read the last two columns with care.** Task 07 scores *higher* at five
+slips than at three, and that is not noise: the headline is the fraction of
+artifacts clearing 0.80, so what matters is how many artifacts a mistake set
+touches, not how many mistakes it contains. The composite columns are
+therefore not monotone in the number of mistakes and not comparable across
+tasks unless the mistake sets happen to cover each dependency graph the same
+way. The per-artifact pass rate is the figure to trust.
 
 Task 04 showed the opposite failure to task 03: one scope mistake floors it at
 0.00, and a task that bottoms out loses information as surely as one that tops
@@ -100,13 +162,15 @@ does.
 pip install -e ".[dev]"                       # graders, validator, harness
 T=02_salinispora_bgc
 
-make test                                      # 259 tests
+make test                                      # 272 tests
 make validate TASK=$T                          # bundle contract check
 make fetch TASK=$T                             # stage and checksum 191 MB of genomes
 make truth TASK=$T                             # run the reference solution into truth/
 make selfgrade TASK=$T                         # expect 1.00
 make grade TASK=$T OUTPUTS=<dir>               # grade any outputs directory
 make eval TASK=$T MODEL=anthropic/claude-opus-5
+
+python -m npbench.cli audit tasks/*/           # the human curation checks
 ```
 
 Grading needs only numpy, pandas and pyyaml. Inspect AI is an extra

@@ -1,0 +1,121 @@
+accession	organism	strain	assembly_level	file
+GCF_000016425.1	Salinispora tropica CNB-440	CNB-440	Complete Genome	data/genomes/GCF_000016425.1.fna.gz
+GCF_000373825.1	Salinispora arenicola CNT849	CNT849	Scaffold	data/genomes/GCF_000373825.1.fna.gz
+GCF_000373845.1	Salinispora arenicola CNS673	CNS673	Scaffold	data/genomes/GCF_000373845.1.fna.gz
+GCF_000374665.1	Salinispora fenicalii	CNR-942	Scaffold	data/genomes/GCF_000374665.1.fna.gz
+GCF_000374685.1	Salinispora pacifica CNS055	CNS055	Scaffold	data/genomes/GCF_000374685.1.fna.gz
+GCF_000374705.1	Salinispora pacifica CNS860	CNS860	Scaffold	data/genomes/GCF_000374705.1.fna.gz
+GCF_000374725.1	Salinispora pacifica DSM 45543 = CNS-863	CNS-863	Scaffold	data/genomes/GCF_000374725.1.fna.gz
+GCF_000374745.1	Salinispora pacifica CNS996	CNS996	Scaffold	data/genomes/GCF_000374745.1.fna.gz
+GCF_000374765.1	Salinispora pacifica CNT045	CNT045	Scaffold	data/genomes/GCF_000374765.1.fna.gz
+GCF_000374785.1	Salinispora pacifica CNT124	CNT124	Scaffold	data/genomes/GCF_000374785.1.fna.gz
+GCF_000375005.1	Salinispora arenicola CNS051	CNS051	Scaffold	data/genomes/GCF_000375005.1.fna.gz
+GCF_000375025.1	Salinispora arenicola CNP193	CNP193	Scaffold	data/genomes/GCF_000375025.1.fna.gz
+GCF_000375045.1	Salinispora arenicola CNP105	CNP105	Scaffold	data/genomes/GCF_000375045.1.fna.gz
+GCF_000375065.1	Salinispora arenicola CNS744	CNS744	Scaffold	data/genomes/GCF_000375065.1.fna.gz
+GCF_000375085.1	Salinispora arenicola CNX481	CNX481	Scaffold	data/genomes/GCF_000375085.1.fna.gz
+GCF_000375105.1	Salinispora arenicola CNX814	CNX814	Scaffold	data/genomes/GCF_000375105.1.fna.gz
+GCF_000375125.1	Salinispora arenicola CNY011	CNY011	Scaffold	data/genomes/GCF_000375125.1.fna.gz
+GCF_000375145.1	Salinispora arenicola CNY231	CNY231	Scaffold	data/genomes/GCF_000375145.1.fna.gz
+GCF_000375165.1	Salinispora arenicola CNY256	CNY256	Scaffold	data/genomes/GCF_000375165.1.fna.gz
+GCF_000375185.1	Salinispora arenicola CNY260	CNY260	Scaffold	data/genomes/GCF_000375185.1.fna.gz
+GCF_000375205.1	Salinispora arenicola CNY280	CNY280	Scaffold	data/genomes/GCF_000375205.1.fna.gz
+GCF_000375225.1	Salinispora pacifica CNQ768	CNQ768	Scaffold	data/genomes/GCF_000375225.1.fna.gz
+GCF_000375245.1	Salinispora pacifica CNT584	CNT584	Scaffold	data/genomes/GCF_000375245.1.fna.gz
+GCF_000375265.1	Salinispora pacifica CNT609	CNT609	Scaffold	data/genomes/GCF_000375265.1.fna.gz
+GCF_000375285.1	Salinispora pacifica CNT851	CNT851	Scaffold	data/genomes/GCF_000375285.1.fna.gz
+GCF_000375305.1	Salinispora arenicola CNY237	CNY237	Scaffold	data/genomes/GCF_000375305.1.fna.gz
+GCF_000377025.1	Salinispora pacifica CNY330	CNY330	Scaffold	data/genomes/GCF_000377025.1.fna.gz
+GCF_000377045.1	Salinispora pacifica CNY331	CNY331	Scaffold	data/genomes/GCF_000377045.1.fna.gz
+GCF_000377065.1	Salinispora tropica CNR699	CNR699	Scaffold	data/genomes/GCF_000377065.1.fna.gz
+GCF_000377085.1	Salinispora tropica CNS416	CNS416	Scaffold	data/genomes/GCF_000377085.1.fna.gz
+GCF_000377605.1	Salinispora arenicola CNT859	CNT859	Scaffold	data/genomes/GCF_000377605.1.fna.gz
+GCF_000378645.1	Salinispora arenicola CNH877	CNH877	Scaffold	data/genomes/GCF_000378645.1.fna.gz
+GCF_000378665.1	Salinispora arenicola CNH962	CNH962	Scaffold	data/genomes/GCF_000378665.1.fna.gz
+GCF_000378685.1	Salinispora arenicola CNR107	CNR107	Scaffold	data/genomes/GCF_000378685.1.fna.gz
+GCF_000378705.1	Salinispora arenicola CNY282	CNY282	Scaffold	data/genomes/GCF_000378705.1.fna.gz
+GCF_000378825.1	Salinispora vitiensis	DSM 45548	Scaffold	data/genomes/GCF_000378825.1.fna.gz
+GCF_000378845.1	Salinispora pacifica DSM 45544	DSM 45544	Scaffold	data/genomes/GCF_000378845.1.fna.gz
+GCF_000379065.1	Salinispora mooreana	DSM 45549	Scaffold	data/genomes/GCF_000379065.1.fna.gz
+GCF_000380945.1	Salinispora arenicola CNY234	CNY234	Scaffold	data/genomes/GCF_000380945.1.fna.gz
+GCF_000383575.1	Salinispora oceanensis	DSM 45547	Scaffold	data/genomes/GCF_000383575.1.fna.gz
+GCF_000384275.1	Salinispora arenicola DSM 45545	CNS-991	Scaffold	data/genomes/GCF_000384275.1.fna.gz
+GCF_000424725.1	Salinispora arenicola CNH963	CNH963	Scaffold	data/genomes/GCF_000424725.1.fna.gz
+GCF_000424745.1	Salinispora arenicola CNS299	CNS299	Scaffold	data/genomes/GCF_000424745.1.fna.gz
+GCF_000424865.1	Salinispora tropica CNT261	CNT261	Scaffold	data/genomes/GCF_000424865.1.fna.gz
+GCF_000424885.1	Salinispora arenicola CNS243	CNS243	Scaffold	data/genomes/GCF_000424885.1.fna.gz
+GCF_000424905.1	Salinispora mooreana	CNS-237	Scaffold	data/genomes/GCF_000424905.1.fna.gz
+GCF_000424925.1	Salinispora pacifica CNY239	CNY239	Scaffold	data/genomes/GCF_000424925.1.fna.gz
+GCF_000425925.1	Salinispora tropica CNS416	CNS416	Scaffold	data/genomes/GCF_000425925.1.fna.gz
+GCF_000482565.1	Salinispora arenicola CNR425	CNR425	Scaffold	data/genomes/GCF_000482565.1.fna.gz
+GCF_000514035.1	Salinispora arenicola CNT799	CNT799	Scaffold	data/genomes/GCF_000514035.1.fna.gz
+GCF_000514415.1	Salinispora pacifica CNT603	CNT603	Scaffold	data/genomes/GCF_000514415.1.fna.gz
+GCF_000514435.1	Salinispora mooreana	CNT-150	Scaffold	data/genomes/GCF_000514435.1.fna.gz
+GCF_000514455.1	Salinispora oceanensis	CNT-138	Scaffold	data/genomes/GCF_000514455.1.fna.gz
+GCF_000514475.1	Salinispora pacifica CNT131	CNT131	Scaffold	data/genomes/GCF_000514475.1.fna.gz
+GCF_000514495.1	Salinispora pacifica CNT084	CNT084	Scaffold	data/genomes/GCF_000514495.1.fna.gz
+GCF_000514515.1	Salinispora oceanensis	CNT-029	Scaffold	data/genomes/GCF_000514515.1.fna.gz
+GCF_000514535.1	Salinispora pacifica CNT001	CNT001	Scaffold	data/genomes/GCF_000514535.1.fna.gz
+GCF_000514555.1	Salinispora arenicola CNX482	CNX482	Scaffold	data/genomes/GCF_000514555.1.fna.gz
+GCF_000514595.1	Salinispora arenicola CNR921	CNR921	Scaffold	data/genomes/GCF_000514595.1.fna.gz
+GCF_000514615.1	Salinispora arenicola CNT850	CNT850	Scaffold	data/genomes/GCF_000514615.1.fna.gz
+GCF_000514635.1	Salinispora arenicola CNH646	CNH646	Scaffold	data/genomes/GCF_000514635.1.fna.gz
+GCF_000514655.1	Salinispora arenicola CNB458	CNB458	Scaffold	data/genomes/GCF_000514655.1.fna.gz
+GCF_000514675.1	Salinispora vitiensis	CNT-148	Scaffold	data/genomes/GCF_000514675.1.fna.gz
+GCF_000514695.1	Salinispora tropica CNS197	CNS197	Scaffold	data/genomes/GCF_000514695.1.fna.gz
+GCF_000514735.1	Salinispora pacifica CNT796	CNT796	Scaffold	data/genomes/GCF_000514735.1.fna.gz
+GCF_000514755.1	Salinispora pacifica CNR894	CNR894	Scaffold	data/genomes/GCF_000514755.1.fna.gz
+GCF_000514775.1	Salinispora pacifica CNR114	CNR114	Scaffold	data/genomes/GCF_000514775.1.fna.gz
+GCF_000514795.1	Salinispora pacifica CNS103	CNS103	Scaffold	data/genomes/GCF_000514795.1.fna.gz
+GCF_000514815.1	Salinispora fenicalii	CNT-569	Scaffold	data/genomes/GCF_000514815.1.fna.gz
+GCF_000514835.1	Salinispora pacifica CNT854	CNT854	Scaffold	data/genomes/GCF_000514835.1.fna.gz
+GCF_000514855.1	Salinispora pacifica CNT855	CNT855	Scaffold	data/genomes/GCF_000514855.1.fna.gz
+GCF_000514875.1	Salinispora arenicola CNX508	CNX508	Scaffold	data/genomes/GCF_000514875.1.fna.gz
+GCF_000514895.1	Salinispora arenicola CNT005	CNT005	Scaffold	data/genomes/GCF_000514895.1.fna.gz
+GCF_000514915.1	Salinispora arenicola CNH941	CNH941	Scaffold	data/genomes/GCF_000514915.1.fna.gz
+GCF_000514935.1	Salinispora arenicola CNX891	CNX891	Scaffold	data/genomes/GCF_000514935.1.fna.gz
+GCF_000514955.1	Salinispora arenicola CNT857	CNT857	Scaffold	data/genomes/GCF_000514955.1.fna.gz
+GCF_000515015.1	Salinispora arenicola CNT798	CNT798	Scaffold	data/genomes/GCF_000515015.1.fna.gz
+GCF_000515035.1	Salinispora arenicola CNH905	CNH905	Scaffold	data/genomes/GCF_000515035.1.fna.gz
+GCF_000515075.1	Salinispora tropica CNB536	CNB536	Scaffold	data/genomes/GCF_000515075.1.fna.gz
+GCF_000515095.1	Salinispora tropica CNB476	CNB476	Scaffold	data/genomes/GCF_000515095.1.fna.gz
+GCF_000515135.1	Salinispora arenicola CNT800	CNT800	Scaffold	data/genomes/GCF_000515135.1.fna.gz
+GCF_000515155.1	Salinispora tropica CNH898	CNH898	Scaffold	data/genomes/GCF_000515155.1.fna.gz
+GCF_000515175.1	Salinispora arenicola CNB527	CNB527	Scaffold	data/genomes/GCF_000515175.1.fna.gz
+GCF_000519145.1	Salinispora arenicola CNH964	CNH964	Scaffold	data/genomes/GCF_000519145.1.fna.gz
+GCF_000620325.1	Salinispora tropica CNY012	CNY012	Scaffold	data/genomes/GCF_000620325.1.fna.gz
+GCF_000620345.1	Salinispora tropica CNT250	CNT250	Scaffold	data/genomes/GCF_000620345.1.fna.gz
+GCF_000702345.1	Salinispora arenicola	CNH996	Scaffold	data/genomes/GCF_000702345.1.fna.gz
+GCF_013416675.1	Salinispora sp. H7-4	H7-4	Scaffold	data/genomes/GCF_013416675.1.fna.gz
+GCF_023845025.1	Salinispora arenicola	RJA3005	Scaffold	data/genomes/GCF_023845025.1.fna.gz
+GCF_058448785.1	Salinispora oceanensis	CNT403	Scaffold	data/genomes/GCF_058448785.1.fna.gz
+GCF_058448815.1	Salinispora mooreana	CNY646	Scaffold	data/genomes/GCF_058448815.1.fna.gz
+GCF_058448845.1	Salinispora oceanensis	CNY703	Scaffold	data/genomes/GCF_058448845.1.fna.gz
+GCF_058448855.1	Salinispora oceanensis	CNY673	Scaffold	data/genomes/GCF_058448855.1.fna.gz
+GCF_059569595.1	Salinispora arenicola CNQ884	CNQ884	Scaffold	data/genomes/GCF_059569595.1.fna.gz
+GCF_059569615.1	Salinispora vitiensis	CNS-801	Scaffold	data/genomes/GCF_059569615.1.fna.gz
+GCF_059569625.1	Salinispora pacifica CNT133A	CNT133A	Scaffold	data/genomes/GCF_059569625.1.fna.gz
+GCF_059569695.1	Salinispora pacifica CNR909	CNR909	Scaffold	data/genomes/GCF_059569695.1.fna.gz
+GCF_059569755.1	Salinispora arenicola CNH718	CNH718	Scaffold	data/genomes/GCF_059569755.1.fna.gz
+GCF_059569795.1	Salinispora arenicola ATCC BAA-917	CNH-643	Scaffold	data/genomes/GCF_059569795.1.fna.gz
+GCF_059569875.1	Salinispora arenicola CNS325	CNS325	Scaffold	data/genomes/GCF_059569875.1.fna.gz
+GCF_059569915.1	Salinispora arenicola CNY230	CNY230	Scaffold	data/genomes/GCF_059569915.1.fna.gz
+GCF_059569975.1	Salinispora pacifica CNY363	CNY363	Scaffold	data/genomes/GCF_059569975.1.fna.gz
+GCF_059570015.1	Salinispora tropica CNY678	CNY678	Scaffold	data/genomes/GCF_059570015.1.fna.gz
+GCF_059570035.1	Salinispora arenicola CNY685	CNY685	Scaffold	data/genomes/GCF_059570035.1.fna.gz
+GCF_059570075.1	Salinispora arenicola CNY486	CNY486	Scaffold	data/genomes/GCF_059570075.1.fna.gz
+GCF_059570135.1	Salinispora arenicola CNY679	CNY679	Scaffold	data/genomes/GCF_059570135.1.fna.gz
+GCF_059570155.1	Salinispora arenicola CNY244	CNY244	Scaffold	data/genomes/GCF_059570155.1.fna.gz
+GCF_059570215.1	Salinispora arenicola CNY690	CNY690	Scaffold	data/genomes/GCF_059570215.1.fna.gz
+GCF_059570235.1	Salinispora pacifica CNR510	CNR510	Scaffold	data/genomes/GCF_059570235.1.fna.gz
+GCF_059570245.1	Salinispora arenicola CNS296	CNS296	Scaffold	data/genomes/GCF_059570245.1.fna.gz
+GCF_059570275.1	Salinispora arenicola CNH713	CNH713	Scaffold	data/genomes/GCF_059570275.1.fna.gz
+GCF_059570295.1	Salinispora arenicola CNH996B	CNH996B	Scaffold	data/genomes/GCF_059570295.1.fna.gz
+GCF_059570315.1	Salinispora arenicola CNS848	CNS848	Scaffold	data/genomes/GCF_059570315.1.fna.gz
+GCF_059570375.1	Salinispora pacifica CNH732	CNH732	Scaffold	data/genomes/GCF_059570375.1.fna.gz
+GCF_059570495.1	Salinispora arenicola CNS342	CNS342	Scaffold	data/genomes/GCF_059570495.1.fna.gz
+GCF_059570555.1	Salinispora tropica CNY681	CNY681	Scaffold	data/genomes/GCF_059570555.1.fna.gz
+GCF_059570655.1	Salinispora arenicola CNY694	CNY694	Scaffold	data/genomes/GCF_059570655.1.fna.gz
+GCF_059570675.1	Salinispora goodfellowii	CNY-666	Scaffold	data/genomes/GCF_059570675.1.fna.gz
+GCF_059570735.1	Salinispora arenicola CNS820	CNS820	Scaffold	data/genomes/GCF_059570735.1.fna.gz
+GCF_059570745.1	Salinispora pacifica CNY498	CNY498	Scaffold	data/genomes/GCF_059570745.1.fna.gz

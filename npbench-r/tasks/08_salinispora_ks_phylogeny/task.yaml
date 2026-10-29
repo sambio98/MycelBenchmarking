@@ -1,0 +1,108 @@
+task_id: 08_salinispora_ks_phylogeny
+title: Ketosynthase phylogeny across the sequenced Salinispora
+
+source:
+  citation: >-
+    Ziemert N, Lechner A, Wietz M, Millán-Aguiñaga N, Chavarria KL, Jensen PR.
+    Diversity and evolution of secondary metabolism in the marine
+    actinomycete genus Salinispora.
+    Proceedings of the National Academy of Sciences 111:E1130-E1139 (2014).
+  doi: 10.1073/pnas.1324161111
+
+truth_provenance: >-
+  Tool-generated. Every artifact in truth/ is produced by
+  solution/make_truth.py over the assemblies in data.manifest.json, using the
+  pinned pyrodigal and pyhmmer builds and the Pfam 35.0 subset that ships
+  inside the installed gecco package. The source paper's own ketosynthase
+  phylogeny is NOT the truth here: it was built from a different genome set
+  with a maximum-likelihood method whose version and seed are not recoverable,
+  and PROJECT.md section 9 excludes artifacts like that. The task measures
+  execution of the prescribed pipeline.
+
+data_scope: >-
+  The tree is UPGMA over a normalised alignment-score distance, not a
+  maximum-likelihood phylogeny. RAxML and IQ-TREE are not pip-installable in
+  this environment and both are stochastic unless the seed is pinned, which
+  PROJECT.md section 9 rules out in favour of artifacts reproducible by
+  construction. Average linkage over a distance matrix is a classical
+  phylogenetic method and is exact given the matrix. The cost is real: UPGMA
+  assumes a molecular clock and will not recover a topology an ML method
+  would. What the task therefore measures is the domain extraction, the
+  distance definition and the tree's derived structure, not phylogenetic
+  inference quality.
+
+  The tree is graded by its splits rather than by a Newick string. A Newick
+  string varies with child order and branch-length formatting; the set of
+  splits is the tree's topological content and is what Robinson-Foulds
+  compares.
+
+determinism: >-
+  Verified. Two independent runs of the reference solution produce
+  byte-identical output for all eight artifacts. Gene calling is trained
+  deterministically per assembly, domains are sorted by protein then start
+  before numbering, alignment scores are used but never the traceback, the
+  nearest-neighbour tie-break is on the partner identifier, scipy's average
+  linkage is exact, and every artifact is sorted on its row key before writing.
+
+categories:
+  - phylogenetics
+  - nrps_pks_domains
+
+# PROJECT.md section 8. The domain inventory is depth 2; the per-genome counts
+# and the multidomain proteins are depth 3; the length bins, the species counts
+# and the nearest neighbours are depth 4; the tree's splits and their taxonomy
+# are depth 5.
+depth: 5
+
+tool_versions:
+  pyrodigal: "3.7.1"
+  pyhmmer: "0.12.3"
+  biopython: "1.88"
+  scipy: "1.16.3"
+  gecco: "0.11.0"          # for its bundled Pfam 35.0 subset only
+  pfam: "35.0"
+  python: "3.13"
+
+solution:
+  steps:
+    - python {task}/solution/make_truth.py --task {task} --out {out}
+
+runtime:
+  vcpus: 4
+  ram_gb: 8
+  wall_clock_hours: 2
+  # Measured: about 4 s per assembly for the gene call and domain search, so
+  # ~8 min over 120, then the all-pairs alignment over the domain set, which is
+  # the bulk of the runtime. Biopython does roughly 30,000 local BLOSUM62
+  # scores per second, so no BLAST and no database are needed.
+
+network:
+  deny_terms:
+    - 10.1073/pnas.1324161111
+    - pnas.1324161111
+    - "Diversity and evolution of secondary metabolism in the marine actinomycete"
+  # The paper's supplementary data includes its own ketosynthase alignment and
+  # tree, and Pfam and InterPro would hand over domain boundaries the agent is
+  # supposed to compute. The staged assemblies and the bundled HMM are the only
+  # inputs the task needs.
+  deny_hosts:
+    - www.ncbi.nlm.nih.gov
+    - ftp.ncbi.nlm.nih.gov
+    - pfam.xfam.org
+    - www.ebi.ac.uk
+    - interpro-documentation.readthedocs.io
+
+# Findings from `npbench audit` that a reviewer has judged benign. Each is
+# matched on the message text, not a line number, so it survives an edit to
+# the prompt above it.
+audit_acknowledged:
+  - contains: '120 is the row count of genome_ks_counts.csv'
+    why: >-
+      120 is the number of staged assemblies, which the agent can count in
+      data/genomes/. One row per assembly is a structural statement about the
+      artifact, not a result.
+  - contains: '150 also appears as a value in truth/'
+    why: >-
+      150 is the prescribed minimum domain length, a method parameter. It
+      coincides with a length_aa value in truth/ because the floor is
+      inclusive.

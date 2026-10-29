@@ -1,0 +1,842 @@
+[
+  {
+    "path": "data/genomes/GCF_000016425.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/016/425/GCF_000016425.1_ASM1642v1/GCF_000016425.1_ASM1642v1_genomic.fna.gz",
+    "accession": "GCF_000016425.1",
+    "bytes": 1472514,
+    "sha256": "ec1ec4c04c84dde9a28983af3e40489958af418a61700c9845823aa566b513f6"
+  },
+  {
+    "path": "data/genomes/GCF_000373825.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/373/825/GCF_000373825.1_ASM37382v1/GCF_000373825.1_ASM37382v1_genomic.fna.gz",
+    "accession": "GCF_000373825.1",
+    "bytes": 1634450,
+    "sha256": "7afa78f416cf3ecb58b3dc869de79a80e36452a5e3a49ce8334cc5c8643245e8"
+  },
+  {
+    "path": "data/genomes/GCF_000373845.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/373/845/GCF_000373845.1_ASM37384v1/GCF_000373845.1_ASM37384v1_genomic.fna.gz",
+    "accession": "GCF_000373845.1",
+    "bytes": 1680259,
+    "sha256": "ba61fed840f168d2ed212fa6d949385e26ebfbc6979aed214d93601b684e9ebc"
+  },
+  {
+    "path": "data/genomes/GCF_000374665.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/374/665/GCF_000374665.1_ASM37466v1/GCF_000374665.1_ASM37466v1_genomic.fna.gz",
+    "accession": "GCF_000374665.1",
+    "bytes": 1570451,
+    "sha256": "5c7f3a2f6e2ba2fc14e05cac67dd068d2055c2cbdc9e1bc67b58c2befb11e9ed"
+  },
+  {
+    "path": "data/genomes/GCF_000374685.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/374/685/GCF_000374685.1_ASM37468v1/GCF_000374685.1_ASM37468v1_genomic.fna.gz",
+    "accession": "GCF_000374685.1",
+    "bytes": 1496924,
+    "sha256": "b673de0e66f7952715447b7b087d39498920b354738d441435cbb6ebb9acfb3d"
+  },
+  {
+    "path": "data/genomes/GCF_000374705.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/374/705/GCF_000374705.1_ASM37470v1/GCF_000374705.1_ASM37470v1_genomic.fna.gz",
+    "accession": "GCF_000374705.1",
+    "bytes": 1532221,
+    "sha256": "293b0489ad266cff7758cf4f510c16e4058c20251f29f79c8224d4346d603a84"
+  },
+  {
+    "path": "data/genomes/GCF_000374725.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/374/725/GCF_000374725.1_ASM37472v1/GCF_000374725.1_ASM37472v1_genomic.fna.gz",
+    "accession": "GCF_000374725.1",
+    "bytes": 1557880,
+    "sha256": "576709a8c4c3f2e0d4e6a12d900f3c0cbed49e8500c10fad21a3e64026b3c063"
+  },
+  {
+    "path": "data/genomes/GCF_000374745.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/374/745/GCF_000374745.1_ASM37474v1/GCF_000374745.1_ASM37474v1_genomic.fna.gz",
+    "accession": "GCF_000374745.1",
+    "bytes": 1622885,
+    "sha256": "496935f6e4b0a4cdc797291900cd5cdff5fb6ce471c3b20065362cfff4ebc705"
+  },
+  {
+    "path": "data/genomes/GCF_000374765.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/374/765/GCF_000374765.1_ASM37476v1/GCF_000374765.1_ASM37476v1_genomic.fna.gz",
+    "accession": "GCF_000374765.1",
+    "bytes": 1653388,
+    "sha256": "8a1eb5c30dce437f9cfe489709010d246ce1b5a291fd8a573948e526fce30879"
+  },
+  {
+    "path": "data/genomes/GCF_000374785.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/374/785/GCF_000374785.1_ASM37478v1/GCF_000374785.1_ASM37478v1_genomic.fna.gz",
+    "accession": "GCF_000374785.1",
+    "bytes": 1474354,
+    "sha256": "e5a61902458e8a2b0cc1665dd6fcbbee4a559cc857e9e35b5148de91a98f4417"
+  },
+  {
+    "path": "data/genomes/GCF_000375005.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/375/005/GCF_000375005.1_ASM37500v1/GCF_000375005.1_ASM37500v1_genomic.fna.gz",
+    "accession": "GCF_000375005.1",
+    "bytes": 1675632,
+    "sha256": "46a2d77a8a1816cda6bb5fdb7bcba87781cc070f6c4d2abd9057dfff3fcd14bc"
+  },
+  {
+    "path": "data/genomes/GCF_000375025.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/375/025/GCF_000375025.1_ASM37502v1/GCF_000375025.1_ASM37502v1_genomic.fna.gz",
+    "accession": "GCF_000375025.1",
+    "bytes": 1650978,
+    "sha256": "a26c380f74ac067ac41abe56c50b0374a39878a3d6fe97595931ebb50dfeac7e"
+  },
+  {
+    "path": "data/genomes/GCF_000375045.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/375/045/GCF_000375045.1_ASM37504v1/GCF_000375045.1_ASM37504v1_genomic.fna.gz",
+    "accession": "GCF_000375045.1",
+    "bytes": 1693401,
+    "sha256": "b1a74bde54c2332ea0a71c0a32913417c4bb5174c07da1f665b8f895e14d43c6"
+  },
+  {
+    "path": "data/genomes/GCF_000375065.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/375/065/GCF_000375065.1_ASM37506v1/GCF_000375065.1_ASM37506v1_genomic.fna.gz",
+    "accession": "GCF_000375065.1",
+    "bytes": 1640708,
+    "sha256": "728d1e67cf868e3904aeec4589d1971d1c42e831dd49b38354842672d7368a45"
+  },
+  {
+    "path": "data/genomes/GCF_000375085.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/375/085/GCF_000375085.1_ASM37508v1/GCF_000375085.1_ASM37508v1_genomic.fna.gz",
+    "accession": "GCF_000375085.1",
+    "bytes": 1593303,
+    "sha256": "bf161fa20be91734483a5e57d8f9f6eb337728f24b8e599048d0d7ae00f9a8c1"
+  },
+  {
+    "path": "data/genomes/GCF_000375105.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/375/105/GCF_000375105.1_ASM37510v1/GCF_000375105.1_ASM37510v1_genomic.fna.gz",
+    "accession": "GCF_000375105.1",
+    "bytes": 1624803,
+    "sha256": "6ff929fd159823d70077cf2795b97004bbe55b5148e0bbedc2210641770f0d32"
+  },
+  {
+    "path": "data/genomes/GCF_000375125.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/375/125/GCF_000375125.1_ASM37512v1/GCF_000375125.1_ASM37512v1_genomic.fna.gz",
+    "accession": "GCF_000375125.1",
+    "bytes": 1638970,
+    "sha256": "f25bf986b881767933fb16fefcafd827582a78e8bf0bfa6261664d1fa8b9494a"
+  },
+  {
+    "path": "data/genomes/GCF_000375145.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/375/145/GCF_000375145.1_ASM37514v1/GCF_000375145.1_ASM37514v1_genomic.fna.gz",
+    "accession": "GCF_000375145.1",
+    "bytes": 1667039,
+    "sha256": "a49e54598455c4574dae206e54f6b1f0827069024dd510278e59adbd0b67bba9"
+  },
+  {
+    "path": "data/genomes/GCF_000375165.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/375/165/GCF_000375165.1_ASM37516v1/GCF_000375165.1_ASM37516v1_genomic.fna.gz",
+    "accession": "GCF_000375165.1",
+    "bytes": 1651182,
+    "sha256": "918bb9c005163866d1546a95cb804753d64283d32592762545add16c02abfe2b"
+  },
+  {
+    "path": "data/genomes/GCF_000375185.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/375/185/GCF_000375185.1_ASM37518v1/GCF_000375185.1_ASM37518v1_genomic.fna.gz",
+    "accession": "GCF_000375185.1",
+    "bytes": 1649411,
+    "sha256": "1c057e2101cea5c09de257b87ae8f05c4735c0e546a05d737def11b8b03893e5"
+  },
+  {
+    "path": "data/genomes/GCF_000375205.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/375/205/GCF_000375205.1_ASM37520v1/GCF_000375205.1_ASM37520v1_genomic.fna.gz",
+    "accession": "GCF_000375205.1",
+    "bytes": 1736427,
+    "sha256": "d0b09a09f77f7f1e32dc8a1c214e8a975084917316e18eaebd59d85ed03a2b2e"
+  },
+  {
+    "path": "data/genomes/GCF_000375225.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/375/225/GCF_000375225.1_ASM37522v1/GCF_000375225.1_ASM37522v1_genomic.fna.gz",
+    "accession": "GCF_000375225.1",
+    "bytes": 1566900,
+    "sha256": "e84276b841dbd104704e8e87211a79bbd1125c0b6368dea698db48f83c41473f"
+  },
+  {
+    "path": "data/genomes/GCF_000375245.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/375/245/GCF_000375245.1_ASM37524v1/GCF_000375245.1_ASM37524v1_genomic.fna.gz",
+    "accession": "GCF_000375245.1",
+    "bytes": 1492683,
+    "sha256": "547b894cc6248cd368fef0259e0b80c7265bc0fb625d4bbc1dde30ce1c6c80f9"
+  },
+  {
+    "path": "data/genomes/GCF_000375265.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/375/265/GCF_000375265.1_ASM37526v1/GCF_000375265.1_ASM37526v1_genomic.fna.gz",
+    "accession": "GCF_000375265.1",
+    "bytes": 1526502,
+    "sha256": "331fbac3ee9829d18f10b2f7359493a09888a7f7f2aacfbacaa1f0715a50d4d7"
+  },
+  {
+    "path": "data/genomes/GCF_000375285.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/375/285/GCF_000375285.1_ASM37528v1/GCF_000375285.1_ASM37528v1_genomic.fna.gz",
+    "accession": "GCF_000375285.1",
+    "bytes": 1503756,
+    "sha256": "c4ee908bddf60d9e5e9f78350dd739b2fe4c0212466f904035dff38e19512b6b"
+  },
+  {
+    "path": "data/genomes/GCF_000375305.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/375/305/GCF_000375305.1_ASM37530v1/GCF_000375305.1_ASM37530v1_genomic.fna.gz",
+    "accession": "GCF_000375305.1",
+    "bytes": 1633680,
+    "sha256": "6553bb5c1b20acaec773181709530d39b655e5f4ed30647322b88bb3f9225894"
+  },
+  {
+    "path": "data/genomes/GCF_000377025.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/377/025/GCF_000377025.1_ASM37702v1/GCF_000377025.1_ASM37702v1_genomic.fna.gz",
+    "accession": "GCF_000377025.1",
+    "bytes": 1572406,
+    "sha256": "b1e9bb7e30628d2ec7b15d0cc89133b9da3c17396f57236b4a5178286df5889a"
+  },
+  {
+    "path": "data/genomes/GCF_000377045.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/377/045/GCF_000377045.1_ASM37704v1/GCF_000377045.1_ASM37704v1_genomic.fna.gz",
+    "accession": "GCF_000377045.1",
+    "bytes": 1642462,
+    "sha256": "809392491cda4e62ae05cd54628eea8f05651581cca0ff9dd58a74c8ee24d965"
+  },
+  {
+    "path": "data/genomes/GCF_000377065.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/377/065/GCF_000377065.1_ASM37706v1/GCF_000377065.1_ASM37706v1_genomic.fna.gz",
+    "accession": "GCF_000377065.1",
+    "bytes": 1607678,
+    "sha256": "e1d4d5f47b54abc19cbb48967a75a6f2f9d947849a027ee5d96c679ad7155a01"
+  },
+  {
+    "path": "data/genomes/GCF_000377085.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/377/085/GCF_000377085.1_ASM37708v1/GCF_000377085.1_ASM37708v1_genomic.fna.gz",
+    "accession": "GCF_000377085.1",
+    "bytes": 1482404,
+    "sha256": "8a9412816d885c83cfbfe632f17763b6982c80a222fb5ee31570aae6ac95fdca"
+  },
+  {
+    "path": "data/genomes/GCF_000377605.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/377/605/GCF_000377605.1_ASM37760v1/GCF_000377605.1_ASM37760v1_genomic.fna.gz",
+    "accession": "GCF_000377605.1",
+    "bytes": 1667124,
+    "sha256": "002d8871333a47c71cb63e7dc158226811fca39a6eb0e7d7de51e7e505713012"
+  },
+  {
+    "path": "data/genomes/GCF_000378645.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/378/645/GCF_000378645.1_ASM37864v1/GCF_000378645.1_ASM37864v1_genomic.fna.gz",
+    "accession": "GCF_000378645.1",
+    "bytes": 1661445,
+    "sha256": "6238fe8ccbf953235dde3d216f1f590d0fdb79a251e25694c503106663df99f9"
+  },
+  {
+    "path": "data/genomes/GCF_000378665.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/378/665/GCF_000378665.1_ASM37866v1/GCF_000378665.1_ASM37866v1_genomic.fna.gz",
+    "accession": "GCF_000378665.1",
+    "bytes": 1553600,
+    "sha256": "c4f856b95a9732a99b2c1692a3267aa95fdf6f85895e4cbefec19aa6c22e3990"
+  },
+  {
+    "path": "data/genomes/GCF_000378685.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/378/685/GCF_000378685.1_ASM37868v1/GCF_000378685.1_ASM37868v1_genomic.fna.gz",
+    "accession": "GCF_000378685.1",
+    "bytes": 1645366,
+    "sha256": "f11d1bebe80cfaf4a465c6ab3e6a8590ad15373a8fcfcc89546f9ad171759ab6"
+  },
+  {
+    "path": "data/genomes/GCF_000378705.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/378/705/GCF_000378705.1_ASM37870v1/GCF_000378705.1_ASM37870v1_genomic.fna.gz",
+    "accession": "GCF_000378705.1",
+    "bytes": 1644440,
+    "sha256": "9b726b26f116b712811e22509dc60228de75e70929b9d4528576b0e6e8f588e1"
+  },
+  {
+    "path": "data/genomes/GCF_000378825.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/378/825/GCF_000378825.1_ASM37882v1/GCF_000378825.1_ASM37882v1_genomic.fna.gz",
+    "accession": "GCF_000378825.1",
+    "bytes": 1447034,
+    "sha256": "b5645b946cdb10c22c9b2d04c180ff899e4cabf38f62c147c740f14346f5f0e6"
+  },
+  {
+    "path": "data/genomes/GCF_000378845.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/378/845/GCF_000378845.1_ASM37884v1/GCF_000378845.1_ASM37884v1_genomic.fna.gz",
+    "accession": "GCF_000378845.1",
+    "bytes": 1547121,
+    "sha256": "1235813d2973ca2b43d1bca966c71f45a71a627dcdd58adc986e35c8a47cf238"
+  },
+  {
+    "path": "data/genomes/GCF_000379065.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/379/065/GCF_000379065.1_ASM37906v1/GCF_000379065.1_ASM37906v1_genomic.fna.gz",
+    "accession": "GCF_000379065.1",
+    "bytes": 1479093,
+    "sha256": "e76ff6bcfe51c6fbf46cbfbecaac5daffbf7c0a74fd23791bfef99c3d7411a58"
+  },
+  {
+    "path": "data/genomes/GCF_000380945.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/380/945/GCF_000380945.1_ASM38094v1/GCF_000380945.1_ASM38094v1_genomic.fna.gz",
+    "accession": "GCF_000380945.1",
+    "bytes": 1588891,
+    "sha256": "407a194d89521968369fe7235f9844236c6b44462080676360524d04efb9b4d3"
+  },
+  {
+    "path": "data/genomes/GCF_000383575.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/383/575/GCF_000383575.1_ASM38357v1/GCF_000383575.1_ASM38357v1_genomic.fna.gz",
+    "accession": "GCF_000383575.1",
+    "bytes": 1546006,
+    "sha256": "c8dccc32e285a5928dfc3b7fad940059dffde5742845f42e7f020f00611a4319"
+  },
+  {
+    "path": "data/genomes/GCF_000384275.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/384/275/GCF_000384275.1_ASM38427v1/GCF_000384275.1_ASM38427v1_genomic.fna.gz",
+    "accession": "GCF_000384275.1",
+    "bytes": 1666484,
+    "sha256": "3af73dbc3db5e085ea4022d6c9922d8615deb3f626b17fa800e33a8d7ca0df17"
+  },
+  {
+    "path": "data/genomes/GCF_000424725.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/424/725/GCF_000424725.1_ASM42472v1/GCF_000424725.1_ASM42472v1_genomic.fna.gz",
+    "accession": "GCF_000424725.1",
+    "bytes": 1557335,
+    "sha256": "9d8c9ff83138d6a7405ae6ed8417796a665a881b0ee139c0027c5dfde3e1150b"
+  },
+  {
+    "path": "data/genomes/GCF_000424745.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/424/745/GCF_000424745.1_ASM42474v1/GCF_000424745.1_ASM42474v1_genomic.fna.gz",
+    "accession": "GCF_000424745.1",
+    "bytes": 1641759,
+    "sha256": "52b0a6e54250f881467742f0da8d6e9f9de8b7dfc794c037d3d7a6b425109a07"
+  },
+  {
+    "path": "data/genomes/GCF_000424865.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/424/865/GCF_000424865.1_ASM42486v1/GCF_000424865.1_ASM42486v1_genomic.fna.gz",
+    "accession": "GCF_000424865.1",
+    "bytes": 1577091,
+    "sha256": "428858414bd0b27924d628b2d7a86a2f163f47613b9c41f3d08e899b7a313f78"
+  },
+  {
+    "path": "data/genomes/GCF_000424885.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/424/885/GCF_000424885.1_ASM42488v1/GCF_000424885.1_ASM42488v1_genomic.fna.gz",
+    "accession": "GCF_000424885.1",
+    "bytes": 1644229,
+    "sha256": "83f737e99e11114c2bd43b03746282223a97ee425ec2f000b6e897f824dedd00"
+  },
+  {
+    "path": "data/genomes/GCF_000424905.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/424/905/GCF_000424905.1_ASM42490v1/GCF_000424905.1_ASM42490v1_genomic.fna.gz",
+    "accession": "GCF_000424905.1",
+    "bytes": 1498314,
+    "sha256": "c9e03d90a3636a1760c2501fb02a68837c1ecfb946d437da18c5d6960cf7b51c"
+  },
+  {
+    "path": "data/genomes/GCF_000424925.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/424/925/GCF_000424925.1_ASM42492v1/GCF_000424925.1_ASM42492v1_genomic.fna.gz",
+    "accession": "GCF_000424925.1",
+    "bytes": 1535691,
+    "sha256": "b06cccf052d141bef0c163c1d9b639400b633234e7d87c7e5f46561db694d534"
+  },
+  {
+    "path": "data/genomes/GCF_000425925.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/425/925/GCF_000425925.1_ASM42592v1/GCF_000425925.1_ASM42592v1_genomic.fna.gz",
+    "accession": "GCF_000425925.1",
+    "bytes": 1482147,
+    "sha256": "e1cb6a0bdf0f4b4ec49306eaeeb5aefbab3fa5c477cf2f9d7d9bccc0e8f8aaeb"
+  },
+  {
+    "path": "data/genomes/GCF_000482565.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/482/565/GCF_000482565.1_ASM48256v1/GCF_000482565.1_ASM48256v1_genomic.fna.gz",
+    "accession": "GCF_000482565.1",
+    "bytes": 1631256,
+    "sha256": "f924ede565d54975d8794775f8aa8a1cc930ec23275b80b1a91e0f74373ce218"
+  },
+  {
+    "path": "data/genomes/GCF_000514035.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/514/035/GCF_000514035.1_ASM51403v1/GCF_000514035.1_ASM51403v1_genomic.fna.gz",
+    "accession": "GCF_000514035.1",
+    "bytes": 1607548,
+    "sha256": "95222d87da65567ec8baa0de5a35be1727573339fe9e2defaab89d4407c49a68"
+  },
+  {
+    "path": "data/genomes/GCF_000514415.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/514/415/GCF_000514415.1_ASM51441v1/GCF_000514415.1_ASM51441v1_genomic.fna.gz",
+    "accession": "GCF_000514415.1",
+    "bytes": 1542738,
+    "sha256": "0b74e755b7510c80c79cb2eb81297b678047e472f7f6c6aa389612dcb8d0eede"
+  },
+  {
+    "path": "data/genomes/GCF_000514435.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/514/435/GCF_000514435.1_ASM51443v1/GCF_000514435.1_ASM51443v1_genomic.fna.gz",
+    "accession": "GCF_000514435.1",
+    "bytes": 1446787,
+    "sha256": "3b16901df992d727e71b3ace8e334d896f9a4f261b971756e3a605a635e98f6d"
+  },
+  {
+    "path": "data/genomes/GCF_000514455.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/514/455/GCF_000514455.1_ASM51445v1/GCF_000514455.1_ASM51445v1_genomic.fna.gz",
+    "accession": "GCF_000514455.1",
+    "bytes": 1543678,
+    "sha256": "8be7558981bb62d2054d8b258e4b82c8eb4e343a237beb1293d409a01952d371"
+  },
+  {
+    "path": "data/genomes/GCF_000514475.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/514/475/GCF_000514475.1_ASM51447v1/GCF_000514475.1_ASM51447v1_genomic.fna.gz",
+    "accession": "GCF_000514475.1",
+    "bytes": 1580210,
+    "sha256": "f4c1850be042d14cd450a575f1babf1a6a916512ddcdccf3e6a809b6f046350e"
+  },
+  {
+    "path": "data/genomes/GCF_000514495.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/514/495/GCF_000514495.1_ASM51449v1/GCF_000514495.1_ASM51449v1_genomic.fna.gz",
+    "accession": "GCF_000514495.1",
+    "bytes": 1570318,
+    "sha256": "46ec8d80148a1c0ddaaae432ee1242865b7df65a749e9140c58a47bdcab343cc"
+  },
+  {
+    "path": "data/genomes/GCF_000514515.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/514/515/GCF_000514515.1_ASM51451v1/GCF_000514515.1_ASM51451v1_genomic.fna.gz",
+    "accession": "GCF_000514515.1",
+    "bytes": 1494333,
+    "sha256": "7ba5d1920bb81fcfbb76330963d655189fcc741e72e27a633b6d775b9d4794ca"
+  },
+  {
+    "path": "data/genomes/GCF_000514535.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/514/535/GCF_000514535.1_ASM51453v1/GCF_000514535.1_ASM51453v1_genomic.fna.gz",
+    "accession": "GCF_000514535.1",
+    "bytes": 1570215,
+    "sha256": "96b93d484e191af640951ccaaf77eabaee70dbcdd733e62f28863b7158b0b6df"
+  },
+  {
+    "path": "data/genomes/GCF_000514555.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/514/555/GCF_000514555.1_ASM51455v1/GCF_000514555.1_ASM51455v1_genomic.fna.gz",
+    "accession": "GCF_000514555.1",
+    "bytes": 1634254,
+    "sha256": "9f48ea0cdab1c1dcd324fcb091266042aab3dde2a74f4b40d4f75441e40bea96"
+  },
+  {
+    "path": "data/genomes/GCF_000514595.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/514/595/GCF_000514595.1_ASM51459v1/GCF_000514595.1_ASM51459v1_genomic.fna.gz",
+    "accession": "GCF_000514595.1",
+    "bytes": 1558098,
+    "sha256": "8b3e297085fd3ab2a46e4f5994ce6bbc6c75879468a02d2e41dd4c04414859d6"
+  },
+  {
+    "path": "data/genomes/GCF_000514615.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/514/615/GCF_000514615.1_ASM51461v1/GCF_000514615.1_ASM51461v1_genomic.fna.gz",
+    "accession": "GCF_000514615.1",
+    "bytes": 1608171,
+    "sha256": "b1ebb27fcc05a88f3c6f787f43fae358479ad659c2743239994f217e1bbcc134"
+  },
+  {
+    "path": "data/genomes/GCF_000514635.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/514/635/GCF_000514635.1_ASM51463v1/GCF_000514635.1_ASM51463v1_genomic.fna.gz",
+    "accession": "GCF_000514635.1",
+    "bytes": 1544333,
+    "sha256": "5244d18df45ad1f86697d4b927580c47cdce646ab8c31e308205253307d30f20"
+  },
+  {
+    "path": "data/genomes/GCF_000514655.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/514/655/GCF_000514655.1_ASM51465v1/GCF_000514655.1_ASM51465v1_genomic.fna.gz",
+    "accession": "GCF_000514655.1",
+    "bytes": 1633581,
+    "sha256": "7500513136e2ca5d2880966e87124b22b9910544a57ea99e25b69227b41f46c9"
+  },
+  {
+    "path": "data/genomes/GCF_000514675.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/514/675/GCF_000514675.1_ASM51467v1/GCF_000514675.1_ASM51467v1_genomic.fna.gz",
+    "accession": "GCF_000514675.1",
+    "bytes": 1444958,
+    "sha256": "59ca05ef4eebbaeee1797748f3ac5d7753e4c275fc2332d6475a2635d33a24cd"
+  },
+  {
+    "path": "data/genomes/GCF_000514695.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/514/695/GCF_000514695.1_ASM51469v1/GCF_000514695.1_ASM51469v1_genomic.fna.gz",
+    "accession": "GCF_000514695.1",
+    "bytes": 1497146,
+    "sha256": "f7ad36e90e1a1e5f744f0c997f3b7d6b5e561965dcd812690b1a1f5dc2f24305"
+  },
+  {
+    "path": "data/genomes/GCF_000514735.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/514/735/GCF_000514735.1_ASM51473v1/GCF_000514735.1_ASM51473v1_genomic.fna.gz",
+    "accession": "GCF_000514735.1",
+    "bytes": 1450868,
+    "sha256": "e8d524a971d59c2db5489861b6d7ca9f61d0484463a02fa77189df08f7aea9e1"
+  },
+  {
+    "path": "data/genomes/GCF_000514755.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/514/755/GCF_000514755.1_ASM51475v1/GCF_000514755.1_ASM51475v1_genomic.fna.gz",
+    "accession": "GCF_000514755.1",
+    "bytes": 1579188,
+    "sha256": "1f229cafcda1234205a71120298832f0ecb4f76f835f380d37ace89eccfec56f"
+  },
+  {
+    "path": "data/genomes/GCF_000514775.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/514/775/GCF_000514775.1_ASM51477v1/GCF_000514775.1_ASM51477v1_genomic.fna.gz",
+    "accession": "GCF_000514775.1",
+    "bytes": 1679681,
+    "sha256": "f1a64ac1bd74b01226b123bbf0ada06e696ef96d5a9ee2072178c4789d324599"
+  },
+  {
+    "path": "data/genomes/GCF_000514795.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/514/795/GCF_000514795.1_ASM51479v1/GCF_000514795.1_ASM51479v1_genomic.fna.gz",
+    "accession": "GCF_000514795.1",
+    "bytes": 1598291,
+    "sha256": "b1ee406f1dc7538353c5551cba375c8e44a82b8c87b4b28d9011891dc0d4da4e"
+  },
+  {
+    "path": "data/genomes/GCF_000514815.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/514/815/GCF_000514815.1_ASM51481v1/GCF_000514815.1_ASM51481v1_genomic.fna.gz",
+    "accession": "GCF_000514815.1",
+    "bytes": 1499294,
+    "sha256": "7508358350aa70bbf000b3170dd84a31f19d5dc04c81442641ef4bddadcee4ed"
+  },
+  {
+    "path": "data/genomes/GCF_000514835.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/514/835/GCF_000514835.1_ASM51483v1/GCF_000514835.1_ASM51483v1_genomic.fna.gz",
+    "accession": "GCF_000514835.1",
+    "bytes": 1521765,
+    "sha256": "cb90e55f876546a60a36acd216729b1907e93206a10610bae66253f0bf7cb883"
+  },
+  {
+    "path": "data/genomes/GCF_000514855.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/514/855/GCF_000514855.1_ASM51485v1/GCF_000514855.1_ASM51485v1_genomic.fna.gz",
+    "accession": "GCF_000514855.1",
+    "bytes": 1488528,
+    "sha256": "ee8dc0fecdce454605a02431eb5625b64a9b4c553241dc23f6e27dbedc45175d"
+  },
+  {
+    "path": "data/genomes/GCF_000514875.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/514/875/GCF_000514875.1_ASM51487v1/GCF_000514875.1_ASM51487v1_genomic.fna.gz",
+    "accession": "GCF_000514875.1",
+    "bytes": 1613586,
+    "sha256": "7eb0ff9a817df2290eaed33d2db1a3bbfd25cd424805ad84e931e49c8f8eb79f"
+  },
+  {
+    "path": "data/genomes/GCF_000514895.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/514/895/GCF_000514895.1_ASM51489v1/GCF_000514895.1_ASM51489v1_genomic.fna.gz",
+    "accession": "GCF_000514895.1",
+    "bytes": 1647163,
+    "sha256": "f9688122aa96e808e9118fdd51fad05d6165f1448f8faa2a19067942de8760b7"
+  },
+  {
+    "path": "data/genomes/GCF_000514915.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/514/915/GCF_000514915.1_ASM51491v1/GCF_000514915.1_ASM51491v1_genomic.fna.gz",
+    "accession": "GCF_000514915.1",
+    "bytes": 1648685,
+    "sha256": "82027c144984cff2475c5097bab3e90fdf7f39b85790f68dca73c279106004c9"
+  },
+  {
+    "path": "data/genomes/GCF_000514935.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/514/935/GCF_000514935.1_ASM51493v1/GCF_000514935.1_ASM51493v1_genomic.fna.gz",
+    "accession": "GCF_000514935.1",
+    "bytes": 1640737,
+    "sha256": "2ef29a2a3c187b9d7404a52731e6ff2088980ac17e37a34056443bb45381f0e5"
+  },
+  {
+    "path": "data/genomes/GCF_000514955.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/514/955/GCF_000514955.1_ASM51495v1/GCF_000514955.1_ASM51495v1_genomic.fna.gz",
+    "accession": "GCF_000514955.1",
+    "bytes": 1635969,
+    "sha256": "edc4bbd16873e22c892464f49450a667c31feacb45fe2eff1c97d67d88dc4fb0"
+  },
+  {
+    "path": "data/genomes/GCF_000515015.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/515/015/GCF_000515015.1_ASM51501v1/GCF_000515015.1_ASM51501v1_genomic.fna.gz",
+    "accession": "GCF_000515015.1",
+    "bytes": 1618411,
+    "sha256": "50a1e527a6a35b9d3b9a280f9c58c18c5689bc70f3142b7656a8674896543e0e"
+  },
+  {
+    "path": "data/genomes/GCF_000515035.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/515/035/GCF_000515035.1_ASM51503v1/GCF_000515035.1_ASM51503v1_genomic.fna.gz",
+    "accession": "GCF_000515035.1",
+    "bytes": 1622720,
+    "sha256": "a9a85d546b6b018e9a67562e5e053d6867df6cda0e89bc426d1c14ef9e004e9f"
+  },
+  {
+    "path": "data/genomes/GCF_000515075.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/515/075/GCF_000515075.1_ASM51507v1/GCF_000515075.1_ASM51507v1_genomic.fna.gz",
+    "accession": "GCF_000515075.1",
+    "bytes": 1592120,
+    "sha256": "0d7d1c9f620e44748fc4cbd5d7821d86fdb582dfba0c88026d5729c8665c9abc"
+  },
+  {
+    "path": "data/genomes/GCF_000515095.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/515/095/GCF_000515095.1_ASM51509v1/GCF_000515095.1_ASM51509v1_genomic.fna.gz",
+    "accession": "GCF_000515095.1",
+    "bytes": 1500980,
+    "sha256": "d4b3c19451032b5b6aa7079959784798adb22474c4136cb3205810b390c3af33"
+  },
+  {
+    "path": "data/genomes/GCF_000515135.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/515/135/GCF_000515135.1_ASM51513v1/GCF_000515135.1_ASM51513v1_genomic.fna.gz",
+    "accession": "GCF_000515135.1",
+    "bytes": 1578757,
+    "sha256": "981c226b53c38d2d0ab611789faff9ccb40139be3b191afb6931de5fc6476399"
+  },
+  {
+    "path": "data/genomes/GCF_000515155.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/515/155/GCF_000515155.1_ASM51515v1/GCF_000515155.1_ASM51515v1_genomic.fna.gz",
+    "accession": "GCF_000515155.1",
+    "bytes": 1585816,
+    "sha256": "aff453a25cf731980a7ec232ed367db089147a3141e85f3e73f7f53a9a7fd6a4"
+  },
+  {
+    "path": "data/genomes/GCF_000515175.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/515/175/GCF_000515175.1_ASM51517v1/GCF_000515175.1_ASM51517v1_genomic.fna.gz",
+    "accession": "GCF_000515175.1",
+    "bytes": 1714556,
+    "sha256": "3223579a9253a206bb1569a6ea25bce744082c6d877ec11b47c06039e09725e2"
+  },
+  {
+    "path": "data/genomes/GCF_000519145.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/519/145/GCF_000519145.1_ASM51914v1/GCF_000519145.1_ASM51914v1_genomic.fna.gz",
+    "accession": "GCF_000519145.1",
+    "bytes": 1693031,
+    "sha256": "d6c30a8ef24be4df9c651981c3ef4feefbf6cfdeeee5f4fd1030aa1b4376ffc4"
+  },
+  {
+    "path": "data/genomes/GCF_000620325.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/620/325/GCF_000620325.1_ASM62032v1/GCF_000620325.1_ASM62032v1_genomic.fna.gz",
+    "accession": "GCF_000620325.1",
+    "bytes": 1537510,
+    "sha256": "ea0909235bb14d3552aa0666c1f3ca0ef0b61b209f9be42e175bf34c2a835631"
+  },
+  {
+    "path": "data/genomes/GCF_000620345.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/620/345/GCF_000620345.1_ASM62034v1/GCF_000620345.1_ASM62034v1_genomic.fna.gz",
+    "accession": "GCF_000620345.1",
+    "bytes": 1476709,
+    "sha256": "dca8cdae00730baa71a5436edb2606b4917004b1eddf670961df01854dcc2d33"
+  },
+  {
+    "path": "data/genomes/GCF_000702345.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/702/345/GCF_000702345.1_ASM70234v1/GCF_000702345.1_ASM70234v1_genomic.fna.gz",
+    "accession": "GCF_000702345.1",
+    "bytes": 1679753,
+    "sha256": "4dcc01b87e496c6ea7a9c060c0932555868e209191952e839ac0f167cb54eef7"
+  },
+  {
+    "path": "data/genomes/GCF_013416675.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/013/416/675/GCF_013416675.1_ASM1341667v1/GCF_013416675.1_ASM1341667v1_genomic.fna.gz",
+    "accession": "GCF_013416675.1",
+    "bytes": 1494848,
+    "sha256": "55264567c0ecdcf42b9691932d0f182efdcd7ee7cf8f03c8f07cd2e12636eb72"
+  },
+  {
+    "path": "data/genomes/GCF_023845025.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/023/845/025/GCF_023845025.1_ASM2384502v1/GCF_023845025.1_ASM2384502v1_genomic.fna.gz",
+    "accession": "GCF_023845025.1",
+    "bytes": 1546224,
+    "sha256": "e3c23603583453a53c57565f2fa5f7f54a601d47d3125d024bf60d65ed913ba3"
+  },
+  {
+    "path": "data/genomes/GCF_058448785.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/058/448/785/GCF_058448785.1_ASM5844878v1/GCF_058448785.1_ASM5844878v1_genomic.fna.gz",
+    "accession": "GCF_058448785.1",
+    "bytes": 1547268,
+    "sha256": "81a06a45d7bc1bdf2baec7a096b60093178905b0ba80c84cfbe76446d0db81f6"
+  },
+  {
+    "path": "data/genomes/GCF_058448815.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/058/448/815/GCF_058448815.1_ASM5844881v1/GCF_058448815.1_ASM5844881v1_genomic.fna.gz",
+    "accession": "GCF_058448815.1",
+    "bytes": 1495030,
+    "sha256": "af2d931b789f4436a29c74469cebdb72b22a994d2ba573fd0c495fc1d4def04c"
+  },
+  {
+    "path": "data/genomes/GCF_058448845.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/058/448/845/GCF_058448845.1_ASM5844884v1/GCF_058448845.1_ASM5844884v1_genomic.fna.gz",
+    "accession": "GCF_058448845.1",
+    "bytes": 1545175,
+    "sha256": "fca8804847fbe6a7bc3e6625054dbcd4ebb0136c6b126c5d93bfc4d393b7f692"
+  },
+  {
+    "path": "data/genomes/GCF_058448855.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/058/448/855/GCF_058448855.1_ASM5844885v1/GCF_058448855.1_ASM5844885v1_genomic.fna.gz",
+    "accession": "GCF_058448855.1",
+    "bytes": 1665224,
+    "sha256": "7ee0b96ef79378966ba4f3b5e3e13219700230eec716f1a80b199254a16abb42"
+  },
+  {
+    "path": "data/genomes/GCF_059569595.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/059/569/595/GCF_059569595.1_ASM5956959v1/GCF_059569595.1_ASM5956959v1_genomic.fna.gz",
+    "accession": "GCF_059569595.1",
+    "bytes": 1667868,
+    "sha256": "8fd887572eccee65294784c29b3660bc776a14312f37a278ddc803eeb958c96c"
+  },
+  {
+    "path": "data/genomes/GCF_059569615.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/059/569/615/GCF_059569615.1_ASM5956961v1/GCF_059569615.1_ASM5956961v1_genomic.fna.gz",
+    "accession": "GCF_059569615.1",
+    "bytes": 1414404,
+    "sha256": "cbcba80f0f9fed59a5c869426908b38e2d6ba13bf6f501f8b64a0ee38dc281ac"
+  },
+  {
+    "path": "data/genomes/GCF_059569625.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/059/569/625/GCF_059569625.1_ASM5956962v1/GCF_059569625.1_ASM5956962v1_genomic.fna.gz",
+    "accession": "GCF_059569625.1",
+    "bytes": 1592405,
+    "sha256": "49f78da68bb7cea735d6fc32d3a90cb1101435136f550aa76b2a85ed67cbf9ab"
+  },
+  {
+    "path": "data/genomes/GCF_059569695.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/059/569/695/GCF_059569695.1_ASM5956969v1/GCF_059569695.1_ASM5956969v1_genomic.fna.gz",
+    "accession": "GCF_059569695.1",
+    "bytes": 1561951,
+    "sha256": "da6efef57bec4665e50d89a929ddf0716f07baf36227637def8191f9498d21af"
+  },
+  {
+    "path": "data/genomes/GCF_059569755.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/059/569/755/GCF_059569755.1_ASM5956975v1/GCF_059569755.1_ASM5956975v1_genomic.fna.gz",
+    "accession": "GCF_059569755.1",
+    "bytes": 1554858,
+    "sha256": "ef824cae8b08181d121f723b069c6ee905e6cb488dda891ac95406986c08ca62"
+  },
+  {
+    "path": "data/genomes/GCF_059569795.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/059/569/795/GCF_059569795.1_ASM5956979v1/GCF_059569795.1_ASM5956979v1_genomic.fna.gz",
+    "accession": "GCF_059569795.1",
+    "bytes": 1605516,
+    "sha256": "0f7a6c25ee173604614173a219baff4e9226a6e417c642db351579ba5b228437"
+  },
+  {
+    "path": "data/genomes/GCF_059569875.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/059/569/875/GCF_059569875.1_ASM5956987v1/GCF_059569875.1_ASM5956987v1_genomic.fna.gz",
+    "accession": "GCF_059569875.1",
+    "bytes": 1593491,
+    "sha256": "0db2357d182cef9057fd07e5096b035f572e660f1df09198bcf4d5150913b991"
+  },
+  {
+    "path": "data/genomes/GCF_059569915.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/059/569/915/GCF_059569915.1_ASM5956991v1/GCF_059569915.1_ASM5956991v1_genomic.fna.gz",
+    "accession": "GCF_059569915.1",
+    "bytes": 1733763,
+    "sha256": "d843621678b24add422c7e60ab421c157d11877fadbc28f7ef0bd113b3eb978e"
+  },
+  {
+    "path": "data/genomes/GCF_059569975.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/059/569/975/GCF_059569975.1_ASM5956997v1/GCF_059569975.1_ASM5956997v1_genomic.fna.gz",
+    "accession": "GCF_059569975.1",
+    "bytes": 1682445,
+    "sha256": "6b54318498a6673d785542fdff06095f53073bcbcd3c4410292204c5d175d096"
+  },
+  {
+    "path": "data/genomes/GCF_059570015.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/059/570/015/GCF_059570015.1_ASM5957001v1/GCF_059570015.1_ASM5957001v1_genomic.fna.gz",
+    "accession": "GCF_059570015.1",
+    "bytes": 1459678,
+    "sha256": "af5c529a0016042f075a92eadf6033fbdb8319778825b47487ee9a89f6754a6d"
+  },
+  {
+    "path": "data/genomes/GCF_059570035.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/059/570/035/GCF_059570035.1_ASM5957003v1/GCF_059570035.1_ASM5957003v1_genomic.fna.gz",
+    "accession": "GCF_059570035.1",
+    "bytes": 1797967,
+    "sha256": "7e94f934a1ebeeb4f26132ebd8c01ffac4aede6b0329513df9337fac6f4edbc0"
+  },
+  {
+    "path": "data/genomes/GCF_059570075.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/059/570/075/GCF_059570075.1_ASM5957007v1/GCF_059570075.1_ASM5957007v1_genomic.fna.gz",
+    "accession": "GCF_059570075.1",
+    "bytes": 1624918,
+    "sha256": "6b0037ca5e3d5b8be9b64921ce676c2c6d0dfb33df2da6f16fb8dfcddcaa3c47"
+  },
+  {
+    "path": "data/genomes/GCF_059570135.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/059/570/135/GCF_059570135.1_ASM5957013v1/GCF_059570135.1_ASM5957013v1_genomic.fna.gz",
+    "accession": "GCF_059570135.1",
+    "bytes": 1647762,
+    "sha256": "99693c954c53c1307de7178171ae02fbab0f4eddd374a3edef6e679e692a5481"
+  },
+  {
+    "path": "data/genomes/GCF_059570155.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/059/570/155/GCF_059570155.1_ASM5957015v1/GCF_059570155.1_ASM5957015v1_genomic.fna.gz",
+    "accession": "GCF_059570155.1",
+    "bytes": 1567273,
+    "sha256": "4bafae926f9429e5b6567ee6d761f15886f9a0e55c895daf2de2c8b306af7586"
+  },
+  {
+    "path": "data/genomes/GCF_059570215.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/059/570/215/GCF_059570215.1_ASM5957021v1/GCF_059570215.1_ASM5957021v1_genomic.fna.gz",
+    "accession": "GCF_059570215.1",
+    "bytes": 1683958,
+    "sha256": "cc3562aa97c4447ff0b5bd07a46a469bad44f60ef84ca0c8266bd946c638febc"
+  },
+  {
+    "path": "data/genomes/GCF_059570235.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/059/570/235/GCF_059570235.1_ASM5957023v1/GCF_059570235.1_ASM5957023v1_genomic.fna.gz",
+    "accession": "GCF_059570235.1",
+    "bytes": 1634885,
+    "sha256": "cd75b07b276ff7310e871c4da01bfbb5e7f151ae1fbbd4a3e1c96bd4d3695804"
+  },
+  {
+    "path": "data/genomes/GCF_059570245.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/059/570/245/GCF_059570245.1_ASM5957024v1/GCF_059570245.1_ASM5957024v1_genomic.fna.gz",
+    "accession": "GCF_059570245.1",
+    "bytes": 1654233,
+    "sha256": "8d39525c817a02c85165b0cd1221c8ccecc4d53ef2ff2595bc143e1b98db8c67"
+  },
+  {
+    "path": "data/genomes/GCF_059570275.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/059/570/275/GCF_059570275.1_ASM5957027v1/GCF_059570275.1_ASM5957027v1_genomic.fna.gz",
+    "accession": "GCF_059570275.1",
+    "bytes": 1570382,
+    "sha256": "ce8ce62bfcbd84cb455f05dad9ff31ff5538e2a3b27ab25d6352536f3bc91b02"
+  },
+  {
+    "path": "data/genomes/GCF_059570295.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/059/570/295/GCF_059570295.1_ASM5957029v1/GCF_059570295.1_ASM5957029v1_genomic.fna.gz",
+    "accession": "GCF_059570295.1",
+    "bytes": 1702427,
+    "sha256": "1ef50a73503aeeba37964b5b0bc7aa5e449ec3b304dc9597d26d281e5146078e"
+  },
+  {
+    "path": "data/genomes/GCF_059570315.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/059/570/315/GCF_059570315.1_ASM5957031v1/GCF_059570315.1_ASM5957031v1_genomic.fna.gz",
+    "accession": "GCF_059570315.1",
+    "bytes": 1725268,
+    "sha256": "4405e3b2085758dc76db2f9eefb3e9ca94bb4de14e2a8d69bab714f45992daab"
+  },
+  {
+    "path": "data/genomes/GCF_059570375.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/059/570/375/GCF_059570375.1_ASM5957037v1/GCF_059570375.1_ASM5957037v1_genomic.fna.gz",
+    "accession": "GCF_059570375.1",
+    "bytes": 1480450,
+    "sha256": "d972e3434bd331763e077a01c6c35c108a7c1d5b1fd2e7e19bff5502f30ba845"
+  },
+  {
+    "path": "data/genomes/GCF_059570495.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/059/570/495/GCF_059570495.1_ASM5957049v1/GCF_059570495.1_ASM5957049v1_genomic.fna.gz",
+    "accession": "GCF_059570495.1",
+    "bytes": 1595338,
+    "sha256": "bd2f491f439b50458c87c2b339d1392d4559e3ef48855d8091620130d964fb8a"
+  },
+  {
+    "path": "data/genomes/GCF_059570555.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/059/570/555/GCF_059570555.1_ASM5957055v1/GCF_059570555.1_ASM5957055v1_genomic.fna.gz",
+    "accession": "GCF_059570555.1",
+    "bytes": 1428221,
+    "sha256": "513654542c3c516869ace36f36c67a473d5b3437abeb85b4e3d59e99d06e3ad5"
+  },
+  {
+    "path": "data/genomes/GCF_059570655.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/059/570/655/GCF_059570655.1_ASM5957065v1/GCF_059570655.1_ASM5957065v1_genomic.fna.gz",
+    "accession": "GCF_059570655.1",
+    "bytes": 1658387,
+    "sha256": "86a5c6b68c407fbf10732a2a0841a52a361bab57f87d47989889f0c8b076c5fc"
+  },
+  {
+    "path": "data/genomes/GCF_059570675.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/059/570/675/GCF_059570675.1_ASM5957067v1/GCF_059570675.1_ASM5957067v1_genomic.fna.gz",
+    "accession": "GCF_059570675.1",
+    "bytes": 1630457,
+    "sha256": "93111485d3886d53e00ec4f02f9bc52c3562e345900d4ed64351ce56e1b11ca0"
+  },
+  {
+    "path": "data/genomes/GCF_059570735.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/059/570/735/GCF_059570735.1_ASM5957073v1/GCF_059570735.1_ASM5957073v1_genomic.fna.gz",
+    "accession": "GCF_059570735.1",
+    "bytes": 1599145,
+    "sha256": "894a2888fa6ad02a853a71da17692a324386da350e66086166d518301fc00205"
+  },
+  {
+    "path": "data/genomes/GCF_059570745.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/059/570/745/GCF_059570745.1_ASM5957074v1/GCF_059570745.1_ASM5957074v1_genomic.fna.gz",
+    "accession": "GCF_059570745.1",
+    "bytes": 1557676,
+    "sha256": "8cab0ab4826897c62eaa2b15b662adcec1e8414e8d38b0ee7fdce1aac31440ea"
+  }
+]

@@ -1,0 +1,268 @@
+version: 1
+
+# Accessions, domain ids and split ids are identifiers and fold safely; so do
+# species names. Where a column is a bare assembly accession it carries
+# strip_accession_version, matching task 02, so GCF_000016425.1 and
+# GCF_000016425 are the same genome. Columns that *embed* an accession inside a
+# longer identifier (domain_id, split_id) do NOT get that rule: the regex only
+# strips a trailing version, and an agent that writes the version is not making
+# a mistake worth failing.
+#
+# The artifacts share upstream dependencies throughout: the gene call feeds the
+# domain table, the domain table feeds the per-genome and per-species counts,
+# the length bins and the multidomain proteins, the domain sequences feed the
+# distance matrix, and the matrix feeds the nearest neighbours, the tree and the
+# tree's taxonomy. A gene-calling or domain-boundary mistake reaches all eight.
+
+artifacts:
+  # Depth 2. The domain inventory. Punishes the gene-calling mode, the E-value,
+  # the inclusion rule, the alignment-versus-envelope choice and the length
+  # floor, all at once.
+  - path: ks_domains.csv
+    truth: ks_domains.csv
+    format: csv
+    soft: false
+    row_key: [domain_id]
+    normalisers: [strip, collapse_whitespace, casefold]
+    column_aliases:
+      domain_id: [ks_id, id, domain]
+      accession: [assembly, assembly_accession, genome, genome_id]
+      protein_id: [protein, orf_id, gene_id]
+      start: [from, target_from, aln_from]
+      end: [to, target_to, aln_to]
+      length_aa: [length, domain_length, aa]
+      bitscore: [score, bit_score]
+    value_aliases: {}
+    metrics:
+      - type: identifier_f1
+      - type: macro_f1
+        column: accession
+      - type: macro_f1
+        column: protein_id
+      - type: lins_ccc
+        column: start
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: end
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: length_aa
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: bitscore
+        log_transform: false
+        pseudocount: null
+
+  # Depth 3. One row per staged assembly, including any with no KS domain at
+  # all. n_proteins is the gene call on its own, so a gene-calling mistake
+  # shows here even when the domain search recovers.
+  - path: genome_ks_counts.csv
+    truth: genome_ks_counts.csv
+    format: csv
+    soft: false
+    row_key: [accession]
+    normalisers: [strip, collapse_whitespace, casefold, strip_accession_version]
+    column_aliases:
+      accession: [assembly, assembly_accession, genome, genome_id]
+      species: [organism, taxon]
+      n_proteins: [proteins, protein_count]
+      n_ks_proteins: [ks_proteins, n_pks_proteins]
+      n_ks_domains: [ks_domains, n_domains]
+      max_domains_per_protein: [max_domains, largest_protein_domains]
+    value_aliases: {}
+    metrics:
+      - type: identifier_f1
+      - type: macro_f1
+        column: species
+      - type: lins_ccc
+        column: n_proteins
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: n_ks_proteins
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: n_ks_domains
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: max_domains_per_protein
+        log_transform: false
+        pseudocount: null
+
+  # Depth 3. The modular PKSs: a protein carrying more than one KS domain. Its
+  # row universe is the artifact that punishes reporting one domain per protein
+  # instead of all of them.
+  - path: multidomain_proteins.csv
+    truth: multidomain_proteins.csv
+    format: csv
+    soft: false
+    row_key: [accession, protein_id]
+    normalisers: [strip, collapse_whitespace, casefold]
+    column_aliases:
+      accession: [assembly, assembly_accession, genome, genome_id]
+      protein_id: [protein, orf_id, gene_id]
+      n_domains: [domains, domain_count, n_ks_domains]
+      first_domain_id: [first_domain, smallest_domain_id]
+      span_aa: [span, domain_span]
+    value_aliases: {}
+    metrics:
+      - type: identifier_f1
+      - type: macro_f1
+        column: first_domain_id
+      - type: lins_ccc
+        column: n_domains
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: span_aa
+        log_transform: false
+        pseudocount: null
+
+  # Depth 3. The tree's leaf set: the distinct domain sequences. 2,993 domains
+  # carry 922 distinct sequences, one of them 53 times, because 60 of the 120
+  # assemblies are the same species. This artifact is where that collapse is
+  # graded, and it is a prerequisite for the tree being meaningful at all.
+  - path: sequence_groups.csv
+    truth: sequence_groups.csv
+    format: csv
+    soft: false
+    row_key: [group_id]
+    normalisers: [strip, collapse_whitespace, casefold]
+    column_aliases:
+      group_id: [group, sequence_id, representative, cluster_id]
+      length_aa: [length, domain_length, aa]
+      n_domains: [domains, count, n_copies]
+      n_genomes: [genomes, n_accessions]
+      n_species: [species_count]
+    value_aliases: {}
+    metrics:
+      - type: identifier_f1
+      - type: lins_ccc
+        column: length_aa
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: n_domains
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: n_genomes
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: n_species
+        log_transform: false
+        pseudocount: null
+
+  # Depth 4. Punishes keeping the strain suffix when deriving the species, a
+  # mistake that turns three species into a hundred.
+  - path: species_domain_counts.csv
+    truth: species_domain_counts.csv
+    format: csv
+    soft: false
+    row_key: [species]
+    normalisers: [strip, collapse_whitespace, casefold]
+    column_aliases:
+      species: [organism, taxon]
+      n_genomes: [genomes, n_accessions]
+      n_domains: [domains, count]
+      mean_domains_per_genome: [avg_domains, domains_per_genome]
+    value_aliases: {}
+    metrics:
+      - type: identifier_f1
+      - type: lins_ccc
+        column: n_genomes
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: n_domains
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: mean_domains_per_genome
+        log_transform: false
+        pseudocount: null
+
+  # Depth 4. The distance matrix, reported at one row per sequence group so the
+  # artifact stays under a thousand rows rather than four hundred thousand. The
+  # nearest neighbour is the part of the matrix the tree is most sensitive to.
+  - path: group_nearest_neighbour.csv
+    truth: group_nearest_neighbour.csv
+    format: csv
+    soft: false
+    row_key: [group_id]
+    normalisers: [strip, collapse_whitespace, casefold]
+    column_aliases:
+      group_id: [group, sequence_id, representative]
+      nearest_group_id: [nearest, neighbour, nearest_neighbour]
+      distance: [dist, d]
+    value_aliases: {}
+    metrics:
+      - type: identifier_f1
+      - type: macro_f1
+        column: nearest_group_id
+      - type: lins_ccc
+        column: distance
+        log_transform: false
+        pseudocount: null
+
+  # Depth 5. The tree itself, as its splits over the sequence groups. Keyed on
+  # (split_id, n_leaves)
+  # because a split and its parent can share a smallest leaf; see the solution
+  # for why that pair is a key.
+  - path: tree_splits.csv
+    truth: tree_splits.csv
+    format: csv
+    soft: false
+    row_key: [split_id, n_leaves]
+    normalisers: [strip, collapse_whitespace, casefold]
+    column_aliases:
+      split_id: [split, clade_id, node_id]
+      n_leaves: [leaves, n_domains, size]
+      height: [merge_height, distance, depth]
+    value_aliases: {}
+    metrics:
+      - type: identifier_f1
+      - type: lins_ccc
+        column: height
+        log_transform: false
+        pseudocount: null
+
+  # Depth 5. The question the tree was built to answer: does a KS clade
+  # correspond to one species or cut across several. Sits on the tree and the
+  # strain table at once.
+  - path: split_taxonomy.csv
+    truth: split_taxonomy.csv
+    format: csv
+    soft: false
+    row_key: [split_id, n_leaves]
+    normalisers: [strip, collapse_whitespace, casefold]
+    column_aliases:
+      split_id: [split, clade_id, node_id]
+      n_leaves: [leaves, size]
+      n_domains: [domains, n_copies]
+      n_genomes: [genomes, n_accessions]
+      n_species: [species_count]
+      breadth: [taxonomic_breadth, scope]
+    value_aliases: {}
+    metrics:
+      - type: identifier_f1
+      - type: macro_f1
+        column: breadth
+      - type: lins_ccc
+        column: n_domains
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: n_genomes
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: n_species
+        log_transform: false
+        pseudocount: null
