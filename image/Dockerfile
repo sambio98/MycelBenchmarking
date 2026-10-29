@@ -32,18 +32,43 @@
 # `-s`, and `--verify` checks every library pin's declared run dependencies
 # against the prefix, so neither form of this can pass again.
 #
-# STATUS: built, with one layer skipped. 2026-10-27, on a host with 9 GB free
-# and an agent proxy in front of the network: every layer below built and
-# `registry --verify` passed inside the resulting image -- 9/9 tools at their
-# pinned version and build, FastTreeMP absent, matchms' run closure complete.
-# What is NOT yet proven is the `download-antismash-databases` layer, which is
-# roughly 10 GB and did not fit; it was commented out for that build and is the
-# one step still to run before relying on the S1/S2 campaigns. The build also
-# needed two host-specific workarounds that are NOT in this file and should not
-# be: the proxy tunnels HTTPS and answers plain HTTP with 405, and the base
-# image carries no CA store, so apt needed its CaInfo pointed at the proxy
-# bundle and the archive URIs moved to https. On a host with direct network
-# access neither is necessary.
+# STATUS: built and measured, 2026-10-27/29, on a host with 12 GB free and an
+# agent proxy in front of the network. What was run:
+#
+#   every layer below          built; `registry --verify` passes INSIDE the
+#                              image -- 9/9 tools at their pinned version and
+#                              build, FastTreeMP absent, matchms' run closure
+#                              complete
+#   the locked closure         231 packages, set-identical to
+#                              environment.lock.json: nothing in the image the
+#                              lock does not record, nothing in the lock the
+#                              image does not have
+#   the database step          `download-antismash-databases` to completion,
+#                              exit 0, 9.4 GB on disk, "Pre-building all
+#                              databases... done."; with them present
+#                              `antismash --check-prereqs` reports ALL
+#                              PREREQUISITES SATISFIED, where without them it
+#                              raises on the MITE dataset
+#   the invariance suite       all 9 tools, 12 invocations, IN THE IMAGE with
+#                              those databases: 9 pass / 0 fail, agreeing with
+#                              image/thread_invariance.json down to diamond's
+#                              documented --no-reorder xfail and mmseqs2 still
+#                              needing its sort_lines canonicalisation. Every
+#                              verdict in that file had until then been measured
+#                              against a prefix assembled in stages outside any
+#                              image.
+#
+# What is still NOT proven is one thing: a LAYER holding those databases. The
+# image plus the database set is about 14 GB and the host had 12, so the
+# `download-antismash-databases` RUN below has never executed as part of a
+# build -- only as the same command in a container from the built image, with
+# its output on a mounted directory. Build it once on a host with ~15 GB free.
+#
+# The build also needed two host-specific workarounds that are NOT in this file
+# and should not be: the proxy tunnels HTTPS and answers plain HTTP with 405,
+# and the base image carries no CA store, so apt needed its CaInfo pointed at
+# the proxy bundle and the archive URIs moved to https. On a host with direct
+# network access neither is necessary.
 #
 # What that build found is the reason the create step below reads the way it
 # does. The prefix had been built in STAGES rather than in one create: six tools
