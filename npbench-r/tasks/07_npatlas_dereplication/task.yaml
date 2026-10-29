@@ -1,0 +1,93 @@
+task_id: 07_npatlas_dereplication
+title: Exact-mass dereplication of a marine actinomycete molecular network against the NP Atlas
+
+source:
+  citation: >-
+    van Santen JA, Poynton EF, Iskakova D, McMann E, Alsup TA, Clark TN,
+    Fergusson CH, Fewer DP, Hughes AH, McCadden CA, et al. The Natural Products
+    Atlas 2.0: a database of microbially-derived natural products.
+    Nucleic Acids Research 50:D1317-D1323 (2022).
+  doi: 10.1093/nar/gkab941
+
+truth_provenance: >-
+  Tool-generated. Every artifact in truth/ is produced by
+  solution/make_truth.py over the two files in data.manifest.json, using the
+  pinned matchms build. Neither source paper reports these annotations: the NP
+  Atlas paper describes the database, and the Crusemann survey's own
+  dereplication was done against a GNPS library that has since been recurated.
+  Nothing here is compared against a published table. The task measures
+  whether an agent can execute a prescribed mass-search pipeline over a frozen
+  reference and report the resulting ambiguity honestly.
+
+data_scope: >-
+  PROJECT.md section 9 rules out the tools this category is usually done with:
+  SIRIUS and CSI:FingerID call a web service whose model version determines the
+  output, and a GNPS library hit list is not reproducible because the library
+  is continuously recurated. What section 9 names as safe is matching against a
+  database snapshot frozen in the bundle, so the reference here is an NP Atlas
+  release pinned by sha256 and every number is arithmetic over it. The cost is
+  that mass-only dereplication cannot identify a compound; the artifacts are
+  built to grade whether that ambiguity is reported rather than collapsed.
+  The spectra are the same clustered consensus file as task 01, for the reason
+  given in that task's data_scope.
+
+# NP Atlas serves its current release from an unversioned URL
+# (NPAtlas_download.json), so the release cannot be recovered from the file and
+# a new release replaces it in place. The manifest pins the bytes by sha256, so
+# drift fails the fetch loudly rather than silently changing truth, and
+# solution/make_truth.py additionally asserts the 36,454-record count before
+# doing any work. Measured: 475 MB and 36,454 records, where PROJECT.md
+# section 9 estimates 676 MB and 36,545 compounds.
+determinism: >-
+  Verified. Two independent runs of the reference solution produce
+  byte-identical output for all eight artifacts. The dedupe keeps the lowest
+  id rather than the first record seen, the mass search is a bisection over a
+  sorted list, the best-match rank breaks ties on NPAID, the per-family
+  pathway label breaks ties alphabetically, and every artifact is sorted on its
+  row key before writing.
+
+categories:
+  - dereplication
+  - networking
+
+# PROJECT.md section 8. The compound table and the query set are depth 2; the
+# candidate annotations are depth 3; the best match, the formula ambiguity and
+# the pathway counts are depth 4; the genus table and the per-family summary
+# are depth 5.
+depth: 5
+
+tool_versions:
+  matchms: "0.33.1"
+  networkx: "3.4.2"
+  npatlas: "2024_09"
+  python: "3.13"
+
+solution:
+  steps:
+    - python {task}/solution/make_truth.py --task {task} --out {out}
+
+runtime:
+  vcpus: 4
+  ram_gb: 8
+  wall_clock_hours: 1
+  # Measured: 3 min end to end. 40 s to parse the 475 MB reference, 35 s to
+  # parse and filter the spectra, under a second for the mass search itself
+  # (bisection over a sorted list), and ~100 s for the all-pairs spectral
+  # comparison that rebuilds the network.
+
+network:
+  deny_terms:
+    - 10.1093/nar/gkab941
+    - gkab941
+    - "The Natural Products Atlas 2.0"
+    - 10.1021/acs.jnatprod.6b01093
+  # The NP Atlas web interface exposes per-compound pages and a mass search
+  # that would hand over annotations.csv directly, and GNPS's library search
+  # would answer the same question against a different, unreproducible library.
+  # The two staged files are the only inputs the task needs.
+  deny_hosts:
+    - www.npatlas.org
+    - npatlas.org
+    - gnps.ucsd.edu
+    - gnps2.org
+    - massive.ucsd.edu

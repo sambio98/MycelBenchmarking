@@ -1,0 +1,251 @@
+version: 1
+
+# NPAIDs, molecular formulae and InChIKeys are identifiers, and `mol_formula`
+# is case-significant: CO is carbon monoxide, Co is cobalt. So case folding is
+# NOT safe on the formula columns and they carry a per-column override. Genus
+# and pathway labels are free text and fold safely.
+#
+# The artifacts share upstream dependencies throughout: the deduplicated
+# compound table and the eligible query set feed the annotations, and the
+# annotations feed the best match, the formula ambiguity, the genus and pathway
+# tables and the per-family summary. A mistake in the dedupe rule or the
+# charge rule reaches all eight.
+
+artifacts:
+  # Depth 2. The reference as the agent read it. Punishes a dedupe on the
+  # InChIKey's first block (which drops 2,925 distinct stereoisomers) and a
+  # drop of the 3,923 compounds with no npclassifier block.
+  - path: atlas_compounds.csv
+    truth: atlas_compounds.csv
+    format: csv
+    soft: false
+    row_key: [npaid]
+    normalisers: [strip, collapse_whitespace, casefold]
+    rules:
+      mol_formula: [strip, collapse_whitespace]
+    column_aliases:
+      npaid: [npa_id, atlas_id, id]
+      mol_formula: [formula, molecular_formula]
+      exact_mass: [monoisotopic_mass, neutral_mass, mass]
+      origin_type: [type, organism_type]
+      genus: [origin_genus, organism_genus]
+      pathway: [npclassifier_pathway, pathway_results]
+    value_aliases: {}
+    metrics:
+      - type: identifier_f1
+      - type: macro_f1
+        column: origin_type
+      - type: macro_f1
+        column: pathway
+      - type: macro_f1
+        column: genus
+      - type: macro_f1
+        column: mol_formula
+      - type: lins_ccc
+        column: exact_mass
+        log_transform: false
+        pseudocount: null
+
+  # Depth 2. The eligible query set: 3,811 of the 4,081 retained spectra, after
+  # charge 2 is excluded. Punishes both the wrong spectrum filter and the wrong
+  # charge rule, and the adduct arithmetic is here rather than hidden.
+  - path: queries.csv
+    truth: queries.csv
+    format: csv
+    soft: false
+    row_key: [scan]
+    normalisers: [strip, collapse_whitespace, casefold]
+    column_aliases:
+      scan: [scan_number, scans, spectrum_id, id]
+      precursor_mz: [pepmass, precursor, parent_mass, mz]
+      charge: [precursor_charge, z]
+      neutral_mass_h: [neutral_mass_mh, mass_h, m_plus_h_neutral]
+      neutral_mass_na: [neutral_mass_mna, mass_na, m_plus_na_neutral]
+    value_aliases: {}
+    metrics:
+      - type: identifier_f1
+      - type: macro_f1
+        column: charge
+      - type: lins_ccc
+        column: precursor_mz
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: neutral_mass_h
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: neutral_mass_na
+        log_transform: false
+        pseudocount: null
+
+  # Depth 3. The core artifact, and the one that measures whether ambiguity was
+  # reported or collapsed. Keyed on all three of scan, compound and adduct,
+  # because the same compound can match one query under both adducts.
+  - path: annotations.csv
+    truth: annotations.csv
+    format: csv
+    soft: false
+    row_key: [scan, npaid, adduct]
+    normalisers: [strip, collapse_whitespace, casefold]
+    rules:
+      mol_formula: [strip, collapse_whitespace]
+    column_aliases:
+      scan: [scan_number, scans, spectrum_id, id]
+      npaid: [npa_id, atlas_id, compound_id]
+      adduct: [ion, ion_species, adduct_type]
+      ppm_error: [ppm, mass_error_ppm, error_ppm]
+      mol_formula: [formula, molecular_formula]
+    value_aliases: {}
+    metrics:
+      - type: identifier_f1
+      - type: macro_f1
+        column: mol_formula
+      - type: lins_ccc
+        column: ppm_error
+        log_transform: false
+        pseudocount: null
+
+  # Depth 4. One row per annotated scan. The tie-break on NPAID is load-bearing
+  # and an agent that sorts only on ppm error will disagree here.
+  - path: best_annotation.csv
+    truth: best_annotation.csv
+    format: csv
+    soft: false
+    row_key: [scan]
+    normalisers: [strip, collapse_whitespace, casefold]
+    rules:
+      mol_formula: [strip, collapse_whitespace]
+    column_aliases:
+      scan: [scan_number, scans, spectrum_id, id]
+      npaid: [npa_id, atlas_id, compound_id]
+      adduct: [ion, ion_species, adduct_type]
+      ppm_error: [ppm, mass_error_ppm, error_ppm]
+      mol_formula: [formula, molecular_formula]
+      genus: [origin_genus, organism_genus]
+      pathway: [npclassifier_pathway, pathway_results]
+    value_aliases: {}
+    metrics:
+      - type: identifier_f1
+      - type: macro_f1
+        column: npaid
+      - type: macro_f1
+        column: adduct
+      - type: macro_f1
+        column: pathway
+      - type: macro_f1
+        column: genus
+      - type: macro_f1
+        column: mol_formula
+      - type: lins_ccc
+        column: ppm_error
+        log_transform: false
+        pseudocount: null
+
+  # Depth 4. The isomer problem, which is the honest limit of mass-only
+  # dereplication. n_compounds counts the formula across the whole release, so
+  # it also tests that the agent kept the release table it built. It once had a
+  # fourth column counting how many of those compounds matched; that is
+  # provably equal to n_compounds, because a formula fixes the mass, so it was
+  # removed rather than left as a column no mistake could reach.
+  - path: formula_candidates.csv
+    truth: formula_candidates.csv
+    format: csv
+    soft: false
+    row_key: [mol_formula]
+    normalisers: [strip, collapse_whitespace]
+    column_aliases:
+      mol_formula: [formula, molecular_formula]
+      n_compounds: [compounds_in_release, n_release_compounds]
+      n_scans: [scans, n_queries]
+    value_aliases: {}
+    metrics:
+      - type: identifier_f1
+      - type: lins_ccc
+        column: n_compounds
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: n_scans
+        log_transform: false
+        pseudocount: null
+
+  # Depth 5. Sits on the annotations and the compound table at once.
+  - path: genus_annotations.csv
+    truth: genus_annotations.csv
+    format: csv
+    soft: false
+    row_key: [genus]
+    normalisers: [strip, collapse_whitespace, casefold]
+    column_aliases:
+      genus: [origin_genus, organism_genus]
+      n_compounds_matched: [matched_compounds, n_matched]
+      n_scans: [scans, n_queries]
+    value_aliases: {}
+    metrics:
+      - type: identifier_f1
+      - type: lins_ccc
+        column: n_compounds_matched
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: n_scans
+        log_transform: false
+        pseudocount: null
+
+  # Depth 4. Punishes splitting a multi-pathway label into one row per pathway.
+  - path: pathway_counts.csv
+    truth: pathway_counts.csv
+    format: csv
+    soft: false
+    row_key: [pathway]
+    normalisers: [strip, collapse_whitespace, casefold]
+    column_aliases:
+      pathway: [npclassifier_pathway, pathway_results]
+      n_compounds_matched: [matched_compounds, n_matched]
+      n_scans: [scans, n_queries]
+    value_aliases: {}
+    metrics:
+      - type: identifier_f1
+      - type: lins_ccc
+        column: n_compounds_matched
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: n_scans
+        log_transform: false
+        pseudocount: null
+
+  # Depth 5. The deepest artifact: it needs the network rebuilt and the
+  # annotations joined onto it, so it inherits every upstream mistake. A family
+  # with no annotated node is the scientifically interesting case and
+  # n_annotated of 0 is a real answer.
+  - path: component_annotations.csv
+    truth: component_annotations.csv
+    format: csv
+    soft: false
+    row_key: [component_id]
+    normalisers: [strip, collapse_whitespace, casefold]
+    column_aliases:
+      component_id: [component, cluster_id, family_id, network_id]
+      n_nodes: [nodes, size, n_spectra]
+      n_annotated: [annotated, n_annotated_nodes]
+      n_distinct_formulas: [n_formulas, distinct_formulas]
+      top_pathway: [dominant_pathway, majority_pathway]
+    value_aliases: {}
+    metrics:
+      - type: identifier_f1
+      - type: macro_f1
+        column: top_pathway
+      - type: lins_ccc
+        column: n_nodes
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: n_annotated
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: n_distinct_formulas
+        log_transform: false
+        pseudocount: null

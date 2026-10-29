@@ -13,6 +13,7 @@ the task bundle, not an agent failure, so it raises.
 from __future__ import annotations
 
 import math
+from collections import Counter
 from dataclasses import dataclass, field
 from typing import Sequence
 
@@ -131,13 +132,22 @@ def macro_f1(truth_labels: Sequence[str], pred_labels: Sequence[str]) -> MetricR
     if not truth_labels:
         return MetricResult(name, 0.0, {"reason": "no_aligned_rows"})
 
-    classes = sorted(set(truth_labels) | set(pred_labels))
+    # Counted in one pass. The obvious three-comprehensions-per-class version is
+    # O(classes x rows), which is fine for a `breadth` column of two classes and
+    # is minutes of CPU for a molecular-formula column of twenty-five thousand
+    # over thirty-six thousand rows. The counts below are identical: a class's
+    # false positives are its predictions that were not true positives, and its
+    # false negatives are its truth rows that were not.
+    truth_total: Counter[str] = Counter(truth_labels)
+    pred_total: Counter[str] = Counter(pred_labels)
+    hits: Counter[str] = Counter(
+        t for t, p in zip(truth_labels, pred_labels) if t == p
+    )
+    classes = sorted(set(truth_total) | set(pred_total))
     per_class = {}
     for label in classes:
-        tp = sum(1 for t, p in zip(truth_labels, pred_labels) if t == label and p == label)
-        fp = sum(1 for t, p in zip(truth_labels, pred_labels) if t != label and p == label)
-        fn = sum(1 for t, p in zip(truth_labels, pred_labels) if t == label and p != label)
-        per_class[label] = _f1(tp, fp, fn)
+        tp = hits[label]
+        per_class[label] = _f1(tp, pred_total[label] - tp, truth_total[label] - tp)
     score = sum(per_class.values()) / len(per_class)
     return MetricResult(
         name, score, {"n": len(truth_labels), "n_classes": len(classes), "per_class": per_class}

@@ -6,6 +6,8 @@ nothing here is asserted against the implementation's own output.
 """
 
 import math
+import random
+import time
 
 import pytest
 
@@ -17,6 +19,7 @@ from npbench.grading.metrics import (
     lins_ccc,
     macro_f1,
 )
+from npbench.grading import metrics as M
 from npbench.grading.metrics import MetricResult
 
 
@@ -210,3 +213,58 @@ class TestCombine:
     def test_no_metrics_is_a_bundle_bug(self):
         with pytest.raises(TruthError):
             combine([])
+
+
+class TestMacroF1IsCountedInOnePass:
+    """The single-pass counts must equal the obvious per-class scans.
+
+    macro_f1 used to run three comprehensions over every row for every class,
+    which is O(classes x rows): fine for a two-class `breadth` column, and
+    minutes of CPU for a molecular-formula column of 25,000 classes over 36,000
+    rows. The rewrite counts once. These tests exist so the rewrite cannot
+    silently drift from the definition it replaced.
+    """
+
+    @staticmethod
+    def _per_class_scan(truth_labels, pred_labels):
+        classes = sorted(set(truth_labels) | set(pred_labels))
+        per_class = {}
+        for label in classes:
+            tp = sum(1 for t, p in zip(truth_labels, pred_labels)
+                     if t == label and p == label)
+            fp = sum(1 for t, p in zip(truth_labels, pred_labels)
+                     if t != label and p == label)
+            fn = sum(1 for t, p in zip(truth_labels, pred_labels)
+                     if t == label and p != label)
+            per_class[label] = M._f1(tp, fp, fn)
+        return sum(per_class.values()) / len(per_class), per_class
+
+    def test_it_agrees_with_the_per_class_scan_on_random_cases(self):
+        rng = random.Random(11)
+        for _ in range(300):
+            n = rng.randint(1, 40)
+            universe = [f"c{i}" for i in range(rng.randint(1, 8))]
+            truth = [rng.choice(universe) for _ in range(n)]
+            # "invented" is never in truth, so it exercises the class universe
+            # being the union rather than truth's labels alone.
+            pred = [rng.choice(universe + ["invented"]) for _ in range(n)]
+            got = M.macro_f1(truth, pred)
+            want, want_per_class = self._per_class_scan(truth, pred)
+            assert got.score == pytest.approx(want, abs=1e-12)
+            assert got.detail["per_class"] == want_per_class
+
+    def test_a_high_cardinality_column_is_not_quadratic(self):
+        """25,000 classes over 36,422 rows, the shape that forced the rewrite."""
+        labels = [f"C{i}H{i * 2}O{i % 7}" for i in range(25000)]
+        truth = labels + labels[:11422]
+        pred = list(truth)
+        pred[5] = "X"
+
+        start = time.perf_counter()
+        result = M.macro_f1(truth, pred)
+        elapsed = time.perf_counter() - start
+
+        assert result.detail["n_classes"] == 25001
+        # The quadratic form took minutes on this input. A generous ceiling
+        # still fails it by three orders of magnitude.
+        assert elapsed < 5.0
