@@ -69,3 +69,12 @@ network:
   # published table, it is not vulnerable to supplementary-file leakage the way
   # a paper-reproduction task is. These terms are declared for consistency and
   # to keep the agent from anchoring on the paper's own counts, which differ.
+
+# Findings from `npbench audit` that a reviewer has judged benign. Each is
+# matched on the message text, not a line number, so it survives an edit to
+# the prompt above it.
+audit_acknowledged:
+  - contains: '120 is the row count of clusters_per_genome.csv'
+    why: >-
+      120 is the number of staged assemblies, countable in data/genomes/.
+      One row per assembly is structural.

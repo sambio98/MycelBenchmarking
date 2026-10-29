@@ -149,7 +149,7 @@ One row per family.
 smallest member `cluster_id`.
 
 ### `genome_pair_distances.csv`
-One row per unordered pair of distinct assemblies: 7,140 rows.
+One row per unordered pair of distinct assemblies.
 
 `accession_a`, `accession_b`, `genomic_distance`, `chemistry_distance`,
 `same_species`

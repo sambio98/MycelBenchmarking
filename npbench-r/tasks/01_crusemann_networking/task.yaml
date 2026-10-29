@@ -75,3 +75,20 @@ network:
   # node and edge tables are downloadable, which would hand over most of
   # edges.csv and network_nodes.csv. The whole GNPS estate is denied; the
   # staged .mgf is the only input the task needs.
+
+# Findings from `npbench audit` that a reviewer has judged benign. Each is
+# matched on the message text, not a line number, so it survives an edit to
+# the prompt above it.
+audit_acknowledged:
+  - contains: '100 also appears as a value in truth/'
+    why: >-
+      100 is the prescribed mass bin width, a method parameter.
+  - contains: '500 also appears as a value in truth/'
+    why: >-
+      500 is the bin label in the worked example of the binning rule,
+      which follows from the 100 Da width rather than from the data.
+  - contains: '566.89 also appears as a value in truth/'
+    why: >-
+      566.89 is an illustrative precursor m/z in the binning example. It
+      coincides with a real precursor value; it states nothing about any
+      artifact.

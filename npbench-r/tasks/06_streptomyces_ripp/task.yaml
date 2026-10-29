@@ -64,3 +64,17 @@ network:
     - RODEO
   # RODEO is denied as a term: its web tool would hand over most of
   # ripp_loci.csv for any accession, and the task is to run the analysis.
+
+# Findings from `npbench audit` that a reviewer has judged benign. Each is
+# matched on the message text, not a line number, so it survives an edit to
+# the prompt above it.
+audit_acknowledged:
+  - contains: '213 is the row count of genome_locus_counts.csv'
+    why: >-
+      213 is the number of staged genomes, countable in data/genomes/. One
+      row per genome is structural.
+  - contains: '120 also appears as a value in truth/'
+    why: >-
+      120 is the upper bound of the prescribed precursor length window, a
+      method parameter that happens to coincide with a precursor length in
+      truth/.

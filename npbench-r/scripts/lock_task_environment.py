@@ -20,8 +20,10 @@ HEADER = """\
 # Pinned runtime environment for {task}.
 #
 # CLAUDE.md: environments are pinned or they are wrong. These are the exact
-# versions truth/ was produced under. GECCO's cluster counts and type
-# assignments are version-dependent, so truth is only valid against these.
+# versions truth/ was produced under. Tool output in this field is
+# version-dependent -- cluster counts, canonical SMILES, similarity scores and
+# alignment scores all move between releases -- so truth is only valid against
+# these.
 #
 # Regenerate with:
 #   python scripts/lock_task_environment.py {task} {roots}

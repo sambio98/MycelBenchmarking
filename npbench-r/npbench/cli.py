@@ -17,6 +17,7 @@ import sys
 import tempfile
 from pathlib import Path
 
+from .audit import dossier, render
 from .build.manifest import fetch, load_manifest
 from .calibrate import CalibrationError, calibrate, load_runs, report as calibration_report
 from .build.validate import report, solution_steps, validate_task
@@ -109,6 +110,23 @@ def _calibrate(args: argparse.Namespace) -> int:
     return 0
 
 
+def _audit(args: argparse.Namespace) -> int:
+    """Per-task dossiers for the human curation pass.
+
+    Exits 1 when any task has an unjudged finding, so it can gate a review the
+    way `validate` gates the contract. A finding a reviewer has already judged
+    is recorded in that task's task.yaml and does not fail the command.
+    """
+    reports = [dossier(task_dir) for task_dir in sorted(args.task_dir)]
+    print("\n\n".join(render(report) for report in reports))
+    open_findings = sum(len(report.findings) for report in reports)
+    if open_findings:
+        print(f"\n{open_findings} finding(s) across {len(reports)} task(s) need review",
+              file=sys.stderr)
+        return 1
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="npbench", description=__doc__.splitlines()[0])
     sub = parser.add_subparsers(dest="command", required=True)
@@ -147,6 +165,13 @@ def main(argv: list[str] | None = None) -> int:
     selfgrade.add_argument("task_dir", type=Path)
     selfgrade.add_argument("--jobs", type=int, default=4)
     selfgrade.set_defaults(handler=_selfgrade)
+
+    audit = sub.add_parser(
+        "audit",
+        help="per-task dossier and the checks for the human curation pass",
+    )
+    audit.add_argument("task_dir", type=Path, nargs="+")
+    audit.set_defaults(handler=_audit)
 
     calibration = sub.add_parser(
         "calibrate",

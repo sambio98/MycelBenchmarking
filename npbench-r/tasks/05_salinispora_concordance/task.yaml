@@ -61,3 +61,22 @@ network:
     - 1462-2920.13867
     - Letzel
     - "Genomic insights into specialized metabolism"
+
+# Findings from `npbench audit` that a reviewer has judged benign. Each is
+# matched on the message text, not a line number, so it survives an edit to
+# the prompt above it.
+audit_acknowledged:
+  - contains: '120 is the row count of genome_repertoires.csv'
+    why: >-
+      120 is the number of staged assemblies, which the agent can count in
+      data/genomes/. The row universe 'one row per assembly' is a
+      structural statement, not a result.
+  - contains: '7,140 is the row count of genome_pair_distances.csv'
+    why: >-
+      7,140 is C(120,2) over the staged assemblies, so it is arithmetic
+      the agent can do before any analysis, not a result of one.
+  - contains: '10 is the row count of distance_concordance_bins.csv'
+    why: >-
+      The method prescribes 10 equal-size bins, so the artifact has 10 rows by
+      definition. The count restates the binning rule rather than any result
+      computed from the data.

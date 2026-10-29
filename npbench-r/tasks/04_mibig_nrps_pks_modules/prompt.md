@@ -34,9 +34,8 @@ First, **module names repeat within a cluster.** Twelve such pairs exist, so a
 module is identified by its **1-based position in the `modules` list**, not by
 its name. Preserve that order; several outputs depend on it.
 
-Second, **over half the modules are marked `active: false`** — 2,089 of 4,034.
-They are curated modules and all of them are in scope. Do not filter on
-`active`; report it.
+Second, **over half the modules are marked `active: false`**. They are curated
+modules and all of them are in scope. Do not filter on `active`; report it.
 
 Third, **almost every adenylation domain's `location` is the sentinel
 `{"from": -1, "to": -1}`.** Coordinates are not usable here and are not asked
@@ -50,9 +49,9 @@ Fifth, **nine substrate names map to more than one distinct structure**,
 `alanine` and `valine` among them, because MIBiG records D and L forms under
 one name. One output asks for exactly that count.
 
-Sixth, **twelve substrates are spelled two ways**, differing only in
-capitalisation — `Leucine` and `leucine`, `Serine` and `serine` — so the 281
-verbatim names are 269 substrates.
+Sixth, **some substrates are spelled two ways**, differing only in
+capitalisation — `Leucine` and `leucine`, `Serine` and `serine` — so the
+verbatim names overcount the substrates. Fold case before counting them.
 
 ### Staged data
 
