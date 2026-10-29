@@ -1,0 +1,194 @@
+version: 1
+
+# Nothing here is an accession or a SMILES, so case folding is safe throughout
+# and no per-column override is needed.
+#
+# The artifacts share upstream dependencies: the retained spectrum set feeds the
+# edges, the edges feed the nodes, and the nodes feed the components, the
+# singletons and the mass bins. A filtering mistake reaches all six.
+
+artifacts:
+  # Depth 2. The retained spectrum set, and the artifact that punishes an agent
+  # which never noticed that 96% of the file carries no peaks: its row universe
+  # is 4,081, not 100,263.
+  - path: spectra.csv
+    truth: spectra.csv
+    format: csv
+    soft: false
+    row_key: [scan]
+    normalisers: [strip, collapse_whitespace, casefold]
+    column_aliases:
+      scan: [scan_number, scans, spectrum_id, id]
+      precursor_mz: [pepmass, precursor, parent_mass, mz]
+      charge: [precursor_charge, z]
+      n_peaks: [peaks, num_peaks, n_fragments]
+      base_peak_mz: [base_peak, most_intense_mz]
+    value_aliases: {}
+    metrics:
+      - type: identifier_f1
+      - type: macro_f1
+        column: charge
+      - type: lins_ccc
+        column: precursor_mz
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: n_peaks
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: base_peak_mz
+        log_transform: false
+        pseudocount: null
+
+  # Depth 3. The network itself, after the top-K cut.
+  - path: edges.csv
+    truth: edges.csv
+    format: csv
+    soft: false
+    row_key: [scan_a, scan_b]
+    normalisers: [strip, collapse_whitespace, casefold]
+    column_aliases:
+      scan_a: [node_a, scan1, source, a]
+      scan_b: [node_b, scan2, target, b]
+      cosine: [score, cosine_score, similarity]
+      n_matched_peaks: [matched_peaks, matches, n_matches]
+      precursor_delta: [mass_difference, delta_mz, precursor_diff]
+    value_aliases: {}
+    metrics:
+      - type: identifier_f1
+      - type: lins_ccc
+        column: cosine
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: n_matched_peaks
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: precursor_delta
+        log_transform: false
+        pseudocount: null
+
+  # Depth 4. Component membership, named from the component's own smallest
+  # scan so the identifier does not depend on an ordering the agent chose.
+  - path: network_nodes.csv
+    truth: network_nodes.csv
+    format: csv
+    soft: false
+    row_key: [scan]
+    normalisers: [strip, collapse_whitespace, casefold]
+    column_aliases:
+      scan: [scan_number, scans, spectrum_id, id]
+      degree: [n_edges, connections]
+      component_id: [component, cluster_id, family_id, network_id]
+      component_size: [component_n_nodes, cluster_size]
+    value_aliases: {}
+    metrics:
+      - type: identifier_f1
+      - type: macro_f1
+        column: component_id
+      - type: lins_ccc
+        column: degree
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: component_size
+        log_transform: false
+        pseudocount: null
+
+  # Depth 4. Only components holding an edge; a lone spectrum is a singleton
+  # and has its own artifact.
+  - path: components.csv
+    truth: components.csv
+    format: csv
+    soft: false
+    row_key: [component_id]
+    normalisers: [strip, collapse_whitespace, casefold]
+    column_aliases:
+      component_id: [component, cluster_id, family_id, network_id]
+      n_nodes: [nodes, size, n_spectra]
+      n_edges: [edges, edge_count]
+      min_precursor_mz: [min_mz, lowest_precursor]
+      max_precursor_mz: [max_mz, highest_precursor]
+      mean_cosine: [avg_cosine, mean_score]
+    value_aliases: {}
+    metrics:
+      - type: identifier_f1
+      - type: lins_ccc
+        column: n_nodes
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: n_edges
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: min_precursor_mz
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: max_precursor_mz
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: mean_cosine
+        log_transform: false
+        pseudocount: null
+
+  # Depth 5. The unnetworked remainder: 2,256 of 4,081, which is the normal
+  # shape of a GNPS network and not a failure.
+  - path: singletons.csv
+    truth: singletons.csv
+    format: csv
+    soft: false
+    row_key: [scan]
+    normalisers: [strip, collapse_whitespace, casefold]
+    column_aliases:
+      scan: [scan_number, scans, spectrum_id, id]
+      precursor_mz: [pepmass, precursor, parent_mass, mz]
+      n_peaks: [peaks, num_peaks, n_fragments]
+    value_aliases: {}
+    metrics:
+      - type: identifier_f1
+      - type: lins_ccc
+        column: precursor_mz
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: n_peaks
+        log_transform: false
+        pseudocount: null
+
+  # Depth 5. Sits on the spectrum set and the finished network at once.
+  - path: precursor_mass_bins.csv
+    truth: precursor_mass_bins.csv
+    format: csv
+    soft: false
+    row_key: [bin_start]
+    normalisers: [strip, collapse_whitespace, casefold]
+    column_aliases:
+      bin_start: [bin, mass_bin, bin_lower]
+      n_spectra: [spectra, count]
+      n_networked: [networked, n_connected]
+      n_singletons: [singletons, n_unconnected]
+      mean_degree: [avg_degree]
+    value_aliases: {}
+    metrics:
+      - type: identifier_f1
+      - type: lins_ccc
+        column: n_spectra
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: n_networked
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: n_singletons
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: mean_degree
+        log_transform: false
+        pseudocount: null

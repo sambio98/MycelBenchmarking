@@ -1,0 +1,77 @@
+task_id: 01_crusemann_networking
+title: Molecular networking of the Crüsemann 146-strain marine actinomycete MS/MS survey
+
+source:
+  citation: >-
+    Crüsemann M, O'Neill EC, Larson CB, Melnik AV, Floros DJ, da Silva RR,
+    Jensen PR, Dorrestein PC, Moore BS. Prioritizing natural product diversity
+    in a collection of 146 bacterial strains based on metabolomic and
+    taxonomical analysis. Journal of Natural Products 80:588-597 (2017).
+  doi: 10.1021/acs.jnatprod.6b00722
+
+truth_provenance: >-
+  Tool-generated. Every artifact in truth/ is produced by
+  solution/make_truth.py over the clustered spectrum file in
+  data.manifest.json, using the pinned matchms build. The paper's own
+  networks, strain counts and prioritisation are NOT the truth here: they came
+  from a GNPS job whose parameters and library version are not recoverable, and
+  the paper's strain count is itself inconsistent with the deposit. This task
+  measures execution of the prescribed networking, which is what PROJECT.md
+  section 9 calls the safe artifact.
+
+data_scope: >-
+  MSV000078836 holds 1,125 mzXML files totalling 311 GB, fifteen times the
+  20 GB target in PROJECT.md section 10, so reprocessing the raw files is out of
+  budget. The deposit also contains the GNPS-clustered consensus spectra as a
+  single 17 MB .mgf, and section 9 names precisely this as the reproducible
+  artifact: "Network topology from a fixed .mgf with fixed parameters". The
+  clustering is the depositors' own work, frozen and checksummed here, so the
+  task starts where reproducibility starts. It is a scope reduction against
+  section 5's description of task 1 and is recorded as such.
+
+determinism: >-
+  Verified. Two independent runs produce byte-identical output for all six
+  artifacts. matchms ModifiedCosineGreedy is deterministic, spectra are sorted
+  by scan before pairing, and the top-K cut breaks ties on partner scan number
+  because rounded cosines tie often.
+
+categories:
+  - msms_networking
+  - dereplication
+
+# PROJECT.md section 8. The spectrum table is depth 2, the edge list depth 3,
+# the node and component tables depth 4, the singleton and mass-bin summaries
+# depth 5.
+depth: 5
+
+tool_versions:
+  matchms: "0.33.1"   # ModifiedCosine was renamed ModifiedCosineGreedy here
+  networkx: "3.7"
+  python: "3.13"
+
+solution:
+  steps:
+    - python {task}/solution/make_truth.py --task {task} --out {out}
+
+runtime:
+  vcpus: 4
+  ram_gb: 8
+  wall_clock_hours: 1
+  # Measured: 50 s end to end. 17 s to parse the mgf, 16 s to filter, 21 s for
+  # the 154,000 in-window cosine comparisons.
+
+network:
+  deny_terms:
+    - 10.1021/acs.jnatprod.6b00722
+    - acs.jnatprod.6b00722
+    - Crüsemann
+    - Crusemann
+    - "Prioritizing Natural Product Diversity in a Collection of 146"
+  deny_hosts:
+    - gnps.ucsd.edu
+    - gnps2.org
+    - massive.ucsd.edu
+  # The GNPS job that produced the published network is still online and its
+  # node and edge tables are downloadable, which would hand over most of
+  # edges.csv and network_nodes.csv. The whole GNPS estate is denied; the
+  # staged .mgf is the only input the task needs.
