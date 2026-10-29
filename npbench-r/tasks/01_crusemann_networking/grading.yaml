@@ -138,10 +138,20 @@ artifacts:
 
   # Depth 5. The unnetworked remainder: 2,256 of 4,081, which is the normal
   # shape of a GNPS network and not a failure.
+  #
+  # Soft, and measured rather than assumed. Its three columns are copies of
+  # spectra.csv restricted to the degree-zero nodes, so once the node set is
+  # right the columns follow; its only independent claim is the membership of a
+  # 2,256-row set whose interior no scoring mistake reaches. Across the 17
+  # variants in scripts/difficulty_task01.py it failed twice, both times on the
+  # one mistake that changes the node universe, and it handed the 3-slip and
+  # 5-slip agents a free pass. It stays in the bundle because the split is a
+  # reported result, and it stays out of the headline because it cannot
+  # discriminate.
   - path: singletons.csv
     truth: singletons.csv
     format: csv
-    soft: false
+    soft: true
     row_key: [scan]
     normalisers: [strip, collapse_whitespace, casefold]
     column_aliases:

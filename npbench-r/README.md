@@ -18,36 +18,41 @@ Build order is set out in `CLAUDE.md`. Steps 1 and 2 are done and verified.
 | 2 | Bundle validator | done |
 | 3 | One task end to end | **done**: task 02 validates clean and self-grades 1.00 |
 | 4 | Inspect AI harness | built; docker sandbox path unverified |
-| 5 | Remaining tasks | 5 of 6 built (02–06); task 01 blocked |
+| 5 | Remaining tasks | all 6 built (01–06) |
 | 6 | Difficulty calibration | machinery built (`npbench calibrate`); needs model runs |
 
 Build order was reordered: **task 02 (Salinispora, BGC detection) was built
 before task 01 (Crüsemann)**. MassIVE MSV000078836 turned out to be 311 GB
-across 1,125 mzXML files, which is 15x the 20 GB target in PROJECT.md §10, so
-task 01 cannot be staged as specified and needs a subsetting decision. Task 02
-stages from NCBI RefSeq in 191 MB.
+across 1,125 mzXML files, 15x the 20 GB target in PROJECT.md §10, so task 01
+waited on a scope decision while task 02 staged from NCBI RefSeq in 191 MB.
+Task 01 is now built against the GNPS-clustered consensus spectra from the same
+deposit — 17 MB, and the artifact PROJECT.md §9 names — rather than the raw
+mzXML. That reduction is the one decision in the suite most worth a second
+opinion; its `NOTES.md` states what it costs and what it keeps.
 
 ## Tasks
 
 | | |
 |---|---|
+| `01_crusemann_networking` | Molecular networking over the Crüsemann *Salinispora*/*Streptomyces* MS/MS deposit (MassIVE MSV000078836), from modified-cosine scoring through the top-10 cut to component structure. 17 MB staged, 4,081 spectra, 3,208 edges, 325 components, 6 artifacts, 27 metric instances, depth 2–5. All 5 hard artifacts in band; grades the GNPS-clustered spectra rather than the 311 GB of raw mzXML — see its `NOTES.md`. |
 | `02_salinispora_bgc` | BGC inventory and gene cluster families across 120 *Salinispora* assemblies with GECCO 0.11.0. 191 MB staged, 2,935 clusters, 7 artifacts, 30 metric instances, depth 2–4. |
 | `03_mibig_cheminformatics` | Scaffolds, isomers, stereochemistry collapse and similarity families over the MIBiG 4.0 compound set with RDKit. 936 KB staged, 4,397 compounds, 8 artifacts, 31 metric instances, depth 2–4. **Discriminates less well than the others** — see its `NOTES.md`. |
 | `04_mibig_nrps_pks_modules` | NRPS/PKS module architecture and adenylation-domain substrate specificity in MIBiG 4.0. 936 KB staged, 4,034 modules, 8 artifacts, 39 metric instances, depth 2–4. Artifacts share upstream dependencies by design; all 8 land in band, but one scope mistake floors the task at 0.00. |
 | `05_salinispora_concordance` | Taxonomy versus chemistry concordance over the same 120 *Salinispora* assemblies as task 02: a k-mer genomic distance against a BGC-family chemistry distance over 7,140 pairs. 7 artifacts, 32 metric instances, depth 2–5. **Best-behaved task** — all 7 in band and no floor. |
 | `06_streptomyces_ripp` | RODEO-style lasso peptide and RiPP locus mining across 213 *Streptomyces* reference genomes, with a sequence similarity network over the precursors. 517 MB staged, 171 loci, 798 precursors, 7 artifacts, 37 metric instances, depth 2–5. 4 of 7 in band; two artifacts are drop candidates — see its `NOTES.md`. |
 
-All three validate clean and self-grade 1.00. Each task's `NOTES.md` records
+All six validate clean and self-grade 1.00. Each task's `NOTES.md` records
 measured scale, reproducibility and difficulty, including what does *not*
 discriminate.
 
 ### The main design finding so far
 
 A task discriminates when its artifacts **share upstream dependencies**, not
-when it has many artifacts. Measured across the three:
+when it has many artifacts. Measured across all six:
 
 | | artifacts in the 0.1–0.8 band | 3 slips | 5 slips |
 |---|---|---|---|
+| 01, molecular networking | 5 of 5 hard | 0.20 | 0.00 |
 | 02, shared joins | 6 of 7 | 0.14 | 0.14 |
 | 03, independent artifacts | 3 of 8 | 0.62 | 0.62 |
 | 04, shared joins by design | 8 of 8 | 0.00 | 0.00 |
@@ -74,12 +79,20 @@ Those rules stay in the method because the artifacts need a defined answer, not
 because they are hard, and its `NOTES.md` says so rather than counting them as
 difficulty.
 
-All five `NOTES.md` files record what does *not* discriminate as well as what
-does.
+A fourth finding, from task 01: **an above-band verdict is a claim about the
+variant set at least as much as about the artifact.** Its `spectra.csv` first
+measured 0.87, above band, and the tempting read was that it needed a harder
+column. It did not. Every variant in that sweep had been drawn from the
+pipeline's parameters, while that artifact lives almost entirely on the parsing
+layer in front of them. Two realistic misreadings — a missing `CHARGE` read as
+1+, a base peak read as highest m/z rather than most intense — take it to 0.57
+and 0.17, and moved it into band with no change to the bundle. The other five
+sweeps were checked for the same hole and do not have it; task 01 is the only
+one whose input is a raw instrument format rather than a table or a JSON
+document.
 
-Task 01 (Crüsemann, MassIVE MSV000078836) is not built: the deposit is 311 GB
-across 1,125 mzXML files, 15x the 20 GB target in PROJECT.md §10, so it needs a
-subsetting decision before it can be staged.
+All six `NOTES.md` files record what does *not* discriminate as well as what
+does.
 
 ## Usage
 
@@ -87,7 +100,7 @@ subsetting decision before it can be staged.
 pip install -e ".[dev]"                       # graders, validator, harness
 T=02_salinispora_bgc
 
-make test                                      # 198 tests
+make test                                      # 259 tests
 make validate TASK=$T                          # bundle contract check
 make fetch TASK=$T                             # stage and checksum 191 MB of genomes
 make truth TASK=$T                             # run the reference solution into truth/
