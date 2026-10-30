@@ -498,22 +498,78 @@ def test_an_unneeded_gold_side_declaration_is_refused(monkeypatch):
     assert "are not needed" in check.detail
 
 
-def test_the_documented_component_count_is_the_specs_own_count():
-    """A headline number nothing reads is a number that drifts.
+#: Repository root, for the documents these tests read.
+REPO = pathlib.Path(__file__).resolve().parents[2]
 
-    The docs said 560 graded components where the specs carried 558, and had
-    done since before the suite was frozen -- nobody recounted because nothing
-    recounted. This does.
+
+def _documented_numbers() -> dict[str, int | str]:
+    """Every structural figure the documents state, counted from the artefacts.
+
+    One of these was wrong -- 560 graded components where the specs carried 558,
+    since before the suite was frozen -- and the rest were right only because
+    they had been maintained by hand. A number nothing recounts is a number that
+    drifts, so these are recounted.
+
+    The gate's mechanical check count is NOT here: deriving it means running the
+    gate, which rebuilds gold. It is the one documented figure still maintained
+    by hand, and it has lagged the code at 25, 26 and 27 checks already.
     """
-    rungs = components = 0
+    import yaml
+
+    from npbench_c.readiness.gate import _contract_fields
+
+    rungs = components = fields = 0
+    templates = set()
     for campaign in CAMPAIGNS:
         spec = json.loads((campaign / "grading.json").read_text())
         rungs += len(spec["rungs"])
         components += sum(len(r["components"]) for r in spec["rungs"])
-    assert rungs == 4 * len(CAMPAIGNS)
+        task = yaml.safe_load((campaign / "task.yaml").read_text())
+        templates.add(task["template_id"])
+        for declared in task["output_contract"].values():
+            fields += len(_contract_fields(declared))
+    manifest = json.loads(
+        (REPO / "release" / "MANIFEST-1.0.0.json").read_text())
+    digest = (REPO / "release" / "npbench-c-1.0.0.tar.gz.sha256"
+              ).read_text().split()[0]
+    return {
+        "campaigns": len(CAMPAIGNS), "templates": len(templates),
+        "rungs": rungs, "components": components, "fields": fields,
+        "release_files": manifest["file_count"],
+        "grader": manifest["grader_version"], "digest": digest,
+    }
 
-    docs = (pathlib.Path(__file__).resolve().parents[2] / "docs")
-    for name in ("npbench-c.md", "catalog.md"):
-        text = (docs / name).read_text()
-        assert f"{components} graded components" in text, name
-        assert f"{rungs} graded rungs" in text, name
+
+def test_the_documents_state_the_numbers_the_artefacts_carry():
+    counted = _documented_numbers()
+    main = (REPO / "docs" / "npbench-c.md").read_text()
+    catalog = (REPO / "docs" / "catalog.md").read_text()
+    environment = (REPO / "docs" / "environment.md").read_text()
+
+    for text, name in ((main, "npbench-c.md"), (catalog, "catalog.md")):
+        assert f"{counted['rungs']} graded rungs" in text, name
+        assert f"{counted['components']} graded components" in text, name
+        assert f"{counted['campaigns']} campaigns" in text, name
+        assert f"{counted['templates']} templates" in text, name
+    assert f"{counted['campaigns']} campaigns" in environment
+    # the release record, which is a published claim about a specific tarball
+    assert f"{counted['release_files']} files" in main
+    assert counted["grader"] in main
+    assert counted["digest"][:8] in main, (
+        "the documented tarball digest is not the one release/ records")
+
+
+def test_the_pending_check_count_is_the_gate_s_own():
+    """The gate decides how many checks wait on agent runs, not the prose.
+
+    `docs/environment.md` does not state it and is not asserted here: it
+    describes the tools and the data, and the gate's arithmetic is the build
+    notes' business.
+    """
+    from npbench_c.readiness.gate import AGENT_RUN_CHECKS
+
+    main = (REPO / "docs" / "npbench-c.md").read_text()
+    assert f"{len(AGENT_RUN_CHECKS)} pending" in main
+    assert main.count(f"{len(AGENT_RUN_CHECKS)} pending") >= 5, (
+        "the pending count is stated in several places; all of them move "
+        "together or none of them is trustworthy")
