@@ -14,6 +14,11 @@ cached on disk and keyed by the configuration that produced it:
 
 Variants are ordered cheap-first so a partial run still says something about
 every layer. Same cheap-proxy caveat as the other tasks.
+
+Finished variants are also appended to <scratch>/results.jsonl and skipped on a
+re-run. A sweep over 111 strains is tens of minutes of modified-cosine, and
+losing all of it to an interrupted process -- which happened once during the
+build -- is an avoidable waste.
 """
 
 from __future__ import annotations
@@ -359,20 +364,41 @@ def main() -> int:
     header = f"{'variant':38}{'task':>6}  " + "".join(f"{n[:13]:>15}" for n in names)
     print(header)
     print("-" * len(header))
+
+    # Finished variants survive an interrupted run.
+    results_path = args.scratch / "results.jsonl"
+    done: dict[str, dict] = {}
+    if results_path.is_file():
+        for line in results_path.read_text().splitlines():
+            if line.strip():
+                record = json.loads(line)
+                done[record["variant"]] = record
+
     passes, measured = Counter(), Counter()
     for label, mistakes in VARIANTS.items():
         if args.only and args.only not in label:
             continue
-        out = args.scratch / label.replace(" ", "_").replace(":", "").replace("/", "")
-        build(ref, args.task, out, mistakes, args.scratch, cached)
-        result = score_task(config, args.truth, out)
-        scored = {a.path: a for a in result.artifacts + result.soft_artifacts}
-        row = f"{label:38}{result.task_score:6.2f}  "
+        record = done.get(label)
+        if record is None:
+            out = args.scratch / label.replace(" ", "_").replace(":", "").replace("/", "")
+            build(ref, args.task, out, mistakes, args.scratch, cached)
+            result = score_task(config, args.truth, out)
+            scored = {a.path: a for a in result.artifacts + result.soft_artifacts}
+            record = {
+                "variant": label,
+                "task_score": result.task_score,
+                "artifacts": {spec.path: [scored[spec.path].score, scored[spec.path].passed]
+                              for spec in config.artifacts},
+            }
+            with results_path.open("a") as handle:
+                handle.write(json.dumps(record) + "\n")
+
+        row = f"{label:38}{record['task_score']:6.2f}  "
         for spec in config.artifacts:
-            artifact = scored[spec.path]
-            row += f"{artifact.score:15.2f}"
+            score, passed = record["artifacts"][spec.path]
+            row += f"{score:15.2f}"
             measured[spec.path] += 1
-            if artifact.passed:
+            if passed:
                 passes[spec.path] += 1
         print(row, flush=True)
 
