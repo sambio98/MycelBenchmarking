@@ -42,38 +42,45 @@ opinion; its `NOTES.md` states what it costs and what it keeps.
 | `06_streptomyces_ripp` | RODEO-style lasso peptide and RiPP locus mining across 213 *Streptomyces* reference genomes, with a sequence similarity network over the precursors. 517 MB staged, 171 loci, 798 precursors, 7 artifacts, 37 metric instances, depth 2–5. 4 of 7 in band; two artifacts are drop candidates — see its `NOTES.md`. |
 | `07_npatlas_dereplication` | Exact-mass dereplication of task 01's molecular network against a frozen NP Atlas v2024_09, with adducts, isomer ambiguity and per-family annotation. 493 MB staged, 36,422 compounds, 3,811 queries, 10,953 candidate annotations, 8 artifacts, 35 metric instances, depth 2–5. 6 of 8 in band. |
 | `08_salinispora_ks_phylogeny` | Ketosynthase phylogeny across the 120 *Salinispora* assemblies: pyrodigal and pyhmmer to the domains, normalised local alignment to a distance matrix, UPGMA to a tree graded by its splits. 182 MB staged, 2,993 domains collapsing to 922 distinct sequences, 8 artifacts, 36 metric instances, depth 2–5. All 8 in band. |
+| `09_salinispora_paired_omics` | Metabologenomic link ranking across 111 *Salinispora* strains with both a genome and an LC-MS/MS run, paired by the Paired Omics Data Platform. GECCO clusters and gene cluster families on one side, strain-resolved metabolite occurrence recovered from each strain's MS2 against the deposit's consensus spectra on the other, joined by standardised Metcalf scoring. 27.9 GB staged, 7 artifacts, 26 metric instances, depth 2–5. **The largest fetch in the suite — see its `NOTES.md`.** |
 
-All eight validate clean and self-grade 1.00, and `npbench audit` reports no
-open findings across them. Each task's `NOTES.md` records
+Tasks 01–08 validate clean, self-grade 1.00 and report no open `npbench audit`
+findings. Task 09 is the newest and its verification is in progress; its
+`task.yaml` records determinism as pending rather than claiming it. Each task's `NOTES.md` records
 measured scale, reproducibility and difficulty, including what does *not*
 discriminate.
 
 ## Coverage of the eight analysis categories
 
 PROJECT.md §4 asks for six to eight tasks and forty to sixty graded artifacts
-covering eight categories. The suite is at **eight tasks, 59 artifacts and 267 metric instances**, the
-top of that range, with seven of the eight categories covered.
+covering eight categories. The suite is at **nine tasks, 66 artifacts and 293
+metric instances**, one task and six artifacts past the top of that range, and
+**all eight categories are covered**.
 
 | category | covered by |
 |---|---|
-| 1. BGC detection and annotation | 02 (GECCO), 06 (pyrodigal + pyhmmer) |
-| 2. Gene cluster family clustering | 02, 05, 06 |
-| 3. MS/MS molecular networking | 01, 07 |
+| 1. BGC detection and annotation | 02 (GECCO), 06 (pyrodigal + pyhmmer), 09 |
+| 2. Gene cluster family clustering | 02, 05, 06, 09 |
+| 3. MS/MS molecular networking | 01, 07, 09 |
 | 4. Dereplication and structure annotation | 07 |
-| 5. **Paired omics and link ranking** | **not covered — see below** |
+| 5. Paired omics and link ranking | 09 |
 | 6. NRPS and PKS domain parsing | 04, 08 |
 | 7. Cheminformatics on NP structures | 03 |
 | 8. Phylogenetics and taxonomy/chemistry concordance | 05 (concordance), 08 (phylogeny) |
 
-Within category 2, *novelty scoring* specifically (BiG-SLiCE-style) is not
-covered; the clustering half is.
+Being over the task count is a curation decision, not an accident: §4's range
+was written before the categories were costed, and category 5 needed a task of
+its own. Dropping one is a reasonable call for the release and each task's
+`NOTES.md` carries the evidence for making it.
 
-### Why category 5 is not covered
+Within category 2, *novelty scoring* specifically (BiG-SLiCE-style) is still
+not covered; the clustering half is.
 
-Metabologenomic link ranking needs a strain-resolved metabolome *and* a
-strain-resolved genome set for the same strains. The blocker is file discovery,
-not compute budget or method, and the evidence is worth recording because it
-is quick for a human with a browser to clear:
+### How category 5 got unblocked
+
+This section previously recorded category 5 as unbuildable, and the reasoning
+was sound but one source short. Worth keeping as a record of the dead ends,
+because they are real and anyone rebuilding this will hit them:
 
 - **MSV000078836's clustered spectra carry no per-strain provenance.** Every
   one of the 100,263 spectra in the staged `.mgf` has `FILENAME=specs_ms.pklbin`,
@@ -83,17 +90,20 @@ is quick for a human with a browser to clear:
   `certifi`, and the GNPS2 proxy that works instead serves only exact paths and
   returns no directory listing. The GNPS cluster-info tables, which would carry
   the per-file mapping, 404 at every documented name tried.
-- **MSV000098188 is partly reachable and is the better dataset.** Its
-  `ccms_parameters/params.xml` downloads and reveals 101 strain-resolved mzXML
-  samples named by collection code (CNZ-840, SNA-030, …) from the Castro-Falcón
-  "microscale" *Salinispora* survey — exactly candidate study 4 in PROJECT.md
-  §5. But its stored peak-file paths 404 at every layout tried, and its 101
-  strains have **zero** overlap with task 02's 120 sequenced genomes, so the
-  task would also need a fresh genome fetch for those strains.
+- **MSV000098188's peak files 404 at every layout tried**, and its 101
+  "microscale" strains have zero overlap with the sequenced set.
 
-What would unblock it: a file listing for either deposit, or the GNPS
-cluster-info table for MSV000078836. Both are a minute's work from a browser
-with a MassIVE account and neither needs any decision about the benchmark.
+What cleared it was the **Paired Omics Data Platform**, which PROJECT.md §5
+names for this very dataset and which I had not tried. Its project record for
+MSV000078836 curates exactly the missing mapping: 360 genome-to-file links, 120
+strains across three extraction methods, each link naming the deposit path of
+one strain's `.mzXML`. 111 of those strains already had an NCBI assembly staged
+for task 02. That is task 09.
+
+The lesson generalises past this task: **"unavailable" was a claim about the
+sources I had tried, not about the data.** The three dead ends above are all
+about file *discovery* on one archive, and the mapping existed in a different
+archive built for precisely this purpose.
 
 ## What the difficulty measurements show
 
