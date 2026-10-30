@@ -42,7 +42,7 @@ opinion; its `NOTES.md` states what it costs and what it keeps.
 | `06_streptomyces_ripp` | RODEO-style lasso peptide and RiPP locus mining across 213 *Streptomyces* reference genomes, with a sequence similarity network over the precursors. 517 MB staged, 171 loci, 798 precursors, 7 artifacts, 37 metric instances, depth 2–5. 4 of 7 in band; two artifacts are drop candidates — see its `NOTES.md`. |
 | `07_npatlas_dereplication` | Exact-mass dereplication of task 01's molecular network against a frozen NP Atlas v2024_09, with adducts, isomer ambiguity and per-family annotation. 493 MB staged, 36,422 compounds, 3,811 queries, 10,953 candidate annotations, 8 artifacts, 35 metric instances, depth 2–5. 6 of 8 in band. |
 | `08_salinispora_ks_phylogeny` | Ketosynthase phylogeny across the 120 *Salinispora* assemblies: pyrodigal and pyhmmer to the domains, normalised local alignment to a distance matrix, UPGMA to a tree graded by its splits. 182 MB staged, 2,993 domains collapsing to 922 distinct sequences, 8 artifacts, 36 metric instances, depth 2–5. All 8 in band. |
-| `09_salinispora_paired_omics` | Metabologenomic link ranking across 111 *Salinispora* strains with both a genome and an LC-MS/MS run, paired by the Paired Omics Data Platform. GECCO clusters and gene cluster families on one side, strain-resolved metabolite occurrence recovered from each strain's MS2 against the deposit's consensus spectra on the other, joined by Metcalf co-occurrence scoring. 33.5 GB staged, 7 artifacts, 26 metric instances, depth 2–5. **The largest fetch in the suite at 1.7× §10's ideal — see its `NOTES.md`.** |
+| `09_salinispora_paired_omics` | Metabologenomic link ranking across 111 *Salinispora* strains with both a genome and an LC-MS/MS run, paired by the Paired Omics Data Platform. GECCO clusters and gene cluster families on one side, strain-resolved metabolite occurrence recovered from each strain's MS2 against the deposit's consensus spectra on the other, joined by Metcalf co-occurrence scoring. 33.5 GB staged, 7 artifacts, 27 metric instances, depth 2–5. 3 of 7 in band; its ranked link table is the most discriminating artifact in the suite. **The largest fetch in the suite at 1.7× §10's ideal — see its `NOTES.md`.** |
 
 Tasks 01–08 validate clean, self-grade 1.00 and report no open `npbench audit`
 findings. Task 09 is the newest and its verification is in progress; its
@@ -53,7 +53,7 @@ discriminate.
 ## Coverage of the eight analysis categories
 
 PROJECT.md §4 asks for six to eight tasks and forty to sixty graded artifacts
-covering eight categories. The suite is at **nine tasks, 66 artifacts and 293
+covering eight categories. The suite is at **nine tasks, 66 artifacts and 294
 metric instances**, one task and six artifacts past the top of that range, and
 **all eight categories are covered**.
 
@@ -122,6 +122,7 @@ when it has many artifacts. Measured across the suite:
 | 06, RiPP mining | 4 of 7 | 0.43 | 0.29 |
 | 07, dereplication | 6 of 8 | 0.12 | 0.25 |
 | 08, KS phylogeny | 8 of 8 | 0.75 | 0.00 |
+| 09, paired omics | 3 of 7 | 0.57 | 0.43 |
 
 **Read the last two columns with care.** Task 07 scores *higher* at five
 slips than at three, and that is not noise: the headline is the fraction of
@@ -165,10 +166,14 @@ column. It did not. Every variant in that sweep had been drawn from the
 pipeline's parameters, while that artifact lives almost entirely on the parsing
 layer in front of them. Two realistic misreadings — a missing `CHARGE` read as
 1+, a base peak read as highest m/z rather than most intense — take it to 0.57
-and 0.17, and moved it into band with no change to the bundle. The other five
-sweeps were checked for the same hole and do not have it; task 01 is the only
-one whose input is a raw instrument format rather than a table or a JSON
-document.
+and 0.17, and moved it into band with no change to the bundle. When that check was first made, the other five sweeps did not have the hole.
+Tasks 07 and 09 later did: task 07's 36,422-row reference table absorbed
+mistakes that a per-row label would have caught, and task 09's BGC inventory
+read 1.00 across sixteen variants purely because none of them touched the layer
+it lives on — adding three GECCO-parsing variants moved it to 0.89. **An
+above-band artifact is a claim about the variant set before it is a claim about
+the artifact**, and the first question is which layer the artifact lives on and
+whether anything in the sweep reaches it.
 
 All six `NOTES.md` files record what does *not* discriminate as well as what
 does.

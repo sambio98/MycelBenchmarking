@@ -41,6 +41,14 @@ from npbench.grading import load_grading_config, score_task  # noqa: E402
 
 # Grouping the clusters and naming the families: free, reuses cached GECCO.
 GENOMIC = {
+    # Reading GECCO's output, as distinct from grouping it. The first sweep had
+    # none of these and bgc_inventory.csv came out at 1.00 across every variant,
+    # which looked like an unfailable artifact and was really an unmeasured
+    # layer -- the same mistake task 01 recorded. Re-running GECCO is 90 minutes
+    # and is not needed: these are all parsing decisions over its cached output.
+    "drops_unknown_type": "filters out clusters GECCO could not type",
+    "domain_count_includes_duplicates": "reports the domains field's length, not its distinct size",
+    "splits_hybrid_types": "splits a hybrid type like NRP;Polyketide into separate rows",
     "domains_as_multiset": "uses the raw domains field without deduplicating it",
     "keeps_thin_clusters": "skips the fewer-than-3-distinct-domains exclusion",
     "families_numbered_by_rank": "names families GCF_0001.. by size rank, not by member",
@@ -190,8 +198,20 @@ def build(ref, task_dir: Path, out: Path, mistakes: set[str], scratch: Path,
     w = ref.write_csv
 
     # --- genomic half --------------------------------------------------------
+    cluster_rows = cached["cluster_rows"]
+    if "domain_count_includes_duplicates" in mistakes:
+        cluster_rows = [{**r, "n_domains": cached["multiset_size"][r["cluster_id"]]}
+                        for r in cluster_rows]
+    if "drops_unknown_type" in mistakes:
+        cluster_rows = [r for r in cluster_rows if r["product_type"] != "Unknown"]
+    if "splits_hybrid_types" in mistakes:
+        split = []
+        for row in cluster_rows:
+            for part in row["product_type"].split(";"):
+                split.append({**row, "product_type": part})
+        cluster_rows = split
     w(out / "bgc_inventory.csv",
-      ["cluster_id", "accession", "product_type", "n_domains"], cached["cluster_rows"])
+      ["cluster_id", "accession", "product_type", "n_domains"], cluster_rows)
 
     family_of = families_of(ref, cached["domains_of"], mistakes)
     strains_of_gcf, clusters_of_gcf = defaultdict(set), defaultdict(list)
@@ -286,6 +306,9 @@ def build(ref, task_dir: Path, out: Path, mistakes: set[str], scratch: Path,
 
 VARIANTS = {
     "reference (no mistakes)": set(),
+    "one slip: drops untyped clusters": {"drops_unknown_type"},
+    "one slip: domain count with duplicates": {"domain_count_includes_duplicates"},
+    "one slip: splits hybrid types": {"splits_hybrid_types"},
     "one slip: domains as a multiset": {"domains_as_multiset"},
     "one slip: keeps thin clusters": {"keeps_thin_clusters"},
     "one slip: families numbered by rank": {"families_numbered_by_rank"},
@@ -323,12 +346,15 @@ def main() -> int:
     strains = ref.load_strains(args.task / "strains.tsv")
     species = {s["accession"]: ref.species_of(s["organism"]) for s in strains}
     domains_of, cluster_rows, strain_of_cluster = {}, [], {}
+    multiset_size = {}
     for strain in strains:
         accession = strain["accession"]
         for record in ref.read_clusters(work, accession):
             cluster_id = record["cluster_id"]
             domains = ref.domain_set(record.get("domains", ""))
             domains_of[cluster_id] = domains
+            multiset_size[cluster_id] = len(
+                [d for d in record.get("domains", "").split(";") if d])
             strain_of_cluster[cluster_id] = accession
             cluster_rows.append({"cluster_id": cluster_id, "accession": accession,
                                  "product_type": record.get("type") or "Unknown",
@@ -357,6 +383,7 @@ def main() -> int:
         "cluster_rows": cluster_rows, "strain_of_cluster": strain_of_cluster,
         "consensus": consensus, "members_of_family": members_of_family,
         "accessions": [s["accession"] for s in strains],
+        "multiset_size": multiset_size,
         "n_ms2": n_ms2, "n_usable": n_usable,
     }
 
