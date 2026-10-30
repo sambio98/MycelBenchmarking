@@ -1,0 +1,118 @@
+task_id: 09_salinispora_paired_omics
+title: Metabologenomic link ranking across 111 paired Salinispora strains
+
+source:
+  citation: >-
+    Crüsemann M, O'Neill EC, Larson CB, Melnik AV, Floros DJ, da Silva RR,
+    Jensen PR, Dorrestein PC, Moore BS. Prioritizing natural product diversity
+    in a collection of 146 bacterial strains based on growth and extraction
+    protocols. Journal of Natural Products 80:588-597 (2017).
+  doi: 10.1021/acs.jnatprod.6b00722
+  secondary_citation: >-
+    Schorn MA, Verhoeven S, Ridder L, Huber F, Acharya DD, Aksenov AA, et al.
+    A community resource for paired genomic and metabolomic data mining.
+    Nature Chemical Biology 17:363-368 (2021). The Paired Omics Data Platform
+    curates the genome-to-spectrum-file mapping this task depends on.
+
+truth_provenance: >-
+  Tool-generated. Every artifact in truth/ is produced by the three solution
+  stages over the files in data.manifest.json, using the pinned GECCO,
+  pyteomics and matchms builds. Neither source paper's own results are the
+  truth here: the Crüsemann prioritisation came from a GNPS web job whose
+  version is not recoverable, and the Paired Omics Data Platform's nine curated
+  BGC-to-molecular-family links came from manual structural work and MIBiG
+  comparison, which PROJECT.md section 9 excludes from grading. The task
+  measures execution of a prescribed linking pipeline.
+
+data_scope: >-
+  This is the paired-omics task PROJECT.md section 4 category 5 asks for and
+  section 11 calls the differentiator. It was the last category to be built
+  because the pairing looked impossible: the deposit's clustered .mgf records
+  FILENAME=specs_ms.pklbin for all 100,263 of its spectra, so it cannot say
+  which strain a consensus spectrum came from, and MassIVE's own listing
+  endpoints are unreachable from a current certificate store - its chain roots
+  in an emSign CA absent from both the system trust store and certifi, and the
+  GNPS2 proxy that works instead serves only exact paths with no directory
+  listing.
+
+  The Paired Omics Data Platform curates exactly the missing mapping: 360
+  genome-to-file links for this project, 120 strains across three extraction
+  methods. 111 of those strains also have an NCBI assembly, and strains.tsv is
+  that join. Only the ethyl acetate extracts are used, which holds the
+  analytical batch constant - same sample preparation, same instrumentation,
+  same deposit directory - because comparing metabolomes across extraction
+  methods would confound every occurrence call downstream.
+
+  Two scope limits are worth stating. First, the molecular families come from
+  the depositors' own GNPS clustering rather than from re-clustering the raw
+  scans: section 9 names network topology from a fixed .mgf as the reproducible
+  artifact, and reimplementing MS/MS clustering deterministically is a research
+  project rather than a task. Second, RefSeq holds two assemblies of
+  Salinispora tropica CNS416; the strain is the unit of every co-occurrence
+  count, so one is dropped by a recorded rule - better assembly level, then
+  smallest accession.
+
+determinism: >-
+  Pending verification at the time of writing. The pipeline is built to be
+  deterministic: GECCO is pinned and its output is byte-identical across runs
+  (checked for task 02), the top-50 peak cut breaks ties on m/z, the presence
+  test takes the first scan to clear the threshold over a precursor-sorted
+  list, family names derive from their own contents rather than from a rank,
+  and the link ranking breaks ties on both identifiers. Two independent runs
+  must be compared before this field is changed to Verified.
+
+categories:
+  - paired_omics
+  - bgc_detection
+  - msms_networking
+
+# PROJECT.md section 8. The strain and cluster inventories are depth 2; the
+# gene cluster families and the strain-resolved occurrence matrix are depth 3;
+# the molecular families are depth 4; the Metcalf scores and the ranked links
+# are depth 5, and they are the first artifacts in the suite that depend on two
+# independently computed halves meeting.
+depth: 5
+
+tool_versions:
+  gecco: "0.11.0"
+  pyteomics: "5.0.2"
+  matchms: "0.33.1"
+  networkx: "3.4.2"
+  python: "3.13"
+
+solution:
+  steps:
+    - python {task}/solution/run_gecco.py --task {task} --jobs {jobs}
+    - python {task}/solution/extract_features.py --task {task}
+    - python {task}/solution/make_truth.py --task {task} --out {out}
+
+runtime:
+  vcpus: 4
+  ram_gb: 8
+  wall_clock_hours: 6
+  # Measured: GECCO is ~36 s per assembly on 4 idle vCPUs, so ~70 min for 111;
+  # reading and filtering one mzXML is ~2 s; the presence test is ~5 s per
+  # strain, so ~9 min; the consensus network is ~100 s. About two hours of
+  # compute, with the wall clock set at six to leave room for staging the
+  # spectra, which is the largest fetch in the suite.
+
+network:
+  deny_terms:
+    - 10.1021/acs.jnatprod.6b00722
+    - acs.jnatprod.6b00722
+    - "Prioritizing natural product diversity in a collection of 146 bacterial strains"
+    - 10.1038/s41589-020-00677-3
+    - pairedomicsdata
+  # The Paired Omics Data Platform is denied even though this task was built
+  # from it: its project record for this deposit carries the curated
+  # BGC-to-molecular-family links, which are a partial answer key for
+  # top_links.csv. The staged strains.tsv already holds the only part of that
+  # record the task needs.
+  deny_hosts:
+    - pairedomicsdata.bioinformatics.nl
+    - gnps.ucsd.edu
+    - gnps2.org
+    - massive.ucsd.edu
+    - massiveproxy.gnps2.org
+    - www.ncbi.nlm.nih.gov
+    - ftp.ncbi.nlm.nih.gov

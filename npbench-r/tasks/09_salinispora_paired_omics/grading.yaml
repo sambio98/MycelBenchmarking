@@ -1,0 +1,204 @@
+version: 1
+
+# Accessions, cluster ids, GCF ids and MF ids are identifiers and fold safely.
+# A bare assembly accession carries strip_accession_version, matching tasks 02
+# and 08, so GCF_000016425.1 and GCF_000016425 are the same genome. Columns
+# that embed an accession inside a longer identifier do not get that rule.
+#
+# This is the deepest dependency chain in the suite, and deliberately so. The
+# gene call feeds the clusters, the clusters feed the gene cluster families;
+# the spectrum filter feeds the presence calls, the presence calls feed the
+# molecular families' occupancy; and the two halves meet in the Metcalf scores
+# and the ranked links. A mistake anywhere upstream reaches the link table.
+
+artifacts:
+  # Depth 2. The two inputs as the agent read them: how many MS2 scans each
+  # file held, how many survived filtering, and how many consensus spectra the
+  # strain contains. Punishes the peak filter and the presence rule at once.
+  - path: strain_inventory.csv
+    truth: strain_inventory.csv
+    format: csv
+    soft: false
+    row_key: [accession]
+    normalisers: [strip, collapse_whitespace, casefold, strip_accession_version]
+    column_aliases:
+      accession: [assembly, assembly_accession, genome, genome_id]
+      species: [organism, taxon]
+      strain: [strain_code, isolate]
+      n_ms2_scans: [ms2_scans, n_scans, total_ms2]
+      n_usable_ms2: [usable_ms2, n_filtered_ms2, kept_ms2]
+      n_spectra_present: [present_spectra, n_present, n_consensus_present]
+    value_aliases: {}
+    metrics:
+      - type: identifier_f1
+      - type: macro_f1
+        column: species
+      - type: lins_ccc
+        column: n_ms2_scans
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: n_usable_ms2
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: n_spectra_present
+        log_transform: false
+        pseudocount: null
+
+  # Depth 2. The genomic half's raw inventory.
+  - path: bgc_inventory.csv
+    truth: bgc_inventory.csv
+    format: csv
+    soft: false
+    row_key: [cluster_id]
+    normalisers: [strip, collapse_whitespace, casefold]
+    column_aliases:
+      cluster_id: [bgc_id, id, cluster]
+      accession: [assembly, assembly_accession, genome, genome_id]
+      product_type: [type, product, cluster_type]
+      n_domains: [domains, n_distinct_domains, domain_count]
+    value_aliases: {}
+    metrics:
+      - type: identifier_f1
+      - type: macro_f1
+        column: accession
+      - type: macro_f1
+        column: product_type
+      - type: lins_ccc
+        column: n_domains
+        log_transform: false
+        pseudocount: null
+
+  # Depth 3. Gene cluster families, by the same rule as task 02 so the two
+  # inventories can be compared. Punishes the thin-cluster exclusion, the
+  # Jaccard threshold and naming a family by rank rather than by contents.
+  - path: gene_cluster_families.csv
+    truth: gene_cluster_families.csv
+    format: csv
+    soft: false
+    row_key: [gcf_id]
+    normalisers: [strip, collapse_whitespace, casefold]
+    column_aliases:
+      gcf_id: [family_id, gcf, family]
+      n_clusters: [clusters, cluster_count]
+      n_strains: [strains, n_genomes]
+      n_species: [species_count]
+      representative_cluster: [representative, smallest_cluster]
+    value_aliases: {}
+    metrics:
+      - type: identifier_f1
+      - type: macro_f1
+        column: representative_cluster
+      - type: lins_ccc
+        column: n_clusters
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: n_strains
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: n_species
+        log_transform: false
+        pseudocount: null
+
+  # Depth 3. The strain-resolved occurrence matrix, one row per present pair.
+  # This is the artifact the whole task exists to produce: the clustered .mgf
+  # cannot say which strain a spectrum came from, and this says it.
+  - path: spectrum_occurrence.csv
+    truth: spectrum_occurrence.csv
+    format: csv
+    soft: false
+    row_key: [scan, accession]
+    normalisers: [strip, collapse_whitespace, casefold]
+    column_aliases:
+      scan: [scan_number, scans, spectrum_id]
+      accession: [assembly, assembly_accession, genome, genome_id]
+    value_aliases: {}
+    metrics:
+      - type: identifier_f1
+
+  # Depth 4. Molecular families and their occupancy across strains.
+  - path: molecular_families.csv
+    truth: molecular_families.csv
+    format: csv
+    soft: false
+    row_key: [mf_id]
+    normalisers: [strip, collapse_whitespace, casefold]
+    column_aliases:
+      mf_id: [family_id, mf, molecular_family]
+      n_spectra: [spectra, n_nodes, size]
+      n_strains: [strains, n_genomes]
+      n_species: [species_count]
+    value_aliases: {}
+    metrics:
+      - type: identifier_f1
+      - type: lins_ccc
+        column: n_spectra
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: n_strains
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: n_species
+        log_transform: false
+        pseudocount: null
+
+  # Depth 5. The link table. Both halves of the analysis meet here, so it
+  # inherits every upstream decision.
+  - path: metcalf_scores.csv
+    truth: metcalf_scores.csv
+    format: csv
+    soft: false
+    row_key: [gcf_id, mf_id]
+    normalisers: [strip, collapse_whitespace, casefold]
+    column_aliases:
+      gcf_id: [family_id, gcf]
+      mf_id: [mf, molecular_family]
+      metcalf_score: [score, metcalf, link_score]
+      n_shared_strains: [shared_strains, n_shared, co_occurrence]
+    value_aliases: {}
+    metrics:
+      - type: identifier_f1
+      - type: lins_ccc
+        column: metcalf_score
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: n_shared_strains
+        log_transform: false
+        pseudocount: null
+
+  # Depth 5. The prioritisation an experimentalist would actually act on, which
+  # is what PROJECT.md section 4 means by link ranking. The dense rank makes
+  # the tie handling gradeable rather than hidden.
+  - path: top_links.csv
+    truth: top_links.csv
+    format: csv
+    soft: false
+    row_key: [gcf_id, mf_id]
+    normalisers: [strip, collapse_whitespace, casefold]
+    column_aliases:
+      gcf_id: [family_id, gcf]
+      mf_id: [mf, molecular_family]
+      rank: [position, link_rank]
+      metcalf_score: [score, metcalf, link_score]
+      n_shared_strains: [shared_strains, n_shared, co_occurrence]
+    value_aliases: {}
+    metrics:
+      - type: identifier_f1
+      - type: lins_ccc
+        column: rank
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: metcalf_score
+        log_transform: false
+        pseudocount: null
+      - type: lins_ccc
+        column: n_shared_strains
+        log_transform: false
+        pseudocount: null
