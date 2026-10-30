@@ -1,0 +1,42 @@
+{
+  "accession": "AL645882.2",
+  "baseline_fragments": 50,
+  "baseline_mode": "single",
+  "breakpoint_census": {
+    "1": 0,
+    "10": 9,
+    "2": 1,
+    "50": 49
+  },
+  "call_census": {
+    "calls": 7738,
+    "coding_bases": 7673298,
+    "coding_fraction": 0.885295,
+    "longest": 22392,
+    "median_length": 855.0,
+    "on_the_forward_strand": 3969,
+    "on_the_reverse_strand": 3769,
+    "shortest": 90
+  },
+  "contig_length": 8667507,
+  "contig_sha256": "40f23ed84a8fd42b2c60afd24301b7d227848fbf886632c5d7f503be52211903",
+  "fixed_flags": [
+    "-f",
+    "gff",
+    "-q"
+  ],
+  "gc_fraction": 0.721187,
+  "locality_window": 5000,
+  "partial_census": {
+    "00": 7738,
+    "01": 0,
+    "10": 0,
+    "11": 0
+  },
+  "prodigal_version": "Prodigal V2.6.3",
+  "start_type_census": {
+    "ATG": 5197,
+    "GTG": 2322,
+    "TTG": 219
+  }
+}

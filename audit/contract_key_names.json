@@ -1,0 +1,18 @@
+{
+ "_note": "Declared exemptions for the readiness gate's check 28, which asks of every key name the oracle's own submission uses whether a system could find that name anywhere in its cold sandbox -- task.yaml, reference/ or inputs/, the compressed inputs included.",
+ "_why_the_check_exists": "Check 27 compares field names only as deep as the contract names keys. Below that, the contract described the shape in prose and never gave the names, and the names are load-bearing: renaming one key inside arch-pks's selection_census took an otherwise perfect answer from depth 4 to depth 0, one inside reconciliation_table to depth 2, one inside a policy_sweep cell to depth 3. 227 such names across 18 campaigns were unfindable; 109 contract fields gained an exact key list, and three deeper ones were written by hand.",
+ "_what_an_exemption_is_for": "A key name the campaign's own DATA supplies rather than the contract: a system reads it off the records or gets it from the tool it ran, so the contract naming it would be naming an answer. Everything else belongs in the contract.",
+ "_what_the_gate_checks": "That every unfindable name is declared here with a reason, and that every declaration is still unfindable -- a stale exemption is a check nobody is getting.",
+ "exemptions": {
+  "bgcdetect-scoelicolor-01": [
+   {
+    "key": "indole",
+    "reason": "An antiSMASH product name, emitted by the tool for a region it detected. The campaign cannot list the products without listing the detection result, and a system that ran the tool has the name."
+   },
+   {
+    "key": "prodigiosin",
+    "reason": "The same: a product name the tool emits. The other twenty products in this census do appear in the shipped locus file, which is why only these two needed declaring."
+   }
+  ]
+ }
+}

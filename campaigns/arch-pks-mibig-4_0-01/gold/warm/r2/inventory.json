@@ -1,0 +1,147 @@
+{
+  "baseline_cutoff": "--cut_ga",
+  "baseline_mapping": "ks_n",
+  "baseline_resolution": "resolve_by_score",
+  "baseline_span": "ali",
+  "curated_active_flag": {
+    "False": 64,
+    "None": 2025,
+    "True": 1945
+  },
+  "curated_coordinate_usability": {
+    "placeholder": 5352,
+    "usable": 94
+  },
+  "curated_domain_totals": {
+    "a_domain": 0,
+    "at_domain": 574,
+    "c_domain": 0,
+    "ks_domain": 857
+  },
+  "curated_module_census": {
+    "1": 243,
+    "2": 118,
+    "3": 48,
+    "4": 28,
+    "5": 10,
+    "6": 8,
+    "7": 8,
+    "8": 1
+  },
+  "domains_by_module_type": {
+    "nrps-type1": {
+      "a_domain": 2901,
+      "c_domain": 833
+    },
+    "pks-modular": {
+      "at_domain": 612,
+      "ks_domain": 612
+    },
+    "pks-modular-starter": {
+      "at_domain": 17
+    },
+    "pks-trans-at": {
+      "ks_domain": 471
+    },
+    "pks-trans-at-starter": {}
+  },
+  "hmmer_version": "HMMER 3.4 (Aug 2023); http://hmmer.org/",
+  "mibig_release": "4.0",
+  "module_family": "pks",
+  "panel_census": {
+    "3Beta_HSD": 3,
+    "ACP_syn_III": 1,
+    "ACP_syn_III_C": 2,
+    "ADH_N": 71,
+    "ADH_zinc_N": 79,
+    "ADH_zinc_N_2": 81,
+    "AMP-binding": 24,
+    "AMP-binding_C": 8,
+    "Abhydrolase_1": 11,
+    "Abhydrolase_6": 13,
+    "Acetyltransf_1": 5,
+    "Acetyltransf_7": 2,
+    "Acyl_transf_1": 572,
+    "AfsA": 2,
+    "Beta_elim_lyase": 2,
+    "CMAS": 12,
+    "Chal_sti_synt_C": 2,
+    "Chal_sti_synt_N": 2,
+    "Condensation": 13,
+    "DUF938": 1,
+    "Docking": 107,
+    "ECH_1": 10,
+    "ECH_2": 9,
+    "Epimerase": 184,
+    "Erythro-docking": 1,
+    "FAE1_CUT1_RppA": 2,
+    "FMO-like": 2,
+    "GDP_Man_Dehyd": 12,
+    "Hydrolase_4": 9,
+    "KAsynt_C_assoc": 833,
+    "KR": 681,
+    "Ketoacyl-synt_C": 893,
+    "LPG_synthase_C": 2,
+    "Lys_Orn_oxgnase": 1,
+    "MaoC_dehydratas": 1,
+    "Methyltransf_11": 98,
+    "Methyltransf_12": 102,
+    "Methyltransf_2": 7,
+    "Methyltransf_21": 1,
+    "Methyltransf_23": 87,
+    "Methyltransf_25": 90,
+    "Methyltransf_31": 45,
+    "Methyltransf_33": 1,
+    "NAD_binding_4": 7,
+    "NAD_binding_8": 1,
+    "PKS_DE": 93,
+    "PP-binding": 1003,
+    "PRMT5": 1,
+    "PS-DH": 465,
+    "Peptidase_S15": 1,
+    "Peptidase_S9": 1,
+    "PhyH": 2,
+    "Polysacc_synt_2": 42,
+    "Pyr_redox_2": 1,
+    "Pyr_redox_3": 1,
+    "RmlD_sub_bind": 3,
+    "SAT": 5,
+    "Sulfotransfer_1": 6,
+    "Sulfotransfer_3": 6,
+    "Thioesterase": 50,
+    "Thiolase_N": 296,
+    "Ubie_methyltran": 4,
+    "adh_short": 606,
+    "adh_short_C2": 269,
+    "ketoacyl-synt": 892
+  },
+  "panel_size": 65,
+  "pfam_sha256": "8d3e2ffa785f91ee0e24a3994d2dcfff6f382e3cf663784a47688e7d95297fee",
+  "pfam_version": "Pfam 35.0",
+  "primary_domain": "ks_domain",
+  "protein_length_summary": {
+    "count": 464,
+    "max": 11478,
+    "median": 2347.0,
+    "min": 79,
+    "residues": 1460845
+  },
+  "secondary_domain": "at_domain",
+  "selection_census": {
+    "corpus_entries": 162,
+    "corpus_genes": 464,
+    "drop_excluded_by_status": 92,
+    "drop_no_shipped_translation": 0,
+    "drop_other_module_type": 1205,
+    "entries_with_modules": 667,
+    "genes_named_by_a_single_gene_module": 1761,
+    "modules": 4034,
+    "modules_spanning_several_genes": 78,
+    "shipped_proteins": 1692
+  },
+  "strata_census": {
+    "cis_at": 318,
+    "mixed": 18,
+    "trans_at": 128
+  }
+}

@@ -1,0 +1,1392 @@
+{
+  "baseline_policy": "p1_case_folded",
+  "biosynthetic_class": "ribosomal",
+  "boundary_offset_summary": {
+    "count": 10,
+    "exactly_at_the_boundary": 0,
+    "max": 30,
+    "median": 19.0,
+    "min": -21
+  },
+  "boundary_relation_census": {
+    "core_not_located": 2,
+    "core_only": 0,
+    "leader_only": 2,
+    "spans_boundary": 8
+  },
+  "cleavage_table": [
+    {
+      "bgc": "BGC0000468",
+      "declared_from": 0,
+      "declared_to": 1,
+      "derived_core_start": 1,
+      "gene": "CCM09443.1",
+      "implied_core_start": 1,
+      "verdict": "agrees"
+    },
+    {
+      "bgc": "BGC0000469",
+      "declared_from": 0,
+      "declared_to": 1,
+      "derived_core_start": 1,
+      "gene": "AFV25481.1",
+      "implied_core_start": 1,
+      "verdict": "agrees"
+    },
+    {
+      "bgc": "BGC0000470",
+      "declared_from": 0,
+      "declared_to": 1,
+      "derived_core_start": 1,
+      "gene": "AFU90404.1",
+      "implied_core_start": 1,
+      "verdict": "agrees"
+    },
+    {
+      "bgc": "BGC0000477",
+      "declared_from": 39,
+      "declared_to": 40,
+      "derived_core_start": 40,
+      "gene": "ACA04491.1",
+      "implied_core_start": 40,
+      "verdict": "agrees"
+    },
+    {
+      "bgc": "BGC0000479",
+      "declared_from": 33,
+      "declared_to": 34,
+      "derived_core_start": 34,
+      "gene": "AED99431.1",
+      "implied_core_start": 34,
+      "verdict": "agrees"
+    },
+    {
+      "bgc": "BGC0000479",
+      "declared_from": 33,
+      "declared_to": 34,
+      "derived_core_start": 34,
+      "gene": "AED99432.1",
+      "implied_core_start": 34,
+      "verdict": "agrees"
+    },
+    {
+      "bgc": "BGC0000480",
+      "declared_from": 41,
+      "declared_to": 42,
+      "derived_core_start": null,
+      "gene": "ACA04484.1",
+      "implied_core_start": 42,
+      "verdict": "underivable"
+    },
+    {
+      "bgc": "BGC0000503",
+      "declared_from": 58,
+      "declared_to": 59,
+      "derived_core_start": 59,
+      "gene": "cinA",
+      "implied_core_start": 59,
+      "verdict": "agrees"
+    },
+    {
+      "bgc": "BGC0000517",
+      "declared_from": 40,
+      "declared_to": 41,
+      "derived_core_start": 41,
+      "gene": "BAB04173.1",
+      "implied_core_start": 41,
+      "verdict": "agrees"
+    },
+    {
+      "bgc": "BGC0000535",
+      "declared_from": 22,
+      "declared_to": 23,
+      "derived_core_start": 23,
+      "gene": "ADJ56352.1",
+      "implied_core_start": 23,
+      "verdict": "agrees"
+    },
+    {
+      "bgc": "BGC0000553",
+      "declared_from": 20,
+      "declared_to": 21,
+      "derived_core_start": 21,
+      "gene": "SSGG_RS09925",
+      "implied_core_start": 21,
+      "verdict": "agrees"
+    },
+    {
+      "bgc": "BGC0000563",
+      "declared_from": 28,
+      "declared_to": 29,
+      "derived_core_start": 29,
+      "gene": "AEA03263.1",
+      "implied_core_start": 29,
+      "verdict": "agrees"
+    },
+    {
+      "bgc": "BGC0000566",
+      "declared_from": 22,
+      "declared_to": 23,
+      "derived_core_start": 23,
+      "gene": "SPy_0738",
+      "implied_core_start": 23,
+      "verdict": "agrees"
+    },
+    {
+      "bgc": "BGC0000582",
+      "declared_from": 41,
+      "declared_to": 42,
+      "derived_core_start": 42,
+      "gene": "ADR72962.1",
+      "implied_core_start": 42,
+      "verdict": "agrees"
+    },
+    {
+      "bgc": "BGC0001157",
+      "declared_from": 0,
+      "declared_to": 1,
+      "derived_core_start": 1,
+      "gene": "CBG72694.1",
+      "implied_core_start": 1,
+      "verdict": "agrees"
+    },
+    {
+      "bgc": "BGC0001229",
+      "declared_from": 26,
+      "declared_to": 27,
+      "derived_core_start": 27,
+      "gene": "SBI_06989",
+      "implied_core_start": 27,
+      "verdict": "agrees"
+    },
+    {
+      "bgc": "BGC0001229",
+      "declared_from": 27,
+      "declared_to": 28,
+      "derived_core_start": 28,
+      "gene": "SBI_06990",
+      "implied_core_start": 28,
+      "verdict": "agrees"
+    },
+    {
+      "bgc": "BGC0001356",
+      "declared_from": 18,
+      "declared_to": 19,
+      "derived_core_start": 19,
+      "gene": "padeA",
+      "implied_core_start": 19,
+      "verdict": "agrees"
+    },
+    {
+      "bgc": "BGC0001474",
+      "declared_from": 42,
+      "declared_to": 43,
+      "derived_core_start": 43,
+      "gene": "PYC80213.1",
+      "implied_core_start": 43,
+      "verdict": "agrees"
+    },
+    {
+      "bgc": "BGC0002084",
+      "declared_from": 1,
+      "declared_to": 2,
+      "derived_core_start": 2,
+      "gene": "bytA",
+      "implied_core_start": 2,
+      "verdict": "agrees"
+    },
+    {
+      "bgc": "BGC0002099",
+      "declared_from": 1,
+      "declared_to": 2,
+      "derived_core_start": 2,
+      "gene": "bytA",
+      "implied_core_start": 2,
+      "verdict": "agrees"
+    },
+    {
+      "bgc": "BGC0002750",
+      "declared_from": 19,
+      "declared_to": 20,
+      "derived_core_start": 20,
+      "gene": "trpA",
+      "implied_core_start": 20,
+      "verdict": "agrees"
+    },
+    {
+      "bgc": "BGC0002751",
+      "declared_from": 16,
+      "declared_to": 17,
+      "derived_core_start": 17,
+      "gene": "amyA",
+      "implied_core_start": 17,
+      "verdict": "agrees"
+    },
+    {
+      "bgc": "BGC0002825",
+      "declared_from": 22,
+      "declared_to": 23,
+      "derived_core_start": 23,
+      "gene": "NopA",
+      "implied_core_start": 23,
+      "verdict": "agrees"
+    },
+    {
+      "bgc": "BGC0002899",
+      "declared_from": 25,
+      "declared_to": 25,
+      "derived_core_start": 25,
+      "gene": "ANC17028.1",
+      "implied_core_start": 25,
+      "verdict": "agrees"
+    },
+    {
+      "bgc": "BGC0002909",
+      "declared_from": 17,
+      "declared_to": 17,
+      "derived_core_start": 17,
+      "gene": "SDS17589.1",
+      "implied_core_start": 17,
+      "verdict": "agrees"
+    },
+    {
+      "bgc": "BGC0002909",
+      "declared_from": 19,
+      "declared_to": 19,
+      "derived_core_start": 19,
+      "gene": "SDS17633.1",
+      "implied_core_start": 19,
+      "verdict": "agrees"
+    },
+    {
+      "bgc": "BGC0002909",
+      "declared_from": 20,
+      "declared_to": 20,
+      "derived_core_start": 20,
+      "gene": "SDS17660.1",
+      "implied_core_start": 20,
+      "verdict": "agrees"
+    },
+    {
+      "bgc": "BGC0002986",
+      "declared_from": 21,
+      "declared_to": 21,
+      "derived_core_start": null,
+      "gene": "BBD82040.1",
+      "implied_core_start": 21,
+      "verdict": "underivable"
+    },
+    {
+      "bgc": "BGC0003015",
+      "declared_from": 27,
+      "declared_to": 27,
+      "derived_core_start": null,
+      "gene": "CUI65249.1",
+      "implied_core_start": 27,
+      "verdict": "underivable"
+    }
+  ],
+  "convention_tally": {
+    "from_as_0based_core_start": {
+      "agrees": 4,
+      "disagrees": 23,
+      "underivable": 3
+    },
+    "from_as_1based_core_start": {
+      "agrees": 0,
+      "disagrees": 27,
+      "underivable": 3
+    },
+    "to_as_0based_core_start": {
+      "agrees": 27,
+      "disagrees": 0,
+      "underivable": 3
+    },
+    "to_as_1based_core_start": {
+      "agrees": 0,
+      "disagrees": 27,
+      "underivable": 3
+    }
+  },
+  "core_sequence_case_census": {
+    "lower": 7,
+    "upper": 60
+  },
+  "core_sequence_shape_census": {
+    "bare_string": 28,
+    "list_of_one": 35,
+    "list_of_several": 2,
+    "printed_list_in_a_string": 2
+  },
+  "deletion_census": {
+    "changed": 0,
+    "gained": 0,
+    "lost": 7,
+    "not_applicable": 9,
+    "retained": 3,
+    "unchanged_absent": 48
+  },
+  "deletion_table": [
+    {
+      "after": [],
+      "before": [
+        "DUF5837"
+      ],
+      "bgc": "BGC0000477",
+      "gene": "ACA04491.1",
+      "outcome": "lost"
+    },
+    {
+      "after": [],
+      "before": [
+        "DUF5840"
+      ],
+      "bgc": "BGC0000479",
+      "gene": "AED99431.1",
+      "outcome": "lost"
+    },
+    {
+      "after": [],
+      "before": [
+        "DUF5840"
+      ],
+      "bgc": "BGC0000479",
+      "gene": "AED99432.1",
+      "outcome": "lost"
+    },
+    {
+      "after": [
+        "DUF5973"
+      ],
+      "before": [
+        "DUF5973"
+      ],
+      "bgc": "BGC0000503",
+      "gene": "cinA",
+      "outcome": "retained"
+    },
+    {
+      "after": [
+        "Lantibiotic_a"
+      ],
+      "before": [
+        "Lantibiotic_a"
+      ],
+      "bgc": "BGC0000517",
+      "gene": "BAB04173.1",
+      "outcome": "retained"
+    },
+    {
+      "after": [],
+      "before": [
+        "Gallidermin"
+      ],
+      "bgc": "BGC0000535",
+      "gene": "ADJ56352.1",
+      "outcome": "lost"
+    },
+    {
+      "after": [],
+      "before": [
+        "RamS"
+      ],
+      "bgc": "BGC0000553",
+      "gene": "SSGG_RS09925",
+      "outcome": "lost"
+    },
+    {
+      "after": [
+        "Lantibiotic_a"
+      ],
+      "before": [
+        "Lantibiotic_a"
+      ],
+      "bgc": "BGC0002110",
+      "gene": "QKV49893.1",
+      "outcome": "retained"
+    },
+    {
+      "after": [],
+      "before": [
+        "Nif11"
+      ],
+      "bgc": "BGC0002897",
+      "gene": "WP_027359228.1",
+      "outcome": "lost"
+    },
+    {
+      "after": [],
+      "before": [
+        "Nif11"
+      ],
+      "bgc": "BGC0002897",
+      "gene": "WP_051284026.1",
+      "outcome": "lost"
+    }
+  ],
+  "domain_table": [
+    {
+      "bgc": "BGC0000477",
+      "boundary_offset": 26,
+      "env_from": 1,
+      "env_to": 66,
+      "gene": "ACA04491.1",
+      "model": "DUF5837",
+      "relation": "spans_boundary"
+    },
+    {
+      "bgc": "BGC0000479",
+      "boundary_offset": 16,
+      "env_from": 1,
+      "env_to": 50,
+      "gene": "AED99431.1",
+      "model": "DUF5840",
+      "relation": "spans_boundary"
+    },
+    {
+      "bgc": "BGC0000479",
+      "boundary_offset": 14,
+      "env_from": 1,
+      "env_to": 48,
+      "gene": "AED99432.1",
+      "model": "DUF5840",
+      "relation": "spans_boundary"
+    },
+    {
+      "bgc": "BGC0000480",
+      "boundary_offset": null,
+      "env_from": 1,
+      "env_to": 93,
+      "gene": "ACA04484.1",
+      "model": "DUF5837",
+      "relation": "core_not_located"
+    },
+    {
+      "bgc": "BGC0000503",
+      "boundary_offset": 19,
+      "env_from": 1,
+      "env_to": 78,
+      "gene": "cinA",
+      "model": "DUF5973",
+      "relation": "spans_boundary"
+    },
+    {
+      "bgc": "BGC0000517",
+      "boundary_offset": 28,
+      "env_from": 39,
+      "env_to": 69,
+      "gene": "BAB04173.1",
+      "model": "Lantibiotic_a",
+      "relation": "spans_boundary"
+    },
+    {
+      "bgc": "BGC0000535",
+      "boundary_offset": 19,
+      "env_from": 2,
+      "env_to": 42,
+      "gene": "ADJ56352.1",
+      "model": "Gallidermin",
+      "relation": "spans_boundary"
+    },
+    {
+      "bgc": "BGC0000553",
+      "boundary_offset": 21,
+      "env_from": 1,
+      "env_to": 42,
+      "gene": "SSGG_RS09925",
+      "model": "RamS",
+      "relation": "spans_boundary"
+    },
+    {
+      "bgc": "BGC0001155",
+      "boundary_offset": null,
+      "env_from": 22,
+      "env_to": 51,
+      "gene": "AGY49587.1",
+      "model": "Thiopep_pre",
+      "relation": "core_not_located"
+    },
+    {
+      "bgc": "BGC0002110",
+      "boundary_offset": 30,
+      "env_from": 23,
+      "env_to": 55,
+      "gene": "QKV49893.1",
+      "model": "Lantibiotic_a",
+      "relation": "spans_boundary"
+    },
+    {
+      "bgc": "BGC0002897",
+      "boundary_offset": -21,
+      "env_from": 1,
+      "env_to": 47,
+      "gene": "WP_027359228.1",
+      "model": "Nif11",
+      "relation": "leader_only"
+    },
+    {
+      "bgc": "BGC0002897",
+      "boundary_offset": -21,
+      "env_from": 1,
+      "env_to": 47,
+      "gene": "WP_051284026.1",
+      "model": "Nif11",
+      "relation": "leader_only"
+    }
+  ],
+  "elected_convention": "to_as_0based_core_start",
+  "environment": {
+    "hmmer_version": "HMMER 3.4 (Aug 2023); http://hmmer.org/",
+    "pfam_sha256": "8d3e2ffa785f91ee0e24a3994d2dcfff6f382e3cf663784a47688e7d95297fee",
+    "pfam_version": "Pfam 35.0"
+  },
+  "hmmer_version": "HMMER 3.4 (Aug 2023); http://hmmer.org/",
+  "leader_length_summary": {
+    "count": 58,
+    "max": 85,
+    "median": 23.0,
+    "min": 1
+  },
+  "localisation_census": {
+    "core_absent": 0,
+    "core_ambiguous": 1,
+    "core_at_C_terminus": 49,
+    "core_at_N_terminus": 0,
+    "core_internal": 9,
+    "core_is_whole_precursor": 6,
+    "malformed_core": 2
+  },
+  "localisation_table": [
+    {
+      "bgc": "BGC0000468",
+      "core_length": 8,
+      "core_start": 1,
+      "cores": 1,
+      "follower_length": 35,
+      "gene": "CCM09443.1",
+      "leader_length": 1,
+      "occurrences": 1,
+      "verdict": "core_internal"
+    },
+    {
+      "bgc": "BGC0000469",
+      "core_length": 8,
+      "core_start": 1,
+      "cores": 1,
+      "follower_length": 35,
+      "gene": "AFV25481.1",
+      "leader_length": 1,
+      "occurrences": 1,
+      "verdict": "core_internal"
+    },
+    {
+      "bgc": "BGC0000470",
+      "core_length": 8,
+      "core_start": 1,
+      "cores": 1,
+      "follower_length": 37,
+      "gene": "AFU90404.1",
+      "leader_length": 1,
+      "occurrences": 1,
+      "verdict": "core_internal"
+    },
+    {
+      "bgc": "BGC0000477",
+      "core_length": 8,
+      "core_start": 40,
+      "cores": 2,
+      "follower_length": 18,
+      "gene": "ACA04491.1",
+      "leader_length": 40,
+      "occurrences": 1,
+      "verdict": "core_internal"
+    },
+    {
+      "bgc": "BGC0000479",
+      "core_length": 9,
+      "core_start": 34,
+      "cores": 1,
+      "follower_length": 7,
+      "gene": "AED99431.1",
+      "leader_length": 34,
+      "occurrences": 1,
+      "verdict": "core_internal"
+    },
+    {
+      "bgc": "BGC0000479",
+      "core_length": 7,
+      "core_start": 34,
+      "cores": 1,
+      "follower_length": 7,
+      "gene": "AED99432.1",
+      "leader_length": 34,
+      "occurrences": 1,
+      "verdict": "core_internal"
+    },
+    {
+      "bgc": "BGC0000480",
+      "core_length": 6,
+      "core_start": null,
+      "cores": 2,
+      "follower_length": null,
+      "gene": "ACA04484.1",
+      "leader_length": null,
+      "occurrences": 2,
+      "verdict": "core_ambiguous"
+    },
+    {
+      "bgc": "BGC0000503",
+      "core_length": 19,
+      "core_start": 59,
+      "cores": 1,
+      "follower_length": 0,
+      "gene": "cinA",
+      "leader_length": 59,
+      "occurrences": 1,
+      "verdict": "core_at_C_terminus"
+    },
+    {
+      "bgc": "BGC0000517",
+      "core_length": 28,
+      "core_start": 41,
+      "cores": 1,
+      "follower_length": 0,
+      "gene": "BAB04173.1",
+      "leader_length": 41,
+      "occurrences": 1,
+      "verdict": "core_at_C_terminus"
+    },
+    {
+      "bgc": "BGC0000535",
+      "core_length": 34,
+      "core_start": 23,
+      "cores": 1,
+      "follower_length": 0,
+      "gene": "ADJ56352.1",
+      "leader_length": 23,
+      "occurrences": 1,
+      "verdict": "core_at_C_terminus"
+    },
+    {
+      "bgc": "BGC0000553",
+      "core_length": 22,
+      "core_start": 21,
+      "cores": 1,
+      "follower_length": 0,
+      "gene": "SSGG_RS09925",
+      "leader_length": 21,
+      "occurrences": 1,
+      "verdict": "core_at_C_terminus"
+    },
+    {
+      "bgc": "BGC0000563",
+      "core_length": 22,
+      "core_start": 29,
+      "cores": 1,
+      "follower_length": 0,
+      "gene": "AEA03263.1",
+      "leader_length": 29,
+      "occurrences": 1,
+      "verdict": "core_at_C_terminus"
+    },
+    {
+      "bgc": "BGC0000566",
+      "core_length": 30,
+      "core_start": 23,
+      "cores": 1,
+      "follower_length": 0,
+      "gene": "SPy_0738",
+      "leader_length": 23,
+      "occurrences": 1,
+      "verdict": "core_at_C_terminus"
+    },
+    {
+      "bgc": "BGC0000580",
+      "core_length": 20,
+      "core_start": 26,
+      "cores": 1,
+      "follower_length": 0,
+      "gene": "EGD17354.1",
+      "leader_length": 26,
+      "occurrences": 1,
+      "verdict": "core_at_C_terminus"
+    },
+    {
+      "bgc": "BGC0000580",
+      "core_length": 20,
+      "core_start": 28,
+      "cores": 1,
+      "follower_length": 0,
+      "gene": "EGD17355.1",
+      "leader_length": 28,
+      "occurrences": 1,
+      "verdict": "core_at_C_terminus"
+    },
+    {
+      "bgc": "BGC0000581",
+      "core_length": 25,
+      "core_start": null,
+      "cores": 1,
+      "follower_length": null,
+      "gene": "AAD28494.1",
+      "leader_length": null,
+      "occurrences": null,
+      "verdict": "malformed_core"
+    },
+    {
+      "bgc": "BGC0000582",
+      "core_length": 22,
+      "core_start": 42,
+      "cores": 1,
+      "follower_length": 0,
+      "gene": "ADR72962.1",
+      "leader_length": 42,
+      "occurrences": 1,
+      "verdict": "core_at_C_terminus"
+    },
+    {
+      "bgc": "BGC0000614",
+      "core_length": 17,
+      "core_start": 41,
+      "cores": 1,
+      "follower_length": 0,
+      "gene": "ACN52291.1",
+      "leader_length": 41,
+      "occurrences": 1,
+      "verdict": "core_at_C_terminus"
+    },
+    {
+      "bgc": "BGC0001155",
+      "core_length": 18,
+      "core_start": null,
+      "cores": 1,
+      "follower_length": null,
+      "gene": "AGY49587.1",
+      "leader_length": null,
+      "occurrences": null,
+      "verdict": "malformed_core"
+    },
+    {
+      "bgc": "BGC0001157",
+      "core_length": 8,
+      "core_start": 1,
+      "cores": 1,
+      "follower_length": 35,
+      "gene": "CBG72694.1",
+      "leader_length": 1,
+      "occurrences": 1,
+      "verdict": "core_internal"
+    },
+    {
+      "bgc": "BGC0001229",
+      "core_length": 37,
+      "core_start": 27,
+      "cores": 1,
+      "follower_length": 0,
+      "gene": "SBI_06989",
+      "leader_length": 27,
+      "occurrences": 1,
+      "verdict": "core_at_C_terminus"
+    },
+    {
+      "bgc": "BGC0001229",
+      "core_length": 39,
+      "core_start": 28,
+      "cores": 1,
+      "follower_length": 0,
+      "gene": "SBI_06990",
+      "leader_length": 28,
+      "occurrences": 1,
+      "verdict": "core_at_C_terminus"
+    },
+    {
+      "bgc": "BGC0001356",
+      "core_length": 23,
+      "core_start": 19,
+      "cores": 1,
+      "follower_length": 0,
+      "gene": "padeA",
+      "leader_length": 19,
+      "occurrences": 1,
+      "verdict": "core_at_C_terminus"
+    },
+    {
+      "bgc": "BGC0001474",
+      "core_length": 17,
+      "core_start": 43,
+      "cores": 1,
+      "follower_length": 0,
+      "gene": "PYC80213.1",
+      "leader_length": 43,
+      "occurrences": 1,
+      "verdict": "core_at_C_terminus"
+    },
+    {
+      "bgc": "BGC0001639",
+      "core_length": 19,
+      "core_start": 26,
+      "cores": 1,
+      "follower_length": 0,
+      "gene": "OUH62395.1",
+      "leader_length": 26,
+      "occurrences": 1,
+      "verdict": "core_at_C_terminus"
+    },
+    {
+      "bgc": "BGC0001802",
+      "core_length": 13,
+      "core_start": 70,
+      "cores": 1,
+      "follower_length": 0,
+      "gene": "ATJ00792.1",
+      "leader_length": 70,
+      "occurrences": 1,
+      "verdict": "core_at_C_terminus"
+    },
+    {
+      "bgc": "BGC0001889",
+      "core_length": 18,
+      "core_start": 22,
+      "cores": 1,
+      "follower_length": 0,
+      "gene": "fusA",
+      "leader_length": 22,
+      "occurrences": 1,
+      "verdict": "core_at_C_terminus"
+    },
+    {
+      "bgc": "BGC0002084",
+      "core_length": 3,
+      "core_start": 2,
+      "cores": 1,
+      "follower_length": 0,
+      "gene": "bytA",
+      "leader_length": 2,
+      "occurrences": 1,
+      "verdict": "core_at_C_terminus"
+    },
+    {
+      "bgc": "BGC0002099",
+      "core_length": 3,
+      "core_start": 2,
+      "cores": 1,
+      "follower_length": 0,
+      "gene": "bytA",
+      "leader_length": 2,
+      "occurrences": 1,
+      "verdict": "core_at_C_terminus"
+    },
+    {
+      "bgc": "BGC0002110",
+      "core_length": 30,
+      "core_start": 25,
+      "cores": 1,
+      "follower_length": 0,
+      "gene": "QKV49893.1",
+      "leader_length": 25,
+      "occurrences": 1,
+      "verdict": "core_at_C_terminus"
+    },
+    {
+      "bgc": "BGC0002110",
+      "core_length": 26,
+      "core_start": 26,
+      "cores": 1,
+      "follower_length": 0,
+      "gene": "QKV49894.1",
+      "leader_length": 26,
+      "occurrences": 1,
+      "verdict": "core_at_C_terminus"
+    },
+    {
+      "bgc": "BGC0002111",
+      "core_length": 23,
+      "core_start": 22,
+      "cores": 1,
+      "follower_length": 0,
+      "gene": "EVG22_32215",
+      "leader_length": 22,
+      "occurrences": 1,
+      "verdict": "core_at_C_terminus"
+    },
+    {
+      "bgc": "BGC0002111",
+      "core_length": 23,
+      "core_start": 22,
+      "cores": 1,
+      "follower_length": 0,
+      "gene": "EVG22_32220",
+      "leader_length": 22,
+      "occurrences": 1,
+      "verdict": "core_at_C_terminus"
+    },
+    {
+      "bgc": "BGC0002111",
+      "core_length": 23,
+      "core_start": 22,
+      "cores": 1,
+      "follower_length": 0,
+      "gene": "EVG22_32225",
+      "leader_length": 22,
+      "occurrences": 1,
+      "verdict": "core_at_C_terminus"
+    },
+    {
+      "bgc": "BGC0002111",
+      "core_length": 23,
+      "core_start": 22,
+      "cores": 1,
+      "follower_length": 0,
+      "gene": "EVG22_32230",
+      "leader_length": 22,
+      "occurrences": 1,
+      "verdict": "core_at_C_terminus"
+    },
+    {
+      "bgc": "BGC0002111",
+      "core_length": 23,
+      "core_start": 22,
+      "cores": 1,
+      "follower_length": 0,
+      "gene": "EVG22_32235",
+      "leader_length": 22,
+      "occurrences": 1,
+      "verdict": "core_at_C_terminus"
+    },
+    {
+      "bgc": "BGC0002111",
+      "core_length": 23,
+      "core_start": 22,
+      "cores": 1,
+      "follower_length": 0,
+      "gene": "EVG22_32240",
+      "leader_length": 22,
+      "occurrences": 1,
+      "verdict": "core_at_C_terminus"
+    },
+    {
+      "bgc": "BGC0002111",
+      "core_length": 23,
+      "core_start": 22,
+      "cores": 1,
+      "follower_length": 0,
+      "gene": "EVG22_32245",
+      "leader_length": 22,
+      "occurrences": 1,
+      "verdict": "core_at_C_terminus"
+    },
+    {
+      "bgc": "BGC0002115",
+      "core_length": 6,
+      "core_start": 17,
+      "cores": 1,
+      "follower_length": 21,
+      "gene": "AGI92077.1",
+      "leader_length": 17,
+      "occurrences": 1,
+      "verdict": "core_internal"
+    },
+    {
+      "bgc": "BGC0002120",
+      "core_length": 51,
+      "core_start": null,
+      "cores": 1,
+      "follower_length": null,
+      "gene": "NQE92413.1",
+      "leader_length": null,
+      "occurrences": 1,
+      "verdict": "core_is_whole_precursor"
+    },
+    {
+      "bgc": "BGC0002130",
+      "core_length": 23,
+      "core_start": 30,
+      "cores": 1,
+      "follower_length": 0,
+      "gene": "QKI29070.1",
+      "leader_length": 30,
+      "occurrences": 1,
+      "verdict": "core_at_C_terminus"
+    },
+    {
+      "bgc": "BGC0002144",
+      "core_length": 27,
+      "core_start": 28,
+      "cores": 1,
+      "follower_length": 0,
+      "gene": "RCCGEPOP_RS37510",
+      "leader_length": 28,
+      "occurrences": 1,
+      "verdict": "core_at_C_terminus"
+    },
+    {
+      "bgc": "BGC0002150",
+      "core_length": 17,
+      "core_start": 1,
+      "cores": 1,
+      "follower_length": 34,
+      "gene": "MBO0654592.1",
+      "leader_length": 1,
+      "occurrences": 1,
+      "verdict": "core_internal"
+    },
+    {
+      "bgc": "BGC0002289",
+      "core_length": 18,
+      "core_start": 25,
+      "cores": 1,
+      "follower_length": 0,
+      "gene": "CQR60041.1",
+      "leader_length": 25,
+      "occurrences": 1,
+      "verdict": "core_at_C_terminus"
+    },
+    {
+      "bgc": "BGC0002322",
+      "core_length": 19,
+      "core_start": 22,
+      "cores": 1,
+      "follower_length": 0,
+      "gene": "CEJ66604.1",
+      "leader_length": 22,
+      "occurrences": 1,
+      "verdict": "core_at_C_terminus"
+    },
+    {
+      "bgc": "BGC0002750",
+      "core_length": 6,
+      "core_start": 20,
+      "cores": 1,
+      "follower_length": 0,
+      "gene": "trpA",
+      "leader_length": 20,
+      "occurrences": 1,
+      "verdict": "core_at_C_terminus"
+    },
+    {
+      "bgc": "BGC0002751",
+      "core_length": 6,
+      "core_start": 17,
+      "cores": 1,
+      "follower_length": 0,
+      "gene": "amyA",
+      "leader_length": 17,
+      "occurrences": 1,
+      "verdict": "core_at_C_terminus"
+    },
+    {
+      "bgc": "BGC0002825",
+      "core_length": 15,
+      "core_start": 23,
+      "cores": 1,
+      "follower_length": 0,
+      "gene": "NopA",
+      "leader_length": 23,
+      "occurrences": 1,
+      "verdict": "core_at_C_terminus"
+    },
+    {
+      "bgc": "BGC0002835",
+      "core_length": 17,
+      "core_start": 29,
+      "cores": 1,
+      "follower_length": 0,
+      "gene": "sle_66130",
+      "leader_length": 29,
+      "occurrences": 1,
+      "verdict": "core_at_C_terminus"
+    },
+    {
+      "bgc": "BGC0002897",
+      "core_length": 21,
+      "core_start": 68,
+      "cores": 1,
+      "follower_length": 0,
+      "gene": "WP_027359228.1",
+      "leader_length": 68,
+      "occurrences": 1,
+      "verdict": "core_at_C_terminus"
+    },
+    {
+      "bgc": "BGC0002897",
+      "core_length": 21,
+      "core_start": 68,
+      "cores": 1,
+      "follower_length": 0,
+      "gene": "WP_051284026.1",
+      "leader_length": 68,
+      "occurrences": 1,
+      "verdict": "core_at_C_terminus"
+    },
+    {
+      "bgc": "BGC0002899",
+      "core_length": 50,
+      "core_start": 25,
+      "cores": 1,
+      "follower_length": 0,
+      "gene": "ANC17028.1",
+      "leader_length": 25,
+      "occurrences": 1,
+      "verdict": "core_at_C_terminus"
+    },
+    {
+      "bgc": "BGC0002900",
+      "core_length": 55,
+      "core_start": 9,
+      "cores": 1,
+      "follower_length": 0,
+      "gene": "EOK06278.1",
+      "leader_length": 9,
+      "occurrences": 1,
+      "verdict": "core_at_C_terminus"
+    },
+    {
+      "bgc": "BGC0002901",
+      "core_length": 48,
+      "core_start": 16,
+      "cores": 1,
+      "follower_length": 0,
+      "gene": "SOB49554.1",
+      "leader_length": 16,
+      "occurrences": 1,
+      "verdict": "core_at_C_terminus"
+    },
+    {
+      "bgc": "BGC0002903",
+      "core_length": 15,
+      "core_start": 27,
+      "cores": 1,
+      "follower_length": 0,
+      "gene": "WP_236653506.1",
+      "leader_length": 27,
+      "occurrences": 1,
+      "verdict": "core_at_C_terminus"
+    },
+    {
+      "bgc": "BGC0002909",
+      "core_length": 22,
+      "core_start": 17,
+      "cores": 1,
+      "follower_length": 0,
+      "gene": "SDS17589.1",
+      "leader_length": 17,
+      "occurrences": 1,
+      "verdict": "core_at_C_terminus"
+    },
+    {
+      "bgc": "BGC0002909",
+      "core_length": 22,
+      "core_start": 19,
+      "cores": 1,
+      "follower_length": 0,
+      "gene": "SDS17633.1",
+      "leader_length": 19,
+      "occurrences": 1,
+      "verdict": "core_at_C_terminus"
+    },
+    {
+      "bgc": "BGC0002909",
+      "core_length": 24,
+      "core_start": 20,
+      "cores": 1,
+      "follower_length": 0,
+      "gene": "SDS17660.1",
+      "leader_length": 20,
+      "occurrences": 1,
+      "verdict": "core_at_C_terminus"
+    },
+    {
+      "bgc": "BGC0002934",
+      "core_length": 35,
+      "core_start": 27,
+      "cores": 1,
+      "follower_length": 0,
+      "gene": "WOF00480.1",
+      "leader_length": 27,
+      "occurrences": 1,
+      "verdict": "core_at_C_terminus"
+    },
+    {
+      "bgc": "BGC0002954",
+      "core_length": 59,
+      "core_start": null,
+      "cores": 1,
+      "follower_length": null,
+      "gene": "WP_034267136.1",
+      "leader_length": null,
+      "occurrences": 1,
+      "verdict": "core_is_whole_precursor"
+    },
+    {
+      "bgc": "BGC0002965",
+      "core_length": 29,
+      "core_start": 85,
+      "cores": 1,
+      "follower_length": 0,
+      "gene": "FB471_2428",
+      "leader_length": 85,
+      "occurrences": 1,
+      "verdict": "core_at_C_terminus"
+    },
+    {
+      "bgc": "BGC0002967",
+      "core_length": 49,
+      "core_start": null,
+      "cores": 1,
+      "follower_length": null,
+      "gene": "WP_003713099.1",
+      "leader_length": null,
+      "occurrences": 1,
+      "verdict": "core_is_whole_precursor"
+    },
+    {
+      "bgc": "BGC0002968",
+      "core_length": 57,
+      "core_start": null,
+      "cores": 1,
+      "follower_length": null,
+      "gene": "WP_013289092.1",
+      "leader_length": null,
+      "occurrences": 1,
+      "verdict": "core_is_whole_precursor"
+    },
+    {
+      "bgc": "BGC0002986",
+      "core_length": 42,
+      "core_start": null,
+      "cores": 1,
+      "follower_length": null,
+      "gene": "BBD82040.1",
+      "leader_length": null,
+      "occurrences": 1,
+      "verdict": "core_is_whole_precursor"
+    },
+    {
+      "bgc": "BGC0003015",
+      "core_length": 57,
+      "core_start": null,
+      "cores": 1,
+      "follower_length": null,
+      "gene": "CUI65249.1",
+      "leader_length": null,
+      "occurrences": 1,
+      "verdict": "core_is_whole_precursor"
+    },
+    {
+      "bgc": "BGC0003019",
+      "core_length": 24,
+      "core_start": 21,
+      "cores": 1,
+      "follower_length": 0,
+      "gene": "ESQ92588.1",
+      "leader_length": 21,
+      "occurrences": 1,
+      "verdict": "core_at_C_terminus"
+    },
+    {
+      "bgc": "BGC0003065",
+      "core_length": 22,
+      "core_start": 67,
+      "cores": 1,
+      "follower_length": 0,
+      "gene": "IM867_13380",
+      "leader_length": 67,
+      "occurrences": 1,
+      "verdict": "core_at_C_terminus"
+    }
+  ],
+  "mibig_release": "4.0",
+  "panel_census": {
+    "DUF5837": 2,
+    "DUF5840": 2,
+    "DUF5973": 1,
+    "Gallidermin": 1,
+    "Lantibiotic_a": 2,
+    "Nif11": 2,
+    "RamS": 1,
+    "Thiopep_pre": 1
+  },
+  "panel_size": 8,
+  "pfam_sha256": "8d3e2ffa785f91ee0e24a3994d2dcfff6f382e3cf663784a47688e7d95297fee",
+  "pfam_version": "Pfam 35.0",
+  "policy_sweep": {
+    "p0_strict": {
+      "cores_declared": 69,
+      "located": 51,
+      "verdict_census": {
+        "core_absent": 7,
+        "core_ambiguous": 1,
+        "core_at_C_terminus": 43,
+        "core_at_N_terminus": 0,
+        "core_internal": 8,
+        "core_is_whole_precursor": 6,
+        "malformed_core": 2
+      }
+    },
+    "p1_case_folded": {
+      "cores_declared": 69,
+      "located": 58,
+      "verdict_census": {
+        "core_absent": 0,
+        "core_ambiguous": 1,
+        "core_at_C_terminus": 49,
+        "core_at_N_terminus": 0,
+        "core_internal": 9,
+        "core_is_whole_precursor": 6,
+        "malformed_core": 2
+      }
+    },
+    "p2_repair_printed_list": {
+      "cores_declared": 69,
+      "located": 60,
+      "verdict_census": {
+        "core_absent": 0,
+        "core_ambiguous": 1,
+        "core_at_C_terminus": 50,
+        "core_at_N_terminus": 0,
+        "core_internal": 10,
+        "core_is_whole_precursor": 6,
+        "malformed_core": 0
+      }
+    }
+  },
+  "precursor_length_summary": {
+    "count": 67,
+    "max": 114,
+    "median": 49.0,
+    "min": 5
+  },
+  "records_declaring_a_cleavage_location": 30,
+  "records_with_a_panel_hit": 12,
+  "ripp_type_census": {
+    "(unstated)": 7,
+    "Bottromycin": 4,
+    "Cyanobactin": 2,
+    "Glycocin": 3,
+    "Graspetide": 2,
+    "LAP": 2,
+    "Lanthipeptide": 22,
+    "Lasso peptide": 12,
+    "Linaridin": 1,
+    "Thioamidide": 3,
+    "Thiopeptide": 3,
+    "other": 6
+  },
+  "selection_census": {
+    "corpus_entries": 54,
+    "corpus_records": 67,
+    "entries_absent_from_reference_set": 46,
+    "entries_excluded_by_both": 46,
+    "entries_excluded_by_status": 46,
+    "entries_in_class": 447,
+    "entries_with_a_named_precursor": 100,
+    "records_named": 121,
+    "records_with_an_unresolved_gene": 0,
+    "reference_records_shipped": 363
+  },
+  "status_census": {
+    "active": 48,
+    "pending": 19
+  },
+  "threshold": "--cut_ga"
+}

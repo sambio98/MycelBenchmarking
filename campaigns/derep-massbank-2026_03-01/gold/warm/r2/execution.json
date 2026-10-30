@@ -1,0 +1,18 @@
+{
+  "candidate_census": {
+    "max": 159,
+    "median": 16.5,
+    "total": 2778
+  },
+  "corpus_census": {
+    "graded_queries": 100,
+    "library_compounds": 1693,
+    "library_spectra": 24794
+  },
+  "environment": {
+    "matchms_version": "0.30.2",
+    "peak_tolerance": 0.01,
+    "precursor_window": 0.01,
+    "similarity": "CosineGreedy"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "description": "Three-letter to one-letter mapping for the residues these structures contain, including the modified residues that appear in deposited coordinates. A comp id outside this table makes the build refuse rather than map to X, because an unmapped residue would silently drop out of the sequence-agreement count.",
+  "three_to_one": {
+    "ALA": "A", "ARG": "R", "ASN": "N", "ASP": "D", "CYS": "C",
+    "GLN": "Q", "GLU": "E", "GLY": "G", "HIS": "H", "ILE": "I",
+    "LEU": "L", "LYS": "K", "MET": "M", "PHE": "F", "PRO": "P",
+    "SER": "S", "THR": "T", "TRP": "W", "TYR": "Y", "VAL": "V",
+    "MSE": "M", "SEC": "U", "PYL": "O", "HYP": "P", "PCA": "E",
+    "ASX": "B", "GLX": "Z", "UNK": "X"
+  },
+  "modified_residue_note": "MSE (selenomethionine) maps to M and HYP to P because the structure records the modified residue where the UniProt sequence records the parent. Mapping them to X instead would make every selenomethionine position read as a sequence disagreement."
+}

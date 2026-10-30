@@ -1,0 +1,80 @@
+{
+  "classified_verdict_counts": {
+    "biosynthetic_class": {
+      "no_counterpart_in_target": 73,
+      "representation_only": 2353,
+      "substantive_change": 16
+    },
+    "compound_formulas": {
+      "absent_in_source": 1015,
+      "absent_in_target": 6,
+      "representation_only": 2,
+      "substantive_change": 39,
+      "unchanged": 1380
+    },
+    "compound_names": {
+      "representation_only": 1,
+      "substantive_change": 152,
+      "unchanged": 2289
+    },
+    "locus_accession": {
+      "unchanged": 2442
+    },
+    "ncbi_tax_id": {
+      "representation_only": 2434,
+      "substantive_change": 8
+    },
+    "organism": {
+      "substantive_change": 8,
+      "unchanged": 2434
+    }
+  },
+  "fields": [
+    "biosynthetic_class",
+    "compound_formulas",
+    "compound_names",
+    "locus_accession",
+    "ncbi_tax_id",
+    "organism"
+  ],
+  "only_in_source": 60,
+  "only_in_target": 571,
+  "perturbations": {
+    "p1_taxid_type_only": {
+      "verdict": "unchanged"
+    },
+    "p2_taxid_value": {
+      "verdict": "substantive_change"
+    },
+    "p3_formula_altered": {
+      "verdict": "substantive_change"
+    },
+    "p4_class_retired": {
+      "verdict": "no_counterpart_in_target"
+    },
+    "p5_organism_removed": {
+      "verdict": "absent_in_source"
+    }
+  },
+  "present": {
+    "report": 1
+  },
+  "raw_difference_counts": {
+    "biosynthetic_class": 2442,
+    "compound_formulas": 181,
+    "compound_names": 152,
+    "locus_accession": 0,
+    "ncbi_tax_id": 2442,
+    "organism": 8
+  },
+  "retired_class_terms": [
+    "Alkaloid"
+  ],
+  "shared_entries": 2442,
+  "shared_status_in_target": {
+    "active": 2414,
+    "retired": 28
+  },
+  "source_entries": 2502,
+  "target_entries": 3013
+}

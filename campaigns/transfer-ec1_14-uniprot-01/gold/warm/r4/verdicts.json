@@ -1,0 +1,160 @@
+{
+  "agreement_by_depth": {
+    "3": {
+      "agree": 3556,
+      "decidable": 3650,
+      "rate": 0.974247
+    },
+    "4": {
+      "agree": 2531,
+      "decidable": 2743,
+      "rate": 0.922712
+    }
+  },
+  "agreement_by_identity": {
+    "0-30": {
+      "agree": 7,
+      "decidable": 17,
+      "rate": 0.411765
+    },
+    "30-40": {
+      "agree": 36,
+      "decidable": 78,
+      "rate": 0.461538
+    },
+    "40-50": {
+      "agree": 108,
+      "decidable": 146,
+      "rate": 0.739726
+    },
+    "50-60": {
+      "agree": 168,
+      "decidable": 219,
+      "rate": 0.767123
+    },
+    "60-70": {
+      "agree": 226,
+      "decidable": 254,
+      "rate": 0.889764
+    },
+    "70-80": {
+      "agree": 342,
+      "decidable": 360,
+      "rate": 0.95
+    },
+    "80-90": {
+      "agree": 505,
+      "decidable": 525,
+      "rate": 0.961905
+    },
+    "90-100.01": {
+      "agree": 1139,
+      "decidable": 1144,
+      "rate": 0.995629
+    }
+  },
+  "transfer_errors_at_subsubclass": [
+    "A0A067XMV4",
+    "A0A0B6CGH9",
+    "A0A0N9HQ36",
+    "A0A1E7MYN1",
+    "A0A1R3RGJ2",
+    "A0A261GRE4",
+    "A0A2Z5U368",
+    "A0A2Z5U6I9",
+    "A0A455R7M0",
+    "A0A861B5L6",
+    "A0A9E7LUJ4",
+    "A0AA38FCJ6",
+    "A0AA38GMP9",
+    "A0AAP5I1G4",
+    "A2R6G7",
+    "A2WLP4",
+    "A4IU28",
+    "B5M9L6",
+    "C0HMM4",
+    "D5JBX1",
+    "E1ACP7",
+    "E1B2Z9",
+    "E9JFX9",
+    "F1CMX6",
+    "G8FRC5",
+    "I1HL09",
+    "I1IUJ6",
+    "I3PLR1",
+    "L7WME6",
+    "O34974",
+    "O52379",
+    "P00183",
+    "P0DKI7",
+    "P0DO13",
+    "P0DO14",
+    "P0DOW1",
+    "P0DPQ7",
+    "P0DXJ2",
+    "P0DXY1",
+    "P14762",
+    "P20813",
+    "P25535",
+    "P37365",
+    "P54950",
+    "P54989",
+    "P75728",
+    "P95482",
+    "P95483",
+    "Q04507",
+    "Q05182",
+    "Q05183",
+    "Q06069",
+    "Q078T0",
+    "Q0CCX4",
+    "Q0CJ62",
+    "Q0DBF4",
+    "Q0JFI2",
+    "Q2MJ19",
+    "Q2MJ21",
+    "Q2RMZ4",
+    "Q2RNK3",
+    "Q2UPC7",
+    "Q41131",
+    "Q4KCZ0",
+    "Q52185",
+    "Q53215",
+    "Q54FI4",
+    "Q59723",
+    "Q5VRI5",
+    "Q5Z5R4",
+    "Q5Z5R7",
+    "Q5Z5S6",
+    "Q607G3",
+    "Q60A55",
+    "Q6F4M8",
+    "Q6UIL3",
+    "Q6WNQ8",
+    "Q6WNQ9",
+    "Q7XZQ8",
+    "Q82IY3",
+    "Q8GMG6",
+    "Q8RQQ0",
+    "Q94IW5",
+    "Q94LP4",
+    "Q9AIX6",
+    "Q9LIF4",
+    "Q9M066",
+    "Q9RBG5",
+    "Q9X404",
+    "Q9XB59",
+    "Q9Y7G5",
+    "S5RR11",
+    "S5SC42",
+    "U5NE19"
+  ],
+  "verdict_census": {
+    "no_hit": 0,
+    "supported": 2531,
+    "supported_to_subsubclass": 845,
+    "undecidable": 902,
+    "wrong_at_serial": 180,
+    "wrong_at_subsubclass": 94
+  }
+}

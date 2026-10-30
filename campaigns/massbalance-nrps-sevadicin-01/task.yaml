@@ -1,0 +1,160 @@
+campaign_id: massbalance-nrps-sevadicin-01
+template_id: mass-balance-nrps
+track: EX
+family: mass_balance_and_route_validation
+layer: L4_molecule_and_structure
+np_class: NRPS
+version: 1.0.0
+horizon_tier: T-short
+license_class: open
+grader_version: "2.0.0+9fc95658"
+grading_spec_version: "1.1.0"
+min_tool_surface: S0
+
+objective: >
+  MIBiG entry BGC0000426 annotates a three-module NRPS assembly line in
+  Paenibacillus larvae and the tripeptide sevadicin. Compute the molecular
+  formula of the linear assembly those modules would produce, quantify how far
+  the annotated compound is from it, and predict the assembly that results from
+  deleting each single module.
+
+method_guidance: partial
+
+scope_note: >
+  MIBiG annotates the enzymatic module count, which is not in general the number
+  of monomer incorporations in the final product. Across the 43 entries meeting
+  this template's admission filter, one is exactly balanced, four differ by a
+  single water, and the rest need chemistry the module table does not annotate --
+  so the size of the gap is the question rather than a formality. The campaign
+  does not ask which chemistry closes a gap: that would be judgement, not
+  computation.
+
+# Identical in substance to the other instantiation of this template; the shared
+# oracle enforces the same conventions, and reference/ ships the pinned tables.
+output_contract:
+  route.json:
+    conventions:
+      formula_format: >
+        Hill order -- carbon, then hydrogen, then other elements alphabetically --
+        with the count omitted when it is 1. Element order is pinned in
+        reference/assembly_rules.json. A formula written in another order is
+        re-rendered before comparison, so presentation is not graded; chemistry is.
+      verdict_vocabulary: [balanced, cyclisation_only, additional_chemistry_required,
+                           deficit_unexplained, insufficient]
+    modules: >
+      One object per annotated module, in module order, each with the 1-based
+      "module" index, the "monomer" name exactly as the entry's
+      a_domain.substrates[].name gives it, and that monomer's "formula".
+    peptide_bonds: integer; n_modules - 1 for a linear assembly
+    naive_assembly_formula: Hill-order formula of the linear assembly
+    naive_assembly_monoisotopic_mass: daltons, 4 decimal places, tolerance 0.001
+    per_compound: >
+      One object per formula-bearing compound the entry annotates, keyed by the
+      compound name exactly as the entry gives it, each carrying "residual"
+      (product minus naive assembly, element by element, signed; elements with a
+      zero difference may be omitted) and "verdict" from the closed vocabulary.
+      This entry annotates one compound; other instantiations annotate several.
+
+      Keys, exactly: `sevadicin`; `sevadicin` keys `residual`, `verdict`.
+    single_module_deletions: >
+      Keyed by the 1-based module index as a string, each carrying the Hill-order
+      "formula" of the assembly remaining after that module is deleted and the
+      "mass_shift" in daltons relative to the full assembly. A map, not a list,
+      so the answer is not order-dependent.
+
+constraints:
+  reference_dir: reference
+  pinned_tables:
+    - reference/monomer_formulas.json
+    - reference/assembly_rules.json
+    - reference/atomic_masses.json
+
+snapshots_required:
+  shipped: [mibig@4.0]
+  fetched: []
+  inputs_pinned:
+    - source: MIBiG
+      version: "4.0"
+      accession: BGC0000426
+      license: CC BY 4.0
+      admission: loci[].evidence contains "Knock-out studies"
+
+budgets:
+  wall_clock_minutes: 20
+  cpu: 2
+  memory_gb: 4
+  network: off
+
+rungs:
+  - {rung_id: r1, ordinal: 1, name: execute,        gold_tier: G1, warm_start_bundle: null}
+  - {rung_id: r2, ordinal: 2, name: correct,        gold_tier: G1, warm_start_bundle: gold/warm/r2}
+  - {rung_id: r3, ordinal: 3, name: commit,         gold_tier: G1, warm_start_bundle: gold/warm/r3}
+  - {rung_id: r4, ordinal: 4, name: counterfactual, gold_tier: G1, warm_start_bundle: gold/warm/r4}
+
+harness:
+  gold_command: ["python3", "-m", "npbench_c.templates.mass_balance_nrps.build", "{campaign}"]
+  solve_command: ["python3", "-m", "npbench_c.templates.mass_balance_nrps.solve", "{campaign}", "{submission}"]
+  measure_command: ["python3", "-m", "npbench_c.templates.mass_balance_nrps.measure", "{campaign}", "{submission}", "{measurement}"]
+  stub_module: npbench_c.sweep.stubs.stub_massbalance
+  stub_args: []
+  stub_levels:
+    - {name: stub-naive,      level: naive}
+    - {name: stub-assembled,  level: assembled}
+    - {name: stub-analyst,    level: analyst, reference: true}
+    - {name: stub-complete,   level: complete}
+    - {name: stub-parametric, level: parametric, mode: no_tool}
+
+grading:
+  chance_levels: {r1: 1.0, r2: 0.01, r3: 0.06, r4: 0.0005}
+  chance_level_notes:
+    r1: >
+      Measured by the no-computation ablation: R1 asks only that the entry and
+      the pinned monomer table be read and echoed in schema. A no-tool ablation
+      is not meaningful for an S0 campaign, so the ablation withholds
+      computation instead.
+    r3: >
+      Higher than the malleobactin instantiation's 0.004: this entry annotates a
+      single compound, so R3 reduces to one residual vector plus one five-way
+      verdict, and a five-way verdict is guessable on its own. The residual
+      vector is what makes R3 real here, and the template ships a second
+      instantiation so that no single entry's verdict branch stands alone.
+
+excluded_from_grading:
+  - field: the per-monomer molecular formulas
+    reason: >
+      Published in reference/monomer_formulas.json, which this campaign must
+      ship: it is S0, the agent has no chemistry toolkit, and the table exists
+      so that a toolkit version bump cannot move a published score. Grading them
+      back measures a copy. They were graded at R2 until an audit of every
+      graded scalar against the cold sandbox found them stated there. What it
+      takes to USE the table is still graded either side of them:
+      all_formulas_parse at R1, and the summed assembly formula and mass at R2.
+  - field: the enumerated compound list
+    reason: >
+      It is a field of the shipped entry, and every warm bundle hands it over
+      because neither the assembly rung nor the reconciliation rung can be posed
+      without knowing which compounds the entry names. Grading it would measure a
+      parse the sandbox has already answered. Caught mechanically: the readiness
+      gate now refuses a component whose composite gold value sits in the warm
+      bundle of the rung that grades it.
+  - field: residual attribution to specific tailoring chemistry
+    reason: >
+      Attributing a residual to a named biosynthetic step is expert inference,
+      not computation, and its gold would be human judgement. The signed
+      residual vector and a mechanical classification of it are graded instead.
+  - field: product monoisotopic mass
+    reason: >
+      The entry supplies compounds[].mass, so grading it would test transcription
+      rather than computation. The assembly mass, which the entry does not
+      supply, is graded instead.
+
+notes_for_audit:
+  - >
+    Recompute the residual from the module table and the compound formula. The
+    verdict follows from it by the precedence declared in reference/, so the
+    residual is the thing to check and this file states nothing about it.
+  - >
+    Both epimerase domains (modules 1 and 2) are stereochemical: they do not
+    change the molecular formula, so they do not enter the residual at all. That
+    is the one convention worth confirming by hand before trusting the module
+    table.

@@ -1,0 +1,9 @@
+{
+  "license": "CC BY 4.0",
+  "note": "Same archive as mibig-diff-3_1-to-4_0-01, copied so each campaign sandbox is self-contained.",
+  "retrieved": "2026-10-02",
+  "sha256": "986f1a69fb5eeb84fd7c0175ae921304c22fd5f8ed04c96d8c1c0c95a145837b",
+  "source": "MIBiG",
+  "url": "https://dl.secondarymetabolites.org/mibig/",
+  "version": "4.0"
+}

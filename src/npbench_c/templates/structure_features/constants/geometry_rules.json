@@ -1,0 +1,70 @@
+{
+  "description": "Every rule needed to turn mmCIF coordinates into the numbers this ladder grades. Geometry is only reproducible when the conventions are pinned, so they are pinned here rather than left to the solver: the same coordinates scored under a different altloc or hydrogen rule give a different contact set, and a benchmark that leaves the convention open grades the convention instead of the computation.",
+  "atom_selection": {
+    "model": "Only pdbx_PDB_model_num == 1 is read.",
+    "altloc": "Only atoms whose label_alt_id is '.' or '?' are read. An atom with a lettered alternate location is excluded outright rather than resolved by occupancy, so the rule needs no tie-break.",
+    "hydrogens": "Atoms whose type_symbol is H or D are excluded. All distances are heavy-atom distances.",
+    "waters": "label_comp_id == 'HOH' is water: neither polymer nor ligand. Excluded from contacts, from the clash test and from the ligand inventory.",
+    "polymer": "group_PDB == 'ATOM' is polymer. group_PDB == 'HETATM' with a non-water comp id is ligand.",
+    "polymer_residue_identity": "(auth_asym_id, auth_seq_id). The insertion code pdbx_PDB_ins_code is appended when present and not '.' or '?'."
+  },
+  "contact_rule": {
+    "cutoff_angstrom": 4.5,
+    "definition": "A polymer residue is in contact with a ligand copy when the minimum distance between any of its heavy atoms and any of the ligand copy's heavy atoms is <= the cutoff.",
+    "distance": "Euclidean distance over Cartn_x/y/z as written in the file, no superposition and no symmetry expansion. Crystallographic symmetry mates are NOT generated, so a contact across a symmetry axis is not reported.",
+    "reported_distance_decimals": 2,
+    "reported_distance_decimals_note": "Coordinates are deposited to 3 decimals, so a distance carries at most 3 meaningful decimals. Reporting 2 puts the comparison tolerance an order of magnitude above floating-point reduction order."
+  },
+  "descriptor_rules": {
+    "centroid": "The unweighted arithmetic mean of the ligand copy's heavy-atom coordinates, summed in file order, reported to 3 decimals.",
+    "radius_of_gyration": "sqrt(mean over heavy atoms of the squared distance to the centroid), unweighted, summed in file order, reported to 3 decimals."
+  },
+  "pocket_volume_rule": {
+    "grid_spacing": 1.0,
+    "probe_radius": 1.4,
+    "origin": "For each axis independently, floor(min ligand heavy-atom coordinate - cutoff). An integer lattice, so the grid does not move when the box does.",
+    "extent": "Along each axis, points at origin + k * spacing for every integer k >= 0 with origin + k * spacing <= max ligand heavy-atom coordinate + cutoff.",
+    "point_admitted_when": [
+      "its distance to the nearest ligand heavy atom is <= the contact cutoff",
+      "its distance to every polymer heavy atom is >= that atom's van der Waals radius + the probe radius",
+      "its distance to the nearest polymer heavy atom is <= the contact cutoff + the probe radius"
+    ],
+    "point_admitted_when_note": "The first condition confines the volume to the ligand's neighbourhood, the second removes points inside protein atoms, the third removes points facing bulk solvent. Ligand atoms themselves are NOT excluded, so the reported volume is the cavity including the space the ligand occupies.",
+    "volume": "admitted point count * grid_spacing ** 3, reported to 3 decimals.",
+    "vdw_radii_angstrom": {
+      "C": 1.7,
+      "N": 1.55,
+      "O": 1.52,
+      "S": 1.8,
+      "P": 1.8,
+      "SE": 1.9,
+      "CL": 1.75,
+      "BR": 1.85,
+      "F": 1.47,
+      "I": 1.98
+    },
+    "vdw_radii_source": "Bondi 1964 / Mantina 2009 consensus values, pinned here. An element outside this table makes the build refuse rather than substitute a default."
+  },
+  "truncation_rule": {
+    "name": "alanine_truncation",
+    "retained_atom_names": [
+      "N",
+      "CA",
+      "C",
+      "O",
+      "CB",
+      "OXT"
+    ],
+    "definition": "Every other atom of the named residue is deleted and the contact set recomputed at the pinned cutoff. This is exact arithmetic over the deposited coordinates, not a rotamer search or a minimisation: no side chain is rebuilt and the backbone does not move. It answers 'which contacts were made by this side chain' and nothing more.",
+    "note": "GLY has no CB and ALA is already truncated, so a campaign naming either position is a campaign bug and the build refuses.",
+    "scope": "Every residue in the focal ligand copy's contact shell, truncated one at a time and independently: the shell is recomputed against a structure with that one side chain deleted and nothing else changed. The positions are not listed anywhere, because they ARE the shell the previous rung computes.",
+    "glycine_and_alanine": "A shell residue that is GLY or ALA has nothing to truncate. It is reported with atoms_removed 0 and its contact surviving, rather than skipped, so the per-position table covers the whole shell.",
+    "question_it_answers": "Which shell residues touch the ligand only through their side chains, and which still touch it through backbone or CB alone. Both outcomes occur in a typical pocket, so neither is the safe guess."
+  },
+  "numbering_rule": {
+    "source": "_struct_ref_seq",
+    "definition": "The record whose pdbx_db_accession matches the campaign's UniProt accession gives three numbering systems: label_seq_id (entity sequence), auth_seq_id (deposited author numbering) and the UniProt position. label_to_uniprot = db_align_beg - seq_align_beg and auth_to_uniprot = db_align_beg - pdbx_auth_seq_align_beg, each added to the structure number to give the UniProt position.",
+    "why_it_matters": "Assuming either structure numbering equals the UniProt position is the standard error. An expression tag shifts label_seq_id while leaving auth_seq_id aligned, and the only way to know is to read the alignment record.",
+    "multiple_records": "When several records cite the accession (one per chain), every record must give the same two offsets or the build refuses: a per-chain offset would make 'the' UniProt position of a contact ambiguous."
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "annotation_source": {
+    "accession": "Q8KHZ8",
+    "database": "UniProtKB",
+    "entry_version": 91,
+    "length_aa": 530,
+    "license": "CC BY 4.0",
+    "organism": "Lentzea aerocolonigenes",
+    "sequence_version": 1,
+    "sha256_16": "a23d45be022e5c1b",
+    "url": "https://rest.uniprot.org/uniprotkb/Q8KHZ8.json"
+  },
+  "note": "RebH is already in the benchmark as the first construct-design instantiation. 2E4G is the Trp complex without FAD, so the pocket ladder has exactly one ligand chemistry and two independent copies of it -- which is what makes the chain-symmetry check possible.",
+  "retrieved": "2026-10-02",
+  "structure_sources": [
+    {
+      "database": "RCSB PDB",
+      "license": "CC0 1.0",
+      "method": "X-ray",
+      "pdb_id": "2E4G",
+      "resolution_angstrom": 2.08,
+      "role": "focal and only structure; two polymer chains, each with a bound L-tryptophan, and an expression tag that shifts label_seq_id by 20 while leaving author numbering aligned to UniProt",
+      "sha256_16": "1f726e833255f398",
+      "url": "https://files.rcsb.org/download/2E4G.cif"
+    }
+  ]
+}

@@ -1,0 +1,85 @@
+{
+  "baseline_band_sizes": {
+    "A0A084GDU5": {
+      "25_to_35": 9,
+      "over_35": 5,
+      "under_25": 4
+    },
+    "A0AI79": {
+      "25_to_35": 52,
+      "over_35": 693,
+      "under_25": 26
+    },
+    "A0AMD1": {
+      "25_to_35": 57,
+      "over_35": 794,
+      "under_25": 5
+    },
+    "A0LDC6": {
+      "25_to_35": 54,
+      "over_35": 365,
+      "under_25": 265
+    },
+    "A1AIE2": {
+      "25_to_35": 68,
+      "over_35": 100,
+      "under_25": 20
+    }
+  },
+  "baseline_hits": {
+    "A0A084GDU5": 18,
+    "A0AI79": 771,
+    "A0AMD1": 856,
+    "A0LDC6": 684,
+    "A1AIE2": 188
+  },
+  "corpus_sequences": 4105,
+  "corpus_sha256": "712a00435a3d7faceb88a8b191e64836f7c3d0996296a89154aad35d20ec6dd2",
+  "corpus_superfamily": "IPR036188",
+  "evalue": 0.001,
+  "format_fields": [
+    "query",
+    "target",
+    "fident",
+    "alnlen",
+    "evalue",
+    "bits"
+  ],
+  "label_resource": "InterPro 110.0",
+  "max_seqs": 4200,
+  "mmseqs_version": "18.8cc5c",
+  "query_table": {
+    "IPR001100": {
+      "accession": "A1AIE2",
+      "family_members": 238,
+      "family_name": "Pyridine nucleotide-disulphide oxidoreductase, class I",
+      "length": 466
+    },
+    "IPR002218": {
+      "accession": "A0AI79",
+      "family_members": 888,
+      "family_name": "tRNA uridine 5-carboxymethylaminomethyl modification enzyme MnmG-related",
+      "length": 434
+    },
+    "IPR004416": {
+      "accession": "A0AMD1",
+      "family_members": 630,
+      "family_name": "tRNA uridine 5-carboxymethylaminomethyl modification enzyme MnmG",
+      "length": 629
+    },
+    "IPR004417": {
+      "accession": "A0LDC6",
+      "family_members": 256,
+      "family_name": "Methylenetetrahydrofolate--tRNA-(uracil-5-)-methyltransferase TrmFO",
+      "length": 439
+    },
+    "IPR050097": {
+      "accession": "A0A084GDU5",
+      "family_members": 313,
+      "family_name": "Ferredoxin--NADP / Thioredoxin reductase",
+      "length": 322
+    }
+  },
+  "sensitivity": 4.0,
+  "threads": 1
+}

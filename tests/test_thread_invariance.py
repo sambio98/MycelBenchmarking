@@ -1,0 +1,737 @@
+"""Phase 1: the pinned-tool image and its thread-invariance suite.
+
+The rule the provisioning notes set is that every tool runs at 1 and 8 threads on
+fixed input and must produce identical output, and that anything failing which
+cannot be pinned into determinism is made single-threaded or excluded from
+gold-producing paths. These tests enforce the rule and pin what measuring it
+found -- including the two cases where the originally declared control was wrong.
+
+The registry and fixture tests need no tools and always run. The invariance tests
+need the image; without it they SKIP with a reason, because a determinism suite
+that quietly measures nothing is worse than one that fails.
+"""
+
+from __future__ import annotations
+
+import json
+import pathlib
+import re
+import shutil
+
+import pytest
+
+from npbench_c.tools import build_fixtures
+from npbench_c.tools.invariance import (
+    FAIL,
+    FIXTURES,
+    PASS,
+    PROJECTIONS,
+    SKIP,
+    XFAIL,
+    ProjectionError,
+    run_tool,
+)
+from npbench_c.tools.registry import (
+    BANNED_BINARIES,
+    MATCHMS,
+    dependency_gaps,
+    NOT_IN_IMAGE,
+    PENDING_TOOLS,
+    REPEATS,
+    THREAD_COUNTS,
+    TOOLS,
+    banned_present,
+    fingerprint,
+    verify,
+)
+
+ROOT = pathlib.Path(__file__).resolve().parents[1]
+LOCK = ROOT / "image" / "environment.lock.json"
+EXPLICIT = ROOT / "image" / "environment.explicit.txt"
+REPORT = ROOT / "image" / "thread_invariance.json"
+#: Where the image puts the binaries. An override keeps the suite usable from a
+#: different prefix without editing code.
+import os
+
+PREFIX = os.environ.get("NPBENCH_TOOL_PREFIX", "/opt/npbench-tools/bin")
+
+#: {pfam} resolves to the Pfam library inside the antiSMASH databases, which
+#: BiG-SCAPE reuses rather than fetching a second 1.5 GB copy.
+ALLOWED_PLACEHOLDERS = {"bin", "fixtures", "setup", "work", "threads", "pfam"}
+
+image_present = pytest.mark.skipif(
+    not pathlib.Path(PREFIX).is_dir(),
+    reason=f"pinned-tool image not present at {PREFIX}; nothing measured")
+
+#: A tool marked slow takes minutes per pass -- BiG-SCAPE runs hmmscan over Pfam
+#: for every cluster in the fixture. The suite still measures it and the verdict
+#: is committed in image/thread_invariance.json; what this controls is whether the
+#: default test run re-measures it. A skip with a reason is not a green tick.
+RUN_SLOW = os.environ.get("NPBENCH_SLOW_TOOLS") == "1"
+
+
+def skip_if_slow(tool) -> None:
+    if tool.slow and not RUN_SLOW:
+        pytest.skip(
+            f"{tool.name} takes minutes per pass; its measured verdict is in "
+            "image/thread_invariance.json. Set NPBENCH_SLOW_TOOLS=1 to re-measure")
+
+#: Each tool is measured once per session. Several tests read the same result and
+#: re-running the suite per test would multiply the wall clock for nothing -- the
+#: runs inside run_tool are what establish determinism, not repeating run_tool.
+_MEASURED: dict[str, dict] = {}
+
+
+def measure(tool) -> dict:
+    if tool.name not in _MEASURED:
+        _MEASURED[tool.name] = run_tool(tool, PREFIX)
+    return _MEASURED[tool.name]
+
+
+# ------------------------------------------------------------- the registry
+
+def test_the_suite_runs_at_the_declared_thread_counts():
+    """1 and 8, twice each. The rule is specific and the code must not drift."""
+    assert THREAD_COUNTS == (1, 8)
+    assert REPEATS >= 2
+
+
+@pytest.mark.parametrize("tool", TOOLS, ids=lambda t: t.name)
+def test_every_tool_declares_what_it_is_for_and_how_to_run_it(tool):
+    assert tool.pinned_version and tool.needed_by and tool.controls
+    assert tool.invocations, "a tool with no invocation is a tool not measured"
+    for invocation in tool.invocations:
+        assert invocation.artifact
+        placeholders = {
+            token.split("{", 1)[1].split("}", 1)[0]
+            for command in (*invocation.setup, invocation.argv)
+            for token in command if "{" in token}
+        assert placeholders <= ALLOWED_PLACEHOLDERS, placeholders
+
+
+@pytest.mark.parametrize("tool", TOOLS, ids=lambda t: t.name)
+def test_every_declared_licence_carries_a_reason(tool):
+    """A normalisation or a canonicalisation without a reason is a loophole."""
+    for rule in tool.normalisations:
+        assert rule.pattern and len(rule.reason) > 40, rule.pattern
+    if tool.canonicalisation:
+        assert tool.canonicalisation.mode == "sort_lines"
+        assert len(tool.canonicalisation.reason) > 40
+
+
+@pytest.mark.parametrize("tool", TOOLS, ids=lambda t: t.name)
+def test_a_tool_with_a_thread_flag_is_tested_across_thread_counts(tool):
+    if tool.thread_flag:
+        assert tool.thread_counts == THREAD_COUNTS
+        # The flag has to appear in something the suite actually runs, or the
+        # thread count under test never reaches the tool.
+        assert any(tool.thread_flag in invocation.argv
+                   for invocation in tool.invocations)
+    else:
+        assert tool.thread_counts == (1,)
+
+
+def test_the_registry_pins_match_the_lockfile():
+    """Two files could drift apart; the image build would then install one thing
+    and the suite would verify another."""
+    lock = json.loads(LOCK.read_text())
+    requested = lock["requested"]
+    assert {tool.name for tool in TOOLS} <= set(requested)
+    for tool in TOOLS:
+        assert requested[tool.name].split("=")[0] == tool.pinned_version
+    # Anything pinned that is not a registry tool -- the interpreter -- still has
+    # to say why it is pinned.
+    for name in requested:
+        assert name in lock["requested_rationale"], name
+
+
+def test_the_lockfile_can_rebuild_the_image_byte_for_byte():
+    lock = json.loads(LOCK.read_text())
+    assert lock["packages"], "an empty closure is not a lock"
+    assert len(lock["packages"]) == lock["package_count"]
+    for package in lock["packages"]:
+        assert package["url"] and package["sha256"], package["name"]
+        assert len(package["sha256"]) == 64
+
+
+def test_the_absences_are_declared_rather_than_implied():
+    """What is missing is a decision with a reason, not a gap for an auditor to
+    notice by counting rows."""
+    assert "iqtree" in NOT_IN_IMAGE
+    for reason in NOT_IN_IMAGE.values():
+        assert len(reason) > 60
+    installed = {tool.name for tool in TOOLS}
+    assert not (installed & set(NOT_IN_IMAGE)), (
+        "a tool cannot be installed and declared absent; matchms was in both "
+        "lists for the two days between its pin being decided and the rebuild, "
+        "which is what PENDING_TOOLS is for")
+
+
+def test_a_pin_is_claimed_as_installed_only_once_it_is():
+    """The distinction PENDING_TOOLS exists for, now that matchms has crossed it.
+
+    `--verify` exists to catch a pin that DRIFTED in the built image: every row
+    it checks is a row the image is supposed to have, so a knowingly-absent row
+    would turn a drift check into an intent list and make its own MISS the normal
+    state. matchms waited in PENDING_TOOLS from the day its pin was decided until
+    the rebuild two days later; it is in TOOLS now, nothing is pending, and the
+    two sets stay disjoint whatever is in them.
+    """
+    pending = {tool.name for tool in PENDING_TOOLS}
+    installed = {tool.name for tool in TOOLS}
+    assert not (pending & installed)
+    assert not (pending | installed) & set(NOT_IN_IMAGE), (
+        "a tool cannot be installed, pending and declared absent at once")
+    assert "matchms" in installed
+    # The build string used to be asserted against the Dockerfile's spec list.
+    # The build installs the locked closure now, so the pin lives in the lock's
+    # `requested` field and in the artifact the explicit file names -- asserting
+    # it against the Dockerfile would be asserting it against a comment.
+    lock = json.loads(LOCK.read_text())
+    assert lock["requested"]["matchms"].endswith("=pyhdfd78af_1")
+    artifact = next(p for p in lock["packages"] if p["name"] == "matchms")
+    assert artifact["build"] == "pyhdfd78af_1"
+    assert artifact["url"] in EXPLICIT.read_text()
+
+
+def test_the_pin_names_the_version_the_grounding_measured_and_is_in_the_closure():
+    """0.30.2 rather than the newest on bioconda. A similarity implementation can
+    change between minor versions, so inheriting the tolerance measurement means
+    pinning the version it was measured on -- and the lock has to show the
+    version that is actually installed, not the version that was requested."""
+    assert MATCHMS.pinned_version == "0.30.2"
+    lock = json.loads(LOCK.read_text())
+    # and the version the build actually links, which is the explicit file's
+    # business rather than the Dockerfile's
+    artifact = next(p for p in lock["packages"] if p["name"] == "matchms")
+    assert f"matchms-{MATCHMS.pinned_version}-" in artifact["url"]
+    assert artifact["url"] in EXPLICIT.read_text()
+    assert lock["requested"]["matchms"].startswith(MATCHMS.pinned_version + "=")
+    installed = [p for p in lock["packages"] if p["name"] == "matchms"]
+    assert len(installed) == 1 and installed[0]["version"] == MATCHMS.pinned_version
+    assert "matchms" not in lock["not_in_this_image"]
+
+
+def test_the_lock_is_generated_from_the_prefix_rather_than_written():
+    """The file went stale the moment it was hand-assembled, and said so in
+    prose. It is generated now, so staleness is a command away from being
+    caught -- and the generator carries the editorial fields over rather than
+    regenerating them, because a rationale is writing, not measurement."""
+    from npbench_c.tools import lockfile
+
+    lock = json.loads(LOCK.read_text())
+    assert lock["package_count"] == len(lock["packages"])
+    assert lock["artifact_bytes"] == sum(int(p["size"]) for p in lock["packages"])
+    assert lock["build_history"], "the lock records how the prefix was built"
+    assert all(step["at"] and step["command"] for step in lock["build_history"])
+    for field in lockfile.EDITORIAL:
+        assert field in lock, field
+    # Every requested spec is name=version=build, and each one is in the closure.
+    by_name = {p["name"]: p for p in lock["packages"]}
+    for name, spec in lock["requested"].items():
+        version, _, build = spec.partition("=")
+        assert name in by_name, name
+        assert by_name[name]["version"] == version, name
+        assert by_name[name]["build"] == build, name
+
+
+def test_a_library_pin_is_invoked_rather_than_imported():
+    """Every pin before this one was a binary. A library imported into the
+    campaign runtime would put numpy, scipy and numba inside a grading core this
+    project keeps stdlib-only, so a library pin is still INVOKED -- as a
+    subprocess of the prefix interpreter, which the image's PATH deliberately
+    does not make `python3`."""
+    assert MATCHMS.is_library
+    assert MATCHMS.module == "matchms"
+    assert MATCHMS.binary.startswith("python")
+    assert any("never import it" in control for control in MATCHMS.controls)
+    assert any("prefix interpreter" in control for control in MATCHMS.controls)
+    # Nothing in the grading path may import it either.
+    grading = (ROOT / "src" / "npbench_c" / "grading").rglob("*.py")
+    for path in grading:
+        assert "matchms" not in path.read_text(), path
+
+
+def test_the_library_probe_excludes_the_host_s_user_site():
+    """The defect this caught, and the reason the flag is in the argv.
+
+    The prefix carried matchms without `requests`, which matchms declares and
+    imports at import time. The probe reported 0.30.2 regardless, because the
+    import also searched the surrounding container's user site, where an
+    unrelated tool had installed requests. A pin that only imports next to the
+    right host is not a pin.
+
+    `-s` rather than `-I`: the image sets PYTHONHASHSEED=0 deliberately and `-I`
+    implies `-E`, which would drop it.
+    """
+    source = (ROOT / "src" / "npbench_c" / "tools" / "registry.py").read_text()
+    assert '[interpreter, "-s", "-c",' in source
+    assert '"{bin}/python3.11", "-s", "{fixtures}/matchms_cosine.py"' in source
+    # And the campaign that drives the library reaches it the same way.
+    core = (ROOT / "src" / "npbench_c" / "templates" / "ms2_dereplication"
+            / "core.py").read_text()
+    assert core.count('"-s"') == 2, "the version query and the driver call"
+
+
+def test_a_library_pin_s_declared_dependencies_are_in_the_prefix(tmp_path):
+    """What `--verify` could not see before: an import succeeding off the host.
+
+    The synthetic prefix below is the shape of the defect -- a library package
+    declaring a dependency the prefix does not carry -- and the live check runs
+    against the real prefix when it is present.
+    """
+    meta = tmp_path / "conda-meta"
+    meta.mkdir()
+    (meta / f"{MATCHMS.name}-{MATCHMS.pinned_version}-x_0.json").write_text(
+        json.dumps({"name": MATCHMS.name, "version": MATCHMS.pinned_version,
+                    "depends": ["numpy >=2.0.0", "requests >=2.31.0"]}))
+    (meta / "numpy-2.2.5-x_0.json").write_text(
+        json.dumps({"name": "numpy", "version": "2.2.5", "depends": []}))
+    assert dependency_gaps(str(tmp_path)) == {MATCHMS.name: ["requests >=2.31.0"]}
+
+    (meta / "requests-2.34.2-x_0.json").write_text(
+        json.dumps({"name": "requests", "version": "2.34.2", "depends": []}))
+    assert dependency_gaps(str(tmp_path)) == {}
+
+
+def test_the_live_prefix_has_no_library_dependency_gap():
+    if MATCHMS.installed_version() is None:
+        pytest.skip("the tool prefix is not present in this container")
+    assert dependency_gaps() == {}
+
+
+def test_the_lock_carries_the_library_pin_s_whole_closure():
+    """The lock is generated from the prefix, so an incomplete prefix produced an
+    incomplete lock: 226 packages that could not import their own library pin."""
+    lock = json.loads(LOCK.read_text())
+    names = {p["name"] for p in lock["packages"]}
+    for name in ("requests", "urllib3", "certifi", "idna", "charset-normalizer"):
+        assert name in names, name
+
+
+def test_the_library_probe_reads_a_version_the_same_way_a_binary_does():
+    """The probe has to work, not merely be declared.
+
+    And it resolves the PREFIX interpreter rather than PATH. `hmmscan` on PATH is
+    unambiguous because nothing else provides it; `python3.11` is the opposite --
+    the system interpreter answers to that name first and has no matchms -- so a
+    probe through PATH would report this pin missing on an image that has it.
+    """
+    found = MATCHMS.installed_version()
+    if found is None:
+        pytest.skip("the tool prefix is not present in this container")
+    assert found == MATCHMS.pinned_version
+    assert re.match(r"\d+\.\d+\.\d+", found)
+
+
+def test_the_library_pin_carries_the_tolerance_control():
+    """The measured finding that makes this tool different from the binaries: the
+    m/z tolerance is part of gold's definition rather than a comparison detail,
+    because the aggregate rate hides per-query movement.
+
+    The numbers are the ones re-measured in THIS image -- 19 of 150 verdicts
+    moving, rate 0.800 to 0.767 -- rather than the first grounding's, which ran
+    on a different numerical stack against a corpus read off a moving branch.
+    """
+    controls = " ".join(MATCHMS.controls)
+    assert "tolerance is part of gold" in controls
+    assert "19 of 150" in controls
+    assert "numpy 2.2.5" in controls and "scipy 1.15.2" in controls
+    # The release pin, and the mistake it corrects, stay on the record.
+    assert "2026.03" in controls and "SNAPSHOT" in controls
+    # The thread question has an answer even without a thread flag.
+    assert "OMP_NUM_THREADS" in controls
+    assert MATCHMS.needed_by == ("T-L4-1", "T-L4-2")
+
+
+def test_the_library_pin_is_measured_by_an_invocation_like_every_other_tool():
+    """TOOLS membership means the suite ran it. The invocation is the prefix
+    interpreter running the committed driver over the committed fixture, which is
+    the same shape a campaign will use."""
+    assert len(MATCHMS.invocations) == 1
+    invocation = MATCHMS.invocations[0]
+    assert invocation.argv[0] == "{bin}/python3.11"
+    assert "{fixtures}/matchms_cosine.py" in invocation.argv
+    assert "{fixtures}/ms2_massbank.json.gz" in invocation.argv
+    assert "--tolerance" in invocation.argv
+    fixtures = ROOT / "src" / "npbench_c" / "tools" / "fixtures"
+    assert (fixtures / "matchms_cosine.py").is_file()
+    assert (fixtures / "ms2_massbank.json.gz").is_file()
+    provenance = json.loads((fixtures / "provenance.json").read_text())
+    for name in ("ms2_massbank.json.gz", "matchms_cosine.py"):
+        assert name in provenance, name
+    record = provenance["ms2_massbank.json.gz"]
+    assert record["license"] == "CC BY 4.0" and record["attribution"]
+    assert "2026.03" in record["source"]
+    assert "SNAPSHOT" in record["release_tag_not_version_string"]
+    assert record["queries"] == 24 and record["library_spectra"] == 378
+
+
+def test_a_ban_is_enforced_rather_than_written_down():
+    """FastTreeMP is not a deferral, it is a ban -- and it arrives whether the ban
+    is remembered or not, because antiSMASH depends on the fasttree package that
+    ships it. So it lives in BANNED_BINARIES, which is checked."""
+    assert "FastTreeMP" in BANNED_BINARIES
+    assert "FastTreeMP" not in NOT_IN_IMAGE, (
+        "a ban and a deferral are different things; keeping it in both gives two "
+        "sources of truth")
+    assert len(BANNED_BINARIES["FastTreeMP"]) > 100
+
+
+# ------------------------------------------------------------- projections
+
+def test_the_antismash_projection_keeps_regions_and_drops_run_metadata():
+    document = {
+        "version": "8.0.4", "input_file": "/some/run/path.embl",
+        "timestamp": "whenever",
+        "records": [{
+            "id": "AY312585.1",
+            "features": [
+                {"type": "region", "location": "[100:2000](+)",
+                 "qualifiers": {"product": ["NRPS", "siderophore"]}},
+                {"type": "CDS", "location": "[1:50](+)", "qualifiers": {}},
+                {"type": "region", "location": "[10:90](+)",
+                 "qualifiers": {"product": ["terpene"]}},
+            ],
+        }],
+    }
+    projected = PROJECTIONS["antismash_regions"](json.dumps(document).encode())
+    assert projected == ("AY312585.1\t[10:90](+)\tterpene\n"
+                         "AY312585.1\t[100:2000](+)\tNRPS,siderophore\n"), (
+        "regions must come out in coordinate order, not lexical order: a string "
+        "sort would put [100:2000] before [10:90], and the projection is what a "
+        "campaign reads")
+    # The run metadata is gone and the regions are sorted, so a reordered
+    # features list is not mistaken for a different detection.
+    assert "8.0.4" not in projected and "/some/run/path" not in projected
+
+
+def test_the_domain_projection_keeps_architecture_and_drops_scores():
+    """E-values and bitscores are floats whose last digits are a reduction-order
+    artefact. The architecture -- which domains, in which order, over which
+    residues -- is the claim, and it is integers and strings."""
+    document = {"records": [{"id": "R1", "modules": {
+        "antismash.detection.nrps_pks_domains": {"cds_results": {
+            "cdsB": {"domain_hmms": [
+                {"hit_id": "PKS_KS", "query_start": 10, "query_end": 40,
+                 "evalue": 1e-30, "bitscore": 99.5}]},
+            "cdsA": {"domain_hmms": [
+                {"hit_id": "PP-binding", "query_start": 300, "query_end": 350,
+                 "evalue": 2e-10, "bitscore": 30.1},
+                {"hit_id": "AMP-binding", "query_start": 44, "query_end": 449,
+                 "evalue": 7.3e-72, "bitscore": 234.1}]},
+            "cdsC": {"domain_hmms": []},
+        }}}}]}
+    projected = PROJECTIONS["antismash_nrps_pks_domains"](
+        json.dumps(document).encode())
+    assert projected == (
+        "R1\tcdsA\tAMP-binding:44-449;PP-binding:300-350\n"
+        "R1\tcdsB\tPKS_KS:10-40\n")
+    assert "234.1" not in projected and "7.3e-72" not in projected
+    # A CDS with no domain hit contributes no line rather than an empty one.
+    assert "cdsC" not in projected
+
+
+def test_the_bigscape_projection_keeps_the_partition_and_drops_the_labels():
+    """FAM_00001 is a name, not a result. Two runs can agree completely on which
+    clusters belong together and disagree on what the groups are called."""
+    table = (
+        "# other_clustering_c0.3.tsv\n"
+        "Record\tGBK\tRecord_Type\tRecord_Number\tCC\tFamily\n"
+        "B.gbk_region_1\tB\tregion\t1\t26\tFAM_00002\n"
+        "A.gbk_region_1\tA\tregion\t1\t26\tFAM_00002\n"
+        "C.gbk_region_1\tC\tregion\t1\t31\tFAM_00009\n"
+        "# PKS_clustering_c0.3.tsv\n"
+        "Record\tGBK\tRecord_Type\tRecord_Number\tCC\tFamily\n"
+        "D.gbk_region_1\tD\tregion\t1\t30\tFAM_00005\n")
+    projected = PROJECTIONS["bigscape_gcf_partition"](table.encode())
+    assert projected == ("PKS\tD.gbk_region_1\n"
+                         "other\tA.gbk_region_1,B.gbk_region_1\n"
+                         "other\tC.gbk_region_1\n")
+
+    # The same partition under different labels and a different row order must
+    # project identically -- that is the whole point of the projection.
+    relabelled = (table.replace("FAM_00002", "FAM_01111")
+                       .replace("FAM_00009", "FAM_02222")
+                       .replace("\t26\t", "\t99\t"))
+    assert PROJECTIONS["bigscape_gcf_partition"](relabelled.encode()) == projected
+
+
+def test_the_bigscape_projection_refuses_to_find_nothing():
+    for table in ("", "# other_clustering_c0.3.tsv\nRecord\tGBK\n"):
+        with pytest.raises(ProjectionError):
+            PROJECTIONS["bigscape_gcf_partition"](table.encode())
+
+
+def test_the_sqlalchemy_bound_is_recorded_where_it_will_be_read():
+    """BiG-SCAPE 2.0.3 crashes on sqlalchemy 2.1 before reading an input file, and
+    its own recipe does not say so. If that fact lives only in a commit message it
+    will be lost the next time someone re-solves the environment."""
+    from npbench_c.tools.registry import BIGSCAPE
+
+    controls = " ".join(BIGSCAPE.controls).lower()
+    assert "sqlalchemy" in controls and "2.1" in controls
+    lock = json.loads(LOCK.read_text())
+    assert lock["requested"]["sqlalchemy"].startswith("2.0.")
+    assert "sqlalchemy" in lock["requested_rationale"]
+
+
+def test_the_antismash_projection_refuses_to_find_nothing():
+    """A projection that silently yields nothing turns the determinism test into a
+    tautology: every run would agree on the same emptiness."""
+    for document in ({"records": []},
+                     {"records": [{"id": "x", "features": [
+                         {"type": "CDS", "location": "[1:2]", "qualifiers": {}}]}]}):
+        with pytest.raises(ProjectionError):
+            PROJECTIONS["antismash_regions"](json.dumps(document).encode())
+
+
+# ------------------------------------------------------------- the fixtures
+
+def test_the_fixtures_are_committed_and_hashed():
+    provenance = json.loads((FIXTURES / "provenance.json").read_text())
+    import hashlib
+
+    for name in ("halogenases.faa", "halogenases.afa", "synthetic.fna",
+                 "bgc_triplet.embl"):
+        path = FIXTURES / name
+        assert path.is_file(), name
+        digest = hashlib.sha256(path.read_bytes()).hexdigest()
+        assert provenance[name]["sha256"] == digest, name
+
+
+def test_the_nucleotide_fixture_regenerates_byte_identically():
+    """Pure Python, no download and no toolkit: the declared codon cycle and
+    spacer make the contig a function of the protein fixture alone."""
+    records = build_fixtures.read_fasta(FIXTURES / "halogenases.faa")
+    rebuilt = build_fixtures.build_contig(records)
+    committed = "".join(
+        line.strip() for line in (FIXTURES / "synthetic.fna").read_text().splitlines()
+        if not line.startswith(">"))
+    assert rebuilt == committed
+
+
+def test_the_bigscape_fixture_has_designed_family_structure():
+    """32 clusters chosen so the set has real families rather than 32 singletons:
+    a clustering fixture made of unrelated BGCs tests almost nothing."""
+    provenance = json.loads((FIXTURES / "provenance.json").read_text())
+    block = provenance["bigscape_input"]
+    files = sorted(p.stem for p in (FIXTURES / "bigscape_input").glob("*.gbk"))
+    listed = sorted({a for accs in block["families"].values() for a in accs}
+                    | set(block["controls"]))
+    assert files == listed
+    assert len(block["families"]) == 4 and len(files) == 32
+    # The placeholder exclusion is the one judgement in the selection, so it is
+    # named rather than left implicit.
+    assert "capsular polysaccharide" in block["excluded_placeholder_names"]
+    assert "as8b1" in block["url"]
+
+
+def test_the_protein_fixture_is_a_real_homolog_set():
+    records = build_fixtures.read_fasta(FIXTURES / "halogenases.faa")
+    assert len(records) >= 20
+    headers = " ".join(h for h, _ in records)
+    # RebH and PrnA are already in the benchmark, so the fixture introduces no
+    # provenance the project does not already carry.
+    assert "Q8KHZ8" in headers and "P95480" in headers
+    # One fragment, deliberately: a short record is where tie-breaks show.
+    lengths = sorted(len(s) for _, s in records)
+    assert lengths[0] < lengths[-1] / 2
+
+
+# ------------------------------------------------------------ the run env
+
+
+def test_a_measured_run_puts_the_tool_prefix_on_path():
+    """Calling `{bin}/tool` by absolute path is not enough.
+
+    antiSMASH shells out to nine helpers -- hmmscan, hmmsearch, hmmpress, hmmpfam2,
+    blastp, makeblastdb, diamond, prodigal and FastTree -- and resolves every one
+    of them on PATH. A measurement that left the prefix off PATH therefore measured
+    whatever the ambient shell exported: here it failed outright with 'Modules
+    failing prerequisites' (44 prerequisite failures across those nine), and on a
+    shell that happened to export the prefix it passed. Either way the verdict was not about
+    the image. The prefix goes last, so the tool environment cannot shadow the
+    system interpreter this suite runs under.
+    """
+    from npbench_c.tools.invariance import _image_path
+
+    path = _image_path(PREFIX).split(os.pathsep)
+    assert path[-1] == PREFIX
+    assert path.count(PREFIX) == 1
+    for entry in os.environ.get("PATH", "").split(os.pathsep):
+        if entry and entry != PREFIX:
+            assert path.index(entry) < path.index(PREFIX)
+
+
+# --------------------------------------------------------- measured results
+
+@image_present
+def test_every_pinned_version_is_installed():
+    rows = verify(PREFIX)
+    wrong = [(name, pinned, found) for name, pinned, found, ok in rows if not ok]
+    assert not wrong, f"pin drift: {wrong}"
+
+
+@image_present
+def test_no_banned_binary_is_present():
+    assert banned_present(PREFIX) == []
+
+
+@image_present
+def test_the_antismash_rule_set_is_fingerprinted():
+    """A region set is a function of the detection rules that produced it, and the
+    rule count has moved every major version: 58 at v5, 88 at v7.1, 103 here. The
+    standing instruction never to compare across versions needs a mechanical form,
+    and a hash over the rule files is it -- a changed rule set is then detectable
+    even when the version string is not what moved."""
+    from npbench_c.tools.registry import ANTISMASH
+
+    package_root = pathlib.Path(PREFIX).parent / "lib"
+    candidates = sorted(package_root.glob("python3.*/site-packages/antismash"))
+    if not candidates:
+        pytest.skip("antiSMASH package root not found")
+    digest = fingerprint(ANTISMASH, str(candidates[-1]))
+    assert digest and len(digest) == 16
+    rules = sum(
+        1 for relative in ANTISMASH.fingerprint.paths
+        for line in (candidates[-1] / relative).read_text().splitlines()
+        if line.startswith("RULE "))
+    assert rules == 103, (
+        f"the detection rule set has {rules} rules, not the 103 this pin was "
+        "fingerprinted against; any campaign built on it needs regenerating")
+
+
+@image_present
+@pytest.mark.parametrize("tool", TOOLS, ids=lambda t: t.name)
+def test_tool_is_thread_invariant(tool):
+    skip_if_slow(tool)
+    result = measure(tool)
+    if result["status"] == SKIP:
+        pytest.skip(result["detail"])
+    assert result["status"] == PASS, result["detail"]
+    for invocation in result["invocations"]:
+        assert invocation["status"] in (PASS, XFAIL), invocation["detail"]
+        if invocation["status"] == PASS:
+            assert invocation["canonical_identical"], invocation["detail"]
+
+
+@image_present
+def test_diamond_no_reorder_is_still_the_witness_it_is_declared_to_be():
+    """The originally declared control had it backwards.
+
+    The provisioning notes listed --no-reorder as a determinism control for
+    DIAMOND. Measured, that flag is what BREAKS determinism: with it, 2.2.8 emits
+    the same hit set in a different query order on each multithreaded run, and
+    without it every run at 1, 4 and 8 threads is byte-identical. The witness
+    invocation keeps that fact under test, so a future release that fixes it is
+    noticed rather than assumed.
+    """
+    from npbench_c.tools.registry import DIAMOND
+
+    result = measure(DIAMOND)
+    if result["status"] == SKIP:
+        pytest.skip(result["detail"])
+    by_name = {i["invocation"]: i for i in result["invocations"]}
+    assert by_name["blastp_tabular"]["raw_identical"]
+    witness = by_name["blastp_tabular_no_reorder"]
+    assert witness["status"] == XFAIL, (
+        "the --no-reorder witness passed; re-read the pin before trusting it: "
+        + witness["detail"])
+
+    # What the witness documents is a per-run reordering, so every claim about it
+    # is a claim about a sample. Over 30 measurements the two single-thread
+    # repeats agreed every time and the two eight-thread repeats agreed none; but
+    # a single four-run draw CAN land on two matching eight-thread runs, and
+    # asserting repeatable_at_fixed_threads on one draw failed roughly once in
+    # thirty. Draw again rather than let a 3% coin decide a verdict: the property
+    # under test is that the eight-thread order is unspecified, which needs two
+    # distinct outputs somewhere in the sample, not in one particular pair.
+    eight = {v["canonical"] for k, v in witness["digests"].items()
+             if k.startswith("t8_")}
+    one = {v["canonical"] for k, v in witness["digests"].items()
+           if k.startswith("t1_")}
+    assert len(one) == 1, "single-threaded DIAMOND moved; that is a different bug"
+    for _ in range(3):
+        if len(eight) > 1:
+            break
+        redraw = run_tool(DIAMOND, PREFIX)
+        again = {i["invocation"]: i
+                 for i in redraw["invocations"]}["blastp_tabular_no_reorder"]
+        eight |= {v["canonical"] for k, v in again["digests"].items()
+                  if k.startswith("t8_")}
+    assert len(eight) > 1, (
+        "--no-reorder came out order-stable at eight threads across four draws; "
+        "if that is real the pin can be revisited, but check before trusting it")
+
+
+@image_present
+def test_mmseqs2_needs_a_canonical_order_and_loses_nothing_to_it():
+    """No flag fixes MMseqs2's multithreaded output order, so the order is fixed
+    by the invocation contract. The content is untouched: at eight threads the hit
+    multiset is identical and only its order moves, which is exactly why sorting
+    is sound here and would not be on an artifact with a header."""
+    from npbench_c.tools.registry import MMSEQS2
+
+    assert MMSEQS2.canonicalisation is not None
+    result = measure(MMSEQS2)
+    if result["status"] == SKIP:
+        pytest.skip(result["detail"])
+    invocation = result["invocations"][0]
+    assert invocation["canonical_identical"]
+    assert not invocation["normalised_identical"], (
+        "MMseqs2 came out order-stable without canonicalisation; if that is real "
+        "the contract can be relaxed, but check before relaxing it")
+
+
+@image_present
+def test_a_projected_invocation_never_claims_a_raw_match():
+    """antiSMASH's JSON carries the input path and a timestamp, so its raw bytes
+    cannot be identical across runs. Reporting 'raw-identical' for a projected
+    invocation would overstate the result exactly the way the incidental-match
+    rule exists to prevent."""
+    from npbench_c.tools.registry import ANTISMASH
+
+    result = measure(ANTISMASH)
+    if result["status"] == SKIP:
+        pytest.skip(result["detail"])
+    for invocation in result["invocations"]:
+        assert invocation["projection"], invocation["invocation"]
+        assert invocation["compared"].startswith("projection:")
+        assert not invocation["raw_identical"]
+        assert invocation["projection_identical"], invocation["detail"]
+
+
+@image_present
+def test_antismash_detects_the_three_fixture_classes():
+    """The fixture earns its place only if the detection rules it exercises are
+    not all of a kind. Three records, three classes, four product names."""
+    from npbench_c.tools.registry import ANTISMASH
+
+    result = measure(ANTISMASH)
+    if result["status"] == SKIP:
+        pytest.skip(result["detail"])
+    assert result["status"] == PASS
+    assert result["fingerprint"], "the rule set must be fingerprinted"
+
+
+@image_present
+def test_the_committed_report_is_not_stale():
+    """image/thread_invariance.json records the measured verdicts. Digests move
+    with wall-clock stamps, so only the verdicts are compared."""
+    if not REPORT.is_file():
+        pytest.skip("no committed invariance report")
+    committed = json.loads(REPORT.read_text())
+    assert set(committed["tools"]) == {tool.name for tool in TOOLS}
+    for tool in TOOLS:
+        if tool.slow and not RUN_SLOW:
+            continue
+        recorded = committed["tools"][tool.name]
+        fresh = measure(tool)
+        if fresh["status"] == SKIP:
+            pytest.skip(fresh["detail"])
+        assert fresh["status"] == recorded["status"], tool.name
+        fresh_by_name = {i["invocation"]: i["status"] for i in fresh["invocations"]}
+        recorded_by_name = {i["invocation"]: i["status"]
+                            for i in recorded["invocations"]}
+        assert fresh_by_name == recorded_by_name, tool.name

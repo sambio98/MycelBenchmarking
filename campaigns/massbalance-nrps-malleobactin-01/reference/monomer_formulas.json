@@ -1,0 +1,27 @@
+{
+  "derivation_note": "Atom counting plus valence-implied hydrogens, which is stable across RDKit versions. Canonical SMILES is not stable and is never used as a key.",
+  "derived_with": "rdkit 2026.03.6 CalcMolFormula",
+  "description": "Monomer molecular formulas for the monomers this entry's modules load. Derived from the SMILES MIBiG supplies for each A-domain substrate.",
+  "monomers": {
+    "N5-formyl-N5-hydroxyornithine": {
+      "formula": "C6H12N2O4",
+      "proteinogenic": false,
+      "smiles_source": "C(C[C@@H](C(=O)O)N)CN(C=O)O"
+    },
+    "N5-hydroxyornithine": {
+      "formula": "C5H12N2O3",
+      "proteinogenic": false,
+      "smiles_source": "C(C[C@@H](C(=O)O)N)CNO"
+    },
+    "aspartic acid": {
+      "formula": "C4H7NO4",
+      "proteinogenic": true,
+      "smiles_source": "C([C@@H](C(=O)O)N)C(=O)O"
+    },
+    "serine": {
+      "formula": "C3H7NO3",
+      "proteinogenic": true,
+      "smiles_source": "C([C@@H](C(=O)O)N)O"
+    }
+  }
+}

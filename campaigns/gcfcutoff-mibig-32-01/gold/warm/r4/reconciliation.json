@@ -1,0 +1,59 @@
+{
+  "co_clustered_pairs": 33,
+  "controls_absorbed": [],
+  "designed_pairs": 86,
+  "false_join_pairs": 0,
+  "families_exact": 0,
+  "missed_pairs": 53,
+  "pair_jaccard": 0.383721,
+  "per_family": {
+    "Aflatoxin B1": {
+      "group_sizes": [
+        4,
+        1
+      ],
+      "groups_spanned": 2,
+      "outsiders": [],
+      "verdict": "fragmented"
+    },
+    "ectoine": {
+      "group_sizes": [
+        5,
+        2,
+        1,
+        1,
+        1
+      ],
+      "groups_spanned": 5,
+      "outsiders": [],
+      "verdict": "fragmented"
+    },
+    "kanamycin": {
+      "group_sizes": [
+        4,
+        1
+      ],
+      "groups_spanned": 2,
+      "outsiders": [],
+      "verdict": "fragmented"
+    },
+    "ochratoxin A": {
+      "group_sizes": [
+        5,
+        1,
+        1
+      ],
+      "groups_spanned": 3,
+      "outsiders": [],
+      "verdict": "fragmented"
+    }
+  },
+  "recovered_pairs": 33,
+  "verdict_census": {
+    "absorbed": 0,
+    "dissolved": 0,
+    "exact": 0,
+    "fragmented": 4,
+    "fragmented_and_absorbed": 0
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "annotation_source": {
+    "accession": "P95480",
+    "database": "UniProtKB",
+    "entry_version": 88,
+    "length_aa": 538,
+    "license": "CC BY 4.0",
+    "organism": "Pseudomonas fluorescens",
+    "sequence_version": 1,
+    "sha256_16": "b474a1db5ae06d1e",
+    "url": "https://rest.uniprot.org/uniprotkb/P95480.json"
+  },
+  "note": "PrnA is already in the benchmark as the second construct-design instantiation, so the protein's provenance is reused rather than introduced. What is new here is the per-residue feature set and the coordinates its ECO:0007744 evidence cites.",
+  "retrieved": "2026-10-02",
+  "structure_sources": [
+    {
+      "database": "RCSB PDB",
+      "license": "CC0 1.0",
+      "method": "X-ray",
+      "pdb_id": "2AQJ",
+      "resolution_angstrom": 1.8,
+      "role": "focal; the only PrnA entry carrying all three annotated ligands (FAD, L-tryptophan and chloride) at once",
+      "sha256_16": "bfc09a4a13917b78",
+      "url": "https://files.rcsb.org/download/2AQJ.cif"
+    },
+    {
+      "database": "RCSB PDB",
+      "license": "CC0 1.0",
+      "method": "X-ray",
+      "pdb_id": "2AR8",
+      "resolution_angstrom": 2.2,
+      "role": "R4 counterfactual; the substrate is 7-chloro-L-tryptophan (CTE) rather than L-tryptophan, so the annotation set this entry evidences is a different one",
+      "sha256_16": "e788c415bd4be6b9",
+      "url": "https://files.rcsb.org/download/2AR8.cif"
+    }
+  ]
+}

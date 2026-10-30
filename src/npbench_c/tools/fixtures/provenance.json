@@ -1,0 +1,151 @@
+{
+  "bgc_triplet.embl": {
+    "assembled_by": "concatenating the three records in the order below; EMBL flat files terminate each record with //, so concatenation is the whole of it",
+    "license": "INSDC records are freely available without restriction",
+    "records": [
+      {
+        "accession": "AY312585.1",
+        "cds": 57,
+        "description": "plasmid pJM1, complete sequence",
+        "length_bp": 65009,
+        "mibig": "BGC0002468, NRPS, knock-out evidence, anguibactin",
+        "organism": "Vibrio anguillarum 775"
+      },
+      {
+        "accession": "MN724926.1",
+        "cds": 9,
+        "description": "landornamide biosynthetic gene cluster",
+        "length_bp": 16516,
+        "mibig": "BGC0002330, ribosomal, knock-out evidence, landornamide A",
+        "organism": "Kamptonema sp. PCC 6506"
+      },
+      {
+        "accession": "MT799798.1",
+        "cds": 15,
+        "description": "julichrome biosynthetic gene cluster",
+        "length_bp": 16028,
+        "mibig": "BGC0002514, PKS, knock-out evidence, julichrome Q6.6",
+        "organism": "Streptomyces sampsonii"
+      }
+    ],
+    "sha256": "01d06255a76d2b5b675ee2a3aa0b2f7927fc8c092d527f9b311b23c49ada484b",
+    "source": "ENA (INSDC)",
+    "url_template": "https://www.ebi.ac.uk/ena/browser/api/embl/{accession}?lineLimit=0",
+    "why_these_records": "Three classes rather than one, so the detection rules exercised are not all of a kind: the run yields NRP-metallophore plus NRPS, lanthipeptide-class-ii plus proteusin, and T2PKS. All three are COMPLETE deposited records whose MIBiG locus starts at position 1, so the provenance is three accessions with no coordinates to get wrong. All three are ANNOTATED, so antiSMASH's verdict is about antiSMASH rather than about a gene caller feeding it. All three are bacterial, so one --taxon setting covers the file."
+  },
+  "bigscape_input": {
+    "antismash_version_that_processed_them": "8.0 beta 1, as the archive name as8b1 states. Worth noticing rather than passing over: the image pins antiSMASH 8.0.4, so a campaign that compares its own antiSMASH 8.0.4 regions against this reference set is mixing two antiSMASH versions -- the comparison antiSMASH's own rules forbid. For a determinism fixture that is harmless, because both arms of every comparison use the same files; for a T-L3-2 campaign it is a constraint that has to be stated.",
+    "archive_sha256": "cf7e27514197983c814fbe2b6ade68e723311d10e2f12b2583447192ad6d3310",
+    "controls": [
+      "BGC0000026",
+      "BGC0000605",
+      "BGC0001082",
+      "BGC0001483",
+      "BGC0002197"
+    ],
+    "excluded_placeholder_names": [
+      "capsular polysaccharide",
+      "lipopolysaccharide",
+      "melanin",
+      "carotenoid",
+      "exopolysaccharide"
+    ],
+    "excluded_placeholder_reason": "MIBiG gives these generic names a representative structure, so entries sharing one are not necessarily homologous clusters. Two different formulas appear under 'capsular polysaccharide' alone. Including them would have put apparent family structure in the fixture that the biology does not support.",
+    "families": {
+      "Aflatoxin B1": [
+        "BGC0000006",
+        "BGC0000007",
+        "BGC0000008",
+        "BGC0000009",
+        "BGC0000011"
+      ],
+      "ectoine": [
+        "BGC0000852",
+        "BGC0000853",
+        "BGC0000854",
+        "BGC0000855",
+        "BGC0000856",
+        "BGC0000857",
+        "BGC0000858",
+        "BGC0000859",
+        "BGC0000860",
+        "BGC0002052"
+      ],
+      "kanamycin": [
+        "BGC0000702",
+        "BGC0000703",
+        "BGC0000704",
+        "BGC0000705",
+        "BGC0000706"
+      ],
+      "ochratoxin A": [
+        "BGC0001030",
+        "BGC0002598",
+        "BGC0002605",
+        "BGC0002606",
+        "BGC0002607",
+        "BGC0002608",
+        "BGC0002609"
+      ]
+    },
+    "license": "CC BY 4.0",
+    "note": "32 clusters over four classes. BiG-SCAPE recovers the designed families at a 0.3 cutoff, which is what makes the fixture a test of clustering rather than a test of whether 32 singletons stay 32 singletons.",
+    "selection_rule": "From the chemical-space campaign's connectivity groups: the four largest groups of 4 to 10 entries sharing an InChIKey connectivity block, after excluding groups whose MIBiG compound name is a class placeholder rather than a specific compound, plus one singleton entry per biosynthetic class as a negative control. Deterministic, and reproducible from tables already in this repository.",
+    "source": "MIBiG, antiSMASH-processed reference set",
+    "url": "https://dl.secondarymetabolites.org/mibig/mibig_antismash_4.0_gbk_as8b1.tar.bz2"
+  },
+  "built_on": "2026-10-02",
+  "description": "Pinned inputs for the thread-invariance suite. A determinism claim is only as good as its fixture, so these are committed files with hashes, not downloads.",
+  "halogenases.afa": {
+    "columns": 1059,
+    "command": "mafft --thread 1 --anysymbol --retree 2 --maxiterate 0",
+    "derived_from": "halogenases.faa",
+    "note": "Produced by a tool the suite also tests. Not circular: once written this is a frozen file, so a later MAFFT invariance failure does not change the HMMER results computed from it.",
+    "sha256": "672a7efc720d5bb2a66b264304bf45173140ef650f2dcbef67b1c056e94e10a9"
+  },
+  "halogenases.faa": {
+    "license": "CC BY 4.0",
+    "note": "Flavin-dependent halogenases. Includes RebH (Q8KHZ8) and PrnA (P95480), already in the benchmark, and one fragment (P81540) whose partial length is deliberate: a short record is where an aligner's and a search tool's tie-breaks show.",
+    "query": "xref:pfam-PF04820 AND reviewed:true",
+    "records": 24,
+    "residues": 12287,
+    "sha256": "a7602f91c2d0feec4317564782e49bcab28e58e48b1cfdc72deaced72fcbf6c1",
+    "source": "UniProtKB",
+    "url": "https://rest.uniprot.org/uniprotkb/stream?query=xref:pfam-PF04820+AND+reviewed:true&format=fasta"
+  },
+  "matchms_cosine.py": {
+    "sha256": "962cf638a8a073e81d05a6ea28eb3ce2ff89528ee9c1e0a750d00c6ce2f4da5f",
+    "what": "The driver the invariance suite and any matchms campaign runs: it reads the fixture, scores every query against the library with CosineGreedy at a declared tolerance, and writes each query's top match at full float precision.",
+    "why_a_file_rather_than_a_command": "matchms is a LIBRARY pin: there is no binary to invoke, so the invocation is the prefix interpreter running this script as a subprocess. Keeping it in the repository means the thing the suite measures and the thing a campaign runs are one file."
+  },
+  "ms2_massbank.json.gz": {
+    "attribution": "MassBank consortium, MassBank-data release 2026.03 (https://github.com/MassBank/MassBank-data), CC BY 4.0",
+    "census": {
+      "compounds_spanning_2plus_instruments_and_contributors": 2384,
+      "compounds_with_2plus_spectra": 7142,
+      "distinct_compounds": 9078,
+      "ms2_with_key_precursor_and_5_peaks": 85146,
+      "of_those_in_positive_mode": 1967,
+      "records_in_release": 139240
+    },
+    "contributors": 22,
+    "instrument_types": 10,
+    "library_spectra": 378,
+    "license": "CC BY 4.0",
+    "measured_top1_at_tolerance_0.01": "19 of 24",
+    "queries": 24,
+    "release_tag_not_version_string": "The tag, deliberately. MassBank's dev branch carries VERSION '2026.03.1-SNAPSHOT', and an earlier grounding pass recorded that as the release 'MassBank 2026.03.1' -- which no clone can reproduce, because dev moves. The tag holds 139,240 records where that snapshot held 141,017, and every census number below shifts by about half a per cent.",
+    "selection_rule": "Every record of the release that is MS2, carries an InChIKey and a precursor m/z, and has at least five peaks. Grouped by the InChIKey's first block, keep the compounds whose spectra span at least two instrument types AND at least two contributors, positive mode only -- polarity cannot be mixed in a reference library. Sort those compounds by InChIKey block and take the first 24. For each, the QUERY is the spectrum from the lexicographically first contributor and the LIBRARY is every spectrum of that compound from any other contributor. Peaks are sorted by m/z, m/z rounded to 6 decimals and intensity to 4.",
+    "sha256": "e0feae1a47bc47bec649c442ed64a60644c6b378e11cb09b362cf755727a14f3",
+    "source": "MassBank-data, release tag 2026.03 (VERSION: version = 2026.03, timestamp 2026-03-16), cloned shallow from https://github.com/MassBank/MassBank-data",
+    "why_this_shape": "A dereplication fixture is gradeable only when the query compound is in the library through a DIFFERENT spectrum, and non-trivial only when that spectrum comes from another instrument in another lab."
+  },
+  "synthetic.fna": {
+    "derived_from": "halogenases.faa",
+    "length_nt": 38455,
+    "note": "Synthetic on purpose: Prodigal needs a contig and no nucleotide source in this project ships one. Gene content is known exactly and the bytes are reproducible from the repo with no download.",
+    "orfs": 24,
+    "rule": "Each protein is reverse-translated by taking, for residue i, codon i modulo the number of synonyms for that amino acid, from the standard genetic code with codons sorted alphabetically. A stop codon is appended, cycling TAA, TAG, TGA. ORFs are separated and flanked by a fixed 60-nt spacer. Residues outside the standard twenty are dropped.",
+    "sha256": "9a0511a7abf6423eac8a028b7c574a47e150610c4026d2d3a371d1c043175f24"
+  }
+}

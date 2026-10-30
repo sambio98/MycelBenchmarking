@@ -1,0 +1,61 @@
+{
+  "description": "Which measured activities are admissible, how replicates become one number per compound and target, and how the selectivity ratio is formed. Every rule is a filter on a STRUCTURED ChEMBL field or exact arithmetic over a measured value: no model prediction, no curated expert call, no estimate. That is the L5 doctrine, and this file is where it is made specific enough to be checkable.",
+  "admission": {
+    "standard_type": "IC50",
+    "ordered_rejection_reasons": [
+      {
+        "reason": "censored_or_missing_relation",
+        "rule": "standard_relation must be exactly '='. A '>' or '<' is a bound, not a measurement, and a missing relation is not a measurement either. Treating a bound as a value is the commonest way a potency table acquires numbers nobody measured."
+      },
+      {
+        "reason": "unconvertible_units",
+        "rule": "standard_units must be nM. Mass-per-volume units such as ug.mL-1 cannot be converted to molar without the compound's molecular weight, and bringing in a molecular weight would make the gold depend on a second source."
+      },
+      {
+        "reason": "no_value",
+        "rule": "standard_value must be present."
+      },
+      {
+        "reason": "non_positive",
+        "rule": "standard_value must be greater than zero. A ratio needs a positive denominator and a non-positive potency is not a measurement."
+      },
+      {
+        "reason": "flagged_by_chembl",
+        "rule": "data_validity_comment must be empty. ChEMBL itself flags these, most often 'Outside typical range'; overriding a curator's own flag would be a judgement."
+      },
+      {
+        "reason": "potential_duplicate",
+        "rule": "potential_duplicate must be 0. A duplicated measurement would be counted twice in the aggregation."
+      },
+      {
+        "reason": "low_confidence_assay",
+        "rule": "the assay's confidence_score must be at least 7. confidence_score lives on the ASSAY and not on the activity, so this rule needs an activity-to-assay join -- which is the point of grading it."
+      }
+    ],
+    "ordered_rejection_reasons_note": "Reasons are tested in the order listed and an activity takes the FIRST that applies, so the counts partition the rejected set exactly. Without a declared order an activity failing two rules would be countable twice and the breakdown would not sum.",
+    "confidence_score_note": "On the target pair this campaign uses, every assay scores 7 ('Direct protein complex subunits assigned'), so this rule rejects nothing here. It is still declared and still graded, because a rule that happens to be a no-op on one instantiation is not a rule that can be left out of the contract -- and the catalogued counterfactual of excluding low-confidence assays is therefore not available on this pair. The R4 variants vary the axes that do.",
+    "min_confidence_score": 7
+  },
+  "aggregation": {
+    "rule": "Per (molecule, target), the MEDIAN of the admissible values. With an even number of values, the mean of the two middle values, rounded to 6 decimals.",
+    "why_median": "Potency replicates are log-distributed and occasionally include an outlier two orders out; a median is insensitive to it and needs no outlier rule, which would be a judgement. The minimum is offered as an R4 variant so the choice is visible rather than assumed.",
+    "rounding": "Aggregated values and every ratio are rounded to 6 decimals, which is the benchmark's reporting precision."
+  },
+  "selectivity": {
+    "ratio": "The reference target's aggregated IC50 divided by the focal target's. Above 1 means the compound is more potent against the focal target.",
+    "direction_note": "The direction is declared because both orderings are defensible and they are reciprocals: a system that inverts it gets every verdict backwards while every magnitude right.",
+    "eligible": "A molecule needs an aggregated value on BOTH targets. A compound measured against one is not evidence of selectivity in either direction.",
+    "thresholds": [
+      2,
+      10,
+      100
+    ],
+    "threshold_note": "Reported at three thresholds rather than one, so the claim does not rest on where a single line was drawn.",
+    "most_selective_tie_break": "Highest ratio; among equal ratios, the lexicographically smallest molecule identifier. Without the second clause the answer would depend on iteration order."
+  },
+  "counting_rules": {
+    "activity_unit": "One ChEMBL activity record.",
+    "molecule_unit": "One molecule_chembl_id. A parent and a salt form carry different identifiers and are counted separately; ChEMBL's own parent_molecule_chembl_id is not used to merge them, because merging would need a rule for which value survives.",
+    "per_target": "Admission counts are reported per target, because the two targets are assayed by different groups and their rejection profiles differ."
+  }
+}

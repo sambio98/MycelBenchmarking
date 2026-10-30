@@ -1,0 +1,24 @@
+{
+  "_what_this_is": "A real-system set for the internal sweep. Copy it, point the commands at your agents, and run: python3 -m npbench_c.sweep.cli campaigns/<id> --systems <your-config>.json  -- which is what turns the readiness gate's five PENDING checks into measurements. npbench_c.sweep.systems documents what the loader refuses and why.",
+  "_placeholders": "{prompt} is the rendered task (also at PROMPT.md in the working directory), {submission} is the directory to write the report into, {sandbox} and {campaign} are available too. Braces that are not one of those four are left alone, so a JSON literal or ${VAR} in a command is safe.",
+  "_timeouts": "Not configured here: the timeout comes from each campaign's declared budgets.wall_clock_minutes, so no system is silently given more wall clock than the campaign budgeted. A timeout_s below that is honoured; one above it is clamped.",
+  "systems": [
+    {
+      "name": "tool-equipped",
+      "reference": true,
+      "command": ["bash", "-lc", "YOUR-AGENT --prompt-file {prompt} --write-to {submission}"],
+      "env": {}
+    },
+    {
+      "name": "bash-only",
+      "command": ["bash", "-lc", "YOUR-AGENT --no-domain-tools --prompt-file {prompt} --write-to {submission}"],
+      "env": {}
+    },
+    {
+      "name": "noncompute-ablation",
+      "mode": "no_tool",
+      "command": ["bash", "-lc", "YOUR-AGENT --prompt-file {prompt} --write-to {submission}"],
+      "env": {}
+    }
+  ]
+}

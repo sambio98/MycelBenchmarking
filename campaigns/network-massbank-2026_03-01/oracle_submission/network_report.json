@@ -1,0 +1,3814 @@
+{
+  "annotation_census": {
+    "confirmed": 73,
+    "no_candidate": 206,
+    "no_match": 18,
+    "tentative": 48,
+    "unsupported": 133
+  },
+  "component_annotation_census": {
+    "0": 135,
+    "1": 57,
+    "2": 3,
+    "3_or_more": 1
+  },
+  "dropped_tier": {
+    "annotations_removed": 48,
+    "claims": {
+      "analogue_with_mass_shift": 32,
+      "annotated_directly": 73,
+      "conflicting_neighbours": 0,
+      "no_annotated_neighbour": 365,
+      "same_compound": 8
+    },
+    "components_losing_all_annotation": 28,
+    "tier_dropped": [
+      "tentative"
+    ]
+  },
+  "edges": [
+    [
+      "MSBNK-AAFC-AC000008",
+      "MSBNK-AAFC-AC000009"
+    ],
+    [
+      "MSBNK-AAFC-AC000010",
+      "MSBNK-AAFC-AC000475"
+    ],
+    [
+      "MSBNK-AAFC-AC000010",
+      "MSBNK-AAFC-AC000484"
+    ],
+    [
+      "MSBNK-AAFC-AC000010",
+      "MSBNK-AAFC-AC000493"
+    ],
+    [
+      "MSBNK-AAFC-AC000044",
+      "MSBNK-AAFC-AC000045"
+    ],
+    [
+      "MSBNK-AAFC-AC000045",
+      "MSBNK-AAFC-AC000046"
+    ],
+    [
+      "MSBNK-AAFC-AC000045",
+      "MSBNK-AAFC-AC000067"
+    ],
+    [
+      "MSBNK-AAFC-AC000045",
+      "MSBNK-AAFC-AC000068"
+    ],
+    [
+      "MSBNK-AAFC-AC000046",
+      "MSBNK-AAFC-AC000065"
+    ],
+    [
+      "MSBNK-AAFC-AC000046",
+      "MSBNK-AAFC-AC000068"
+    ],
+    [
+      "MSBNK-AAFC-AC000055",
+      "MSBNK-AAFC-AC000056"
+    ],
+    [
+      "MSBNK-AAFC-AC000055",
+      "MSBNK-AAFC-AC000057"
+    ],
+    [
+      "MSBNK-AAFC-AC000055",
+      "MSBNK-AAFC-AC000058"
+    ],
+    [
+      "MSBNK-AAFC-AC000056",
+      "MSBNK-AAFC-AC000057"
+    ],
+    [
+      "MSBNK-AAFC-AC000056",
+      "MSBNK-AAFC-AC000058"
+    ],
+    [
+      "MSBNK-AAFC-AC000057",
+      "MSBNK-AAFC-AC000058"
+    ],
+    [
+      "MSBNK-AAFC-AC000057",
+      "MSBNK-AAFC-AC000059"
+    ],
+    [
+      "MSBNK-AAFC-AC000058",
+      "MSBNK-AAFC-AC000059"
+    ],
+    [
+      "MSBNK-AAFC-AC000066",
+      "MSBNK-AAFC-AC000067"
+    ],
+    [
+      "MSBNK-AAFC-AC000067",
+      "MSBNK-AAFC-AC000068"
+    ],
+    [
+      "MSBNK-AAFC-AC000067",
+      "MSBNK-AAFC-AC000069"
+    ],
+    [
+      "MSBNK-AAFC-AC000068",
+      "MSBNK-AAFC-AC000069"
+    ],
+    [
+      "MSBNK-AAFC-AC000071",
+      "MSBNK-AAFC-AC000072"
+    ],
+    [
+      "MSBNK-AAFC-AC000078",
+      "MSBNK-AAFC-AC000079"
+    ],
+    [
+      "MSBNK-AAFC-AC000079",
+      "MSBNK-AAFC-AC000080"
+    ],
+    [
+      "MSBNK-AAFC-AC000082",
+      "MSBNK-AAFC-AC000083"
+    ],
+    [
+      "MSBNK-AAFC-AC000082",
+      "MSBNK-AAFC-AC000084"
+    ],
+    [
+      "MSBNK-AAFC-AC000082",
+      "MSBNK-AAFC-AC000085"
+    ],
+    [
+      "MSBNK-AAFC-AC000082",
+      "MSBNK-AAFC-AC000091"
+    ],
+    [
+      "MSBNK-AAFC-AC000083",
+      "MSBNK-AAFC-AC000084"
+    ],
+    [
+      "MSBNK-AAFC-AC000083",
+      "MSBNK-AAFC-AC000085"
+    ],
+    [
+      "MSBNK-AAFC-AC000084",
+      "MSBNK-AAFC-AC000085"
+    ],
+    [
+      "MSBNK-AAFC-AC000095",
+      "MSBNK-AAFC-AC000096"
+    ],
+    [
+      "MSBNK-AAFC-AC000095",
+      "MSBNK-AAFC-AC000097"
+    ],
+    [
+      "MSBNK-AAFC-AC000096",
+      "MSBNK-AAFC-AC000097"
+    ],
+    [
+      "MSBNK-AAFC-AC000097",
+      "MSBNK-AAFC-AC000098"
+    ],
+    [
+      "MSBNK-AAFC-AC000097",
+      "MSBNK-AAFC-AC000099"
+    ],
+    [
+      "MSBNK-AAFC-AC000098",
+      "MSBNK-AAFC-AC000099"
+    ],
+    [
+      "MSBNK-AAFC-AC000110",
+      "MSBNK-AAFC-AC000111"
+    ],
+    [
+      "MSBNK-AAFC-AC000111",
+      "MSBNK-AAFC-AC000112"
+    ],
+    [
+      "MSBNK-AAFC-AC000112",
+      "MSBNK-AAFC-AC000113"
+    ],
+    [
+      "MSBNK-AAFC-AC000112",
+      "MSBNK-AAFC-AC000118"
+    ],
+    [
+      "MSBNK-AAFC-AC000113",
+      "MSBNK-AAFC-AC000114"
+    ],
+    [
+      "MSBNK-AAFC-AC000113",
+      "MSBNK-AAFC-AC000118"
+    ],
+    [
+      "MSBNK-AAFC-AC000114",
+      "MSBNK-AAFC-AC000119"
+    ],
+    [
+      "MSBNK-AAFC-AC000115",
+      "MSBNK-AAFC-AC000116"
+    ],
+    [
+      "MSBNK-AAFC-AC000116",
+      "MSBNK-AAFC-AC000117"
+    ],
+    [
+      "MSBNK-AAFC-AC000116",
+      "MSBNK-AAFC-AC000118"
+    ],
+    [
+      "MSBNK-AAFC-AC000117",
+      "MSBNK-AAFC-AC000118"
+    ],
+    [
+      "MSBNK-AAFC-AC000117",
+      "MSBNK-AAFC-AC000119"
+    ],
+    [
+      "MSBNK-AAFC-AC000118",
+      "MSBNK-AAFC-AC000119"
+    ],
+    [
+      "MSBNK-AAFC-AC000119",
+      "MSBNK-AAFC-AC000144"
+    ],
+    [
+      "MSBNK-AAFC-AC000120",
+      "MSBNK-AAFC-AC000121"
+    ],
+    [
+      "MSBNK-AAFC-AC000121",
+      "MSBNK-AAFC-AC000122"
+    ],
+    [
+      "MSBNK-AAFC-AC000122",
+      "MSBNK-AAFC-AC000123"
+    ],
+    [
+      "MSBNK-AAFC-AC000122",
+      "MSBNK-AAFC-AC000124"
+    ],
+    [
+      "MSBNK-AAFC-AC000123",
+      "MSBNK-AAFC-AC000124"
+    ],
+    [
+      "MSBNK-AAFC-AC000123",
+      "MSBNK-AAFC-AC000595"
+    ],
+    [
+      "MSBNK-AAFC-AC000124",
+      "MSBNK-AAFC-AC000154"
+    ],
+    [
+      "MSBNK-AAFC-AC000124",
+      "MSBNK-AAFC-AC000247"
+    ],
+    [
+      "MSBNK-AAFC-AC000124",
+      "MSBNK-AAFC-AC000252"
+    ],
+    [
+      "MSBNK-AAFC-AC000124",
+      "MSBNK-AAFC-AC000272"
+    ],
+    [
+      "MSBNK-AAFC-AC000124",
+      "MSBNK-AAFC-AC000559"
+    ],
+    [
+      "MSBNK-AAFC-AC000124",
+      "MSBNK-AAFC-AC000586"
+    ],
+    [
+      "MSBNK-AAFC-AC000124",
+      "MSBNK-AAFC-AC000587"
+    ],
+    [
+      "MSBNK-AAFC-AC000124",
+      "MSBNK-AAFC-AC000595"
+    ],
+    [
+      "MSBNK-AAFC-AC000124",
+      "MSBNK-AAFC-AC000596"
+    ],
+    [
+      "MSBNK-AAFC-AC000124",
+      "MSBNK-AAFC-AC000604"
+    ],
+    [
+      "MSBNK-AAFC-AC000124",
+      "MSBNK-AAFC-AC000920"
+    ],
+    [
+      "MSBNK-AAFC-AC000135",
+      "MSBNK-AAFC-AC000136"
+    ],
+    [
+      "MSBNK-AAFC-AC000135",
+      "MSBNK-AAFC-AC000137"
+    ],
+    [
+      "MSBNK-AAFC-AC000136",
+      "MSBNK-AAFC-AC000137"
+    ],
+    [
+      "MSBNK-AAFC-AC000137",
+      "MSBNK-AAFC-AC000138"
+    ],
+    [
+      "MSBNK-AAFC-AC000137",
+      "MSBNK-AAFC-AC000139"
+    ],
+    [
+      "MSBNK-AAFC-AC000138",
+      "MSBNK-AAFC-AC000139"
+    ],
+    [
+      "MSBNK-AAFC-AC000140",
+      "MSBNK-AAFC-AC000141"
+    ],
+    [
+      "MSBNK-AAFC-AC000141",
+      "MSBNK-AAFC-AC000142"
+    ],
+    [
+      "MSBNK-AAFC-AC000141",
+      "MSBNK-AAFC-AC000143"
+    ],
+    [
+      "MSBNK-AAFC-AC000142",
+      "MSBNK-AAFC-AC000143"
+    ],
+    [
+      "MSBNK-AAFC-AC000142",
+      "MSBNK-AAFC-AC000144"
+    ],
+    [
+      "MSBNK-AAFC-AC000143",
+      "MSBNK-AAFC-AC000144"
+    ],
+    [
+      "MSBNK-AAFC-AC000143",
+      "MSBNK-AAFC-AC000515"
+    ],
+    [
+      "MSBNK-AAFC-AC000143",
+      "MSBNK-AAFC-AC000516"
+    ],
+    [
+      "MSBNK-AAFC-AC000144",
+      "MSBNK-AAFC-AC000516"
+    ],
+    [
+      "MSBNK-AAFC-AC000150",
+      "MSBNK-AAFC-AC000151"
+    ],
+    [
+      "MSBNK-AAFC-AC000151",
+      "MSBNK-AAFC-AC000152"
+    ],
+    [
+      "MSBNK-AAFC-AC000151",
+      "MSBNK-AAFC-AC000153"
+    ],
+    [
+      "MSBNK-AAFC-AC000151",
+      "MSBNK-AAFC-AC000195"
+    ],
+    [
+      "MSBNK-AAFC-AC000151",
+      "MSBNK-AAFC-AC000196"
+    ],
+    [
+      "MSBNK-AAFC-AC000151",
+      "MSBNK-AAFC-AC000234"
+    ],
+    [
+      "MSBNK-AAFC-AC000151",
+      "MSBNK-AAFC-AC000235"
+    ],
+    [
+      "MSBNK-AAFC-AC000151",
+      "MSBNK-AAFC-AC000236"
+    ],
+    [
+      "MSBNK-AAFC-AC000152",
+      "MSBNK-AAFC-AC000153"
+    ],
+    [
+      "MSBNK-AAFC-AC000152",
+      "MSBNK-AAFC-AC000154"
+    ],
+    [
+      "MSBNK-AAFC-AC000152",
+      "MSBNK-AAFC-AC000196"
+    ],
+    [
+      "MSBNK-AAFC-AC000152",
+      "MSBNK-AAFC-AC000197"
+    ],
+    [
+      "MSBNK-AAFC-AC000152",
+      "MSBNK-AAFC-AC000234"
+    ],
+    [
+      "MSBNK-AAFC-AC000152",
+      "MSBNK-AAFC-AC000235"
+    ],
+    [
+      "MSBNK-AAFC-AC000152",
+      "MSBNK-AAFC-AC000236"
+    ],
+    [
+      "MSBNK-AAFC-AC000152",
+      "MSBNK-AAFC-AC000237"
+    ],
+    [
+      "MSBNK-AAFC-AC000153",
+      "MSBNK-AAFC-AC000154"
+    ],
+    [
+      "MSBNK-AAFC-AC000153",
+      "MSBNK-AAFC-AC000196"
+    ],
+    [
+      "MSBNK-AAFC-AC000153",
+      "MSBNK-AAFC-AC000197"
+    ],
+    [
+      "MSBNK-AAFC-AC000153",
+      "MSBNK-AAFC-AC000198"
+    ],
+    [
+      "MSBNK-AAFC-AC000153",
+      "MSBNK-AAFC-AC000235"
+    ],
+    [
+      "MSBNK-AAFC-AC000153",
+      "MSBNK-AAFC-AC000236"
+    ],
+    [
+      "MSBNK-AAFC-AC000153",
+      "MSBNK-AAFC-AC000237"
+    ],
+    [
+      "MSBNK-AAFC-AC000154",
+      "MSBNK-AAFC-AC000198"
+    ],
+    [
+      "MSBNK-AAFC-AC000154",
+      "MSBNK-AAFC-AC000236"
+    ],
+    [
+      "MSBNK-AAFC-AC000154",
+      "MSBNK-AAFC-AC000237"
+    ],
+    [
+      "MSBNK-AAFC-AC000160",
+      "MSBNK-AAFC-AC000535"
+    ],
+    [
+      "MSBNK-AAFC-AC000160",
+      "MSBNK-AAFC-AC000536"
+    ],
+    [
+      "MSBNK-AAFC-AC000161",
+      "MSBNK-AAFC-AC000162"
+    ],
+    [
+      "MSBNK-AAFC-AC000161",
+      "MSBNK-AAFC-AC000536"
+    ],
+    [
+      "MSBNK-AAFC-AC000161",
+      "MSBNK-AAFC-AC000537"
+    ],
+    [
+      "MSBNK-AAFC-AC000162",
+      "MSBNK-AAFC-AC000163"
+    ],
+    [
+      "MSBNK-AAFC-AC000162",
+      "MSBNK-AAFC-AC000537"
+    ],
+    [
+      "MSBNK-AAFC-AC000162",
+      "MSBNK-AAFC-AC000538"
+    ],
+    [
+      "MSBNK-AAFC-AC000163",
+      "MSBNK-AAFC-AC000164"
+    ],
+    [
+      "MSBNK-AAFC-AC000163",
+      "MSBNK-AAFC-AC000537"
+    ],
+    [
+      "MSBNK-AAFC-AC000163",
+      "MSBNK-AAFC-AC000538"
+    ],
+    [
+      "MSBNK-AAFC-AC000163",
+      "MSBNK-AAFC-AC000539"
+    ],
+    [
+      "MSBNK-AAFC-AC000164",
+      "MSBNK-AAFC-AC000538"
+    ],
+    [
+      "MSBNK-AAFC-AC000164",
+      "MSBNK-AAFC-AC000539"
+    ],
+    [
+      "MSBNK-AAFC-AC000165",
+      "MSBNK-AAFC-AC000166"
+    ],
+    [
+      "MSBNK-AAFC-AC000167",
+      "MSBNK-AAFC-AC000168"
+    ],
+    [
+      "MSBNK-AAFC-AC000167",
+      "MSBNK-AAFC-AC000169"
+    ],
+    [
+      "MSBNK-AAFC-AC000168",
+      "MSBNK-AAFC-AC000169"
+    ],
+    [
+      "MSBNK-AAFC-AC000170",
+      "MSBNK-AAFC-AC000171"
+    ],
+    [
+      "MSBNK-AAFC-AC000171",
+      "MSBNK-AAFC-AC000172"
+    ],
+    [
+      "MSBNK-AAFC-AC000172",
+      "MSBNK-AAFC-AC000173"
+    ],
+    [
+      "MSBNK-AAFC-AC000172",
+      "MSBNK-AAFC-AC000174"
+    ],
+    [
+      "MSBNK-AAFC-AC000173",
+      "MSBNK-AAFC-AC000174"
+    ],
+    [
+      "MSBNK-AAFC-AC000191",
+      "MSBNK-AAFC-AC000192"
+    ],
+    [
+      "MSBNK-AAFC-AC000192",
+      "MSBNK-AAFC-AC000777"
+    ],
+    [
+      "MSBNK-AAFC-AC000192",
+      "MSBNK-AAFC-AC000778"
+    ],
+    [
+      "MSBNK-AAFC-AC000193",
+      "MSBNK-AAFC-AC000746"
+    ],
+    [
+      "MSBNK-AAFC-AC000193",
+      "MSBNK-AAFC-AC000779"
+    ],
+    [
+      "MSBNK-AAFC-AC000193",
+      "MSBNK-AAFC-AC000780"
+    ],
+    [
+      "MSBNK-AAFC-AC000194",
+      "MSBNK-AAFC-AC000195"
+    ],
+    [
+      "MSBNK-AAFC-AC000195",
+      "MSBNK-AAFC-AC000196"
+    ],
+    [
+      "MSBNK-AAFC-AC000195",
+      "MSBNK-AAFC-AC000197"
+    ],
+    [
+      "MSBNK-AAFC-AC000195",
+      "MSBNK-AAFC-AC000234"
+    ],
+    [
+      "MSBNK-AAFC-AC000195",
+      "MSBNK-AAFC-AC000235"
+    ],
+    [
+      "MSBNK-AAFC-AC000196",
+      "MSBNK-AAFC-AC000197"
+    ],
+    [
+      "MSBNK-AAFC-AC000196",
+      "MSBNK-AAFC-AC000234"
+    ],
+    [
+      "MSBNK-AAFC-AC000196",
+      "MSBNK-AAFC-AC000235"
+    ],
+    [
+      "MSBNK-AAFC-AC000196",
+      "MSBNK-AAFC-AC000236"
+    ],
+    [
+      "MSBNK-AAFC-AC000197",
+      "MSBNK-AAFC-AC000198"
+    ],
+    [
+      "MSBNK-AAFC-AC000197",
+      "MSBNK-AAFC-AC000235"
+    ],
+    [
+      "MSBNK-AAFC-AC000197",
+      "MSBNK-AAFC-AC000236"
+    ],
+    [
+      "MSBNK-AAFC-AC000198",
+      "MSBNK-AAFC-AC000237"
+    ],
+    [
+      "MSBNK-AAFC-AC000198",
+      "MSBNK-AAFC-AC000631"
+    ],
+    [
+      "MSBNK-AAFC-AC000216",
+      "MSBNK-AAFC-AC000217"
+    ],
+    [
+      "MSBNK-AAFC-AC000217",
+      "MSBNK-AAFC-AC000218"
+    ],
+    [
+      "MSBNK-AAFC-AC000217",
+      "MSBNK-AAFC-AC000773"
+    ],
+    [
+      "MSBNK-AAFC-AC000217",
+      "MSBNK-AAFC-AC000774"
+    ],
+    [
+      "MSBNK-AAFC-AC000217",
+      "MSBNK-AAFC-AC000784"
+    ],
+    [
+      "MSBNK-AAFC-AC000218",
+      "MSBNK-AAFC-AC000773"
+    ],
+    [
+      "MSBNK-AAFC-AC000218",
+      "MSBNK-AAFC-AC000774"
+    ],
+    [
+      "MSBNK-AAFC-AC000218",
+      "MSBNK-AAFC-AC000775"
+    ],
+    [
+      "MSBNK-AAFC-AC000218",
+      "MSBNK-AAFC-AC000784"
+    ],
+    [
+      "MSBNK-AAFC-AC000234",
+      "MSBNK-AAFC-AC000235"
+    ],
+    [
+      "MSBNK-AAFC-AC000234",
+      "MSBNK-AAFC-AC000236"
+    ],
+    [
+      "MSBNK-AAFC-AC000235",
+      "MSBNK-AAFC-AC000236"
+    ],
+    [
+      "MSBNK-AAFC-AC000235",
+      "MSBNK-AAFC-AC000237"
+    ],
+    [
+      "MSBNK-AAFC-AC000236",
+      "MSBNK-AAFC-AC000237"
+    ],
+    [
+      "MSBNK-AAFC-AC000243",
+      "MSBNK-AAFC-AC000244"
+    ],
+    [
+      "MSBNK-AAFC-AC000243",
+      "MSBNK-AAFC-AC000245"
+    ],
+    [
+      "MSBNK-AAFC-AC000244",
+      "MSBNK-AAFC-AC000245"
+    ],
+    [
+      "MSBNK-AAFC-AC000245",
+      "MSBNK-AAFC-AC000246"
+    ],
+    [
+      "MSBNK-AAFC-AC000247",
+      "MSBNK-AAFC-AC000272"
+    ],
+    [
+      "MSBNK-AAFC-AC000247",
+      "MSBNK-AAFC-AC000920"
+    ],
+    [
+      "MSBNK-AAFC-AC000248",
+      "MSBNK-AAFC-AC000249"
+    ],
+    [
+      "MSBNK-AAFC-AC000248",
+      "MSBNK-AAFC-AC000268"
+    ],
+    [
+      "MSBNK-AAFC-AC000248",
+      "MSBNK-AAFC-AC000269"
+    ],
+    [
+      "MSBNK-AAFC-AC000248",
+      "MSBNK-AAFC-AC000556"
+    ],
+    [
+      "MSBNK-AAFC-AC000249",
+      "MSBNK-AAFC-AC000250"
+    ],
+    [
+      "MSBNK-AAFC-AC000249",
+      "MSBNK-AAFC-AC000268"
+    ],
+    [
+      "MSBNK-AAFC-AC000249",
+      "MSBNK-AAFC-AC000269"
+    ],
+    [
+      "MSBNK-AAFC-AC000249",
+      "MSBNK-AAFC-AC000556"
+    ],
+    [
+      "MSBNK-AAFC-AC000249",
+      "MSBNK-AAFC-AC000557"
+    ],
+    [
+      "MSBNK-AAFC-AC000250",
+      "MSBNK-AAFC-AC000251"
+    ],
+    [
+      "MSBNK-AAFC-AC000250",
+      "MSBNK-AAFC-AC000270"
+    ],
+    [
+      "MSBNK-AAFC-AC000250",
+      "MSBNK-AAFC-AC000271"
+    ],
+    [
+      "MSBNK-AAFC-AC000250",
+      "MSBNK-AAFC-AC000557"
+    ],
+    [
+      "MSBNK-AAFC-AC000250",
+      "MSBNK-AAFC-AC000558"
+    ],
+    [
+      "MSBNK-AAFC-AC000250",
+      "MSBNK-AAFC-AC000585"
+    ],
+    [
+      "MSBNK-AAFC-AC000250",
+      "MSBNK-AAFC-AC000594"
+    ],
+    [
+      "MSBNK-AAFC-AC000251",
+      "MSBNK-AAFC-AC000252"
+    ],
+    [
+      "MSBNK-AAFC-AC000251",
+      "MSBNK-AAFC-AC000271"
+    ],
+    [
+      "MSBNK-AAFC-AC000251",
+      "MSBNK-AAFC-AC000272"
+    ],
+    [
+      "MSBNK-AAFC-AC000251",
+      "MSBNK-AAFC-AC000557"
+    ],
+    [
+      "MSBNK-AAFC-AC000251",
+      "MSBNK-AAFC-AC000558"
+    ],
+    [
+      "MSBNK-AAFC-AC000251",
+      "MSBNK-AAFC-AC000559"
+    ],
+    [
+      "MSBNK-AAFC-AC000251",
+      "MSBNK-AAFC-AC000585"
+    ],
+    [
+      "MSBNK-AAFC-AC000251",
+      "MSBNK-AAFC-AC000594"
+    ],
+    [
+      "MSBNK-AAFC-AC000252",
+      "MSBNK-AAFC-AC000559"
+    ],
+    [
+      "MSBNK-AAFC-AC000252",
+      "MSBNK-AAFC-AC000587"
+    ],
+    [
+      "MSBNK-AAFC-AC000252",
+      "MSBNK-AAFC-AC000595"
+    ],
+    [
+      "MSBNK-AAFC-AC000252",
+      "MSBNK-AAFC-AC000596"
+    ],
+    [
+      "MSBNK-AAFC-AC000259",
+      "MSBNK-AAFC-AC000260"
+    ],
+    [
+      "MSBNK-AAFC-AC000259",
+      "MSBNK-AAFC-AC000261"
+    ],
+    [
+      "MSBNK-AAFC-AC000259",
+      "MSBNK-AAFC-AC000522"
+    ],
+    [
+      "MSBNK-AAFC-AC000259",
+      "MSBNK-AAFC-AC000523"
+    ],
+    [
+      "MSBNK-AAFC-AC000260",
+      "MSBNK-AAFC-AC000261"
+    ],
+    [
+      "MSBNK-AAFC-AC000260",
+      "MSBNK-AAFC-AC000262"
+    ],
+    [
+      "MSBNK-AAFC-AC000260",
+      "MSBNK-AAFC-AC000522"
+    ],
+    [
+      "MSBNK-AAFC-AC000260",
+      "MSBNK-AAFC-AC000523"
+    ],
+    [
+      "MSBNK-AAFC-AC000261",
+      "MSBNK-AAFC-AC000262"
+    ],
+    [
+      "MSBNK-AAFC-AC000261",
+      "MSBNK-AAFC-AC000522"
+    ],
+    [
+      "MSBNK-AAFC-AC000261",
+      "MSBNK-AAFC-AC000523"
+    ],
+    [
+      "MSBNK-AAFC-AC000262",
+      "MSBNK-AAFC-AC000522"
+    ],
+    [
+      "MSBNK-AAFC-AC000262",
+      "MSBNK-AAFC-AC000523"
+    ],
+    [
+      "MSBNK-AAFC-AC000262",
+      "MSBNK-AAFC-AC000524"
+    ],
+    [
+      "MSBNK-AAFC-AC000268",
+      "MSBNK-AAFC-AC000269"
+    ],
+    [
+      "MSBNK-AAFC-AC000268",
+      "MSBNK-AAFC-AC000270"
+    ],
+    [
+      "MSBNK-AAFC-AC000268",
+      "MSBNK-AAFC-AC000556"
+    ],
+    [
+      "MSBNK-AAFC-AC000269",
+      "MSBNK-AAFC-AC000270"
+    ],
+    [
+      "MSBNK-AAFC-AC000269",
+      "MSBNK-AAFC-AC000556"
+    ],
+    [
+      "MSBNK-AAFC-AC000270",
+      "MSBNK-AAFC-AC000271"
+    ],
+    [
+      "MSBNK-AAFC-AC000270",
+      "MSBNK-AAFC-AC000272"
+    ],
+    [
+      "MSBNK-AAFC-AC000270",
+      "MSBNK-AAFC-AC000557"
+    ],
+    [
+      "MSBNK-AAFC-AC000270",
+      "MSBNK-AAFC-AC000558"
+    ],
+    [
+      "MSBNK-AAFC-AC000270",
+      "MSBNK-AAFC-AC000585"
+    ],
+    [
+      "MSBNK-AAFC-AC000270",
+      "MSBNK-AAFC-AC000594"
+    ],
+    [
+      "MSBNK-AAFC-AC000271",
+      "MSBNK-AAFC-AC000272"
+    ],
+    [
+      "MSBNK-AAFC-AC000271",
+      "MSBNK-AAFC-AC000557"
+    ],
+    [
+      "MSBNK-AAFC-AC000271",
+      "MSBNK-AAFC-AC000558"
+    ],
+    [
+      "MSBNK-AAFC-AC000271",
+      "MSBNK-AAFC-AC000594"
+    ],
+    [
+      "MSBNK-AAFC-AC000272",
+      "MSBNK-AAFC-AC000558"
+    ],
+    [
+      "MSBNK-AAFC-AC000272",
+      "MSBNK-AAFC-AC000559"
+    ],
+    [
+      "MSBNK-AAFC-AC000272",
+      "MSBNK-AAFC-AC000586"
+    ],
+    [
+      "MSBNK-AAFC-AC000272",
+      "MSBNK-AAFC-AC000595"
+    ],
+    [
+      "MSBNK-AAFC-AC000272",
+      "MSBNK-AAFC-AC000920"
+    ],
+    [
+      "MSBNK-AAFC-AC000278",
+      "MSBNK-AAFC-AC000279"
+    ],
+    [
+      "MSBNK-AAFC-AC000278",
+      "MSBNK-AAFC-AC000280"
+    ],
+    [
+      "MSBNK-AAFC-AC000279",
+      "MSBNK-AAFC-AC000280"
+    ],
+    [
+      "MSBNK-AAFC-AC000280",
+      "MSBNK-AAFC-AC000281"
+    ],
+    [
+      "MSBNK-AAFC-AC000280",
+      "MSBNK-AAFC-AC000282"
+    ],
+    [
+      "MSBNK-AAFC-AC000281",
+      "MSBNK-AAFC-AC000282"
+    ],
+    [
+      "MSBNK-AAFC-AC000282",
+      "MSBNK-AAFC-AC000823"
+    ],
+    [
+      "MSBNK-AAFC-AC000288",
+      "MSBNK-AAFC-AC000289"
+    ],
+    [
+      "MSBNK-AAFC-AC000289",
+      "MSBNK-AAFC-AC000290"
+    ],
+    [
+      "MSBNK-AAFC-AC000290",
+      "MSBNK-AAFC-AC000291"
+    ],
+    [
+      "MSBNK-AAFC-AC000291",
+      "MSBNK-AAFC-AC000292"
+    ],
+    [
+      "MSBNK-AAFC-AC000295",
+      "MSBNK-AAFC-AC000296"
+    ],
+    [
+      "MSBNK-AAFC-AC000295",
+      "MSBNK-AAFC-AC000305"
+    ],
+    [
+      "MSBNK-AAFC-AC000295",
+      "MSBNK-AAFC-AC000306"
+    ],
+    [
+      "MSBNK-AAFC-AC000295",
+      "MSBNK-AAFC-AC000359"
+    ],
+    [
+      "MSBNK-AAFC-AC000296",
+      "MSBNK-AAFC-AC000297"
+    ],
+    [
+      "MSBNK-AAFC-AC000296",
+      "MSBNK-AAFC-AC000305"
+    ],
+    [
+      "MSBNK-AAFC-AC000296",
+      "MSBNK-AAFC-AC000306"
+    ],
+    [
+      "MSBNK-AAFC-AC000296",
+      "MSBNK-AAFC-AC000307"
+    ],
+    [
+      "MSBNK-AAFC-AC000296",
+      "MSBNK-AAFC-AC000359"
+    ],
+    [
+      "MSBNK-AAFC-AC000296",
+      "MSBNK-AAFC-AC000360"
+    ],
+    [
+      "MSBNK-AAFC-AC000297",
+      "MSBNK-AAFC-AC000306"
+    ],
+    [
+      "MSBNK-AAFC-AC000297",
+      "MSBNK-AAFC-AC000307"
+    ],
+    [
+      "MSBNK-AAFC-AC000297",
+      "MSBNK-AAFC-AC000317"
+    ],
+    [
+      "MSBNK-AAFC-AC000297",
+      "MSBNK-AAFC-AC000330"
+    ],
+    [
+      "MSBNK-AAFC-AC000297",
+      "MSBNK-AAFC-AC000331"
+    ],
+    [
+      "MSBNK-AAFC-AC000297",
+      "MSBNK-AAFC-AC000335"
+    ],
+    [
+      "MSBNK-AAFC-AC000297",
+      "MSBNK-AAFC-AC000336"
+    ],
+    [
+      "MSBNK-AAFC-AC000297",
+      "MSBNK-AAFC-AC000340"
+    ],
+    [
+      "MSBNK-AAFC-AC000297",
+      "MSBNK-AAFC-AC000341"
+    ],
+    [
+      "MSBNK-AAFC-AC000297",
+      "MSBNK-AAFC-AC000345"
+    ],
+    [
+      "MSBNK-AAFC-AC000297",
+      "MSBNK-AAFC-AC000346"
+    ],
+    [
+      "MSBNK-AAFC-AC000297",
+      "MSBNK-AAFC-AC000350"
+    ],
+    [
+      "MSBNK-AAFC-AC000297",
+      "MSBNK-AAFC-AC000351"
+    ],
+    [
+      "MSBNK-AAFC-AC000297",
+      "MSBNK-AAFC-AC000355"
+    ],
+    [
+      "MSBNK-AAFC-AC000297",
+      "MSBNK-AAFC-AC000356"
+    ],
+    [
+      "MSBNK-AAFC-AC000297",
+      "MSBNK-AAFC-AC000360"
+    ],
+    [
+      "MSBNK-AAFC-AC000297",
+      "MSBNK-AAFC-AC000361"
+    ],
+    [
+      "MSBNK-AAFC-AC000305",
+      "MSBNK-AAFC-AC000306"
+    ],
+    [
+      "MSBNK-AAFC-AC000305",
+      "MSBNK-AAFC-AC000359"
+    ],
+    [
+      "MSBNK-AAFC-AC000306",
+      "MSBNK-AAFC-AC000307"
+    ],
+    [
+      "MSBNK-AAFC-AC000306",
+      "MSBNK-AAFC-AC000359"
+    ],
+    [
+      "MSBNK-AAFC-AC000306",
+      "MSBNK-AAFC-AC000360"
+    ],
+    [
+      "MSBNK-AAFC-AC000307",
+      "MSBNK-AAFC-AC000317"
+    ],
+    [
+      "MSBNK-AAFC-AC000307",
+      "MSBNK-AAFC-AC000330"
+    ],
+    [
+      "MSBNK-AAFC-AC000307",
+      "MSBNK-AAFC-AC000331"
+    ],
+    [
+      "MSBNK-AAFC-AC000307",
+      "MSBNK-AAFC-AC000335"
+    ],
+    [
+      "MSBNK-AAFC-AC000307",
+      "MSBNK-AAFC-AC000336"
+    ],
+    [
+      "MSBNK-AAFC-AC000307",
+      "MSBNK-AAFC-AC000340"
+    ],
+    [
+      "MSBNK-AAFC-AC000307",
+      "MSBNK-AAFC-AC000341"
+    ],
+    [
+      "MSBNK-AAFC-AC000307",
+      "MSBNK-AAFC-AC000345"
+    ],
+    [
+      "MSBNK-AAFC-AC000307",
+      "MSBNK-AAFC-AC000346"
+    ],
+    [
+      "MSBNK-AAFC-AC000307",
+      "MSBNK-AAFC-AC000350"
+    ],
+    [
+      "MSBNK-AAFC-AC000307",
+      "MSBNK-AAFC-AC000351"
+    ],
+    [
+      "MSBNK-AAFC-AC000307",
+      "MSBNK-AAFC-AC000355"
+    ],
+    [
+      "MSBNK-AAFC-AC000307",
+      "MSBNK-AAFC-AC000356"
+    ],
+    [
+      "MSBNK-AAFC-AC000307",
+      "MSBNK-AAFC-AC000360"
+    ],
+    [
+      "MSBNK-AAFC-AC000307",
+      "MSBNK-AAFC-AC000361"
+    ],
+    [
+      "MSBNK-AAFC-AC000315",
+      "MSBNK-AAFC-AC000316"
+    ],
+    [
+      "MSBNK-AAFC-AC000315",
+      "MSBNK-AAFC-AC000320"
+    ],
+    [
+      "MSBNK-AAFC-AC000316",
+      "MSBNK-AAFC-AC000317"
+    ],
+    [
+      "MSBNK-AAFC-AC000316",
+      "MSBNK-AAFC-AC000321"
+    ],
+    [
+      "MSBNK-AAFC-AC000316",
+      "MSBNK-AAFC-AC000330"
+    ],
+    [
+      "MSBNK-AAFC-AC000316",
+      "MSBNK-AAFC-AC000335"
+    ],
+    [
+      "MSBNK-AAFC-AC000316",
+      "MSBNK-AAFC-AC000340"
+    ],
+    [
+      "MSBNK-AAFC-AC000316",
+      "MSBNK-AAFC-AC000345"
+    ],
+    [
+      "MSBNK-AAFC-AC000316",
+      "MSBNK-AAFC-AC000350"
+    ],
+    [
+      "MSBNK-AAFC-AC000316",
+      "MSBNK-AAFC-AC000351"
+    ],
+    [
+      "MSBNK-AAFC-AC000316",
+      "MSBNK-AAFC-AC000355"
+    ],
+    [
+      "MSBNK-AAFC-AC000316",
+      "MSBNK-AAFC-AC000360"
+    ],
+    [
+      "MSBNK-AAFC-AC000317",
+      "MSBNK-AAFC-AC000322"
+    ],
+    [
+      "MSBNK-AAFC-AC000317",
+      "MSBNK-AAFC-AC000330"
+    ],
+    [
+      "MSBNK-AAFC-AC000317",
+      "MSBNK-AAFC-AC000331"
+    ],
+    [
+      "MSBNK-AAFC-AC000317",
+      "MSBNK-AAFC-AC000335"
+    ],
+    [
+      "MSBNK-AAFC-AC000317",
+      "MSBNK-AAFC-AC000336"
+    ],
+    [
+      "MSBNK-AAFC-AC000317",
+      "MSBNK-AAFC-AC000341"
+    ],
+    [
+      "MSBNK-AAFC-AC000317",
+      "MSBNK-AAFC-AC000345"
+    ],
+    [
+      "MSBNK-AAFC-AC000317",
+      "MSBNK-AAFC-AC000350"
+    ],
+    [
+      "MSBNK-AAFC-AC000317",
+      "MSBNK-AAFC-AC000351"
+    ],
+    [
+      "MSBNK-AAFC-AC000321",
+      "MSBNK-AAFC-AC000322"
+    ],
+    [
+      "MSBNK-AAFC-AC000321",
+      "MSBNK-AAFC-AC000330"
+    ],
+    [
+      "MSBNK-AAFC-AC000321",
+      "MSBNK-AAFC-AC000331"
+    ],
+    [
+      "MSBNK-AAFC-AC000321",
+      "MSBNK-AAFC-AC000335"
+    ],
+    [
+      "MSBNK-AAFC-AC000321",
+      "MSBNK-AAFC-AC000336"
+    ],
+    [
+      "MSBNK-AAFC-AC000321",
+      "MSBNK-AAFC-AC000340"
+    ],
+    [
+      "MSBNK-AAFC-AC000321",
+      "MSBNK-AAFC-AC000341"
+    ],
+    [
+      "MSBNK-AAFC-AC000321",
+      "MSBNK-AAFC-AC000344"
+    ],
+    [
+      "MSBNK-AAFC-AC000321",
+      "MSBNK-AAFC-AC000345"
+    ],
+    [
+      "MSBNK-AAFC-AC000321",
+      "MSBNK-AAFC-AC000346"
+    ],
+    [
+      "MSBNK-AAFC-AC000321",
+      "MSBNK-AAFC-AC000350"
+    ],
+    [
+      "MSBNK-AAFC-AC000321",
+      "MSBNK-AAFC-AC000351"
+    ],
+    [
+      "MSBNK-AAFC-AC000321",
+      "MSBNK-AAFC-AC000355"
+    ],
+    [
+      "MSBNK-AAFC-AC000321",
+      "MSBNK-AAFC-AC000356"
+    ],
+    [
+      "MSBNK-AAFC-AC000321",
+      "MSBNK-AAFC-AC000360"
+    ],
+    [
+      "MSBNK-AAFC-AC000321",
+      "MSBNK-AAFC-AC000361"
+    ],
+    [
+      "MSBNK-AAFC-AC000322",
+      "MSBNK-AAFC-AC000330"
+    ],
+    [
+      "MSBNK-AAFC-AC000322",
+      "MSBNK-AAFC-AC000331"
+    ],
+    [
+      "MSBNK-AAFC-AC000322",
+      "MSBNK-AAFC-AC000335"
+    ],
+    [
+      "MSBNK-AAFC-AC000322",
+      "MSBNK-AAFC-AC000336"
+    ],
+    [
+      "MSBNK-AAFC-AC000322",
+      "MSBNK-AAFC-AC000340"
+    ],
+    [
+      "MSBNK-AAFC-AC000322",
+      "MSBNK-AAFC-AC000341"
+    ],
+    [
+      "MSBNK-AAFC-AC000322",
+      "MSBNK-AAFC-AC000345"
+    ],
+    [
+      "MSBNK-AAFC-AC000322",
+      "MSBNK-AAFC-AC000346"
+    ],
+    [
+      "MSBNK-AAFC-AC000322",
+      "MSBNK-AAFC-AC000350"
+    ],
+    [
+      "MSBNK-AAFC-AC000322",
+      "MSBNK-AAFC-AC000351"
+    ],
+    [
+      "MSBNK-AAFC-AC000322",
+      "MSBNK-AAFC-AC000355"
+    ],
+    [
+      "MSBNK-AAFC-AC000322",
+      "MSBNK-AAFC-AC000356"
+    ],
+    [
+      "MSBNK-AAFC-AC000322",
+      "MSBNK-AAFC-AC000360"
+    ],
+    [
+      "MSBNK-AAFC-AC000322",
+      "MSBNK-AAFC-AC000361"
+    ],
+    [
+      "MSBNK-AAFC-AC000325",
+      "MSBNK-AAFC-AC000326"
+    ],
+    [
+      "MSBNK-AAFC-AC000329",
+      "MSBNK-AAFC-AC000330"
+    ],
+    [
+      "MSBNK-AAFC-AC000329",
+      "MSBNK-AAFC-AC000334"
+    ],
+    [
+      "MSBNK-AAFC-AC000329",
+      "MSBNK-AAFC-AC000335"
+    ],
+    [
+      "MSBNK-AAFC-AC000329",
+      "MSBNK-AAFC-AC000339"
+    ],
+    [
+      "MSBNK-AAFC-AC000329",
+      "MSBNK-AAFC-AC000340"
+    ],
+    [
+      "MSBNK-AAFC-AC000329",
+      "MSBNK-AAFC-AC000344"
+    ],
+    [
+      "MSBNK-AAFC-AC000329",
+      "MSBNK-AAFC-AC000345"
+    ],
+    [
+      "MSBNK-AAFC-AC000329",
+      "MSBNK-AAFC-AC000354"
+    ],
+    [
+      "MSBNK-AAFC-AC000329",
+      "MSBNK-AAFC-AC000355"
+    ],
+    [
+      "MSBNK-AAFC-AC000329",
+      "MSBNK-AAFC-AC000360"
+    ],
+    [
+      "MSBNK-AAFC-AC000330",
+      "MSBNK-AAFC-AC000331"
+    ],
+    [
+      "MSBNK-AAFC-AC000330",
+      "MSBNK-AAFC-AC000334"
+    ],
+    [
+      "MSBNK-AAFC-AC000330",
+      "MSBNK-AAFC-AC000335"
+    ],
+    [
+      "MSBNK-AAFC-AC000330",
+      "MSBNK-AAFC-AC000336"
+    ],
+    [
+      "MSBNK-AAFC-AC000330",
+      "MSBNK-AAFC-AC000339"
+    ],
+    [
+      "MSBNK-AAFC-AC000330",
+      "MSBNK-AAFC-AC000340"
+    ],
+    [
+      "MSBNK-AAFC-AC000330",
+      "MSBNK-AAFC-AC000341"
+    ],
+    [
+      "MSBNK-AAFC-AC000330",
+      "MSBNK-AAFC-AC000344"
+    ],
+    [
+      "MSBNK-AAFC-AC000330",
+      "MSBNK-AAFC-AC000345"
+    ],
+    [
+      "MSBNK-AAFC-AC000330",
+      "MSBNK-AAFC-AC000346"
+    ],
+    [
+      "MSBNK-AAFC-AC000330",
+      "MSBNK-AAFC-AC000350"
+    ],
+    [
+      "MSBNK-AAFC-AC000330",
+      "MSBNK-AAFC-AC000351"
+    ],
+    [
+      "MSBNK-AAFC-AC000330",
+      "MSBNK-AAFC-AC000354"
+    ],
+    [
+      "MSBNK-AAFC-AC000330",
+      "MSBNK-AAFC-AC000355"
+    ],
+    [
+      "MSBNK-AAFC-AC000330",
+      "MSBNK-AAFC-AC000356"
+    ],
+    [
+      "MSBNK-AAFC-AC000330",
+      "MSBNK-AAFC-AC000360"
+    ],
+    [
+      "MSBNK-AAFC-AC000330",
+      "MSBNK-AAFC-AC000361"
+    ],
+    [
+      "MSBNK-AAFC-AC000331",
+      "MSBNK-AAFC-AC000335"
+    ],
+    [
+      "MSBNK-AAFC-AC000331",
+      "MSBNK-AAFC-AC000336"
+    ],
+    [
+      "MSBNK-AAFC-AC000331",
+      "MSBNK-AAFC-AC000340"
+    ],
+    [
+      "MSBNK-AAFC-AC000331",
+      "MSBNK-AAFC-AC000341"
+    ],
+    [
+      "MSBNK-AAFC-AC000331",
+      "MSBNK-AAFC-AC000344"
+    ],
+    [
+      "MSBNK-AAFC-AC000331",
+      "MSBNK-AAFC-AC000345"
+    ],
+    [
+      "MSBNK-AAFC-AC000331",
+      "MSBNK-AAFC-AC000346"
+    ],
+    [
+      "MSBNK-AAFC-AC000331",
+      "MSBNK-AAFC-AC000350"
+    ],
+    [
+      "MSBNK-AAFC-AC000331",
+      "MSBNK-AAFC-AC000351"
+    ],
+    [
+      "MSBNK-AAFC-AC000331",
+      "MSBNK-AAFC-AC000355"
+    ],
+    [
+      "MSBNK-AAFC-AC000331",
+      "MSBNK-AAFC-AC000356"
+    ],
+    [
+      "MSBNK-AAFC-AC000331",
+      "MSBNK-AAFC-AC000360"
+    ],
+    [
+      "MSBNK-AAFC-AC000331",
+      "MSBNK-AAFC-AC000361"
+    ],
+    [
+      "MSBNK-AAFC-AC000334",
+      "MSBNK-AAFC-AC000335"
+    ],
+    [
+      "MSBNK-AAFC-AC000334",
+      "MSBNK-AAFC-AC000340"
+    ],
+    [
+      "MSBNK-AAFC-AC000334",
+      "MSBNK-AAFC-AC000344"
+    ],
+    [
+      "MSBNK-AAFC-AC000334",
+      "MSBNK-AAFC-AC000345"
+    ],
+    [
+      "MSBNK-AAFC-AC000334",
+      "MSBNK-AAFC-AC000354"
+    ],
+    [
+      "MSBNK-AAFC-AC000334",
+      "MSBNK-AAFC-AC000355"
+    ],
+    [
+      "MSBNK-AAFC-AC000334",
+      "MSBNK-AAFC-AC000360"
+    ],
+    [
+      "MSBNK-AAFC-AC000335",
+      "MSBNK-AAFC-AC000336"
+    ],
+    [
+      "MSBNK-AAFC-AC000335",
+      "MSBNK-AAFC-AC000340"
+    ],
+    [
+      "MSBNK-AAFC-AC000335",
+      "MSBNK-AAFC-AC000341"
+    ],
+    [
+      "MSBNK-AAFC-AC000335",
+      "MSBNK-AAFC-AC000344"
+    ],
+    [
+      "MSBNK-AAFC-AC000335",
+      "MSBNK-AAFC-AC000345"
+    ],
+    [
+      "MSBNK-AAFC-AC000335",
+      "MSBNK-AAFC-AC000346"
+    ],
+    [
+      "MSBNK-AAFC-AC000335",
+      "MSBNK-AAFC-AC000350"
+    ],
+    [
+      "MSBNK-AAFC-AC000335",
+      "MSBNK-AAFC-AC000351"
+    ],
+    [
+      "MSBNK-AAFC-AC000335",
+      "MSBNK-AAFC-AC000354"
+    ],
+    [
+      "MSBNK-AAFC-AC000335",
+      "MSBNK-AAFC-AC000355"
+    ],
+    [
+      "MSBNK-AAFC-AC000335",
+      "MSBNK-AAFC-AC000356"
+    ],
+    [
+      "MSBNK-AAFC-AC000335",
+      "MSBNK-AAFC-AC000360"
+    ],
+    [
+      "MSBNK-AAFC-AC000335",
+      "MSBNK-AAFC-AC000361"
+    ],
+    [
+      "MSBNK-AAFC-AC000336",
+      "MSBNK-AAFC-AC000340"
+    ],
+    [
+      "MSBNK-AAFC-AC000336",
+      "MSBNK-AAFC-AC000341"
+    ],
+    [
+      "MSBNK-AAFC-AC000336",
+      "MSBNK-AAFC-AC000344"
+    ],
+    [
+      "MSBNK-AAFC-AC000336",
+      "MSBNK-AAFC-AC000345"
+    ],
+    [
+      "MSBNK-AAFC-AC000336",
+      "MSBNK-AAFC-AC000346"
+    ],
+    [
+      "MSBNK-AAFC-AC000336",
+      "MSBNK-AAFC-AC000350"
+    ],
+    [
+      "MSBNK-AAFC-AC000336",
+      "MSBNK-AAFC-AC000351"
+    ],
+    [
+      "MSBNK-AAFC-AC000336",
+      "MSBNK-AAFC-AC000355"
+    ],
+    [
+      "MSBNK-AAFC-AC000336",
+      "MSBNK-AAFC-AC000356"
+    ],
+    [
+      "MSBNK-AAFC-AC000336",
+      "MSBNK-AAFC-AC000360"
+    ],
+    [
+      "MSBNK-AAFC-AC000336",
+      "MSBNK-AAFC-AC000361"
+    ],
+    [
+      "MSBNK-AAFC-AC000339",
+      "MSBNK-AAFC-AC000340"
+    ],
+    [
+      "MSBNK-AAFC-AC000339",
+      "MSBNK-AAFC-AC000344"
+    ],
+    [
+      "MSBNK-AAFC-AC000339",
+      "MSBNK-AAFC-AC000354"
+    ],
+    [
+      "MSBNK-AAFC-AC000339",
+      "MSBNK-AAFC-AC000355"
+    ],
+    [
+      "MSBNK-AAFC-AC000339",
+      "MSBNK-AAFC-AC000359"
+    ],
+    [
+      "MSBNK-AAFC-AC000340",
+      "MSBNK-AAFC-AC000341"
+    ],
+    [
+      "MSBNK-AAFC-AC000340",
+      "MSBNK-AAFC-AC000344"
+    ],
+    [
+      "MSBNK-AAFC-AC000340",
+      "MSBNK-AAFC-AC000345"
+    ],
+    [
+      "MSBNK-AAFC-AC000340",
+      "MSBNK-AAFC-AC000346"
+    ],
+    [
+      "MSBNK-AAFC-AC000340",
+      "MSBNK-AAFC-AC000350"
+    ],
+    [
+      "MSBNK-AAFC-AC000340",
+      "MSBNK-AAFC-AC000351"
+    ],
+    [
+      "MSBNK-AAFC-AC000340",
+      "MSBNK-AAFC-AC000354"
+    ],
+    [
+      "MSBNK-AAFC-AC000340",
+      "MSBNK-AAFC-AC000355"
+    ],
+    [
+      "MSBNK-AAFC-AC000340",
+      "MSBNK-AAFC-AC000356"
+    ],
+    [
+      "MSBNK-AAFC-AC000340",
+      "MSBNK-AAFC-AC000359"
+    ],
+    [
+      "MSBNK-AAFC-AC000340",
+      "MSBNK-AAFC-AC000360"
+    ],
+    [
+      "MSBNK-AAFC-AC000340",
+      "MSBNK-AAFC-AC000361"
+    ],
+    [
+      "MSBNK-AAFC-AC000341",
+      "MSBNK-AAFC-AC000344"
+    ],
+    [
+      "MSBNK-AAFC-AC000341",
+      "MSBNK-AAFC-AC000345"
+    ],
+    [
+      "MSBNK-AAFC-AC000341",
+      "MSBNK-AAFC-AC000346"
+    ],
+    [
+      "MSBNK-AAFC-AC000341",
+      "MSBNK-AAFC-AC000350"
+    ],
+    [
+      "MSBNK-AAFC-AC000341",
+      "MSBNK-AAFC-AC000351"
+    ],
+    [
+      "MSBNK-AAFC-AC000341",
+      "MSBNK-AAFC-AC000355"
+    ],
+    [
+      "MSBNK-AAFC-AC000341",
+      "MSBNK-AAFC-AC000356"
+    ],
+    [
+      "MSBNK-AAFC-AC000341",
+      "MSBNK-AAFC-AC000360"
+    ],
+    [
+      "MSBNK-AAFC-AC000341",
+      "MSBNK-AAFC-AC000361"
+    ],
+    [
+      "MSBNK-AAFC-AC000344",
+      "MSBNK-AAFC-AC000345"
+    ],
+    [
+      "MSBNK-AAFC-AC000344",
+      "MSBNK-AAFC-AC000350"
+    ],
+    [
+      "MSBNK-AAFC-AC000344",
+      "MSBNK-AAFC-AC000354"
+    ],
+    [
+      "MSBNK-AAFC-AC000344",
+      "MSBNK-AAFC-AC000355"
+    ],
+    [
+      "MSBNK-AAFC-AC000344",
+      "MSBNK-AAFC-AC000359"
+    ],
+    [
+      "MSBNK-AAFC-AC000344",
+      "MSBNK-AAFC-AC000360"
+    ],
+    [
+      "MSBNK-AAFC-AC000345",
+      "MSBNK-AAFC-AC000346"
+    ],
+    [
+      "MSBNK-AAFC-AC000345",
+      "MSBNK-AAFC-AC000350"
+    ],
+    [
+      "MSBNK-AAFC-AC000345",
+      "MSBNK-AAFC-AC000351"
+    ],
+    [
+      "MSBNK-AAFC-AC000345",
+      "MSBNK-AAFC-AC000354"
+    ],
+    [
+      "MSBNK-AAFC-AC000345",
+      "MSBNK-AAFC-AC000355"
+    ],
+    [
+      "MSBNK-AAFC-AC000345",
+      "MSBNK-AAFC-AC000356"
+    ],
+    [
+      "MSBNK-AAFC-AC000345",
+      "MSBNK-AAFC-AC000360"
+    ],
+    [
+      "MSBNK-AAFC-AC000345",
+      "MSBNK-AAFC-AC000361"
+    ],
+    [
+      "MSBNK-AAFC-AC000346",
+      "MSBNK-AAFC-AC000350"
+    ],
+    [
+      "MSBNK-AAFC-AC000346",
+      "MSBNK-AAFC-AC000351"
+    ],
+    [
+      "MSBNK-AAFC-AC000346",
+      "MSBNK-AAFC-AC000355"
+    ],
+    [
+      "MSBNK-AAFC-AC000346",
+      "MSBNK-AAFC-AC000356"
+    ],
+    [
+      "MSBNK-AAFC-AC000346",
+      "MSBNK-AAFC-AC000360"
+    ],
+    [
+      "MSBNK-AAFC-AC000346",
+      "MSBNK-AAFC-AC000361"
+    ],
+    [
+      "MSBNK-AAFC-AC000349",
+      "MSBNK-AAFC-AC000350"
+    ],
+    [
+      "MSBNK-AAFC-AC000350",
+      "MSBNK-AAFC-AC000351"
+    ],
+    [
+      "MSBNK-AAFC-AC000350",
+      "MSBNK-AAFC-AC000355"
+    ],
+    [
+      "MSBNK-AAFC-AC000350",
+      "MSBNK-AAFC-AC000356"
+    ],
+    [
+      "MSBNK-AAFC-AC000350",
+      "MSBNK-AAFC-AC000360"
+    ],
+    [
+      "MSBNK-AAFC-AC000351",
+      "MSBNK-AAFC-AC000355"
+    ],
+    [
+      "MSBNK-AAFC-AC000351",
+      "MSBNK-AAFC-AC000356"
+    ],
+    [
+      "MSBNK-AAFC-AC000351",
+      "MSBNK-AAFC-AC000360"
+    ],
+    [
+      "MSBNK-AAFC-AC000351",
+      "MSBNK-AAFC-AC000361"
+    ],
+    [
+      "MSBNK-AAFC-AC000354",
+      "MSBNK-AAFC-AC000355"
+    ],
+    [
+      "MSBNK-AAFC-AC000354",
+      "MSBNK-AAFC-AC000359"
+    ],
+    [
+      "MSBNK-AAFC-AC000355",
+      "MSBNK-AAFC-AC000356"
+    ],
+    [
+      "MSBNK-AAFC-AC000355",
+      "MSBNK-AAFC-AC000359"
+    ],
+    [
+      "MSBNK-AAFC-AC000355",
+      "MSBNK-AAFC-AC000360"
+    ],
+    [
+      "MSBNK-AAFC-AC000355",
+      "MSBNK-AAFC-AC000361"
+    ],
+    [
+      "MSBNK-AAFC-AC000356",
+      "MSBNK-AAFC-AC000360"
+    ],
+    [
+      "MSBNK-AAFC-AC000356",
+      "MSBNK-AAFC-AC000361"
+    ],
+    [
+      "MSBNK-AAFC-AC000358",
+      "MSBNK-AAFC-AC000359"
+    ],
+    [
+      "MSBNK-AAFC-AC000359",
+      "MSBNK-AAFC-AC000360"
+    ],
+    [
+      "MSBNK-AAFC-AC000360",
+      "MSBNK-AAFC-AC000361"
+    ],
+    [
+      "MSBNK-AAFC-AC000433",
+      "MSBNK-AAFC-AC000434"
+    ],
+    [
+      "MSBNK-AAFC-AC000436",
+      "MSBNK-AAFC-AC000437"
+    ],
+    [
+      "MSBNK-AAFC-AC000436",
+      "MSBNK-AAFC-AC000438"
+    ],
+    [
+      "MSBNK-AAFC-AC000436",
+      "MSBNK-AAFC-AC000445"
+    ],
+    [
+      "MSBNK-AAFC-AC000436",
+      "MSBNK-AAFC-AC000463"
+    ],
+    [
+      "MSBNK-AAFC-AC000437",
+      "MSBNK-AAFC-AC000438"
+    ],
+    [
+      "MSBNK-AAFC-AC000437",
+      "MSBNK-AAFC-AC000463"
+    ],
+    [
+      "MSBNK-AAFC-AC000437",
+      "MSBNK-AAFC-AC000464"
+    ],
+    [
+      "MSBNK-AAFC-AC000437",
+      "MSBNK-AAFC-AC000465"
+    ],
+    [
+      "MSBNK-AAFC-AC000438",
+      "MSBNK-AAFC-AC000439"
+    ],
+    [
+      "MSBNK-AAFC-AC000438",
+      "MSBNK-AAFC-AC000464"
+    ],
+    [
+      "MSBNK-AAFC-AC000438",
+      "MSBNK-AAFC-AC000465"
+    ],
+    [
+      "MSBNK-AAFC-AC000439",
+      "MSBNK-AAFC-AC000448"
+    ],
+    [
+      "MSBNK-AAFC-AC000439",
+      "MSBNK-AAFC-AC000466"
+    ],
+    [
+      "MSBNK-AAFC-AC000454",
+      "MSBNK-AAFC-AC000455"
+    ],
+    [
+      "MSBNK-AAFC-AC000454",
+      "MSBNK-AAFC-AC000463"
+    ],
+    [
+      "MSBNK-AAFC-AC000455",
+      "MSBNK-AAFC-AC000456"
+    ],
+    [
+      "MSBNK-AAFC-AC000455",
+      "MSBNK-AAFC-AC000463"
+    ],
+    [
+      "MSBNK-AAFC-AC000455",
+      "MSBNK-AAFC-AC000464"
+    ],
+    [
+      "MSBNK-AAFC-AC000455",
+      "MSBNK-AAFC-AC000465"
+    ],
+    [
+      "MSBNK-AAFC-AC000456",
+      "MSBNK-AAFC-AC000464"
+    ],
+    [
+      "MSBNK-AAFC-AC000456",
+      "MSBNK-AAFC-AC000465"
+    ],
+    [
+      "MSBNK-AAFC-AC000463",
+      "MSBNK-AAFC-AC000464"
+    ],
+    [
+      "MSBNK-AAFC-AC000463",
+      "MSBNK-AAFC-AC000465"
+    ],
+    [
+      "MSBNK-AAFC-AC000464",
+      "MSBNK-AAFC-AC000465"
+    ],
+    [
+      "MSBNK-AAFC-AC000465",
+      "MSBNK-AAFC-AC000466"
+    ],
+    [
+      "MSBNK-AAFC-AC000473",
+      "MSBNK-AAFC-AC000474"
+    ],
+    [
+      "MSBNK-AAFC-AC000475",
+      "MSBNK-AAFC-AC000484"
+    ],
+    [
+      "MSBNK-AAFC-AC000475",
+      "MSBNK-AAFC-AC000493"
+    ],
+    [
+      "MSBNK-AAFC-AC000481",
+      "MSBNK-AAFC-AC000490"
+    ],
+    [
+      "MSBNK-AAFC-AC000482",
+      "MSBNK-AAFC-AC000483"
+    ],
+    [
+      "MSBNK-AAFC-AC000482",
+      "MSBNK-AAFC-AC000491"
+    ],
+    [
+      "MSBNK-AAFC-AC000482",
+      "MSBNK-AAFC-AC000492"
+    ],
+    [
+      "MSBNK-AAFC-AC000483",
+      "MSBNK-AAFC-AC000491"
+    ],
+    [
+      "MSBNK-AAFC-AC000483",
+      "MSBNK-AAFC-AC000492"
+    ],
+    [
+      "MSBNK-AAFC-AC000484",
+      "MSBNK-AAFC-AC000493"
+    ],
+    [
+      "MSBNK-AAFC-AC000491",
+      "MSBNK-AAFC-AC000492"
+    ],
+    [
+      "MSBNK-AAFC-AC000501",
+      "MSBNK-AAFC-AC000502"
+    ],
+    [
+      "MSBNK-AAFC-AC000505",
+      "MSBNK-AAFC-AC000506"
+    ],
+    [
+      "MSBNK-AAFC-AC000509",
+      "MSBNK-AAFC-AC000510"
+    ],
+    [
+      "MSBNK-AAFC-AC000510",
+      "MSBNK-AAFC-AC000511"
+    ],
+    [
+      "MSBNK-AAFC-AC000513",
+      "MSBNK-AAFC-AC000514"
+    ],
+    [
+      "MSBNK-AAFC-AC000514",
+      "MSBNK-AAFC-AC000515"
+    ],
+    [
+      "MSBNK-AAFC-AC000515",
+      "MSBNK-AAFC-AC000516"
+    ],
+    [
+      "MSBNK-AAFC-AC000521",
+      "MSBNK-AAFC-AC000522"
+    ],
+    [
+      "MSBNK-AAFC-AC000521",
+      "MSBNK-AAFC-AC000523"
+    ],
+    [
+      "MSBNK-AAFC-AC000522",
+      "MSBNK-AAFC-AC000523"
+    ],
+    [
+      "MSBNK-AAFC-AC000522",
+      "MSBNK-AAFC-AC000524"
+    ],
+    [
+      "MSBNK-AAFC-AC000523",
+      "MSBNK-AAFC-AC000524"
+    ],
+    [
+      "MSBNK-AAFC-AC000535",
+      "MSBNK-AAFC-AC000536"
+    ],
+    [
+      "MSBNK-AAFC-AC000537",
+      "MSBNK-AAFC-AC000538"
+    ],
+    [
+      "MSBNK-AAFC-AC000538",
+      "MSBNK-AAFC-AC000539"
+    ],
+    [
+      "MSBNK-AAFC-AC000541",
+      "MSBNK-AAFC-AC000542"
+    ],
+    [
+      "MSBNK-AAFC-AC000541",
+      "MSBNK-AAFC-AC000543"
+    ],
+    [
+      "MSBNK-AAFC-AC000542",
+      "MSBNK-AAFC-AC000543"
+    ],
+    [
+      "MSBNK-AAFC-AC000546",
+      "MSBNK-AAFC-AC000547"
+    ],
+    [
+      "MSBNK-AAFC-AC000547",
+      "MSBNK-AAFC-AC000548"
+    ],
+    [
+      "MSBNK-AAFC-AC000552",
+      "MSBNK-AAFC-AC000553"
+    ],
+    [
+      "MSBNK-AAFC-AC000556",
+      "MSBNK-AAFC-AC000557"
+    ],
+    [
+      "MSBNK-AAFC-AC000557",
+      "MSBNK-AAFC-AC000558"
+    ],
+    [
+      "MSBNK-AAFC-AC000557",
+      "MSBNK-AAFC-AC000594"
+    ],
+    [
+      "MSBNK-AAFC-AC000558",
+      "MSBNK-AAFC-AC000559"
+    ],
+    [
+      "MSBNK-AAFC-AC000558",
+      "MSBNK-AAFC-AC000585"
+    ],
+    [
+      "MSBNK-AAFC-AC000558",
+      "MSBNK-AAFC-AC000594"
+    ],
+    [
+      "MSBNK-AAFC-AC000559",
+      "MSBNK-AAFC-AC000586"
+    ],
+    [
+      "MSBNK-AAFC-AC000559",
+      "MSBNK-AAFC-AC000587"
+    ],
+    [
+      "MSBNK-AAFC-AC000559",
+      "MSBNK-AAFC-AC000595"
+    ],
+    [
+      "MSBNK-AAFC-AC000559",
+      "MSBNK-AAFC-AC000596"
+    ],
+    [
+      "MSBNK-AAFC-AC000559",
+      "MSBNK-AAFC-AC000920"
+    ],
+    [
+      "MSBNK-AAFC-AC000566",
+      "MSBNK-AAFC-AC000567"
+    ],
+    [
+      "MSBNK-AAFC-AC000567",
+      "MSBNK-AAFC-AC000568"
+    ],
+    [
+      "MSBNK-AAFC-AC000571",
+      "MSBNK-AAFC-AC000572"
+    ],
+    [
+      "MSBNK-AAFC-AC000572",
+      "MSBNK-AAFC-AC000573"
+    ],
+    [
+      "MSBNK-AAFC-AC000585",
+      "MSBNK-AAFC-AC000586"
+    ],
+    [
+      "MSBNK-AAFC-AC000585",
+      "MSBNK-AAFC-AC000594"
+    ],
+    [
+      "MSBNK-AAFC-AC000585",
+      "MSBNK-AAFC-AC000595"
+    ],
+    [
+      "MSBNK-AAFC-AC000586",
+      "MSBNK-AAFC-AC000587"
+    ],
+    [
+      "MSBNK-AAFC-AC000586",
+      "MSBNK-AAFC-AC000594"
+    ],
+    [
+      "MSBNK-AAFC-AC000586",
+      "MSBNK-AAFC-AC000595"
+    ],
+    [
+      "MSBNK-AAFC-AC000586",
+      "MSBNK-AAFC-AC000596"
+    ],
+    [
+      "MSBNK-AAFC-AC000587",
+      "MSBNK-AAFC-AC000595"
+    ],
+    [
+      "MSBNK-AAFC-AC000587",
+      "MSBNK-AAFC-AC000596"
+    ],
+    [
+      "MSBNK-AAFC-AC000587",
+      "MSBNK-AAFC-AC000605"
+    ],
+    [
+      "MSBNK-AAFC-AC000594",
+      "MSBNK-AAFC-AC000595"
+    ],
+    [
+      "MSBNK-AAFC-AC000594",
+      "MSBNK-AAFC-AC000603"
+    ],
+    [
+      "MSBNK-AAFC-AC000595",
+      "MSBNK-AAFC-AC000596"
+    ],
+    [
+      "MSBNK-AAFC-AC000595",
+      "MSBNK-AAFC-AC000604"
+    ],
+    [
+      "MSBNK-AAFC-AC000596",
+      "MSBNK-AAFC-AC000604"
+    ],
+    [
+      "MSBNK-AAFC-AC000596",
+      "MSBNK-AAFC-AC000605"
+    ],
+    [
+      "MSBNK-AAFC-AC000611",
+      "MSBNK-AAFC-AC000619"
+    ],
+    [
+      "MSBNK-AAFC-AC000612",
+      "MSBNK-AAFC-AC000613"
+    ],
+    [
+      "MSBNK-AAFC-AC000612",
+      "MSBNK-AAFC-AC000620"
+    ],
+    [
+      "MSBNK-AAFC-AC000612",
+      "MSBNK-AAFC-AC000621"
+    ],
+    [
+      "MSBNK-AAFC-AC000613",
+      "MSBNK-AAFC-AC000620"
+    ],
+    [
+      "MSBNK-AAFC-AC000613",
+      "MSBNK-AAFC-AC000621"
+    ],
+    [
+      "MSBNK-AAFC-AC000614",
+      "MSBNK-AAFC-AC000622"
+    ],
+    [
+      "MSBNK-AAFC-AC000620",
+      "MSBNK-AAFC-AC000621"
+    ],
+    [
+      "MSBNK-AAFC-AC000627",
+      "MSBNK-AAFC-AC000628"
+    ],
+    [
+      "MSBNK-AAFC-AC000629",
+      "MSBNK-AAFC-AC000630"
+    ],
+    [
+      "MSBNK-AAFC-AC000630",
+      "MSBNK-AAFC-AC000631"
+    ],
+    [
+      "MSBNK-AAFC-AC000638",
+      "MSBNK-AAFC-AC000639"
+    ],
+    [
+      "MSBNK-AAFC-AC000639",
+      "MSBNK-AAFC-AC000640"
+    ],
+    [
+      "MSBNK-AAFC-AC000640",
+      "MSBNK-AAFC-AC000641"
+    ],
+    [
+      "MSBNK-AAFC-AC000666",
+      "MSBNK-AAFC-AC000667"
+    ],
+    [
+      "MSBNK-AAFC-AC000666",
+      "MSBNK-AAFC-AC000668"
+    ],
+    [
+      "MSBNK-AAFC-AC000666",
+      "MSBNK-AAFC-AC000669"
+    ],
+    [
+      "MSBNK-AAFC-AC000667",
+      "MSBNK-AAFC-AC000668"
+    ],
+    [
+      "MSBNK-AAFC-AC000667",
+      "MSBNK-AAFC-AC000669"
+    ],
+    [
+      "MSBNK-AAFC-AC000667",
+      "MSBNK-AAFC-AC000670"
+    ],
+    [
+      "MSBNK-AAFC-AC000668",
+      "MSBNK-AAFC-AC000669"
+    ],
+    [
+      "MSBNK-AAFC-AC000669",
+      "MSBNK-AAFC-AC000670"
+    ],
+    [
+      "MSBNK-AAFC-AC000697",
+      "MSBNK-AAFC-AC000698"
+    ],
+    [
+      "MSBNK-AAFC-AC000698",
+      "MSBNK-AAFC-AC000699"
+    ],
+    [
+      "MSBNK-AAFC-AC000714",
+      "MSBNK-AAFC-AC000715"
+    ],
+    [
+      "MSBNK-AAFC-AC000716",
+      "MSBNK-AAFC-AC000717"
+    ],
+    [
+      "MSBNK-AAFC-AC000726",
+      "MSBNK-AAFC-AC000727"
+    ],
+    [
+      "MSBNK-AAFC-AC000726",
+      "MSBNK-AAFC-AC000735"
+    ],
+    [
+      "MSBNK-AAFC-AC000726",
+      "MSBNK-AAFC-AC000736"
+    ],
+    [
+      "MSBNK-AAFC-AC000727",
+      "MSBNK-AAFC-AC000728"
+    ],
+    [
+      "MSBNK-AAFC-AC000727",
+      "MSBNK-AAFC-AC000735"
+    ],
+    [
+      "MSBNK-AAFC-AC000727",
+      "MSBNK-AAFC-AC000736"
+    ],
+    [
+      "MSBNK-AAFC-AC000727",
+      "MSBNK-AAFC-AC000737"
+    ],
+    [
+      "MSBNK-AAFC-AC000728",
+      "MSBNK-AAFC-AC000736"
+    ],
+    [
+      "MSBNK-AAFC-AC000728",
+      "MSBNK-AAFC-AC000737"
+    ],
+    [
+      "MSBNK-AAFC-AC000735",
+      "MSBNK-AAFC-AC000736"
+    ],
+    [
+      "MSBNK-AAFC-AC000736",
+      "MSBNK-AAFC-AC000737"
+    ],
+    [
+      "MSBNK-AAFC-AC000744",
+      "MSBNK-AAFC-AC000745"
+    ],
+    [
+      "MSBNK-AAFC-AC000746",
+      "MSBNK-AAFC-AC000779"
+    ],
+    [
+      "MSBNK-AAFC-AC000746",
+      "MSBNK-AAFC-AC000780"
+    ],
+    [
+      "MSBNK-AAFC-AC000747",
+      "MSBNK-AAFC-AC000748"
+    ],
+    [
+      "MSBNK-AAFC-AC000748",
+      "MSBNK-AAFC-AC000749"
+    ],
+    [
+      "MSBNK-AAFC-AC000749",
+      "MSBNK-AAFC-AC000750"
+    ],
+    [
+      "MSBNK-AAFC-AC000750",
+      "MSBNK-AAFC-AC000751"
+    ],
+    [
+      "MSBNK-AAFC-AC000754",
+      "MSBNK-AAFC-AC000755"
+    ],
+    [
+      "MSBNK-AAFC-AC000755",
+      "MSBNK-AAFC-AC000756"
+    ],
+    [
+      "MSBNK-AAFC-AC000758",
+      "MSBNK-AAFC-AC000759"
+    ],
+    [
+      "MSBNK-AAFC-AC000759",
+      "MSBNK-AAFC-AC000760"
+    ],
+    [
+      "MSBNK-AAFC-AC000760",
+      "MSBNK-AAFC-AC000761"
+    ],
+    [
+      "MSBNK-AAFC-AC000773",
+      "MSBNK-AAFC-AC000774"
+    ],
+    [
+      "MSBNK-AAFC-AC000774",
+      "MSBNK-AAFC-AC000775"
+    ],
+    [
+      "MSBNK-AAFC-AC000775",
+      "MSBNK-AAFC-AC000784"
+    ],
+    [
+      "MSBNK-AAFC-AC000775",
+      "MSBNK-AAFC-AC000785"
+    ],
+    [
+      "MSBNK-AAFC-AC000777",
+      "MSBNK-AAFC-AC000778"
+    ],
+    [
+      "MSBNK-AAFC-AC000778",
+      "MSBNK-AAFC-AC000779"
+    ],
+    [
+      "MSBNK-AAFC-AC000779",
+      "MSBNK-AAFC-AC000780"
+    ],
+    [
+      "MSBNK-AAFC-AC000792",
+      "MSBNK-AAFC-AC000793"
+    ],
+    [
+      "MSBNK-AAFC-AC000793",
+      "MSBNK-AAFC-AC000794"
+    ],
+    [
+      "MSBNK-AAFC-AC000798",
+      "MSBNK-AAFC-AC000799"
+    ],
+    [
+      "MSBNK-AAFC-AC000808",
+      "MSBNK-AAFC-AC000809"
+    ],
+    [
+      "MSBNK-AAFC-AC000810",
+      "MSBNK-AAFC-AC000866"
+    ],
+    [
+      "MSBNK-AAFC-AC000811",
+      "MSBNK-AAFC-AC000812"
+    ],
+    [
+      "MSBNK-AAFC-AC000814",
+      "MSBNK-AAFC-AC000815"
+    ],
+    [
+      "MSBNK-AAFC-AC000815",
+      "MSBNK-AAFC-AC000816"
+    ],
+    [
+      "MSBNK-AAFC-AC000816",
+      "MSBNK-AAFC-AC000817"
+    ],
+    [
+      "MSBNK-AAFC-AC000817",
+      "MSBNK-AAFC-AC000818"
+    ],
+    [
+      "MSBNK-AAFC-AC000821",
+      "MSBNK-AAFC-AC000822"
+    ],
+    [
+      "MSBNK-AAFC-AC000822",
+      "MSBNK-AAFC-AC000823"
+    ],
+    [
+      "MSBNK-AAFC-AC000823",
+      "MSBNK-AAFC-AC000831"
+    ],
+    [
+      "MSBNK-AAFC-AC000823",
+      "MSBNK-AAFC-AC000920"
+    ],
+    [
+      "MSBNK-AAFC-AC000829",
+      "MSBNK-AAFC-AC000830"
+    ],
+    [
+      "MSBNK-AAFC-AC000830",
+      "MSBNK-AAFC-AC000831"
+    ],
+    [
+      "MSBNK-AAFC-AC000853",
+      "MSBNK-AAFC-AC000854"
+    ],
+    [
+      "MSBNK-AAFC-AC000854",
+      "MSBNK-AAFC-AC000855"
+    ],
+    [
+      "MSBNK-AAFC-AC000855",
+      "MSBNK-AAFC-AC000856"
+    ],
+    [
+      "MSBNK-AAFC-AC000857",
+      "MSBNK-AAFC-AC000858"
+    ],
+    [
+      "MSBNK-AAFC-AC000857",
+      "MSBNK-AAFC-AC000859"
+    ],
+    [
+      "MSBNK-AAFC-AC000858",
+      "MSBNK-AAFC-AC000859"
+    ],
+    [
+      "MSBNK-AAFC-AC000858",
+      "MSBNK-AAFC-AC000860"
+    ],
+    [
+      "MSBNK-AAFC-AC000859",
+      "MSBNK-AAFC-AC000860"
+    ],
+    [
+      "MSBNK-AAFC-AC000859",
+      "MSBNK-AAFC-AC000861"
+    ],
+    [
+      "MSBNK-AAFC-AC000860",
+      "MSBNK-AAFC-AC000861"
+    ],
+    [
+      "MSBNK-AAFC-AC000862",
+      "MSBNK-AAFC-AC000863"
+    ],
+    [
+      "MSBNK-AAFC-AC000863",
+      "MSBNK-AAFC-AC000864"
+    ],
+    [
+      "MSBNK-AAFC-AC000864",
+      "MSBNK-AAFC-AC000865"
+    ],
+    [
+      "MSBNK-AAFC-AC000864",
+      "MSBNK-AAFC-AC000866"
+    ],
+    [
+      "MSBNK-AAFC-AC000865",
+      "MSBNK-AAFC-AC000866"
+    ],
+    [
+      "MSBNK-AAFC-AC000867",
+      "MSBNK-AAFC-AC000868"
+    ],
+    [
+      "MSBNK-AAFC-AC000874",
+      "MSBNK-AAFC-AC000875"
+    ],
+    [
+      "MSBNK-AAFC-AC000874",
+      "MSBNK-AAFC-AC000876"
+    ],
+    [
+      "MSBNK-AAFC-AC000875",
+      "MSBNK-AAFC-AC000876"
+    ],
+    [
+      "MSBNK-AAFC-AC000899",
+      "MSBNK-AAFC-AC000900"
+    ],
+    [
+      "MSBNK-AAFC-AC000900",
+      "MSBNK-AAFC-AC000901"
+    ],
+    [
+      "MSBNK-AAFC-AC000909",
+      "MSBNK-AAFC-AC000910"
+    ],
+    [
+      "MSBNK-AAFC-AC000910",
+      "MSBNK-AAFC-AC000911"
+    ],
+    [
+      "MSBNK-AAFC-AC000917",
+      "MSBNK-AAFC-AC000918"
+    ],
+    [
+      "MSBNK-AAFC-AC000918",
+      "MSBNK-AAFC-AC000919"
+    ],
+    [
+      "MSBNK-AAFC-AC000919",
+      "MSBNK-AAFC-AC000920"
+    ],
+    [
+      "MSBNK-AAFC-AC000921",
+      "MSBNK-AAFC-AC000922"
+    ],
+    [
+      "MSBNK-AAFC-AC000922",
+      "MSBNK-AAFC-AC000923"
+    ],
+    [
+      "MSBNK-AAFC-AC000922",
+      "MSBNK-AAFC-AC000924"
+    ],
+    [
+      "MSBNK-AAFC-AC000923",
+      "MSBNK-AAFC-AC000924"
+    ],
+    [
+      "MSBNK-AAFC-AC000923",
+      "MSBNK-AAFC-AC000925"
+    ],
+    [
+      "MSBNK-AAFC-AC000924",
+      "MSBNK-AAFC-AC000925"
+    ],
+    [
+      "MSBNK-AAFC-AC000948",
+      "MSBNK-AAFC-AC000949"
+    ]
+  ],
+  "environment": {
+    "edge_min_matched_peaks": 6,
+    "edge_score_threshold": 0.7,
+    "matchms_version": "0.30.2",
+    "peak_tolerance": 0.01,
+    "similarity": "CosineGreedy"
+  },
+  "mass_shifts": {
+    "MSBNK-AAFC-AC000010": -200.0685,
+    "MSBNK-AAFC-AC000046": 55.9898,
+    "MSBNK-AAFC-AC000118": 84.0211,
+    "MSBNK-AAFC-AC000119": 26.0156,
+    "MSBNK-AAFC-AC000247": 50.0521,
+    "MSBNK-AAFC-AC000250": 154.063,
+    "MSBNK-AAFC-AC000251": 154.063,
+    "MSBNK-AAFC-AC000295": -48.0,
+    "MSBNK-AAFC-AC000296": -48.0,
+    "MSBNK-AAFC-AC000297": -48.0,
+    "MSBNK-AAFC-AC000305": -33.9843,
+    "MSBNK-AAFC-AC000306": -33.9843,
+    "MSBNK-AAFC-AC000307": -33.9843,
+    "MSBNK-AAFC-AC000316": -284.116,
+    "MSBNK-AAFC-AC000321": -284.116,
+    "MSBNK-AAFC-AC000322": -284.116,
+    "MSBNK-AAFC-AC000329": -76.0313,
+    "MSBNK-AAFC-AC000330": -76.0313,
+    "MSBNK-AAFC-AC000331": -76.0313,
+    "MSBNK-AAFC-AC000334": -62.0156,
+    "MSBNK-AAFC-AC000335": -62.0156,
+    "MSBNK-AAFC-AC000336": -62.0156,
+    "MSBNK-AAFC-AC000339": -33.9843,
+    "MSBNK-AAFC-AC000340": -33.9843,
+    "MSBNK-AAFC-AC000341": -33.9843,
+    "MSBNK-AAFC-AC000344": -28.0313,
+    "MSBNK-AAFC-AC000345": -28.0313,
+    "MSBNK-AAFC-AC000346": -28.0313,
+    "MSBNK-AAFC-AC000350": -15.9949,
+    "MSBNK-AAFC-AC000351": -15.9949,
+    "MSBNK-AAFC-AC000475": 15.9949,
+    "MSBNK-AAFC-AC000515": -42.0106,
+    "MSBNK-AAFC-AC000516": -42.0106,
+    "MSBNK-AAFC-AC000557": 266.1155,
+    "MSBNK-AAFC-AC000558": 266.1155,
+    "MSBNK-AAFC-AC000559": 266.1155,
+    "MSBNK-AAFC-AC000586": 276.0634,
+    "MSBNK-AAFC-AC000594": 278.0791,
+    "MSBNK-AAFC-AC000773": -68.0626,
+    "MSBNK-AAFC-AC000774": -68.0626,
+    "MSBNK-AAFC-AC000775": -68.0626,
+    "MSBNK-AAFC-AC000784": 15.9949,
+    "MSBNK-AAFC-AC000810": 40.0062,
+    "MSBNK-AAFC-AC000920": 180.0787
+  },
+  "network_census": {
+    "components": 196,
+    "edges": 676,
+    "largest_component": 61,
+    "max_degree": 24,
+    "nodes": 478,
+    "nodes_with_an_edge": 345,
+    "singletons": 133
+  },
+  "propagation_census": {
+    "analogue_with_mass_shift": 44,
+    "annotated_directly": 121,
+    "conflicting_neighbours": 2,
+    "no_annotated_neighbour": 304,
+    "same_compound": 7
+  },
+  "propagation_claims": {
+    "MSBNK-AAFC-AC000001": "annotated_directly",
+    "MSBNK-AAFC-AC000002": "annotated_directly",
+    "MSBNK-AAFC-AC000003": "annotated_directly",
+    "MSBNK-AAFC-AC000004": "annotated_directly",
+    "MSBNK-AAFC-AC000005": "annotated_directly",
+    "MSBNK-AAFC-AC000007": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000008": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000009": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000010": "analogue_with_mass_shift",
+    "MSBNK-AAFC-AC000019": "annotated_directly",
+    "MSBNK-AAFC-AC000020": "annotated_directly",
+    "MSBNK-AAFC-AC000029": "annotated_directly",
+    "MSBNK-AAFC-AC000033": "annotated_directly",
+    "MSBNK-AAFC-AC000034": "annotated_directly",
+    "MSBNK-AAFC-AC000039": "annotated_directly",
+    "MSBNK-AAFC-AC000040": "annotated_directly",
+    "MSBNK-AAFC-AC000044": "annotated_directly",
+    "MSBNK-AAFC-AC000045": "same_compound",
+    "MSBNK-AAFC-AC000046": "analogue_with_mass_shift",
+    "MSBNK-AAFC-AC000052": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000054": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000055": "annotated_directly",
+    "MSBNK-AAFC-AC000056": "annotated_directly",
+    "MSBNK-AAFC-AC000057": "annotated_directly",
+    "MSBNK-AAFC-AC000058": "annotated_directly",
+    "MSBNK-AAFC-AC000059": "annotated_directly",
+    "MSBNK-AAFC-AC000065": "annotated_directly",
+    "MSBNK-AAFC-AC000066": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000067": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000068": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000069": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000070": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000071": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000072": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000073": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000075": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000076": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000077": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000078": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000079": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000080": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000081": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000082": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000083": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000084": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000085": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000091": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000095": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000096": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000097": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000098": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000099": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000110": "annotated_directly",
+    "MSBNK-AAFC-AC000111": "annotated_directly",
+    "MSBNK-AAFC-AC000112": "annotated_directly",
+    "MSBNK-AAFC-AC000113": "annotated_directly",
+    "MSBNK-AAFC-AC000114": "same_compound",
+    "MSBNK-AAFC-AC000115": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000116": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000117": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000118": "analogue_with_mass_shift",
+    "MSBNK-AAFC-AC000119": "analogue_with_mass_shift",
+    "MSBNK-AAFC-AC000120": "same_compound",
+    "MSBNK-AAFC-AC000121": "annotated_directly",
+    "MSBNK-AAFC-AC000122": "annotated_directly",
+    "MSBNK-AAFC-AC000123": "annotated_directly",
+    "MSBNK-AAFC-AC000124": "conflicting_neighbours",
+    "MSBNK-AAFC-AC000135": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000136": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000137": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000138": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000139": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000140": "annotated_directly",
+    "MSBNK-AAFC-AC000141": "annotated_directly",
+    "MSBNK-AAFC-AC000142": "annotated_directly",
+    "MSBNK-AAFC-AC000143": "annotated_directly",
+    "MSBNK-AAFC-AC000144": "annotated_directly",
+    "MSBNK-AAFC-AC000150": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000151": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000152": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000153": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000154": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000160": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000161": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000162": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000163": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000164": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000165": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000166": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000167": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000168": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000169": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000170": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000171": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000172": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000173": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000174": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000177": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000178": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000179": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000188": "annotated_directly",
+    "MSBNK-AAFC-AC000190": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000191": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000192": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000193": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000194": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000195": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000196": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000197": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000198": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000204": "annotated_directly",
+    "MSBNK-AAFC-AC000205": "annotated_directly",
+    "MSBNK-AAFC-AC000206": "annotated_directly",
+    "MSBNK-AAFC-AC000208": "annotated_directly",
+    "MSBNK-AAFC-AC000216": "annotated_directly",
+    "MSBNK-AAFC-AC000217": "annotated_directly",
+    "MSBNK-AAFC-AC000218": "annotated_directly",
+    "MSBNK-AAFC-AC000227": "annotated_directly",
+    "MSBNK-AAFC-AC000228": "annotated_directly",
+    "MSBNK-AAFC-AC000233": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000234": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000235": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000236": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000237": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000243": "annotated_directly",
+    "MSBNK-AAFC-AC000244": "annotated_directly",
+    "MSBNK-AAFC-AC000245": "same_compound",
+    "MSBNK-AAFC-AC000246": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000247": "analogue_with_mass_shift",
+    "MSBNK-AAFC-AC000248": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000249": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000250": "analogue_with_mass_shift",
+    "MSBNK-AAFC-AC000251": "analogue_with_mass_shift",
+    "MSBNK-AAFC-AC000252": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000258": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000259": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000260": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000261": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000262": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000268": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000269": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000270": "same_compound",
+    "MSBNK-AAFC-AC000271": "annotated_directly",
+    "MSBNK-AAFC-AC000272": "annotated_directly",
+    "MSBNK-AAFC-AC000277": "annotated_directly",
+    "MSBNK-AAFC-AC000278": "annotated_directly",
+    "MSBNK-AAFC-AC000279": "annotated_directly",
+    "MSBNK-AAFC-AC000280": "same_compound",
+    "MSBNK-AAFC-AC000281": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000282": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000288": "annotated_directly",
+    "MSBNK-AAFC-AC000289": "annotated_directly",
+    "MSBNK-AAFC-AC000290": "annotated_directly",
+    "MSBNK-AAFC-AC000291": "annotated_directly",
+    "MSBNK-AAFC-AC000292": "annotated_directly",
+    "MSBNK-AAFC-AC000294": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000295": "analogue_with_mass_shift",
+    "MSBNK-AAFC-AC000296": "analogue_with_mass_shift",
+    "MSBNK-AAFC-AC000297": "analogue_with_mass_shift",
+    "MSBNK-AAFC-AC000304": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000305": "analogue_with_mass_shift",
+    "MSBNK-AAFC-AC000306": "analogue_with_mass_shift",
+    "MSBNK-AAFC-AC000307": "analogue_with_mass_shift",
+    "MSBNK-AAFC-AC000315": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000316": "analogue_with_mass_shift",
+    "MSBNK-AAFC-AC000317": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000320": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000321": "analogue_with_mass_shift",
+    "MSBNK-AAFC-AC000322": "analogue_with_mass_shift",
+    "MSBNK-AAFC-AC000325": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000326": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000328": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000329": "analogue_with_mass_shift",
+    "MSBNK-AAFC-AC000330": "analogue_with_mass_shift",
+    "MSBNK-AAFC-AC000331": "analogue_with_mass_shift",
+    "MSBNK-AAFC-AC000333": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000334": "analogue_with_mass_shift",
+    "MSBNK-AAFC-AC000335": "analogue_with_mass_shift",
+    "MSBNK-AAFC-AC000336": "analogue_with_mass_shift",
+    "MSBNK-AAFC-AC000338": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000339": "analogue_with_mass_shift",
+    "MSBNK-AAFC-AC000340": "analogue_with_mass_shift",
+    "MSBNK-AAFC-AC000341": "analogue_with_mass_shift",
+    "MSBNK-AAFC-AC000343": "annotated_directly",
+    "MSBNK-AAFC-AC000344": "analogue_with_mass_shift",
+    "MSBNK-AAFC-AC000345": "analogue_with_mass_shift",
+    "MSBNK-AAFC-AC000346": "analogue_with_mass_shift",
+    "MSBNK-AAFC-AC000348": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000349": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000350": "analogue_with_mass_shift",
+    "MSBNK-AAFC-AC000351": "analogue_with_mass_shift",
+    "MSBNK-AAFC-AC000353": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000354": "annotated_directly",
+    "MSBNK-AAFC-AC000355": "annotated_directly",
+    "MSBNK-AAFC-AC000356": "annotated_directly",
+    "MSBNK-AAFC-AC000358": "annotated_directly",
+    "MSBNK-AAFC-AC000359": "annotated_directly",
+    "MSBNK-AAFC-AC000360": "annotated_directly",
+    "MSBNK-AAFC-AC000361": "annotated_directly",
+    "MSBNK-AAFC-AC000411": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000433": "annotated_directly",
+    "MSBNK-AAFC-AC000434": "annotated_directly",
+    "MSBNK-AAFC-AC000436": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000437": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000438": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000439": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000445": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000446": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000447": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000448": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000454": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000455": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000456": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000457": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000462": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000463": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000464": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000465": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000466": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000472": "annotated_directly",
+    "MSBNK-AAFC-AC000473": "annotated_directly",
+    "MSBNK-AAFC-AC000474": "annotated_directly",
+    "MSBNK-AAFC-AC000475": "analogue_with_mass_shift",
+    "MSBNK-AAFC-AC000481": "annotated_directly",
+    "MSBNK-AAFC-AC000482": "annotated_directly",
+    "MSBNK-AAFC-AC000483": "annotated_directly",
+    "MSBNK-AAFC-AC000484": "annotated_directly",
+    "MSBNK-AAFC-AC000490": "annotated_directly",
+    "MSBNK-AAFC-AC000491": "annotated_directly",
+    "MSBNK-AAFC-AC000492": "annotated_directly",
+    "MSBNK-AAFC-AC000493": "annotated_directly",
+    "MSBNK-AAFC-AC000500": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000501": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000502": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000503": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000504": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000505": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000506": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000507": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000509": "annotated_directly",
+    "MSBNK-AAFC-AC000510": "annotated_directly",
+    "MSBNK-AAFC-AC000511": "annotated_directly",
+    "MSBNK-AAFC-AC000512": "annotated_directly",
+    "MSBNK-AAFC-AC000513": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000514": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000515": "analogue_with_mass_shift",
+    "MSBNK-AAFC-AC000516": "analogue_with_mass_shift",
+    "MSBNK-AAFC-AC000520": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000521": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000522": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000523": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000524": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000535": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000536": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000537": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000538": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000539": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000541": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000542": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000543": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000544": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000546": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000547": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000548": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000549": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000552": "annotated_directly",
+    "MSBNK-AAFC-AC000553": "annotated_directly",
+    "MSBNK-AAFC-AC000554": "annotated_directly",
+    "MSBNK-AAFC-AC000555": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000556": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000557": "analogue_with_mass_shift",
+    "MSBNK-AAFC-AC000558": "analogue_with_mass_shift",
+    "MSBNK-AAFC-AC000559": "analogue_with_mass_shift",
+    "MSBNK-AAFC-AC000565": "annotated_directly",
+    "MSBNK-AAFC-AC000566": "annotated_directly",
+    "MSBNK-AAFC-AC000567": "annotated_directly",
+    "MSBNK-AAFC-AC000568": "annotated_directly",
+    "MSBNK-AAFC-AC000571": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000572": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000573": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000575": "annotated_directly",
+    "MSBNK-AAFC-AC000576": "annotated_directly",
+    "MSBNK-AAFC-AC000584": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000585": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000586": "analogue_with_mass_shift",
+    "MSBNK-AAFC-AC000587": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000593": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000594": "analogue_with_mass_shift",
+    "MSBNK-AAFC-AC000595": "conflicting_neighbours",
+    "MSBNK-AAFC-AC000596": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000602": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000603": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000604": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000605": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000611": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000612": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000613": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000614": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000619": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000620": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000621": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000622": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000627": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000628": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000629": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000630": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000631": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000633": "annotated_directly",
+    "MSBNK-AAFC-AC000634": "annotated_directly",
+    "MSBNK-AAFC-AC000635": "annotated_directly",
+    "MSBNK-AAFC-AC000636": "annotated_directly",
+    "MSBNK-AAFC-AC000637": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000638": "annotated_directly",
+    "MSBNK-AAFC-AC000639": "annotated_directly",
+    "MSBNK-AAFC-AC000640": "annotated_directly",
+    "MSBNK-AAFC-AC000641": "annotated_directly",
+    "MSBNK-AAFC-AC000659": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000660": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000661": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000666": "annotated_directly",
+    "MSBNK-AAFC-AC000667": "annotated_directly",
+    "MSBNK-AAFC-AC000668": "annotated_directly",
+    "MSBNK-AAFC-AC000669": "annotated_directly",
+    "MSBNK-AAFC-AC000670": "annotated_directly",
+    "MSBNK-AAFC-AC000674": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000675": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000688": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000689": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000694": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000697": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000698": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000699": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000701": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000702": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000703": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000704": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000707": "annotated_directly",
+    "MSBNK-AAFC-AC000708": "annotated_directly",
+    "MSBNK-AAFC-AC000710": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000711": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000712": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000714": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000715": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000716": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000717": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000718": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000725": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000726": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000727": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000728": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000734": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000735": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000736": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000737": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000743": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000744": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000745": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000746": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000747": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000748": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000749": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000750": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000751": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000752": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000753": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000754": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000755": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000756": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000758": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000759": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000760": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000761": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000770": "annotated_directly",
+    "MSBNK-AAFC-AC000773": "analogue_with_mass_shift",
+    "MSBNK-AAFC-AC000774": "analogue_with_mass_shift",
+    "MSBNK-AAFC-AC000775": "analogue_with_mass_shift",
+    "MSBNK-AAFC-AC000776": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000777": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000778": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000779": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000780": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000782": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000783": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000784": "analogue_with_mass_shift",
+    "MSBNK-AAFC-AC000785": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000787": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000788": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000789": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000790": "annotated_directly",
+    "MSBNK-AAFC-AC000791": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000792": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000793": "same_compound",
+    "MSBNK-AAFC-AC000794": "annotated_directly",
+    "MSBNK-AAFC-AC000795": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000798": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000799": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000800": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000807": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000808": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000809": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000810": "analogue_with_mass_shift",
+    "MSBNK-AAFC-AC000811": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000812": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000813": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000814": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000815": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000816": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000817": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000818": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000820": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000821": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000822": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000823": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000828": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000829": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000830": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000831": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000833": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000836": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000837": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000838": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000839": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000840": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000841": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000850": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000851": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000852": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000853": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000854": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000855": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000856": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000857": "annotated_directly",
+    "MSBNK-AAFC-AC000858": "annotated_directly",
+    "MSBNK-AAFC-AC000859": "annotated_directly",
+    "MSBNK-AAFC-AC000860": "annotated_directly",
+    "MSBNK-AAFC-AC000861": "annotated_directly",
+    "MSBNK-AAFC-AC000862": "annotated_directly",
+    "MSBNK-AAFC-AC000863": "annotated_directly",
+    "MSBNK-AAFC-AC000864": "annotated_directly",
+    "MSBNK-AAFC-AC000865": "annotated_directly",
+    "MSBNK-AAFC-AC000866": "annotated_directly",
+    "MSBNK-AAFC-AC000867": "annotated_directly",
+    "MSBNK-AAFC-AC000868": "annotated_directly",
+    "MSBNK-AAFC-AC000869": "annotated_directly",
+    "MSBNK-AAFC-AC000870": "annotated_directly",
+    "MSBNK-AAFC-AC000871": "annotated_directly",
+    "MSBNK-AAFC-AC000872": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000873": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000874": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000875": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000876": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000888": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000889": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000890": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000892": "annotated_directly",
+    "MSBNK-AAFC-AC000898": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000899": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000900": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000901": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000908": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000909": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000910": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000911": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000916": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000917": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000918": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000919": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000920": "analogue_with_mass_shift",
+    "MSBNK-AAFC-AC000921": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000922": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000923": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000924": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000925": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000930": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000946": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000947": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000948": "no_annotated_neighbour",
+    "MSBNK-AAFC-AC000949": "no_annotated_neighbour"
+  },
+  "threshold_grid": {
+    "0.6": {
+      "claims": {
+        "analogue_with_mass_shift": 44,
+        "annotated_directly": 121,
+        "conflicting_neighbours": 15,
+        "no_annotated_neighbour": 287,
+        "same_compound": 11
+      },
+      "components": 160,
+      "edges": 902,
+      "largest_component": 97
+    },
+    "0.7": {
+      "claims": {
+        "analogue_with_mass_shift": 44,
+        "annotated_directly": 121,
+        "conflicting_neighbours": 2,
+        "no_annotated_neighbour": 304,
+        "same_compound": 7
+      },
+      "components": 196,
+      "edges": 676,
+      "largest_component": 61
+    },
+    "0.8": {
+      "claims": {
+        "analogue_with_mass_shift": 24,
+        "annotated_directly": 121,
+        "conflicting_neighbours": 0,
+        "no_annotated_neighbour": 327,
+        "same_compound": 6
+      },
+      "components": 259,
+      "edges": 410,
+      "largest_component": 26
+    },
+    "0.9": {
+      "claims": {
+        "analogue_with_mass_shift": 17,
+        "annotated_directly": 121,
+        "conflicting_neighbours": 0,
+        "no_annotated_neighbour": 339,
+        "same_compound": 1
+      },
+      "components": 344,
+      "edges": 190,
+      "largest_component": 21
+    }
+  },
+  "top_matches": {
+    "MSBNK-AAFC-AC000001": "MSBNK-RIKEN-PR302220",
+    "MSBNK-AAFC-AC000002": "MSBNK-RIKEN-PR302220",
+    "MSBNK-AAFC-AC000003": "MSBNK-RIKEN-PR302220",
+    "MSBNK-AAFC-AC000004": "MSBNK-CASMI_2016-SM821404",
+    "MSBNK-AAFC-AC000005": "MSBNK-CASMI_2016-SM821404",
+    "MSBNK-AAFC-AC000007": null,
+    "MSBNK-AAFC-AC000008": null,
+    "MSBNK-AAFC-AC000009": null,
+    "MSBNK-AAFC-AC000010": null,
+    "MSBNK-AAFC-AC000019": "MSBNK-Athens_Univ-AU596201",
+    "MSBNK-AAFC-AC000020": "MSBNK-Athens_Univ-AU596203",
+    "MSBNK-AAFC-AC000029": "MSBNK-Athens_Univ-AU596303",
+    "MSBNK-AAFC-AC000033": "MSBNK-Athens_Univ-AU596402",
+    "MSBNK-AAFC-AC000034": "MSBNK-Athens_Univ-AU596403",
+    "MSBNK-AAFC-AC000039": "MSBNK-Athens_Univ-AU596502",
+    "MSBNK-AAFC-AC000040": "MSBNK-Athens_Univ-AU596503",
+    "MSBNK-AAFC-AC000044": "MSBNK-Athens_Univ-AU596401",
+    "MSBNK-AAFC-AC000045": "MSBNK-Athens_Univ-AU596401",
+    "MSBNK-AAFC-AC000046": "MSBNK-Athens_Univ-AU596403",
+    "MSBNK-AAFC-AC000052": null,
+    "MSBNK-AAFC-AC000054": null,
+    "MSBNK-AAFC-AC000055": "MSBNK-HBM4EU-HB003606",
+    "MSBNK-AAFC-AC000056": "MSBNK-HBM4EU-HB003607",
+    "MSBNK-AAFC-AC000057": "MSBNK-HBM4EU-HB003608",
+    "MSBNK-AAFC-AC000058": "MSBNK-HBM4EU-HB003608",
+    "MSBNK-AAFC-AC000059": "MSBNK-HBM4EU-HB003610",
+    "MSBNK-AAFC-AC000065": "MSBNK-HBM4EU-HB003589",
+    "MSBNK-AAFC-AC000066": null,
+    "MSBNK-AAFC-AC000067": null,
+    "MSBNK-AAFC-AC000068": null,
+    "MSBNK-AAFC-AC000069": null,
+    "MSBNK-AAFC-AC000070": null,
+    "MSBNK-AAFC-AC000071": null,
+    "MSBNK-AAFC-AC000072": null,
+    "MSBNK-AAFC-AC000073": null,
+    "MSBNK-AAFC-AC000075": null,
+    "MSBNK-AAFC-AC000076": null,
+    "MSBNK-AAFC-AC000077": null,
+    "MSBNK-AAFC-AC000078": null,
+    "MSBNK-AAFC-AC000079": null,
+    "MSBNK-AAFC-AC000080": null,
+    "MSBNK-AAFC-AC000081": null,
+    "MSBNK-AAFC-AC000082": null,
+    "MSBNK-AAFC-AC000083": null,
+    "MSBNK-AAFC-AC000084": null,
+    "MSBNK-AAFC-AC000085": null,
+    "MSBNK-AAFC-AC000091": null,
+    "MSBNK-AAFC-AC000095": null,
+    "MSBNK-AAFC-AC000096": null,
+    "MSBNK-AAFC-AC000097": null,
+    "MSBNK-AAFC-AC000098": null,
+    "MSBNK-AAFC-AC000099": null,
+    "MSBNK-AAFC-AC000110": "MSBNK-Athens_Univ-AU596700",
+    "MSBNK-AAFC-AC000111": "MSBNK-HBM4EU-HB003520",
+    "MSBNK-AAFC-AC000112": "MSBNK-HBM4EU-HB004027",
+    "MSBNK-AAFC-AC000113": "MSBNK-HBM4EU-HB004028",
+    "MSBNK-AAFC-AC000114": "MSBNK-HBM4EU-HB004028",
+    "MSBNK-AAFC-AC000115": "MSBNK-EPA-ENTACT_AGILENT001224",
+    "MSBNK-AAFC-AC000116": "MSBNK-EPA-ENTACT_AGILENT001224",
+    "MSBNK-AAFC-AC000117": "MSBNK-LCSB-LU109305",
+    "MSBNK-AAFC-AC000118": "MSBNK-LCSB-LU109305",
+    "MSBNK-AAFC-AC000119": "MSBNK-LCSB-LU109305",
+    "MSBNK-AAFC-AC000120": "MSBNK-HBM4EU-HB004090",
+    "MSBNK-AAFC-AC000121": "MSBNK-HBM4EU-HB004090",
+    "MSBNK-AAFC-AC000122": "MSBNK-HBM4EU-HB004090",
+    "MSBNK-AAFC-AC000123": "MSBNK-HBM4EU-HB004090",
+    "MSBNK-AAFC-AC000124": "MSBNK-HBM4EU-HB004090",
+    "MSBNK-AAFC-AC000135": "MSBNK-EPA-ENTACT_AGILENT000191",
+    "MSBNK-AAFC-AC000136": "MSBNK-EPA-ENTACT_AGILENT000191",
+    "MSBNK-AAFC-AC000137": "MSBNK-EPA-ENTACT_AGILENT000190",
+    "MSBNK-AAFC-AC000138": "MSBNK-EPA-ENTACT_AGILENT000190",
+    "MSBNK-AAFC-AC000139": "MSBNK-EPA-ENTACT_AGILENT000190",
+    "MSBNK-AAFC-AC000140": "MSBNK-HBM4EU-HB003529",
+    "MSBNK-AAFC-AC000141": "MSBNK-HBM4EU-HB003528",
+    "MSBNK-AAFC-AC000142": "MSBNK-HBM4EU-HB004042",
+    "MSBNK-AAFC-AC000143": "MSBNK-HBM4EU-HB004043",
+    "MSBNK-AAFC-AC000144": "MSBNK-HBM4EU-HB003530",
+    "MSBNK-AAFC-AC000150": "MSBNK-ACES_SU-AS000667",
+    "MSBNK-AAFC-AC000151": "MSBNK-ACES_SU-AS000667",
+    "MSBNK-AAFC-AC000152": "MSBNK-ACES_SU-AS000667",
+    "MSBNK-AAFC-AC000153": "MSBNK-ACES_SU-AS000667",
+    "MSBNK-AAFC-AC000154": "MSBNK-ACES_SU-AS000667",
+    "MSBNK-AAFC-AC000160": "MSBNK-Eawag-EQ360301",
+    "MSBNK-AAFC-AC000161": "MSBNK-BAFG-CSL23111018777",
+    "MSBNK-AAFC-AC000162": "MSBNK-UFZ-UF406504",
+    "MSBNK-AAFC-AC000163": "MSBNK-Eawag-EQ360303",
+    "MSBNK-AAFC-AC000164": "MSBNK-Eawag-EQ360305",
+    "MSBNK-AAFC-AC000165": "MSBNK-PFOS_research_group-FFF00290",
+    "MSBNK-AAFC-AC000166": "MSBNK-PFOS_research_group-FFF00289",
+    "MSBNK-AAFC-AC000167": "MSBNK-PFOS_research_group-FFF00287",
+    "MSBNK-AAFC-AC000168": "MSBNK-PFOS_research_group-FFF00288",
+    "MSBNK-AAFC-AC000169": "MSBNK-PFOS_research_group-FFF00288",
+    "MSBNK-AAFC-AC000170": null,
+    "MSBNK-AAFC-AC000171": null,
+    "MSBNK-AAFC-AC000172": null,
+    "MSBNK-AAFC-AC000173": null,
+    "MSBNK-AAFC-AC000174": null,
+    "MSBNK-AAFC-AC000177": null,
+    "MSBNK-AAFC-AC000178": null,
+    "MSBNK-AAFC-AC000179": null,
+    "MSBNK-AAFC-AC000188": "MSBNK-RIKEN-PR302075",
+    "MSBNK-AAFC-AC000190": null,
+    "MSBNK-AAFC-AC000191": null,
+    "MSBNK-AAFC-AC000192": null,
+    "MSBNK-AAFC-AC000193": null,
+    "MSBNK-AAFC-AC000194": "MSBNK-Eawag-EQ01127006",
+    "MSBNK-AAFC-AC000195": "MSBNK-Eawag-EQ01127006",
+    "MSBNK-AAFC-AC000196": "MSBNK-Eawag-EQ01127006",
+    "MSBNK-AAFC-AC000197": "MSBNK-Eawag-EQ01127006",
+    "MSBNK-AAFC-AC000198": "MSBNK-Eawag-EQ01127006",
+    "MSBNK-AAFC-AC000204": "MSBNK-Athens_Univ-AU596600",
+    "MSBNK-AAFC-AC000205": "MSBNK-Athens_Univ-AU596601",
+    "MSBNK-AAFC-AC000206": "MSBNK-Athens_Univ-AU596602",
+    "MSBNK-AAFC-AC000208": "MSBNK-Athens_Univ-AU596603",
+    "MSBNK-AAFC-AC000216": "MSBNK-HBM4EU-HB003659",
+    "MSBNK-AAFC-AC000217": "MSBNK-HBM4EU-HB003659",
+    "MSBNK-AAFC-AC000218": "MSBNK-HBM4EU-HB003661",
+    "MSBNK-AAFC-AC000227": "MSBNK-NaToxAq-NA002916",
+    "MSBNK-AAFC-AC000228": "MSBNK-NaToxAq-NA003289",
+    "MSBNK-AAFC-AC000233": null,
+    "MSBNK-AAFC-AC000234": null,
+    "MSBNK-AAFC-AC000235": null,
+    "MSBNK-AAFC-AC000236": null,
+    "MSBNK-AAFC-AC000237": null,
+    "MSBNK-AAFC-AC000243": "MSBNK-mFam-MC02_000553",
+    "MSBNK-AAFC-AC000244": "MSBNK-mFam-MC02_000553",
+    "MSBNK-AAFC-AC000245": "MSBNK-mFam-MC02_000554",
+    "MSBNK-AAFC-AC000246": "MSBNK-mFam-MC02_000554",
+    "MSBNK-AAFC-AC000247": "MSBNK-mFam-MC02_000554",
+    "MSBNK-AAFC-AC000248": "MSBNK-ACES_SU-AS001109",
+    "MSBNK-AAFC-AC000249": "MSBNK-ACES_SU-AS001109",
+    "MSBNK-AAFC-AC000250": "MSBNK-ACES_SU-AS001109",
+    "MSBNK-AAFC-AC000251": "MSBNK-ACES_SU-AS001109",
+    "MSBNK-AAFC-AC000252": "MSBNK-ACES_SU-AS001109",
+    "MSBNK-AAFC-AC000258": null,
+    "MSBNK-AAFC-AC000259": null,
+    "MSBNK-AAFC-AC000260": null,
+    "MSBNK-AAFC-AC000261": null,
+    "MSBNK-AAFC-AC000262": null,
+    "MSBNK-AAFC-AC000268": "MSBNK-HBM4EU-HB003928",
+    "MSBNK-AAFC-AC000269": "MSBNK-HBM4EU-HB003928",
+    "MSBNK-AAFC-AC000270": "MSBNK-HBM4EU-HB004037",
+    "MSBNK-AAFC-AC000271": "MSBNK-HBM4EU-HB003929",
+    "MSBNK-AAFC-AC000272": "MSBNK-HBM4EU-HB003929",
+    "MSBNK-AAFC-AC000277": "MSBNK-HBM4EU-HB004094",
+    "MSBNK-AAFC-AC000278": "MSBNK-mFam-MC14_000065",
+    "MSBNK-AAFC-AC000279": "MSBNK-mFam-MC14_000065",
+    "MSBNK-AAFC-AC000280": "MSBNK-mFam-MC14_000065",
+    "MSBNK-AAFC-AC000281": "MSBNK-mFam-MC14_000065",
+    "MSBNK-AAFC-AC000282": "MSBNK-mFam-MC14_000065",
+    "MSBNK-AAFC-AC000288": "MSBNK-NaToxAq-NA002253",
+    "MSBNK-AAFC-AC000289": "MSBNK-HBM4EU-HB003531",
+    "MSBNK-AAFC-AC000290": "MSBNK-NaToxAq-NA002648",
+    "MSBNK-AAFC-AC000291": "MSBNK-NaToxAq-NA002649",
+    "MSBNK-AAFC-AC000292": "MSBNK-NaToxAq-NA003032",
+    "MSBNK-AAFC-AC000294": null,
+    "MSBNK-AAFC-AC000295": null,
+    "MSBNK-AAFC-AC000296": null,
+    "MSBNK-AAFC-AC000297": null,
+    "MSBNK-AAFC-AC000304": null,
+    "MSBNK-AAFC-AC000305": null,
+    "MSBNK-AAFC-AC000306": null,
+    "MSBNK-AAFC-AC000307": null,
+    "MSBNK-AAFC-AC000315": "MSBNK-Eawag-EQ304501",
+    "MSBNK-AAFC-AC000316": "MSBNK-Eawag-EQ304501",
+    "MSBNK-AAFC-AC000317": "MSBNK-Eawag-EQ304502",
+    "MSBNK-AAFC-AC000320": "MSBNK-Eawag-EQ304501",
+    "MSBNK-AAFC-AC000321": "MSBNK-Eawag-EQ304501",
+    "MSBNK-AAFC-AC000322": "MSBNK-Eawag-EQ304502",
+    "MSBNK-AAFC-AC000325": "MSBNK-Athens_Univ-AU207601",
+    "MSBNK-AAFC-AC000326": "MSBNK-Eawag_Additional_Specs-ET150205",
+    "MSBNK-AAFC-AC000328": null,
+    "MSBNK-AAFC-AC000329": null,
+    "MSBNK-AAFC-AC000330": null,
+    "MSBNK-AAFC-AC000331": null,
+    "MSBNK-AAFC-AC000333": null,
+    "MSBNK-AAFC-AC000334": null,
+    "MSBNK-AAFC-AC000335": null,
+    "MSBNK-AAFC-AC000336": null,
+    "MSBNK-AAFC-AC000338": null,
+    "MSBNK-AAFC-AC000339": null,
+    "MSBNK-AAFC-AC000340": null,
+    "MSBNK-AAFC-AC000341": null,
+    "MSBNK-AAFC-AC000343": "MSBNK-Univ_Connecticut-CO000408",
+    "MSBNK-AAFC-AC000344": "MSBNK-Univ_Connecticut-CO000408",
+    "MSBNK-AAFC-AC000345": "MSBNK-Univ_Connecticut-CO000410",
+    "MSBNK-AAFC-AC000346": "MSBNK-Univ_Connecticut-CO000410",
+    "MSBNK-AAFC-AC000348": null,
+    "MSBNK-AAFC-AC000349": null,
+    "MSBNK-AAFC-AC000350": null,
+    "MSBNK-AAFC-AC000351": null,
+    "MSBNK-AAFC-AC000353": "MSBNK-Univ_Connecticut-CO000172",
+    "MSBNK-AAFC-AC000354": "MSBNK-Univ_Connecticut-CO000174",
+    "MSBNK-AAFC-AC000355": "MSBNK-Univ_Connecticut-CO000175",
+    "MSBNK-AAFC-AC000356": "MSBNK-Univ_Connecticut-CO000175",
+    "MSBNK-AAFC-AC000358": "MSBNK-Univ_Connecticut-CO000173",
+    "MSBNK-AAFC-AC000359": "MSBNK-Univ_Connecticut-CO000173",
+    "MSBNK-AAFC-AC000360": "MSBNK-Univ_Connecticut-CO000175",
+    "MSBNK-AAFC-AC000361": "MSBNK-Univ_Connecticut-CO000175",
+    "MSBNK-AAFC-AC000411": null,
+    "MSBNK-AAFC-AC000433": "MSBNK-NaToxAq-NA001075",
+    "MSBNK-AAFC-AC000434": "MSBNK-NaToxAq-NA001079",
+    "MSBNK-AAFC-AC000436": null,
+    "MSBNK-AAFC-AC000437": null,
+    "MSBNK-AAFC-AC000438": null,
+    "MSBNK-AAFC-AC000439": null,
+    "MSBNK-AAFC-AC000445": null,
+    "MSBNK-AAFC-AC000446": null,
+    "MSBNK-AAFC-AC000447": null,
+    "MSBNK-AAFC-AC000448": null,
+    "MSBNK-AAFC-AC000454": null,
+    "MSBNK-AAFC-AC000455": null,
+    "MSBNK-AAFC-AC000456": null,
+    "MSBNK-AAFC-AC000457": null,
+    "MSBNK-AAFC-AC000462": null,
+    "MSBNK-AAFC-AC000463": null,
+    "MSBNK-AAFC-AC000464": null,
+    "MSBNK-AAFC-AC000465": null,
+    "MSBNK-AAFC-AC000466": null,
+    "MSBNK-AAFC-AC000472": "MSBNK-Athens_Univ-AU596802",
+    "MSBNK-AAFC-AC000473": "MSBNK-Athens_Univ-AU596804",
+    "MSBNK-AAFC-AC000474": "MSBNK-Athens_Univ-AU596804",
+    "MSBNK-AAFC-AC000475": "MSBNK-Athens_Univ-AU596804",
+    "MSBNK-AAFC-AC000481": "MSBNK-Athens_Univ-AU596902",
+    "MSBNK-AAFC-AC000482": "MSBNK-HBM4EU-HB003558",
+    "MSBNK-AAFC-AC000483": "MSBNK-HBM4EU-HB003553",
+    "MSBNK-AAFC-AC000484": "MSBNK-HBM4EU-HB003554",
+    "MSBNK-AAFC-AC000490": "MSBNK-Athens_Univ-AU596902",
+    "MSBNK-AAFC-AC000491": "MSBNK-HBM4EU-HB003558",
+    "MSBNK-AAFC-AC000492": "MSBNK-HBM4EU-HB003554",
+    "MSBNK-AAFC-AC000493": "MSBNK-HBM4EU-HB003554",
+    "MSBNK-AAFC-AC000500": null,
+    "MSBNK-AAFC-AC000501": null,
+    "MSBNK-AAFC-AC000502": null,
+    "MSBNK-AAFC-AC000503": null,
+    "MSBNK-AAFC-AC000504": null,
+    "MSBNK-AAFC-AC000505": null,
+    "MSBNK-AAFC-AC000506": null,
+    "MSBNK-AAFC-AC000507": null,
+    "MSBNK-AAFC-AC000509": "MSBNK-Washington_State_Univ-BML00405",
+    "MSBNK-AAFC-AC000510": "MSBNK-Washington_State_Univ-BML00405",
+    "MSBNK-AAFC-AC000511": "MSBNK-Washington_State_Univ-BML00405",
+    "MSBNK-AAFC-AC000512": "MSBNK-ACES_SU-AS000539",
+    "MSBNK-AAFC-AC000513": "MSBNK-Eawag-EQ360702",
+    "MSBNK-AAFC-AC000514": "MSBNK-Eawag-EQ360702",
+    "MSBNK-AAFC-AC000515": "MSBNK-Eawag-EQ360709",
+    "MSBNK-AAFC-AC000516": "MSBNK-Athens_Univ-AU156311",
+    "MSBNK-AAFC-AC000520": null,
+    "MSBNK-AAFC-AC000521": null,
+    "MSBNK-AAFC-AC000522": null,
+    "MSBNK-AAFC-AC000523": null,
+    "MSBNK-AAFC-AC000524": null,
+    "MSBNK-AAFC-AC000535": "MSBNK-Eawag-EQ360301",
+    "MSBNK-AAFC-AC000536": "MSBNK-BAFG-CSL23111018777",
+    "MSBNK-AAFC-AC000537": "MSBNK-UFZ-UF406504",
+    "MSBNK-AAFC-AC000538": "MSBNK-UFZ-UF406504",
+    "MSBNK-AAFC-AC000539": "MSBNK-Eawag-EQ360305",
+    "MSBNK-AAFC-AC000541": "MSBNK-ACES_SU-AS000354",
+    "MSBNK-AAFC-AC000542": null,
+    "MSBNK-AAFC-AC000543": null,
+    "MSBNK-AAFC-AC000544": null,
+    "MSBNK-AAFC-AC000546": "MSBNK-RIKEN-PR310799",
+    "MSBNK-AAFC-AC000547": "MSBNK-RIKEN-PR310799",
+    "MSBNK-AAFC-AC000548": "MSBNK-RIKEN-PR310799",
+    "MSBNK-AAFC-AC000549": "MSBNK-RIKEN-PR310799",
+    "MSBNK-AAFC-AC000552": "MSBNK-HBM4EU-HB003642",
+    "MSBNK-AAFC-AC000553": "MSBNK-HBM4EU-HB003643",
+    "MSBNK-AAFC-AC000554": "MSBNK-HBM4EU-HB003643",
+    "MSBNK-AAFC-AC000555": null,
+    "MSBNK-AAFC-AC000556": null,
+    "MSBNK-AAFC-AC000557": null,
+    "MSBNK-AAFC-AC000558": null,
+    "MSBNK-AAFC-AC000559": null,
+    "MSBNK-AAFC-AC000565": "MSBNK-HBM4EU-HB003714",
+    "MSBNK-AAFC-AC000566": "MSBNK-HBM4EU-HB003716",
+    "MSBNK-AAFC-AC000567": "MSBNK-HBM4EU-HB003716",
+    "MSBNK-AAFC-AC000568": "MSBNK-HBM4EU-HB003718",
+    "MSBNK-AAFC-AC000571": "MSBNK-HBM4EU-HB003928",
+    "MSBNK-AAFC-AC000572": "MSBNK-HBM4EU-HB003928",
+    "MSBNK-AAFC-AC000573": "MSBNK-HBM4EU-HB003929",
+    "MSBNK-AAFC-AC000575": "MSBNK-NaToxAq-NA002574",
+    "MSBNK-AAFC-AC000576": "MSBNK-HBM4EU-HB004057",
+    "MSBNK-AAFC-AC000584": null,
+    "MSBNK-AAFC-AC000585": null,
+    "MSBNK-AAFC-AC000586": null,
+    "MSBNK-AAFC-AC000587": null,
+    "MSBNK-AAFC-AC000593": null,
+    "MSBNK-AAFC-AC000594": null,
+    "MSBNK-AAFC-AC000595": null,
+    "MSBNK-AAFC-AC000596": null,
+    "MSBNK-AAFC-AC000602": null,
+    "MSBNK-AAFC-AC000603": null,
+    "MSBNK-AAFC-AC000604": null,
+    "MSBNK-AAFC-AC000605": null,
+    "MSBNK-AAFC-AC000611": null,
+    "MSBNK-AAFC-AC000612": null,
+    "MSBNK-AAFC-AC000613": null,
+    "MSBNK-AAFC-AC000614": null,
+    "MSBNK-AAFC-AC000619": null,
+    "MSBNK-AAFC-AC000620": null,
+    "MSBNK-AAFC-AC000621": null,
+    "MSBNK-AAFC-AC000622": null,
+    "MSBNK-AAFC-AC000627": "MSBNK-ACES_SU-AS001143",
+    "MSBNK-AAFC-AC000628": "MSBNK-ACES_SU-AS001143",
+    "MSBNK-AAFC-AC000629": "MSBNK-MSSJ-MSJ01866",
+    "MSBNK-AAFC-AC000630": "MSBNK-ACES_SU-AS000612",
+    "MSBNK-AAFC-AC000631": "MSBNK-ACES_SU-AS000612",
+    "MSBNK-AAFC-AC000633": "MSBNK-HBM4EU-HB003617",
+    "MSBNK-AAFC-AC000634": "MSBNK-HBM4EU-HB003620",
+    "MSBNK-AAFC-AC000635": "MSBNK-HBM4EU-HB003621",
+    "MSBNK-AAFC-AC000636": "MSBNK-HBM4EU-HB003622",
+    "MSBNK-AAFC-AC000637": "MSBNK-HBM4EU-HB004074",
+    "MSBNK-AAFC-AC000638": "MSBNK-HBM4EU-HB003615",
+    "MSBNK-AAFC-AC000639": "MSBNK-HBM4EU-HB004075",
+    "MSBNK-AAFC-AC000640": "MSBNK-HBM4EU-HB004076",
+    "MSBNK-AAFC-AC000641": "MSBNK-HBM4EU-HB003616",
+    "MSBNK-AAFC-AC000659": null,
+    "MSBNK-AAFC-AC000660": null,
+    "MSBNK-AAFC-AC000661": null,
+    "MSBNK-AAFC-AC000666": "MSBNK-HBM4EU-HB004022",
+    "MSBNK-AAFC-AC000667": "MSBNK-HBM4EU-HB004022",
+    "MSBNK-AAFC-AC000668": "MSBNK-HBM4EU-HB004022",
+    "MSBNK-AAFC-AC000669": "MSBNK-HBM4EU-HB004023",
+    "MSBNK-AAFC-AC000670": "MSBNK-HBM4EU-HB004023",
+    "MSBNK-AAFC-AC000674": "MSBNK-mFam-MC11_000268",
+    "MSBNK-AAFC-AC000675": "MSBNK-Washington_State_Univ-BML01821",
+    "MSBNK-AAFC-AC000688": "MSBNK-UFZ-WANA216005070APH",
+    "MSBNK-AAFC-AC000689": "MSBNK-RIKEN-PR310773",
+    "MSBNK-AAFC-AC000694": null,
+    "MSBNK-AAFC-AC000697": null,
+    "MSBNK-AAFC-AC000698": null,
+    "MSBNK-AAFC-AC000699": null,
+    "MSBNK-AAFC-AC000701": "MSBNK-Eawag-EQ01146103",
+    "MSBNK-AAFC-AC000702": "MSBNK-Eawag-EQ01146103",
+    "MSBNK-AAFC-AC000703": null,
+    "MSBNK-AAFC-AC000704": null,
+    "MSBNK-AAFC-AC000707": "MSBNK-HBM4EU-HB003589",
+    "MSBNK-AAFC-AC000708": "MSBNK-HBM4EU-HB003590",
+    "MSBNK-AAFC-AC000710": null,
+    "MSBNK-AAFC-AC000711": null,
+    "MSBNK-AAFC-AC000712": null,
+    "MSBNK-AAFC-AC000714": null,
+    "MSBNK-AAFC-AC000715": null,
+    "MSBNK-AAFC-AC000716": null,
+    "MSBNK-AAFC-AC000717": null,
+    "MSBNK-AAFC-AC000718": null,
+    "MSBNK-AAFC-AC000725": null,
+    "MSBNK-AAFC-AC000726": null,
+    "MSBNK-AAFC-AC000727": null,
+    "MSBNK-AAFC-AC000728": null,
+    "MSBNK-AAFC-AC000734": null,
+    "MSBNK-AAFC-AC000735": null,
+    "MSBNK-AAFC-AC000736": null,
+    "MSBNK-AAFC-AC000737": null,
+    "MSBNK-AAFC-AC000743": null,
+    "MSBNK-AAFC-AC000744": null,
+    "MSBNK-AAFC-AC000745": null,
+    "MSBNK-AAFC-AC000746": null,
+    "MSBNK-AAFC-AC000747": "MSBNK-ACES_SU-AS000335",
+    "MSBNK-AAFC-AC000748": "MSBNK-ACES_SU-AS000335",
+    "MSBNK-AAFC-AC000749": "MSBNK-mFam-MC14_000087",
+    "MSBNK-AAFC-AC000750": "MSBNK-mFam-MC14_000087",
+    "MSBNK-AAFC-AC000751": "MSBNK-mFam-MC14_000087",
+    "MSBNK-AAFC-AC000752": null,
+    "MSBNK-AAFC-AC000753": null,
+    "MSBNK-AAFC-AC000754": null,
+    "MSBNK-AAFC-AC000755": null,
+    "MSBNK-AAFC-AC000756": null,
+    "MSBNK-AAFC-AC000758": null,
+    "MSBNK-AAFC-AC000759": "MSBNK-Athens_Univ-AU596204",
+    "MSBNK-AAFC-AC000760": null,
+    "MSBNK-AAFC-AC000761": null,
+    "MSBNK-AAFC-AC000770": "MSBNK-RIKEN-PR304149",
+    "MSBNK-AAFC-AC000773": null,
+    "MSBNK-AAFC-AC000774": null,
+    "MSBNK-AAFC-AC000775": null,
+    "MSBNK-AAFC-AC000776": null,
+    "MSBNK-AAFC-AC000777": null,
+    "MSBNK-AAFC-AC000778": null,
+    "MSBNK-AAFC-AC000779": null,
+    "MSBNK-AAFC-AC000780": null,
+    "MSBNK-AAFC-AC000782": "MSBNK-ACES_SU-AS001007",
+    "MSBNK-AAFC-AC000783": "MSBNK-ACES_SU-AS001007",
+    "MSBNK-AAFC-AC000784": null,
+    "MSBNK-AAFC-AC000785": null,
+    "MSBNK-AAFC-AC000787": "MSBNK-HBM4EU-HB003799",
+    "MSBNK-AAFC-AC000788": "MSBNK-HBM4EU-HB003799",
+    "MSBNK-AAFC-AC000789": "MSBNK-HBM4EU-HB003801",
+    "MSBNK-AAFC-AC000790": "MSBNK-HBM4EU-HB003801",
+    "MSBNK-AAFC-AC000791": "MSBNK-HBM4EU-HB003509",
+    "MSBNK-AAFC-AC000792": "MSBNK-HBM4EU-HB003508",
+    "MSBNK-AAFC-AC000793": "MSBNK-HBM4EU-HB003997",
+    "MSBNK-AAFC-AC000794": "MSBNK-HBM4EU-HB003996",
+    "MSBNK-AAFC-AC000795": "MSBNK-HBM4EU-HB003997",
+    "MSBNK-AAFC-AC000798": "MSBNK-RIKEN-PR301733",
+    "MSBNK-AAFC-AC000799": "MSBNK-RIKEN-PR301739",
+    "MSBNK-AAFC-AC000800": "MSBNK-RIKEN-PR301736",
+    "MSBNK-AAFC-AC000807": null,
+    "MSBNK-AAFC-AC000808": null,
+    "MSBNK-AAFC-AC000809": null,
+    "MSBNK-AAFC-AC000810": null,
+    "MSBNK-AAFC-AC000811": null,
+    "MSBNK-AAFC-AC000812": null,
+    "MSBNK-AAFC-AC000813": null,
+    "MSBNK-AAFC-AC000814": "MSBNK-LCSB-LU024301",
+    "MSBNK-AAFC-AC000815": "MSBNK-LCSB-LU024301",
+    "MSBNK-AAFC-AC000816": "MSBNK-LCSB-LU024301",
+    "MSBNK-AAFC-AC000817": "MSBNK-LCSB-LU024305",
+    "MSBNK-AAFC-AC000818": "MSBNK-LCSB-LU024305",
+    "MSBNK-AAFC-AC000820": null,
+    "MSBNK-AAFC-AC000821": null,
+    "MSBNK-AAFC-AC000822": null,
+    "MSBNK-AAFC-AC000823": null,
+    "MSBNK-AAFC-AC000828": null,
+    "MSBNK-AAFC-AC000829": null,
+    "MSBNK-AAFC-AC000830": null,
+    "MSBNK-AAFC-AC000831": null,
+    "MSBNK-AAFC-AC000833": null,
+    "MSBNK-AAFC-AC000836": null,
+    "MSBNK-AAFC-AC000837": "MSBNK-IPB_Halle-PN000015",
+    "MSBNK-AAFC-AC000838": null,
+    "MSBNK-AAFC-AC000839": null,
+    "MSBNK-AAFC-AC000840": null,
+    "MSBNK-AAFC-AC000841": null,
+    "MSBNK-AAFC-AC000850": null,
+    "MSBNK-AAFC-AC000851": null,
+    "MSBNK-AAFC-AC000852": "MSBNK-NaToxAq-NA002894",
+    "MSBNK-AAFC-AC000853": "MSBNK-NaToxAq-NA003643",
+    "MSBNK-AAFC-AC000854": "MSBNK-NaToxAq-NA003643",
+    "MSBNK-AAFC-AC000855": "MSBNK-NaToxAq-NA003643",
+    "MSBNK-AAFC-AC000856": "MSBNK-NaToxAq-NA003643",
+    "MSBNK-AAFC-AC000857": "MSBNK-ACES_SU-AS000742",
+    "MSBNK-AAFC-AC000858": "MSBNK-ACES_SU-AS000742",
+    "MSBNK-AAFC-AC000859": "MSBNK-ACES_SU-AS000742",
+    "MSBNK-AAFC-AC000860": "MSBNK-ACES_SU-AS000742",
+    "MSBNK-AAFC-AC000861": "MSBNK-ACES_SU-AS000742",
+    "MSBNK-AAFC-AC000862": "MSBNK-HBM4EU-HB003847",
+    "MSBNK-AAFC-AC000863": "MSBNK-HBM4EU-HB003848",
+    "MSBNK-AAFC-AC000864": "MSBNK-HBM4EU-HB003849",
+    "MSBNK-AAFC-AC000865": "MSBNK-HBM4EU-HB003851",
+    "MSBNK-AAFC-AC000866": "MSBNK-HBM4EU-HB003851",
+    "MSBNK-AAFC-AC000867": "MSBNK-HBM4EU-HB003688",
+    "MSBNK-AAFC-AC000868": "MSBNK-HBM4EU-HB003688",
+    "MSBNK-AAFC-AC000869": "MSBNK-HBM4EU-HB003689",
+    "MSBNK-AAFC-AC000870": "MSBNK-HBM4EU-HB003690",
+    "MSBNK-AAFC-AC000871": "MSBNK-HBM4EU-HB003691",
+    "MSBNK-AAFC-AC000872": null,
+    "MSBNK-AAFC-AC000873": null,
+    "MSBNK-AAFC-AC000874": null,
+    "MSBNK-AAFC-AC000875": null,
+    "MSBNK-AAFC-AC000876": null,
+    "MSBNK-AAFC-AC000888": "MSBNK-HBM4EU-HB004060",
+    "MSBNK-AAFC-AC000889": "MSBNK-HBM4EU-HB004060",
+    "MSBNK-AAFC-AC000890": "MSBNK-HBM4EU-HB004060",
+    "MSBNK-AAFC-AC000892": "MSBNK-HBM4EU-HB004061",
+    "MSBNK-AAFC-AC000898": "MSBNK-IPB_Halle-PN000021",
+    "MSBNK-AAFC-AC000899": "MSBNK-IPB_Halle-PN000021",
+    "MSBNK-AAFC-AC000900": "MSBNK-BAFG-CSL2311107007",
+    "MSBNK-AAFC-AC000901": "MSBNK-BAFG-CSL2311107007",
+    "MSBNK-AAFC-AC000908": "MSBNK-Washington_State_Univ-BML01756",
+    "MSBNK-AAFC-AC000909": "MSBNK-Washington_State_Univ-BML01756",
+    "MSBNK-AAFC-AC000910": "MSBNK-RIKEN-PR304004",
+    "MSBNK-AAFC-AC000911": "MSBNK-RIKEN-PR304004",
+    "MSBNK-AAFC-AC000916": null,
+    "MSBNK-AAFC-AC000917": null,
+    "MSBNK-AAFC-AC000918": null,
+    "MSBNK-AAFC-AC000919": null,
+    "MSBNK-AAFC-AC000920": null,
+    "MSBNK-AAFC-AC000921": "MSBNK-Eawag-EQ01130502",
+    "MSBNK-AAFC-AC000922": "MSBNK-Eawag-EQ01130502",
+    "MSBNK-AAFC-AC000923": null,
+    "MSBNK-AAFC-AC000924": null,
+    "MSBNK-AAFC-AC000925": null,
+    "MSBNK-AAFC-AC000930": null,
+    "MSBNK-AAFC-AC000946": null,
+    "MSBNK-AAFC-AC000947": null,
+    "MSBNK-AAFC-AC000948": null,
+    "MSBNK-AAFC-AC000949": null
+  }
+}
