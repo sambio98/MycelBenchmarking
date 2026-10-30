@@ -33,6 +33,8 @@ artifacts:
       - type: identifier_f1
       - type: macro_f1
         column: species
+      - type: macro_f1
+        column: strain
       - type: lins_ccc
         column: n_ms2_scans
         log_transform: false

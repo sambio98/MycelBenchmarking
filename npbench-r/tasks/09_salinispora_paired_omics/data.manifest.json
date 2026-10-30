@@ -1,0 +1,1563 @@
+[
+  {
+    "path": "data/MSV000078836_specs_ms.mgf",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/clustered/MSV000078836_specs_ms.mgf",
+    "accession": "MSV000078836",
+    "bytes": 17127838,
+    "sha256": "8877aaf84d1cdef16db00fa27adb37217a7fffc2761ca428f7712b624189a642"
+  },
+  {
+    "path": "data/genomes/GCF_000016425.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/016/425/GCF_000016425.1_ASM1642v1/GCF_000016425.1_ASM1642v1_genomic.fna.gz",
+    "accession": "GCF_000016425.1",
+    "bytes": 1472514,
+    "sha256": "ec1ec4c04c84dde9a28983af3e40489958af418a61700c9845823aa566b513f6"
+  },
+  {
+    "path": "data/genomes/GCF_000373825.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/373/825/GCF_000373825.1_ASM37382v1/GCF_000373825.1_ASM37382v1_genomic.fna.gz",
+    "accession": "GCF_000373825.1",
+    "bytes": 1634450,
+    "sha256": "7afa78f416cf3ecb58b3dc869de79a80e36452a5e3a49ce8334cc5c8643245e8"
+  },
+  {
+    "path": "data/genomes/GCF_000373845.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/373/845/GCF_000373845.1_ASM37384v1/GCF_000373845.1_ASM37384v1_genomic.fna.gz",
+    "accession": "GCF_000373845.1",
+    "bytes": 1680259,
+    "sha256": "ba61fed840f168d2ed212fa6d949385e26ebfbc6979aed214d93601b684e9ebc"
+  },
+  {
+    "path": "data/genomes/GCF_000374665.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/374/665/GCF_000374665.1_ASM37466v1/GCF_000374665.1_ASM37466v1_genomic.fna.gz",
+    "accession": "GCF_000374665.1",
+    "bytes": 1570451,
+    "sha256": "5c7f3a2f6e2ba2fc14e05cac67dd068d2055c2cbdc9e1bc67b58c2befb11e9ed"
+  },
+  {
+    "path": "data/genomes/GCF_000374685.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/374/685/GCF_000374685.1_ASM37468v1/GCF_000374685.1_ASM37468v1_genomic.fna.gz",
+    "accession": "GCF_000374685.1",
+    "bytes": 1496924,
+    "sha256": "b673de0e66f7952715447b7b087d39498920b354738d441435cbb6ebb9acfb3d"
+  },
+  {
+    "path": "data/genomes/GCF_000374705.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/374/705/GCF_000374705.1_ASM37470v1/GCF_000374705.1_ASM37470v1_genomic.fna.gz",
+    "accession": "GCF_000374705.1",
+    "bytes": 1532221,
+    "sha256": "293b0489ad266cff7758cf4f510c16e4058c20251f29f79c8224d4346d603a84"
+  },
+  {
+    "path": "data/genomes/GCF_000374725.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/374/725/GCF_000374725.1_ASM37472v1/GCF_000374725.1_ASM37472v1_genomic.fna.gz",
+    "accession": "GCF_000374725.1",
+    "bytes": 1557880,
+    "sha256": "576709a8c4c3f2e0d4e6a12d900f3c0cbed49e8500c10fad21a3e64026b3c063"
+  },
+  {
+    "path": "data/genomes/GCF_000374745.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/374/745/GCF_000374745.1_ASM37474v1/GCF_000374745.1_ASM37474v1_genomic.fna.gz",
+    "accession": "GCF_000374745.1",
+    "bytes": 1622885,
+    "sha256": "496935f6e4b0a4cdc797291900cd5cdff5fb6ce471c3b20065362cfff4ebc705"
+  },
+  {
+    "path": "data/genomes/GCF_000374765.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/374/765/GCF_000374765.1_ASM37476v1/GCF_000374765.1_ASM37476v1_genomic.fna.gz",
+    "accession": "GCF_000374765.1",
+    "bytes": 1653388,
+    "sha256": "8a1eb5c30dce437f9cfe489709010d246ce1b5a291fd8a573948e526fce30879"
+  },
+  {
+    "path": "data/genomes/GCF_000374785.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/374/785/GCF_000374785.1_ASM37478v1/GCF_000374785.1_ASM37478v1_genomic.fna.gz",
+    "accession": "GCF_000374785.1",
+    "bytes": 1474354,
+    "sha256": "e5a61902458e8a2b0cc1665dd6fcbbee4a559cc857e9e35b5148de91a98f4417"
+  },
+  {
+    "path": "data/genomes/GCF_000375005.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/375/005/GCF_000375005.1_ASM37500v1/GCF_000375005.1_ASM37500v1_genomic.fna.gz",
+    "accession": "GCF_000375005.1",
+    "bytes": 1675632,
+    "sha256": "46a2d77a8a1816cda6bb5fdb7bcba87781cc070f6c4d2abd9057dfff3fcd14bc"
+  },
+  {
+    "path": "data/genomes/GCF_000375025.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/375/025/GCF_000375025.1_ASM37502v1/GCF_000375025.1_ASM37502v1_genomic.fna.gz",
+    "accession": "GCF_000375025.1",
+    "bytes": 1650978,
+    "sha256": "a26c380f74ac067ac41abe56c50b0374a39878a3d6fe97595931ebb50dfeac7e"
+  },
+  {
+    "path": "data/genomes/GCF_000375045.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/375/045/GCF_000375045.1_ASM37504v1/GCF_000375045.1_ASM37504v1_genomic.fna.gz",
+    "accession": "GCF_000375045.1",
+    "bytes": 1693401,
+    "sha256": "b1a74bde54c2332ea0a71c0a32913417c4bb5174c07da1f665b8f895e14d43c6"
+  },
+  {
+    "path": "data/genomes/GCF_000375065.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/375/065/GCF_000375065.1_ASM37506v1/GCF_000375065.1_ASM37506v1_genomic.fna.gz",
+    "accession": "GCF_000375065.1",
+    "bytes": 1640708,
+    "sha256": "728d1e67cf868e3904aeec4589d1971d1c42e831dd49b38354842672d7368a45"
+  },
+  {
+    "path": "data/genomes/GCF_000375085.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/375/085/GCF_000375085.1_ASM37508v1/GCF_000375085.1_ASM37508v1_genomic.fna.gz",
+    "accession": "GCF_000375085.1",
+    "bytes": 1593303,
+    "sha256": "bf161fa20be91734483a5e57d8f9f6eb337728f24b8e599048d0d7ae00f9a8c1"
+  },
+  {
+    "path": "data/genomes/GCF_000375105.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/375/105/GCF_000375105.1_ASM37510v1/GCF_000375105.1_ASM37510v1_genomic.fna.gz",
+    "accession": "GCF_000375105.1",
+    "bytes": 1624803,
+    "sha256": "6ff929fd159823d70077cf2795b97004bbe55b5148e0bbedc2210641770f0d32"
+  },
+  {
+    "path": "data/genomes/GCF_000375125.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/375/125/GCF_000375125.1_ASM37512v1/GCF_000375125.1_ASM37512v1_genomic.fna.gz",
+    "accession": "GCF_000375125.1",
+    "bytes": 1638970,
+    "sha256": "f25bf986b881767933fb16fefcafd827582a78e8bf0bfa6261664d1fa8b9494a"
+  },
+  {
+    "path": "data/genomes/GCF_000375145.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/375/145/GCF_000375145.1_ASM37514v1/GCF_000375145.1_ASM37514v1_genomic.fna.gz",
+    "accession": "GCF_000375145.1",
+    "bytes": 1667039,
+    "sha256": "a49e54598455c4574dae206e54f6b1f0827069024dd510278e59adbd0b67bba9"
+  },
+  {
+    "path": "data/genomes/GCF_000375165.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/375/165/GCF_000375165.1_ASM37516v1/GCF_000375165.1_ASM37516v1_genomic.fna.gz",
+    "accession": "GCF_000375165.1",
+    "bytes": 1651182,
+    "sha256": "918bb9c005163866d1546a95cb804753d64283d32592762545add16c02abfe2b"
+  },
+  {
+    "path": "data/genomes/GCF_000375185.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/375/185/GCF_000375185.1_ASM37518v1/GCF_000375185.1_ASM37518v1_genomic.fna.gz",
+    "accession": "GCF_000375185.1",
+    "bytes": 1649411,
+    "sha256": "1c057e2101cea5c09de257b87ae8f05c4735c0e546a05d737def11b8b03893e5"
+  },
+  {
+    "path": "data/genomes/GCF_000375205.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/375/205/GCF_000375205.1_ASM37520v1/GCF_000375205.1_ASM37520v1_genomic.fna.gz",
+    "accession": "GCF_000375205.1",
+    "bytes": 1736427,
+    "sha256": "d0b09a09f77f7f1e32dc8a1c214e8a975084917316e18eaebd59d85ed03a2b2e"
+  },
+  {
+    "path": "data/genomes/GCF_000375225.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/375/225/GCF_000375225.1_ASM37522v1/GCF_000375225.1_ASM37522v1_genomic.fna.gz",
+    "accession": "GCF_000375225.1",
+    "bytes": 1566900,
+    "sha256": "e84276b841dbd104704e8e87211a79bbd1125c0b6368dea698db48f83c41473f"
+  },
+  {
+    "path": "data/genomes/GCF_000375245.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/375/245/GCF_000375245.1_ASM37524v1/GCF_000375245.1_ASM37524v1_genomic.fna.gz",
+    "accession": "GCF_000375245.1",
+    "bytes": 1492683,
+    "sha256": "547b894cc6248cd368fef0259e0b80c7265bc0fb625d4bbc1dde30ce1c6c80f9"
+  },
+  {
+    "path": "data/genomes/GCF_000375265.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/375/265/GCF_000375265.1_ASM37526v1/GCF_000375265.1_ASM37526v1_genomic.fna.gz",
+    "accession": "GCF_000375265.1",
+    "bytes": 1526502,
+    "sha256": "331fbac3ee9829d18f10b2f7359493a09888a7f7f2aacfbacaa1f0715a50d4d7"
+  },
+  {
+    "path": "data/genomes/GCF_000375285.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/375/285/GCF_000375285.1_ASM37528v1/GCF_000375285.1_ASM37528v1_genomic.fna.gz",
+    "accession": "GCF_000375285.1",
+    "bytes": 1503756,
+    "sha256": "c4ee908bddf60d9e5e9f78350dd739b2fe4c0212466f904035dff38e19512b6b"
+  },
+  {
+    "path": "data/genomes/GCF_000375305.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/375/305/GCF_000375305.1_ASM37530v1/GCF_000375305.1_ASM37530v1_genomic.fna.gz",
+    "accession": "GCF_000375305.1",
+    "bytes": 1633680,
+    "sha256": "6553bb5c1b20acaec773181709530d39b655e5f4ed30647322b88bb3f9225894"
+  },
+  {
+    "path": "data/genomes/GCF_000377025.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/377/025/GCF_000377025.1_ASM37702v1/GCF_000377025.1_ASM37702v1_genomic.fna.gz",
+    "accession": "GCF_000377025.1",
+    "bytes": 1572406,
+    "sha256": "b1e9bb7e30628d2ec7b15d0cc89133b9da3c17396f57236b4a5178286df5889a"
+  },
+  {
+    "path": "data/genomes/GCF_000377045.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/377/045/GCF_000377045.1_ASM37704v1/GCF_000377045.1_ASM37704v1_genomic.fna.gz",
+    "accession": "GCF_000377045.1",
+    "bytes": 1642462,
+    "sha256": "809392491cda4e62ae05cd54628eea8f05651581cca0ff9dd58a74c8ee24d965"
+  },
+  {
+    "path": "data/genomes/GCF_000377065.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/377/065/GCF_000377065.1_ASM37706v1/GCF_000377065.1_ASM37706v1_genomic.fna.gz",
+    "accession": "GCF_000377065.1",
+    "bytes": 1607678,
+    "sha256": "e1d4d5f47b54abc19cbb48967a75a6f2f9d947849a027ee5d96c679ad7155a01"
+  },
+  {
+    "path": "data/genomes/GCF_000377085.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/377/085/GCF_000377085.1_ASM37708v1/GCF_000377085.1_ASM37708v1_genomic.fna.gz",
+    "accession": "GCF_000377085.1",
+    "bytes": 1482404,
+    "sha256": "8a9412816d885c83cfbfe632f17763b6982c80a222fb5ee31570aae6ac95fdca"
+  },
+  {
+    "path": "data/genomes/GCF_000377605.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/377/605/GCF_000377605.1_ASM37760v1/GCF_000377605.1_ASM37760v1_genomic.fna.gz",
+    "accession": "GCF_000377605.1",
+    "bytes": 1667124,
+    "sha256": "002d8871333a47c71cb63e7dc158226811fca39a6eb0e7d7de51e7e505713012"
+  },
+  {
+    "path": "data/genomes/GCF_000378645.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/378/645/GCF_000378645.1_ASM37864v1/GCF_000378645.1_ASM37864v1_genomic.fna.gz",
+    "accession": "GCF_000378645.1",
+    "bytes": 1661445,
+    "sha256": "6238fe8ccbf953235dde3d216f1f590d0fdb79a251e25694c503106663df99f9"
+  },
+  {
+    "path": "data/genomes/GCF_000378665.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/378/665/GCF_000378665.1_ASM37866v1/GCF_000378665.1_ASM37866v1_genomic.fna.gz",
+    "accession": "GCF_000378665.1",
+    "bytes": 1553600,
+    "sha256": "c4f856b95a9732a99b2c1692a3267aa95fdf6f85895e4cbefec19aa6c22e3990"
+  },
+  {
+    "path": "data/genomes/GCF_000378685.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/378/685/GCF_000378685.1_ASM37868v1/GCF_000378685.1_ASM37868v1_genomic.fna.gz",
+    "accession": "GCF_000378685.1",
+    "bytes": 1645366,
+    "sha256": "f11d1bebe80cfaf4a465c6ab3e6a8590ad15373a8fcfcc89546f9ad171759ab6"
+  },
+  {
+    "path": "data/genomes/GCF_000378705.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/378/705/GCF_000378705.1_ASM37870v1/GCF_000378705.1_ASM37870v1_genomic.fna.gz",
+    "accession": "GCF_000378705.1",
+    "bytes": 1644440,
+    "sha256": "9b726b26f116b712811e22509dc60228de75e70929b9d4528576b0e6e8f588e1"
+  },
+  {
+    "path": "data/genomes/GCF_000380945.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/380/945/GCF_000380945.1_ASM38094v1/GCF_000380945.1_ASM38094v1_genomic.fna.gz",
+    "accession": "GCF_000380945.1",
+    "bytes": 1588891,
+    "sha256": "407a194d89521968369fe7235f9844236c6b44462080676360524d04efb9b4d3"
+  },
+  {
+    "path": "data/genomes/GCF_000384275.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/384/275/GCF_000384275.1_ASM38427v1/GCF_000384275.1_ASM38427v1_genomic.fna.gz",
+    "accession": "GCF_000384275.1",
+    "bytes": 1666484,
+    "sha256": "3af73dbc3db5e085ea4022d6c9922d8615deb3f626b17fa800e33a8d7ca0df17"
+  },
+  {
+    "path": "data/genomes/GCF_000424725.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/424/725/GCF_000424725.1_ASM42472v1/GCF_000424725.1_ASM42472v1_genomic.fna.gz",
+    "accession": "GCF_000424725.1",
+    "bytes": 1557335,
+    "sha256": "9d8c9ff83138d6a7405ae6ed8417796a665a881b0ee139c0027c5dfde3e1150b"
+  },
+  {
+    "path": "data/genomes/GCF_000424745.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/424/745/GCF_000424745.1_ASM42474v1/GCF_000424745.1_ASM42474v1_genomic.fna.gz",
+    "accession": "GCF_000424745.1",
+    "bytes": 1641759,
+    "sha256": "52b0a6e54250f881467742f0da8d6e9f9de8b7dfc794c037d3d7a6b425109a07"
+  },
+  {
+    "path": "data/genomes/GCF_000424865.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/424/865/GCF_000424865.1_ASM42486v1/GCF_000424865.1_ASM42486v1_genomic.fna.gz",
+    "accession": "GCF_000424865.1",
+    "bytes": 1577091,
+    "sha256": "428858414bd0b27924d628b2d7a86a2f163f47613b9c41f3d08e899b7a313f78"
+  },
+  {
+    "path": "data/genomes/GCF_000424885.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/424/885/GCF_000424885.1_ASM42488v1/GCF_000424885.1_ASM42488v1_genomic.fna.gz",
+    "accession": "GCF_000424885.1",
+    "bytes": 1644229,
+    "sha256": "83f737e99e11114c2bd43b03746282223a97ee425ec2f000b6e897f824dedd00"
+  },
+  {
+    "path": "data/genomes/GCF_000424905.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/424/905/GCF_000424905.1_ASM42490v1/GCF_000424905.1_ASM42490v1_genomic.fna.gz",
+    "accession": "GCF_000424905.1",
+    "bytes": 1498314,
+    "sha256": "c9e03d90a3636a1760c2501fb02a68837c1ecfb946d437da18c5d6960cf7b51c"
+  },
+  {
+    "path": "data/genomes/GCF_000424925.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/424/925/GCF_000424925.1_ASM42492v1/GCF_000424925.1_ASM42492v1_genomic.fna.gz",
+    "accession": "GCF_000424925.1",
+    "bytes": 1535691,
+    "sha256": "b06cccf052d141bef0c163c1d9b639400b633234e7d87c7e5f46561db694d534"
+  },
+  {
+    "path": "data/genomes/GCF_000482565.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/482/565/GCF_000482565.1_ASM48256v1/GCF_000482565.1_ASM48256v1_genomic.fna.gz",
+    "accession": "GCF_000482565.1",
+    "bytes": 1631256,
+    "sha256": "f924ede565d54975d8794775f8aa8a1cc930ec23275b80b1a91e0f74373ce218"
+  },
+  {
+    "path": "data/genomes/GCF_000514035.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/514/035/GCF_000514035.1_ASM51403v1/GCF_000514035.1_ASM51403v1_genomic.fna.gz",
+    "accession": "GCF_000514035.1",
+    "bytes": 1607548,
+    "sha256": "95222d87da65567ec8baa0de5a35be1727573339fe9e2defaab89d4407c49a68"
+  },
+  {
+    "path": "data/genomes/GCF_000514415.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/514/415/GCF_000514415.1_ASM51441v1/GCF_000514415.1_ASM51441v1_genomic.fna.gz",
+    "accession": "GCF_000514415.1",
+    "bytes": 1542738,
+    "sha256": "0b74e755b7510c80c79cb2eb81297b678047e472f7f6c6aa389612dcb8d0eede"
+  },
+  {
+    "path": "data/genomes/GCF_000514435.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/514/435/GCF_000514435.1_ASM51443v1/GCF_000514435.1_ASM51443v1_genomic.fna.gz",
+    "accession": "GCF_000514435.1",
+    "bytes": 1446787,
+    "sha256": "3b16901df992d727e71b3ace8e334d896f9a4f261b971756e3a605a635e98f6d"
+  },
+  {
+    "path": "data/genomes/GCF_000514455.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/514/455/GCF_000514455.1_ASM51445v1/GCF_000514455.1_ASM51445v1_genomic.fna.gz",
+    "accession": "GCF_000514455.1",
+    "bytes": 1543678,
+    "sha256": "8be7558981bb62d2054d8b258e4b82c8eb4e343a237beb1293d409a01952d371"
+  },
+  {
+    "path": "data/genomes/GCF_000514475.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/514/475/GCF_000514475.1_ASM51447v1/GCF_000514475.1_ASM51447v1_genomic.fna.gz",
+    "accession": "GCF_000514475.1",
+    "bytes": 1580210,
+    "sha256": "f4c1850be042d14cd450a575f1babf1a6a916512ddcdccf3e6a809b6f046350e"
+  },
+  {
+    "path": "data/genomes/GCF_000514495.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/514/495/GCF_000514495.1_ASM51449v1/GCF_000514495.1_ASM51449v1_genomic.fna.gz",
+    "accession": "GCF_000514495.1",
+    "bytes": 1570318,
+    "sha256": "46ec8d80148a1c0ddaaae432ee1242865b7df65a749e9140c58a47bdcab343cc"
+  },
+  {
+    "path": "data/genomes/GCF_000514515.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/514/515/GCF_000514515.1_ASM51451v1/GCF_000514515.1_ASM51451v1_genomic.fna.gz",
+    "accession": "GCF_000514515.1",
+    "bytes": 1494333,
+    "sha256": "7ba5d1920bb81fcfbb76330963d655189fcc741e72e27a633b6d775b9d4794ca"
+  },
+  {
+    "path": "data/genomes/GCF_000514535.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/514/535/GCF_000514535.1_ASM51453v1/GCF_000514535.1_ASM51453v1_genomic.fna.gz",
+    "accession": "GCF_000514535.1",
+    "bytes": 1570215,
+    "sha256": "96b93d484e191af640951ccaaf77eabaee70dbcdd733e62f28863b7158b0b6df"
+  },
+  {
+    "path": "data/genomes/GCF_000514555.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/514/555/GCF_000514555.1_ASM51455v1/GCF_000514555.1_ASM51455v1_genomic.fna.gz",
+    "accession": "GCF_000514555.1",
+    "bytes": 1634254,
+    "sha256": "9f48ea0cdab1c1dcd324fcb091266042aab3dde2a74f4b40d4f75441e40bea96"
+  },
+  {
+    "path": "data/genomes/GCF_000514595.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/514/595/GCF_000514595.1_ASM51459v1/GCF_000514595.1_ASM51459v1_genomic.fna.gz",
+    "accession": "GCF_000514595.1",
+    "bytes": 1558098,
+    "sha256": "8b3e297085fd3ab2a46e4f5994ce6bbc6c75879468a02d2e41dd4c04414859d6"
+  },
+  {
+    "path": "data/genomes/GCF_000514615.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/514/615/GCF_000514615.1_ASM51461v1/GCF_000514615.1_ASM51461v1_genomic.fna.gz",
+    "accession": "GCF_000514615.1",
+    "bytes": 1608171,
+    "sha256": "b1ebb27fcc05a88f3c6f787f43fae358479ad659c2743239994f217e1bbcc134"
+  },
+  {
+    "path": "data/genomes/GCF_000514635.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/514/635/GCF_000514635.1_ASM51463v1/GCF_000514635.1_ASM51463v1_genomic.fna.gz",
+    "accession": "GCF_000514635.1",
+    "bytes": 1544333,
+    "sha256": "5244d18df45ad1f86697d4b927580c47cdce646ab8c31e308205253307d30f20"
+  },
+  {
+    "path": "data/genomes/GCF_000514655.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/514/655/GCF_000514655.1_ASM51465v1/GCF_000514655.1_ASM51465v1_genomic.fna.gz",
+    "accession": "GCF_000514655.1",
+    "bytes": 1633581,
+    "sha256": "7500513136e2ca5d2880966e87124b22b9910544a57ea99e25b69227b41f46c9"
+  },
+  {
+    "path": "data/genomes/GCF_000514675.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/514/675/GCF_000514675.1_ASM51467v1/GCF_000514675.1_ASM51467v1_genomic.fna.gz",
+    "accession": "GCF_000514675.1",
+    "bytes": 1444958,
+    "sha256": "59ca05ef4eebbaeee1797748f3ac5d7753e4c275fc2332d6475a2635d33a24cd"
+  },
+  {
+    "path": "data/genomes/GCF_000514695.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/514/695/GCF_000514695.1_ASM51469v1/GCF_000514695.1_ASM51469v1_genomic.fna.gz",
+    "accession": "GCF_000514695.1",
+    "bytes": 1497146,
+    "sha256": "f7ad36e90e1a1e5f744f0c997f3b7d6b5e561965dcd812690b1a1f5dc2f24305"
+  },
+  {
+    "path": "data/genomes/GCF_000514735.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/514/735/GCF_000514735.1_ASM51473v1/GCF_000514735.1_ASM51473v1_genomic.fna.gz",
+    "accession": "GCF_000514735.1",
+    "bytes": 1450868,
+    "sha256": "e8d524a971d59c2db5489861b6d7ca9f61d0484463a02fa77189df08f7aea9e1"
+  },
+  {
+    "path": "data/genomes/GCF_000514755.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/514/755/GCF_000514755.1_ASM51475v1/GCF_000514755.1_ASM51475v1_genomic.fna.gz",
+    "accession": "GCF_000514755.1",
+    "bytes": 1579188,
+    "sha256": "1f229cafcda1234205a71120298832f0ecb4f76f835f380d37ace89eccfec56f"
+  },
+  {
+    "path": "data/genomes/GCF_000514775.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/514/775/GCF_000514775.1_ASM51477v1/GCF_000514775.1_ASM51477v1_genomic.fna.gz",
+    "accession": "GCF_000514775.1",
+    "bytes": 1679681,
+    "sha256": "f1a64ac1bd74b01226b123bbf0ada06e696ef96d5a9ee2072178c4789d324599"
+  },
+  {
+    "path": "data/genomes/GCF_000514795.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/514/795/GCF_000514795.1_ASM51479v1/GCF_000514795.1_ASM51479v1_genomic.fna.gz",
+    "accession": "GCF_000514795.1",
+    "bytes": 1598291,
+    "sha256": "b1ee406f1dc7538353c5551cba375c8e44a82b8c87b4b28d9011891dc0d4da4e"
+  },
+  {
+    "path": "data/genomes/GCF_000514815.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/514/815/GCF_000514815.1_ASM51481v1/GCF_000514815.1_ASM51481v1_genomic.fna.gz",
+    "accession": "GCF_000514815.1",
+    "bytes": 1499294,
+    "sha256": "7508358350aa70bbf000b3170dd84a31f19d5dc04c81442641ef4bddadcee4ed"
+  },
+  {
+    "path": "data/genomes/GCF_000514835.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/514/835/GCF_000514835.1_ASM51483v1/GCF_000514835.1_ASM51483v1_genomic.fna.gz",
+    "accession": "GCF_000514835.1",
+    "bytes": 1521765,
+    "sha256": "cb90e55f876546a60a36acd216729b1907e93206a10610bae66253f0bf7cb883"
+  },
+  {
+    "path": "data/genomes/GCF_000514855.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/514/855/GCF_000514855.1_ASM51485v1/GCF_000514855.1_ASM51485v1_genomic.fna.gz",
+    "accession": "GCF_000514855.1",
+    "bytes": 1488528,
+    "sha256": "ee8dc0fecdce454605a02431eb5625b64a9b4c553241dc23f6e27dbedc45175d"
+  },
+  {
+    "path": "data/genomes/GCF_000514875.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/514/875/GCF_000514875.1_ASM51487v1/GCF_000514875.1_ASM51487v1_genomic.fna.gz",
+    "accession": "GCF_000514875.1",
+    "bytes": 1613586,
+    "sha256": "7eb0ff9a817df2290eaed33d2db1a3bbfd25cd424805ad84e931e49c8f8eb79f"
+  },
+  {
+    "path": "data/genomes/GCF_000514895.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/514/895/GCF_000514895.1_ASM51489v1/GCF_000514895.1_ASM51489v1_genomic.fna.gz",
+    "accession": "GCF_000514895.1",
+    "bytes": 1647163,
+    "sha256": "f9688122aa96e808e9118fdd51fad05d6165f1448f8faa2a19067942de8760b7"
+  },
+  {
+    "path": "data/genomes/GCF_000514915.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/514/915/GCF_000514915.1_ASM51491v1/GCF_000514915.1_ASM51491v1_genomic.fna.gz",
+    "accession": "GCF_000514915.1",
+    "bytes": 1648685,
+    "sha256": "82027c144984cff2475c5097bab3e90fdf7f39b85790f68dca73c279106004c9"
+  },
+  {
+    "path": "data/genomes/GCF_000514935.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/514/935/GCF_000514935.1_ASM51493v1/GCF_000514935.1_ASM51493v1_genomic.fna.gz",
+    "accession": "GCF_000514935.1",
+    "bytes": 1640737,
+    "sha256": "2ef29a2a3c187b9d7404a52731e6ff2088980ac17e37a34056443bb45381f0e5"
+  },
+  {
+    "path": "data/genomes/GCF_000514955.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/514/955/GCF_000514955.1_ASM51495v1/GCF_000514955.1_ASM51495v1_genomic.fna.gz",
+    "accession": "GCF_000514955.1",
+    "bytes": 1635969,
+    "sha256": "edc4bbd16873e22c892464f49450a667c31feacb45fe2eff1c97d67d88dc4fb0"
+  },
+  {
+    "path": "data/genomes/GCF_000515015.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/515/015/GCF_000515015.1_ASM51501v1/GCF_000515015.1_ASM51501v1_genomic.fna.gz",
+    "accession": "GCF_000515015.1",
+    "bytes": 1618411,
+    "sha256": "50a1e527a6a35b9d3b9a280f9c58c18c5689bc70f3142b7656a8674896543e0e"
+  },
+  {
+    "path": "data/genomes/GCF_000515035.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/515/035/GCF_000515035.1_ASM51503v1/GCF_000515035.1_ASM51503v1_genomic.fna.gz",
+    "accession": "GCF_000515035.1",
+    "bytes": 1622720,
+    "sha256": "a9a85d546b6b018e9a67562e5e053d6867df6cda0e89bc426d1c14ef9e004e9f"
+  },
+  {
+    "path": "data/genomes/GCF_000515075.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/515/075/GCF_000515075.1_ASM51507v1/GCF_000515075.1_ASM51507v1_genomic.fna.gz",
+    "accession": "GCF_000515075.1",
+    "bytes": 1592120,
+    "sha256": "0d7d1c9f620e44748fc4cbd5d7821d86fdb582dfba0c88026d5729c8665c9abc"
+  },
+  {
+    "path": "data/genomes/GCF_000515095.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/515/095/GCF_000515095.1_ASM51509v1/GCF_000515095.1_ASM51509v1_genomic.fna.gz",
+    "accession": "GCF_000515095.1",
+    "bytes": 1500980,
+    "sha256": "d4b3c19451032b5b6aa7079959784798adb22474c4136cb3205810b390c3af33"
+  },
+  {
+    "path": "data/genomes/GCF_000515135.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/515/135/GCF_000515135.1_ASM51513v1/GCF_000515135.1_ASM51513v1_genomic.fna.gz",
+    "accession": "GCF_000515135.1",
+    "bytes": 1578757,
+    "sha256": "981c226b53c38d2d0ab611789faff9ccb40139be3b191afb6931de5fc6476399"
+  },
+  {
+    "path": "data/genomes/GCF_000515155.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/515/155/GCF_000515155.1_ASM51515v1/GCF_000515155.1_ASM51515v1_genomic.fna.gz",
+    "accession": "GCF_000515155.1",
+    "bytes": 1585816,
+    "sha256": "aff453a25cf731980a7ec232ed367db089147a3141e85f3e73f7f53a9a7fd6a4"
+  },
+  {
+    "path": "data/genomes/GCF_000515175.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/515/175/GCF_000515175.1_ASM51517v1/GCF_000515175.1_ASM51517v1_genomic.fna.gz",
+    "accession": "GCF_000515175.1",
+    "bytes": 1714556,
+    "sha256": "3223579a9253a206bb1569a6ea25bce744082c6d877ec11b47c06039e09725e2"
+  },
+  {
+    "path": "data/genomes/GCF_000519145.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/519/145/GCF_000519145.1_ASM51914v1/GCF_000519145.1_ASM51914v1_genomic.fna.gz",
+    "accession": "GCF_000519145.1",
+    "bytes": 1693031,
+    "sha256": "d6c30a8ef24be4df9c651981c3ef4feefbf6cfdeeee5f4fd1030aa1b4376ffc4"
+  },
+  {
+    "path": "data/genomes/GCF_000620325.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/620/325/GCF_000620325.1_ASM62032v1/GCF_000620325.1_ASM62032v1_genomic.fna.gz",
+    "accession": "GCF_000620325.1",
+    "bytes": 1537510,
+    "sha256": "ea0909235bb14d3552aa0666c1f3ca0ef0b61b209f9be42e175bf34c2a835631"
+  },
+  {
+    "path": "data/genomes/GCF_000620345.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/620/345/GCF_000620345.1_ASM62034v1/GCF_000620345.1_ASM62034v1_genomic.fna.gz",
+    "accession": "GCF_000620345.1",
+    "bytes": 1476709,
+    "sha256": "dca8cdae00730baa71a5436edb2606b4917004b1eddf670961df01854dcc2d33"
+  },
+  {
+    "path": "data/genomes/GCF_000702345.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/702/345/GCF_000702345.1_ASM70234v1/GCF_000702345.1_ASM70234v1_genomic.fna.gz",
+    "accession": "GCF_000702345.1",
+    "bytes": 1679753,
+    "sha256": "4dcc01b87e496c6ea7a9c060c0932555868e209191952e839ac0f167cb54eef7"
+  },
+  {
+    "path": "data/genomes/GCF_058448785.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/058/448/785/GCF_058448785.1_ASM5844878v1/GCF_058448785.1_ASM5844878v1_genomic.fna.gz",
+    "accession": "GCF_058448785.1",
+    "bytes": 1547268,
+    "sha256": "81a06a45d7bc1bdf2baec7a096b60093178905b0ba80c84cfbe76446d0db81f6"
+  },
+  {
+    "path": "data/genomes/GCF_058448815.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/058/448/815/GCF_058448815.1_ASM5844881v1/GCF_058448815.1_ASM5844881v1_genomic.fna.gz",
+    "accession": "GCF_058448815.1",
+    "bytes": 1495030,
+    "sha256": "af2d931b789f4436a29c74469cebdb72b22a994d2ba573fd0c495fc1d4def04c"
+  },
+  {
+    "path": "data/genomes/GCF_058448845.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/058/448/845/GCF_058448845.1_ASM5844884v1/GCF_058448845.1_ASM5844884v1_genomic.fna.gz",
+    "accession": "GCF_058448845.1",
+    "bytes": 1545175,
+    "sha256": "fca8804847fbe6a7bc3e6625054dbcd4ebb0136c6b126c5d93bfc4d393b7f692"
+  },
+  {
+    "path": "data/genomes/GCF_058448855.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/058/448/855/GCF_058448855.1_ASM5844885v1/GCF_058448855.1_ASM5844885v1_genomic.fna.gz",
+    "accession": "GCF_058448855.1",
+    "bytes": 1665224,
+    "sha256": "7ee0b96ef79378966ba4f3b5e3e13219700230eec716f1a80b199254a16abb42"
+  },
+  {
+    "path": "data/genomes/GCF_059569595.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/059/569/595/GCF_059569595.1_ASM5956959v1/GCF_059569595.1_ASM5956959v1_genomic.fna.gz",
+    "accession": "GCF_059569595.1",
+    "bytes": 1667868,
+    "sha256": "8fd887572eccee65294784c29b3660bc776a14312f37a278ddc803eeb958c96c"
+  },
+  {
+    "path": "data/genomes/GCF_059569615.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/059/569/615/GCF_059569615.1_ASM5956961v1/GCF_059569615.1_ASM5956961v1_genomic.fna.gz",
+    "accession": "GCF_059569615.1",
+    "bytes": 1414404,
+    "sha256": "cbcba80f0f9fed59a5c869426908b38e2d6ba13bf6f501f8b64a0ee38dc281ac"
+  },
+  {
+    "path": "data/genomes/GCF_059569695.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/059/569/695/GCF_059569695.1_ASM5956969v1/GCF_059569695.1_ASM5956969v1_genomic.fna.gz",
+    "accession": "GCF_059569695.1",
+    "bytes": 1561951,
+    "sha256": "da6efef57bec4665e50d89a929ddf0716f07baf36227637def8191f9498d21af"
+  },
+  {
+    "path": "data/genomes/GCF_059569755.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/059/569/755/GCF_059569755.1_ASM5956975v1/GCF_059569755.1_ASM5956975v1_genomic.fna.gz",
+    "accession": "GCF_059569755.1",
+    "bytes": 1554858,
+    "sha256": "ef824cae8b08181d121f723b069c6ee905e6cb488dda891ac95406986c08ca62"
+  },
+  {
+    "path": "data/genomes/GCF_059569795.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/059/569/795/GCF_059569795.1_ASM5956979v1/GCF_059569795.1_ASM5956979v1_genomic.fna.gz",
+    "accession": "GCF_059569795.1",
+    "bytes": 1605516,
+    "sha256": "0f7a6c25ee173604614173a219baff4e9226a6e417c642db351579ba5b228437"
+  },
+  {
+    "path": "data/genomes/GCF_059569875.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/059/569/875/GCF_059569875.1_ASM5956987v1/GCF_059569875.1_ASM5956987v1_genomic.fna.gz",
+    "accession": "GCF_059569875.1",
+    "bytes": 1593491,
+    "sha256": "0db2357d182cef9057fd07e5096b035f572e660f1df09198bcf4d5150913b991"
+  },
+  {
+    "path": "data/genomes/GCF_059569915.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/059/569/915/GCF_059569915.1_ASM5956991v1/GCF_059569915.1_ASM5956991v1_genomic.fna.gz",
+    "accession": "GCF_059569915.1",
+    "bytes": 1733763,
+    "sha256": "d843621678b24add422c7e60ab421c157d11877fadbc28f7ef0bd113b3eb978e"
+  },
+  {
+    "path": "data/genomes/GCF_059569975.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/059/569/975/GCF_059569975.1_ASM5956997v1/GCF_059569975.1_ASM5956997v1_genomic.fna.gz",
+    "accession": "GCF_059569975.1",
+    "bytes": 1682445,
+    "sha256": "6b54318498a6673d785542fdff06095f53073bcbcd3c4410292204c5d175d096"
+  },
+  {
+    "path": "data/genomes/GCF_059570015.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/059/570/015/GCF_059570015.1_ASM5957001v1/GCF_059570015.1_ASM5957001v1_genomic.fna.gz",
+    "accession": "GCF_059570015.1",
+    "bytes": 1459678,
+    "sha256": "af5c529a0016042f075a92eadf6033fbdb8319778825b47487ee9a89f6754a6d"
+  },
+  {
+    "path": "data/genomes/GCF_059570035.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/059/570/035/GCF_059570035.1_ASM5957003v1/GCF_059570035.1_ASM5957003v1_genomic.fna.gz",
+    "accession": "GCF_059570035.1",
+    "bytes": 1797967,
+    "sha256": "7e94f934a1ebeeb4f26132ebd8c01ffac4aede6b0329513df9337fac6f4edbc0"
+  },
+  {
+    "path": "data/genomes/GCF_059570075.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/059/570/075/GCF_059570075.1_ASM5957007v1/GCF_059570075.1_ASM5957007v1_genomic.fna.gz",
+    "accession": "GCF_059570075.1",
+    "bytes": 1624918,
+    "sha256": "6b0037ca5e3d5b8be9b64921ce676c2c6d0dfb33df2da6f16fb8dfcddcaa3c47"
+  },
+  {
+    "path": "data/genomes/GCF_059570135.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/059/570/135/GCF_059570135.1_ASM5957013v1/GCF_059570135.1_ASM5957013v1_genomic.fna.gz",
+    "accession": "GCF_059570135.1",
+    "bytes": 1647762,
+    "sha256": "99693c954c53c1307de7178171ae02fbab0f4eddd374a3edef6e679e692a5481"
+  },
+  {
+    "path": "data/genomes/GCF_059570155.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/059/570/155/GCF_059570155.1_ASM5957015v1/GCF_059570155.1_ASM5957015v1_genomic.fna.gz",
+    "accession": "GCF_059570155.1",
+    "bytes": 1567273,
+    "sha256": "4bafae926f9429e5b6567ee6d761f15886f9a0e55c895daf2de2c8b306af7586"
+  },
+  {
+    "path": "data/genomes/GCF_059570215.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/059/570/215/GCF_059570215.1_ASM5957021v1/GCF_059570215.1_ASM5957021v1_genomic.fna.gz",
+    "accession": "GCF_059570215.1",
+    "bytes": 1683958,
+    "sha256": "cc3562aa97c4447ff0b5bd07a46a469bad44f60ef84ca0c8266bd946c638febc"
+  },
+  {
+    "path": "data/genomes/GCF_059570235.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/059/570/235/GCF_059570235.1_ASM5957023v1/GCF_059570235.1_ASM5957023v1_genomic.fna.gz",
+    "accession": "GCF_059570235.1",
+    "bytes": 1634885,
+    "sha256": "cd75b07b276ff7310e871c4da01bfbb5e7f151ae1fbbd4a3e1c96bd4d3695804"
+  },
+  {
+    "path": "data/genomes/GCF_059570245.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/059/570/245/GCF_059570245.1_ASM5957024v1/GCF_059570245.1_ASM5957024v1_genomic.fna.gz",
+    "accession": "GCF_059570245.1",
+    "bytes": 1654233,
+    "sha256": "8d39525c817a02c85165b0cd1221c8ccecc4d53ef2ff2595bc143e1b98db8c67"
+  },
+  {
+    "path": "data/genomes/GCF_059570275.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/059/570/275/GCF_059570275.1_ASM5957027v1/GCF_059570275.1_ASM5957027v1_genomic.fna.gz",
+    "accession": "GCF_059570275.1",
+    "bytes": 1570382,
+    "sha256": "ce8ce62bfcbd84cb455f05dad9ff31ff5538e2a3b27ab25d6352536f3bc91b02"
+  },
+  {
+    "path": "data/genomes/GCF_059570315.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/059/570/315/GCF_059570315.1_ASM5957031v1/GCF_059570315.1_ASM5957031v1_genomic.fna.gz",
+    "accession": "GCF_059570315.1",
+    "bytes": 1725268,
+    "sha256": "4405e3b2085758dc76db2f9eefb3e9ca94bb4de14e2a8d69bab714f45992daab"
+  },
+  {
+    "path": "data/genomes/GCF_059570375.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/059/570/375/GCF_059570375.1_ASM5957037v1/GCF_059570375.1_ASM5957037v1_genomic.fna.gz",
+    "accession": "GCF_059570375.1",
+    "bytes": 1480450,
+    "sha256": "d972e3434bd331763e077a01c6c35c108a7c1d5b1fd2e7e19bff5502f30ba845"
+  },
+  {
+    "path": "data/genomes/GCF_059570495.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/059/570/495/GCF_059570495.1_ASM5957049v1/GCF_059570495.1_ASM5957049v1_genomic.fna.gz",
+    "accession": "GCF_059570495.1",
+    "bytes": 1595338,
+    "sha256": "bd2f491f439b50458c87c2b339d1392d4559e3ef48855d8091620130d964fb8a"
+  },
+  {
+    "path": "data/genomes/GCF_059570555.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/059/570/555/GCF_059570555.1_ASM5957055v1/GCF_059570555.1_ASM5957055v1_genomic.fna.gz",
+    "accession": "GCF_059570555.1",
+    "bytes": 1428221,
+    "sha256": "513654542c3c516869ace36f36c67a473d5b3437abeb85b4e3d59e99d06e3ad5"
+  },
+  {
+    "path": "data/genomes/GCF_059570655.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/059/570/655/GCF_059570655.1_ASM5957065v1/GCF_059570655.1_ASM5957065v1_genomic.fna.gz",
+    "accession": "GCF_059570655.1",
+    "bytes": 1658387,
+    "sha256": "86a5c6b68c407fbf10732a2a0841a52a361bab57f87d47989889f0c8b076c5fc"
+  },
+  {
+    "path": "data/genomes/GCF_059570675.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/059/570/675/GCF_059570675.1_ASM5957067v1/GCF_059570675.1_ASM5957067v1_genomic.fna.gz",
+    "accession": "GCF_059570675.1",
+    "bytes": 1630457,
+    "sha256": "93111485d3886d53e00ec4f02f9bc52c3562e345900d4ed64351ce56e1b11ca0"
+  },
+  {
+    "path": "data/genomes/GCF_059570735.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/059/570/735/GCF_059570735.1_ASM5957073v1/GCF_059570735.1_ASM5957073v1_genomic.fna.gz",
+    "accession": "GCF_059570735.1",
+    "bytes": 1599145,
+    "sha256": "894a2888fa6ad02a853a71da17692a324386da350e66086166d518301fc00205"
+  },
+  {
+    "path": "data/genomes/GCF_059570745.1.fna.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/059/570/745/GCF_059570745.1_ASM5957074v1/GCF_059570745.1_ASM5957074v1_genomic.fna.gz",
+    "accession": "GCF_059570745.1",
+    "bytes": 1557676,
+    "sha256": "8cab0ab4826897c62eaa2b15b662adcec1e8414e8d38b0ee7fdce1aac31440ea"
+  },
+  {
+    "path": "data/spectra/B440-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/B440-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 134763166,
+    "sha256": "0696a58b49ffa62b56228439c5c803d13289b8851b2fe8bba1d841468bd080c7"
+  },
+  {
+    "path": "data/spectra/B458-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/B458-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 141702701,
+    "sha256": "820bca3eabe021614e2f5634e2c07377faf36fb040640f7bc7e913ede1bb3dfa"
+  },
+  {
+    "path": "data/spectra/B476-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/B476-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 148794036,
+    "sha256": "47f148a1c5b5c8f5acc9e48ef5c291448b9a2f7d43e3b9b0a4334ed3e3455b8a"
+  },
+  {
+    "path": "data/spectra/B527-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/B527-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 134537934,
+    "sha256": "7393c4b6cd2b8d0a50e462fe36bc0571d48f8dee837596e2280cb2659b43dd38"
+  },
+  {
+    "path": "data/spectra/B536-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/B536-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 136710689,
+    "sha256": "c1b1dd89a60c76f8601caa05e3da9deb323693e31ed3d996eac6d3d0200bd081"
+  },
+  {
+    "path": "data/spectra/H643-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/H643-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 656037583,
+    "sha256": "3317f2e04cf6cf56ac632425a3fc1301e41dc5c675515aae043eee2e03ee5737"
+  },
+  {
+    "path": "data/spectra/H646-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/H646-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 132125475,
+    "sha256": "65b8c6240de39a278cb790845174c4a94bdd4e1dcd2c973429151fcd7f80a0a0"
+  },
+  {
+    "path": "data/spectra/H713-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/H713-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 549018940,
+    "sha256": "c7d7eba74d0afe963ae59baac7a14bb467366f9fa34e95f41e3190d8525291c4"
+  },
+  {
+    "path": "data/spectra/H718-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/H718-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 751278293,
+    "sha256": "a6f78306912b148017d54a2d002c2cbdacf60e6732bc4e766cf814d99b1fc6d7"
+  },
+  {
+    "path": "data/spectra/H732-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/H732-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 523356644,
+    "sha256": "8551b7b84808c832217edd274a34930b6e8a7498bb74e54a1b1c6a8f54e32d31"
+  },
+  {
+    "path": "data/spectra/H877-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/H877-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 129360968,
+    "sha256": "851430467f42a9627301d55694bda6e0aee1b39985b0213b27ddd383276a4327"
+  },
+  {
+    "path": "data/spectra/H898-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/H898-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 147755295,
+    "sha256": "863e1fd8c96890f675a49b84db2b824254aa8e0f4c006e336de3a4d7525f8248"
+  },
+  {
+    "path": "data/spectra/H905-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/H905-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 124316711,
+    "sha256": "b1129a481723472b17a328daa2613001523349ea90db3bde88d8237a209baff0"
+  },
+  {
+    "path": "data/spectra/H941-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/H941-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 123168355,
+    "sha256": "6dbff68b65bad21fa4e68ce24f94e600a5f5bbf0cd7a158dbf0d33360960c188"
+  },
+  {
+    "path": "data/spectra/H962-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/H962-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 194343795,
+    "sha256": "f74993578c30050918dbcd6eab97ad8dfa50dfffeb932920a2ae518cc57fe9a6"
+  },
+  {
+    "path": "data/spectra/H963-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/H963-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 221619240,
+    "sha256": "2a05ec3a8a25f9a3f6fae4451d3cca415686851fe74406c6a54d9ca82632479f"
+  },
+  {
+    "path": "data/spectra/H964-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/H964-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 122461696,
+    "sha256": "de5de8419b35356795f00ae7005b52fcfd96214862c407c26a16c178a4dbcd4d"
+  },
+  {
+    "path": "data/spectra/H996-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/H996-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 133006768,
+    "sha256": "5d65752d44f023685254aa8fc5a5679ae91f8f7def505be5285dfc69739ddc39"
+  },
+  {
+    "path": "data/spectra/P105-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/P105-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 146516868,
+    "sha256": "dcc8aae51aaf8a64f0ad57c32f5f532ffba180825a72868596f86956612deb03"
+  },
+  {
+    "path": "data/spectra/P193-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/P193-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 132286341,
+    "sha256": "b0f251b3d97607220344e8c3feeb7726586765760830176670bbfb9d0b91cb3f"
+  },
+  {
+    "path": "data/spectra/Q768-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/Q768-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 192111964,
+    "sha256": "b7ebbfe84d8f45ccd84c058fa0235ccfb81292f9322a891aaa899cb14afdc5f0"
+  },
+  {
+    "path": "data/spectra/Q884-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/Q884-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 669920302,
+    "sha256": "ff124c9d95b8e7b7c62ba1edcd0a505c2cfeeeb07ed0f4723284a847c2639173"
+  },
+  {
+    "path": "data/spectra/R107-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/R107-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 130595975,
+    "sha256": "a298f4b54f0ced216239b182e0eb67cb28252dd5673026dc273d4dabf5697db6"
+  },
+  {
+    "path": "data/spectra/R114-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/R114-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 356886743,
+    "sha256": "be7afd69c202cbbd03e482e017f4d15dc06babdca6849abf044161a9dc3bc9c5"
+  },
+  {
+    "path": "data/spectra/R425-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/R425-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 205269933,
+    "sha256": "0d204baa115785b1d43483239ec03c02eddd2875fe12f3079d7401b69e3cec95"
+  },
+  {
+    "path": "data/spectra/R510-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/R510-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 537987654,
+    "sha256": "47038800a5e50520438753847ad9526805b1d6f1e93a636e3b6a2b7dca220c1b"
+  },
+  {
+    "path": "data/spectra/R699-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/R699-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 149118340,
+    "sha256": "9d1fdcdbd8c5d23ff798f24a95135dc0e6703b1c4ea1d98bb0398aa167a470b5"
+  },
+  {
+    "path": "data/spectra/R894-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/R894-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 138985220,
+    "sha256": "d15d32d2b89f52b5dc2e8bdfba028d8a22e806e4c9f32fae0acf8b5ac8a6d749"
+  },
+  {
+    "path": "data/spectra/R909-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/R909-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 713389615,
+    "sha256": "0aa6b20d2775440eaebd219396ac95e5dd48903b455ac048cae7f5cebe57846a"
+  },
+  {
+    "path": "data/spectra/R921-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/R921-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 127806755,
+    "sha256": "f4a6de43af0bd78ef0de8fe02c1b16cce615b8582d9b4ea7fd89e234f9baa09b"
+  },
+  {
+    "path": "data/spectra/R942-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/R942-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 139753722,
+    "sha256": "95f33f5ed6629aefbdc27ed13c2b466019f20a4c3feb164a9caa10fc7d7850bf"
+  },
+  {
+    "path": "data/spectra/S051-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/S051-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 151018934,
+    "sha256": "0242aa0237a946224361dfc6bc42cb60262c84007c5818a60ec100a4b68a6aa7"
+  },
+  {
+    "path": "data/spectra/S055-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/S055-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 134772657,
+    "sha256": "67126fe2485ae0ac42eeaa2c76e567f462a6a70d696bf6c2b2f78655dddcc2c4"
+  },
+  {
+    "path": "data/spectra/S103-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/S103-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 145159231,
+    "sha256": "e2575315bb8dcc183e6e56083d6645f16cdb87501065941a950716eeed2aae5d"
+  },
+  {
+    "path": "data/spectra/S197-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/S197-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 151848786,
+    "sha256": "1a731557caabb70b2256464cd5c83f19681780d6991e9d92d3767c40a478a991"
+  },
+  {
+    "path": "data/spectra/S237-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/S237-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 131265544,
+    "sha256": "53ff72ea04f4d349dc0d669f2314bbd45d2b9ecda5ee6fffbb0747b42e5fff87"
+  },
+  {
+    "path": "data/spectra/S243-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/S243-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 355128520,
+    "sha256": "91850697520f8e2acbcbd5fa84a68e65d9297c36cd5f7c4e537b590b6d225773"
+  },
+  {
+    "path": "data/spectra/S296-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/S296-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 519367865,
+    "sha256": "17c913c794c5b277fc0ba62552709a50eb3ea117f760b5b466f38f1250563d25"
+  },
+  {
+    "path": "data/spectra/S299-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/S299-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 165807764,
+    "sha256": "0f519aaa130219348a9e5630110b0e30d7738ad5eb042c9a6e7763dc11e5f230"
+  },
+  {
+    "path": "data/spectra/S325-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/S325-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 546099674,
+    "sha256": "165514a17f66990726817c65b4f3cb2d9ed945b7982b7b8db665a61dbd5615e5"
+  },
+  {
+    "path": "data/spectra/S342-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/S342-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 538666945,
+    "sha256": "03f9309030288e76b8f29547eb3ea69b7dfd5d275077d3ca24762db0d48b4148"
+  },
+  {
+    "path": "data/spectra/S416-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/S416-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 147732959,
+    "sha256": "d68be4f496b77fafce5d51a5562f8228d097b7854ab470ef33c3de09b229a151"
+  },
+  {
+    "path": "data/spectra/S673-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/S673-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 207317972,
+    "sha256": "aacb0449a0460f83899d332147d1055f749f3df35e366d63a66941dc55f39bb7"
+  },
+  {
+    "path": "data/spectra/S744-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/S744-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 244642869,
+    "sha256": "fb99e5e9b18d11d55130291d1efc41e08ece570a56046a070e81ee79abf81a1b"
+  },
+  {
+    "path": "data/spectra/S801-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/S801-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 712404952,
+    "sha256": "51cd7efc65d9436c323963bc258a4463020ac0570b4fbf534ee1408ed4b885a3"
+  },
+  {
+    "path": "data/spectra/S820-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/S820-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 535807575,
+    "sha256": "0e972a84b6d2574a6ef2d7952255c22837718e2fc3f8cad93299d4385f73ef9b"
+  },
+  {
+    "path": "data/spectra/S848-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/S848-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 536776974,
+    "sha256": "1831156eb8e114ee0c5b2207af09bde8e36316f12827da1ffaa560c04cf73010"
+  },
+  {
+    "path": "data/spectra/S860-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/S860-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 458728720,
+    "sha256": "43c201273f68407a2039d13b8022f4cf0d04551549ad9f893ca50a8d7e6571f7"
+  },
+  {
+    "path": "data/spectra/S863-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/S863-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 646860954,
+    "sha256": "1fc790f3b4873cdbb8f819bdf450923678fc2b3b72088e802ddb3d5a42bc4b64"
+  },
+  {
+    "path": "data/spectra/S991-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/S991-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 152387308,
+    "sha256": "2f85dabeecdb594f0a1672acf51f00a50dfb8e98da62d4cb3d0af31b4f2f70a8"
+  },
+  {
+    "path": "data/spectra/S996-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/S996-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 155615454,
+    "sha256": "b1451c8a4e7eea3fa83c463d6b0c3d3ca0dd12814cd28ee7e9727fd304a1e49f"
+  },
+  {
+    "path": "data/spectra/T001-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/T001-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 157114753,
+    "sha256": "39b9c8bffb3d853234add1a1663b7d98ed2979ed8a7635493ee541650625141c"
+  },
+  {
+    "path": "data/spectra/T005-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/T005-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 159716090,
+    "sha256": "4e3cdef20e34908d8530b7072837770784b1fee8350c95330f1d62480cd5caee"
+  },
+  {
+    "path": "data/spectra/T029-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/T029-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 154472535,
+    "sha256": "7c39ae0f469b497c9b8eb1ce3d5189427037a381d5e41f068e556440994d6f1b"
+  },
+  {
+    "path": "data/spectra/T045-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/T045-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 135741388,
+    "sha256": "613fb8f83421000c794d66b6034c6caa52f6b455445401a53aa7b11ce23d0767"
+  },
+  {
+    "path": "data/spectra/T084-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/T084-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 464168342,
+    "sha256": "f312b67fc8389d2ea01c741d136f14f46bcf12f7170e81044f42e263d3b10f4b"
+  },
+  {
+    "path": "data/spectra/T124-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/T124-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 158456637,
+    "sha256": "a74570e9cbc9d9cfa7cc25f9c2fd6b4c1b00a3fd5028243df09ed3033585b690"
+  },
+  {
+    "path": "data/spectra/T131-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/T131-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 159074334,
+    "sha256": "cfe3c9ac1ac37f85a2dcc0f1f866f078aa880bee3fdd790ea5c7c58c87e31b89"
+  },
+  {
+    "path": "data/spectra/T138-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/T138-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 134254931,
+    "sha256": "4d99b407f9b435335c415d4dfbe3d7a32362000f6146f784b6170b5c0a04444d"
+  },
+  {
+    "path": "data/spectra/T148-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/T148-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 136346220,
+    "sha256": "53f8979b0b177a7a39537f95e54d5f86b5e285cdf4a6c790b4ab498adecd2561"
+  },
+  {
+    "path": "data/spectra/T150-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/T150-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 755249429,
+    "sha256": "6fcbe70f791098487c662d81c6f6ed85f1bdce5231510696ce800feec37c319e"
+  },
+  {
+    "path": "data/spectra/T250-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/T250-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 195333480,
+    "sha256": "165f5ef0356abca090a2ce4b045e0254b64921bcd383b5bb917fe2542392313e"
+  },
+  {
+    "path": "data/spectra/T261-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/T261-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 708115164,
+    "sha256": "c64fefd32101ed3f5dc6e2635bdc52fe0924ccd8bd8448ea65e717a96909f21f"
+  },
+  {
+    "path": "data/spectra/T403-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/T403-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 752099659,
+    "sha256": "3c5eea52d18a117ce4ffc5e9fc93e9ff8d8dd478ccce121ba523df4f454f8d28"
+  },
+  {
+    "path": "data/spectra/T569-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/T569-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 136194496,
+    "sha256": "2d4411a558c42a37fe0ce5767c1326f2f8662e0218af577fb6287483737f052c"
+  },
+  {
+    "path": "data/spectra/T584-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/T584-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 192696763,
+    "sha256": "9682e5b7f55197f72c16a396fc35974f2596414170d1f06b7a69d4147785830a"
+  },
+  {
+    "path": "data/spectra/T603-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/T603-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 131166200,
+    "sha256": "8d22337fe4512962ebca909ded7e6d121f554154a2675bb85b97eb41249c0777"
+  },
+  {
+    "path": "data/spectra/T609-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/T609-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 140963474,
+    "sha256": "a7ec82823bc52722a2b1c10154da7b22cea3b82e7cba7a25639872ad8bb9c3b1"
+  },
+  {
+    "path": "data/spectra/T796-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/T796-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 132176856,
+    "sha256": "646e5291798ca0c81a202f2e1b88201ac8ae2449e325cd4e97735bf5f3705ac7"
+  },
+  {
+    "path": "data/spectra/T798-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/T798-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 171519121,
+    "sha256": "25ed6b36b7cbdec45c877b24212ef75465b9d21454fc0054d1be36ada815e96a"
+  },
+  {
+    "path": "data/spectra/T799-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/T799-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 214693588,
+    "sha256": "d74e8223356d835457e32406b742f2221fd2b99f96ede45e15281b4ee2a65a6d"
+  },
+  {
+    "path": "data/spectra/T800-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/T800-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 171072884,
+    "sha256": "6488811e09e57ace9f0ec26af0d6a318a0ac399a7a7da226f7ea100cb1a6406e"
+  },
+  {
+    "path": "data/spectra/T849-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/T849-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 135510607,
+    "sha256": "80a39083e021a6d23a75bd0507edec244d0385d3c60b188ac16ef7ee30baeb6d"
+  },
+  {
+    "path": "data/spectra/T850-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/T850-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 171430925,
+    "sha256": "6fe432ea46d637fc52602c25b2df92886959d50c1a0d7b2f3be98f2f99ae78f7"
+  },
+  {
+    "path": "data/spectra/T851-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/T851-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 143208336,
+    "sha256": "548c1712ed6b961f7154d28559399a795a348fec0e2f0dc7fe25b4f03fb5e142"
+  },
+  {
+    "path": "data/spectra/T854-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/T854-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 699930283,
+    "sha256": "b044f0b1b3f9070de6218d8545682e25139fd217aabad71f311da914bbb38776"
+  },
+  {
+    "path": "data/spectra/T855-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/T855-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 709899061,
+    "sha256": "60ea5275840aa61089b41b2af5016c2832a536f95a46e2365c597e52fb73ead5"
+  },
+  {
+    "path": "data/spectra/T857-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/T857-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 170733348,
+    "sha256": "7200c0ae7bb162eeea53af9a43feb58447f87fe5607bacd5ee3c158c11752c67"
+  },
+  {
+    "path": "data/spectra/T859-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/T859-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 171450551,
+    "sha256": "e0fcafbdaabcceda4c206bcda0d39b02e47eb8d1b4588c2e3352607001bf32fa"
+  },
+  {
+    "path": "data/spectra/X481-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/X481-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 158430381,
+    "sha256": "363e48f869214bd505fdb1a30009a56a4dc855360da25b8a6da83f8972a733fb"
+  },
+  {
+    "path": "data/spectra/X482-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/X482-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 157285692,
+    "sha256": "c4b29d332893c139ddcbe1d30b5b4e4529bdb19d9c4b7f9212fe7030a922072a"
+  },
+  {
+    "path": "data/spectra/X508-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/X508-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 135082559,
+    "sha256": "820e345c7527d0272ae275cb5d8a4db5ff4b23ba3a8bfde5fd2d0ed77a42d105"
+  },
+  {
+    "path": "data/spectra/X814-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/X814-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 165513376,
+    "sha256": "a12ebe335499f3f23aa3b7a5ef2840120cad1d7b0efb61a5f16629fafd32c719"
+  },
+  {
+    "path": "data/spectra/X891-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/X891-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 126445614,
+    "sha256": "498c6a2fbb1ab64f39c3002d46651e650c0d41139f90bf51aa6abceb0c7ac15e"
+  },
+  {
+    "path": "data/spectra/Y011-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/Y011-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 153986791,
+    "sha256": "3292680e4dc6ffb61029a90f1ed89ce8d4d950c9527cde271e994583ef158814"
+  },
+  {
+    "path": "data/spectra/Y012-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/Y012-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 151425995,
+    "sha256": "c881af88d53b537ed0be5aa583e79c45759c16c9b9c4985b2af9f050ec443285"
+  },
+  {
+    "path": "data/spectra/Y230-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/Y230-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 739756025,
+    "sha256": "157e2af889efd589eb775cfaa01e2b54060613216f705aacc2e62083360a9d06"
+  },
+  {
+    "path": "data/spectra/Y231-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/Y231-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 113423771,
+    "sha256": "59db78e19386ca4daa3d66aba0b2af1014c4e32d1317ccdaec6ed011e8fd6260"
+  },
+  {
+    "path": "data/spectra/Y234-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/Y234-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 153665221,
+    "sha256": "47992c08a833f67182addec572e89c61d55c37ba252b27aaef633823fab00db3"
+  },
+  {
+    "path": "data/spectra/Y237-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/Y237-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 155079766,
+    "sha256": "548110a9fa9fcd7ef800b95a6f92c921192feccd4c14c852f6ff530475d6cbb2"
+  },
+  {
+    "path": "data/spectra/Y239-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/Y239-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 185440967,
+    "sha256": "d8a6122cb248312f6482d259375bd0fdb69934623916f9cf8913c1132d27ceba"
+  },
+  {
+    "path": "data/spectra/Y244-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/Y244-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 755910333,
+    "sha256": "a6610497e1d9d32b3f00e4d0a0d14d112b92c21e961c60a52648c5de3266a9f9"
+  },
+  {
+    "path": "data/spectra/Y256-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/Y256-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 157335201,
+    "sha256": "3ceb3469f249c3eac7a67f72fd1d63fc4c4d726cd9d0090505d188c17060e1b2"
+  },
+  {
+    "path": "data/spectra/Y260-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/Y260-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 143312114,
+    "sha256": "01396b0c9ec3cb74d1bdb310ad4e43f6e688cfd5c59d846a3624a2837ddfbf95"
+  },
+  {
+    "path": "data/spectra/Y280-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/Y280-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 136837559,
+    "sha256": "28fb50046b8861851a03272224f53518001c011edbaa341eb15e3106f70fb39f"
+  },
+  {
+    "path": "data/spectra/Y282-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/Y282-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 196735340,
+    "sha256": "87673c06d108786b23549c9c2d66bc7ae61622c4271274674b4c535e4897b232"
+  },
+  {
+    "path": "data/spectra/Y330-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/Y330-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 137117701,
+    "sha256": "0bf90ce8db8aa60064308aa17611845537c69106adcab4f19bc3eaeffe3c3446"
+  },
+  {
+    "path": "data/spectra/Y331-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/Y331-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 150604807,
+    "sha256": "9b722d6065e7e63d4d38ade3648cafa1846fc85ff2f2e60cb4bce08475e171a7"
+  },
+  {
+    "path": "data/spectra/Y363-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/Y363-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 544066229,
+    "sha256": "c6c84875409bbf216cb6d67d1f3b6077bf362aa3b310ebaa0c23f33095c76110"
+  },
+  {
+    "path": "data/spectra/Y486-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/Y486-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 358108840,
+    "sha256": "868ed17390c3f21f6a21f0c594149a6a84d5ad0bf260262daf24ae9b0f6aad04"
+  },
+  {
+    "path": "data/spectra/Y498-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/Y498-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 538141368,
+    "sha256": "267bbe549a48d1dee47f578ebed6857ceee44e022271fcc4f54dce52190ce50a"
+  },
+  {
+    "path": "data/spectra/Y646-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/Y646-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 528305277,
+    "sha256": "dc309b1b1de3dc183b7420e2ff11908fcbbedd4cbbe2411050de37bde8adaff1"
+  },
+  {
+    "path": "data/spectra/Y666-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/Y666-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 475595503,
+    "sha256": "10e5cd87f3ac583bc184929f6dd8d23964dbdb6650c3f2b09f16f6bba17ffa87"
+  },
+  {
+    "path": "data/spectra/Y673-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/Y673-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 489397442,
+    "sha256": "e8433ef07a452030c191206a89eeefa73e8ee3ac8d98cc0862165d4c3d0757a7"
+  },
+  {
+    "path": "data/spectra/Y678-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/Y678-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 152216376,
+    "sha256": "9e9a9f7984b1a4607b7875f354284f925d24fa8fcb36d4853c240a34c15ffc92"
+  },
+  {
+    "path": "data/spectra/Y679-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/Y679-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 756304351,
+    "sha256": "09fafc06889500ef95ed0da3efc65e6f7e3f9620115523525e7891b4a4c163b4"
+  },
+  {
+    "path": "data/spectra/Y681-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/Y681-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 718477234,
+    "sha256": "86c1401d9d5f6049f86bb88b300320f156a6cc32651758d5defeda44eb0d5608"
+  },
+  {
+    "path": "data/spectra/Y685-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/Y685-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 360203550,
+    "sha256": "0cf34235bb5e9b95e5c2e95a533cf63ed7743982c1b04fbff65fc63375dadbff"
+  },
+  {
+    "path": "data/spectra/Y690-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/Y690-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 789970081,
+    "sha256": "37396c127aeb84f49908509faecda5c13e88c6bb67096421588abaca3b4e82b6"
+  },
+  {
+    "path": "data/spectra/Y694-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/Y694-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 711180793,
+    "sha256": "18c141ecd4771192a6c75db4190a7f8755ebdfadc40b793459b7d11559b6808e"
+  },
+  {
+    "path": "data/spectra/Y703-3-EA.mzXML",
+    "url": "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/ccms_peak/Screening/Y703-3-EA.mzXML",
+    "accession": "MSV000078836",
+    "bytes": 485912489,
+    "sha256": "0bea447ba0f21f639b91f1da73ee1f14744b93a9834223b8a88ae1f8bac44650"
+  }
+]

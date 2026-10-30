@@ -4,8 +4,8 @@ Measurements taken while building this task. They are not part of the contract;
 they are the evidence behind the choices in `task.yaml` and the input to the
 difficulty calibration in PROJECT.md §8.
 
-**Read the scope section before using this task.** It stages 27.9 GB, which is
-above the 20 GB figure PROJECT.md §10 calls ideal, and that is the one decision
+**Read the scope section before using this task.** It stages 33.5 GB, which is
+1.7x the 20 GB figure PROJECT.md §10 calls ideal, and that is the one decision
 here most worth a second opinion.
 
 ## How this task became possible
@@ -49,17 +49,26 @@ constant — comparing metabolomes across extraction methods would confound ever
 occurrence call downstream. That rule, not an arbitrary cut, is what fixes the
 strain count at 111.
 
-**27.9 GB staged**, the largest fetch in the suite by a factor of fifty. The
-mzXML files run 135 to 459 MB, mean 252 MB; my first estimate of 17.8 GB was
-taken from a single 160 MB file and was wrong. PROJECT.md §10 says to keep
-every task well under 100 GB and ideally under 20 GB, so this is inside the
-limit and 1.4× the ideal.
+**33.5 GB staged**, the largest fetch in the suite by a factor of sixty-seven.
+The mzXML files run 113 to 790 MB, mean 300 MB. PROJECT.md §10 says to keep
+every task well under 100 GB and ideally under 20 GB, so this satisfies the
+limit and is **1.7× the ideal**.
+
+Both of my earlier estimates were wrong and in the same direction, which is
+worth recording as a method note: 17.8 GB came from extrapolating a single
+160 MB file, and 27.9 GB from the first eight, whose mean was 252 MB. The true
+mean is 300 MB and the distribution has a long right tail — the largest file is
+790 MB, seven times the smallest. **Extrapolating a staging budget from a
+sample of one, or of eight, is not estimating; the only honest number came
+from fingerprinting all 111.**
 
 I kept all 111 strains rather than cutting to fit, because "every paired strain
 at one extraction method" is a rule and any smaller set needs an arbitrary one.
-Staying under 20 GB would mean roughly 79 strains. Metcalf scoring degrades
-gracefully with fewer strains, so that reduction is available to a reviewer who
-wants it; it is a curation decision rather than a technical one.
+Staying under 20 GB would mean **66 strains**, dropping 45 of them. Metcalf
+scoring degrades gracefully with fewer strains, so that reduction is available
+to a reviewer who wants it; it is a curation decision rather than a technical
+one, and it is the decision in this suite I would most like a second opinion
+on.
 
 **The molecular families are the depositors', not ours.** They come from the
 GNPS clustering frozen in the `.mgf` rather than from re-clustering the raw
@@ -112,8 +121,8 @@ rule, not because it is hard.
 
 ## Staging had to stream
 
-17.8 GB was the estimate and 27.9 GB the reality, and neither fits on this
-container beside everything else. `scripts/stage_task09_spectra.py` therefore
+33.5 GB does not fit on this container beside everything else, and neither did
+either of the figures it was estimated at. `scripts/stage_task09_spectra.py` therefore
 fetches a batch, records bytes and sha256, runs the solution's own stage-2
 extraction over it, and deletes the mzXML before fetching the next, keeping
 peak disk at a few hundred megabytes. Deleting is safe because the manifest is

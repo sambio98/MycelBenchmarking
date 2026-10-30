@@ -1,6 +1,6 @@
 """Stage task 09's spectra in batches, fingerprint them, and extract features.
 
-17.8 GB of mzXML will not sit on this container's disk alongside everything
+33.5 GB of mzXML will not sit on this container's disk alongside everything
 else, and it does not need to: the only things the bundle keeps are the
 manifest entry for each file and the compact feature set extracted from it. So
 this downloads a batch, records bytes and sha256, runs the solution's own
