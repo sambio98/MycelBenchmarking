@@ -29,8 +29,18 @@ The three halves:
     reproducible way to get strain resolution: §9 names network topology from a
     fixed .mgf as the safe artifact, and the clustering is the depositors' own,
     frozen and checksummed.
-  * **Links.** Standardised Metcalf scoring over strain co-occurrence, the
-    scheme NPLinker implements.
+  * **Links.** Metcalf scoring over strain co-occurrence: the weighted
+    co-occurrence count from Doroghazi et al. 2014, which NPLinker implements
+    as its `metcalf` scoring function.
+
+Not the *standardised* Metcalf score. NPLinker also offers a variant that
+subtracts the score's expected value under a null model and divides by its
+standard deviation, which corrects a known bias: the raw score rewards
+ubiquity, so a gene cluster family in every strain scores top against a
+molecular family in every strain whether or not they are related. The raw
+score is what this task prescribes, because it is a closed-form weighted count
+with nothing left to a judgement call, and the bias is recorded in NOTES.md
+rather than hidden. Standardising it is the obvious extension.
 
 What this does NOT claim. The paper's own prioritisation is not the truth here,
 and neither are PoDP's nine curated BGC-to-molecular-family links: those came
@@ -73,8 +83,8 @@ MIN_DOMAINS = 3
 PRESENCE_WINDOW_DA = 0.5
 PRESENCE_MIN_COSINE = 0.70
 
-# Standardised Metcalf weights (Doroghazi et al. 2014, as NPLinker implements
-# them). The asymmetry is the point: a gene cluster family present in a strain
+# Metcalf weights (Doroghazi et al. 2014, as NPLinker's `metcalf` scoring
+# implements them). The asymmetry is the point: a gene cluster family present in a strain
 # whose metabolome lacks the molecular family is evidence against the link,
 # while the reverse is not -- a molecule can be made by a cluster the detector
 # missed, so that cell scores zero rather than penalising.

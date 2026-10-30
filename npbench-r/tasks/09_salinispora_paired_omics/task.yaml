@@ -43,6 +43,14 @@ data_scope: >-
   same deposit directory - because comparing metabolomes across extraction
   methods would confound every occurrence call downstream.
 
+  The link score is the raw Metcalf weighted co-occurrence count, not
+  NPLinker's standardised variant. The raw score is a closed-form weighted sum
+  with nothing left to a judgement call, which is what a graded artifact needs;
+  it also rewards ubiquity, so the top-ranked links are gene cluster families
+  and molecular families that are both near-universal. That bias is real and is
+  recorded in NOTES.md, and standardising against a null model is the obvious
+  extension for a later revision.
+
   Two scope limits are worth stating. First, the molecular families come from
   the depositors' own GNPS clustering rather than from re-clustering the raw
   scans: section 9 names network topology from a fixed .mgf as the reproducible

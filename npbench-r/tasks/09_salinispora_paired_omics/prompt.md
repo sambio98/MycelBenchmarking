@@ -104,8 +104,9 @@ A molecular family is present in a strain when **any** of its spectra is.
 
 ### The links
 
-Score every (gene cluster family, molecular family) pair with the
-**standardised Metcalf score** over the 111 strains. For each strain, add:
+Score every (gene cluster family, molecular family) pair with the **Metcalf
+score** over the 111 strains — the weighted co-occurrence count. For each
+strain, add:
 
 | | molecular family present | absent |
 |---|---|---|
@@ -114,6 +115,8 @@ Score every (gene cluster family, molecular family) pair with the
 
 Score only molecular families present in at least one strain: a family nobody
 detected scores identically against every cluster family and says nothing.
+
+Use the raw weighted sum, not a standardised or z-scored variant.
 
 Then rank. Sort descending by score, breaking ties by `gcf_id` then `mf_id`
 ascending, and keep the top **500** rows. Rank is **dense**: tied scores share
