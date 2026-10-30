@@ -140,8 +140,8 @@ with the full staging can add it back.
 
 ## Reproducibility
 
-Pending. Two independent runs must be compared before `task.yaml`'s
-`determinism` field is changed from its current "pending verification".
+Verified. Two independent runs of stage 3 produce byte-identical output for all
+seven artifacts, including the 275,988-row link table.
 
 ## Scale
 

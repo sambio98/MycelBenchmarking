@@ -1,0 +1,37 @@
+[
+  {
+    "path": "bgc_inventory.csv",
+    "sha256": "991ab67669d3f96f42634095d46872e1491fa9a580aef24e879a890a03231692",
+    "rows": 2730
+  },
+  {
+    "path": "gene_cluster_families.csv",
+    "sha256": "ff09331e441211514085c063968813e2625ce71264d2bdddcef71f57d5019217",
+    "rows": 218
+  },
+  {
+    "path": "metcalf_scores.csv",
+    "sha256": "ddf9387c3632a5aa1be9e5952c74f16841808a284456bc0710393693d67369a7",
+    "rows": 275988
+  },
+  {
+    "path": "molecular_families.csv",
+    "sha256": "c1e7e33fce033581329baa353997c0568a24a0a8b3c5993571a9fc49e4dfa15f",
+    "rows": 2581
+  },
+  {
+    "path": "spectrum_occurrence.csv",
+    "sha256": "2a598bcafd76ab4702b43a56b6324429bf49ad4d48a9384266e3e7233e5ff582",
+    "rows": 65886
+  },
+  {
+    "path": "strain_inventory.csv",
+    "sha256": "ec8083806a740666ac62e93c8d3287cde86f77ad55d13031fde282cca657961e",
+    "rows": 111
+  },
+  {
+    "path": "top_links.csv",
+    "sha256": "99ce118bca5de3c63c1a2d9b3e33cfca1047dc4f8406faf511cf82ede29abfdc",
+    "rows": 500
+  }
+]

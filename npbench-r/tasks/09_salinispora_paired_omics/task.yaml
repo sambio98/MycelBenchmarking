@@ -68,13 +68,14 @@ data_scope: >-
   smallest accession.
 
 determinism: >-
-  Pending verification at the time of writing. The pipeline is built to be
-  deterministic: GECCO is pinned and its output is byte-identical across runs
-  (checked for task 02), the top-50 peak cut breaks ties on m/z, the presence
-  test takes the first scan to clear the threshold over a precursor-sorted
-  list, family names derive from their own contents rather than from a rank,
-  and the link ranking breaks ties on both identifiers. Two independent runs
-  must be compared before this field is changed to Verified.
+  Verified. Two independent runs of stage 3 over the same staged inputs produce
+  byte-identical output for all seven artifacts. The pieces that make that hold:
+  GECCO is pinned and its own output is byte-identical across runs (checked for
+  task 02), the top-50 peak cut breaks ties on m/z, the presence test walks a
+  precursor-sorted list and stops at the first scan to clear the threshold,
+  family names on both sides derive from their own contents rather than from a
+  rank, the Metcalf sum is integer arithmetic, and the link ranking breaks ties
+  on both identifiers before the 500-row cut.
 
 categories:
   - paired_omics
