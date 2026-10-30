@@ -6,7 +6,7 @@ describes 24 templates, 8 of them instantiated twice: 32 campaigns and 128
 graded rungs.
 
 **What was built is 25 campaigns from 20 templates, 5 of them instantiated
-twice, giving 100 graded rungs and 560 graded components, and the suite is frozen
+twice, giving 100 graded rungs and 558 graded components, and the suite is frozen
 there** (owner's decision, 2026-10-27). The difference from the catalogue is
 recorded rather than quietly dropped: three rows ground out on measurement
 (T-L2-4 x2, T-L5-2, T-L6-3, each with its numbers in `docs/npbench-c.md`), and

@@ -496,3 +496,24 @@ def test_an_unneeded_gold_side_declaration_is_refused(monkeypatch):
     check = gate._oracle_determinism(SMALL)
     assert check.status != PASS
     assert "are not needed" in check.detail
+
+
+def test_the_documented_component_count_is_the_specs_own_count():
+    """A headline number nothing reads is a number that drifts.
+
+    The docs said 560 graded components where the specs carried 558, and had
+    done since before the suite was frozen -- nobody recounted because nothing
+    recounted. This does.
+    """
+    rungs = components = 0
+    for campaign in CAMPAIGNS:
+        spec = json.loads((campaign / "grading.json").read_text())
+        rungs += len(spec["rungs"])
+        components += sum(len(r["components"]) for r in spec["rungs"])
+    assert rungs == 4 * len(CAMPAIGNS)
+
+    docs = (pathlib.Path(__file__).resolve().parents[2] / "docs")
+    for name in ("npbench-c.md", "catalog.md"):
+        text = (docs / name).read_text()
+        assert f"{components} graded components" in text, name
+        assert f"{rungs} graded rungs" in text, name

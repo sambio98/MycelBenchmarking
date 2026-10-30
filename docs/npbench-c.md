@@ -8,7 +8,7 @@ The suite is frozen at 25: that is the owner's decision of 2026-10-27 and it
 closes open item 7. The catalogue describes 32 campaigns from 24 templates; three
 rows were retired on measurement with their numbers recorded below, and the two
 remaining instantiations (T-L4-1 x2, T-L4-2 x2) are deliberately not built. 25
-campaigns x 4 rungs = **100 graded rungs** and **560 graded components**.
+campaigns x 4 rungs = **100 graded rungs** and **558 graded components**.
 
 ## What exists
 
@@ -84,7 +84,7 @@ PYTHONPATH=src python3 -m npbench_c.readiness.gate campaigns/construct-ecoli-reb
 ## The rung ladder
 
 The graded unit is the rung, not the campaign. 25 campaigns x 4 rungs = **100
-graded (prompt, gold) pairs**, carrying 560 graded components in all -- a median
+graded (prompt, gold) pairs**, carrying 558 graded components in all -- a median
 of 23 per campaign, from 11 to 38.
 
 | Rung | Measures | Target clear rate |
@@ -5053,10 +5053,12 @@ gates.
    exclusions that are less obvious than `gold/` and for the one campaign whose
    missing licence record it found.
 3. **Real systems for the sweep — the only thing between 1.0.0 and an auditable
-   benchmark.** The harness side is now complete: the prompt generator, the
-   validated system-set loader, the `--systems` CLI path and an end-to-end smoke
-   test are all in (see "The missing half of the sweep" above), and
-   `sweep_systems.example.json` is a template with three roles filled in. What
+   benchmark.** The harness side is now complete and exercised: the prompt
+   generator, the validated system-set loader, the `--systems` CLI path, and a
+   run over **all 25 campaigns with a non-stub command-line system — 12 runs
+   each, `{'completed': 12}` on every one** (see "Running a sweep over your own
+   agents" above). `sweep_systems.example.json` is a template with three roles
+   filled in. What
    remains is not code: it is **which agents to run and the credential and
    compute to run them**. The arithmetic, at the frozen 25 campaigns: 4
    rung-modes x 25 campaigns = 100 runs per system per repeat, so three systems
@@ -5101,7 +5103,7 @@ gates.
    remaining second instantiations — T-L4-1 ×2 and T-L4-2 ×2 — are buildable and
    deliberately not built (items 14 and 15). T-L3-5a counts as one of the 25: it
    is a built campaign whatever it replaced. 25 campaigns × 4 rungs = 100 graded
-   rungs carrying 560 graded components.
+   rungs carrying 558 graded components.
 8. ~~Sweep cost: the tool memo covers the tool, not the work around it.~~
    **Closed, and the diagnosis in this item was wrong.** Profiled per phase, the
    sandbox copy it blamed costs 0.01s and the parse was only one of three causes:
@@ -5173,3 +5175,39 @@ gates.
    hold more than ninety nodes, and the build refuses a hairball on purpose. So
    the work is declaring both caps with the measurement that sets them, not
    another corpus hunt.
+16. ~~The published contract did not name what the measurer reads.~~ **Closed,
+   in two layers, both now gated.** Projecting each oracle submission onto only
+   its contract-declared field names and grading that failed on **5 of 25**
+   campaigns, two at depth 0 — a perfect system following the contract would
+   have been graded as having failed to execute. Below that, **227 key names
+   inside those fields** appeared nowhere a system can read, and renaming one
+   took a perfect answer from depth 4 to depth 0. 109 contract fields gained an
+   exact key list, three deeper ones were written by hand, and checks 27
+   (`contract_names_what_is_graded`) and 28 (`every_key_name_is_findable`) hold
+   both layers — each verified to fire on a planted defect rather than only to
+   pass. The oracle never went through the contract, which is why nothing had
+   compared the two. See "Readiness gate" above.
+17. ~~The lock did not lock.~~ **Closed.** Built for the first time, the image
+   resolved **232 packages against the lock's 231**, with a dozen transitives
+   newer while every pinned tool sat at its pin and `--verify` passed. The lock
+   was a record and not a build input, so "a score is comparable only against a
+   run of the same image" was unenforceable. `lockfile --explicit` renders it as
+   a conda explicit file and the create step installs that; the rebuild came out
+   **231 packages, set-identical to the lock**. See "The image, built" above.
+18. ~~`image/Dockerfile` had never been built.~~ **Closed.** All twelve steps
+   build, the ~9.4 GB database layer included (step 7, 506 s), `--verify` passes
+   in-image, `antismash --check-prereqs` reports all prerequisites satisfied,
+   and the **invariance suite reproduces in the image** — 9 tools, 12
+   invocations, 9 pass / 0 fail, matching `image/thread_invariance.json` down to
+   diamond's documented `xfail` and mmseqs2's `sort_lines` canonicalisation.
+   Those verdicts had until then been measured against a prefix assembled in
+   stages outside any image. What no run here has done is EXPORT the finished
+   image: `docker build -t` wants about 30 GB free for the content store and the
+   unpacked snapshot together.
+19. **Gold derivability, as a standing property.** 21 of 25 campaigns rebuild
+   their committed gold byte-for-byte from the published sandbox alone; four need
+   exactly one declared file each, named with its reason in
+   `audit/gold_side_inputs.json`, and none of the four feeds a graded path.
+   `oracle_determinism` checks this on every gate run and also refuses a
+   declaration the build does not actually need. Nothing is open here — it is
+   listed so the next campaign is held to it.
