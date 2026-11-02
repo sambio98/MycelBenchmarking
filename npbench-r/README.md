@@ -16,9 +16,9 @@ Build order is set out in `CLAUDE.md`. Steps 1 and 2 are done and verified.
 |---|---|---|
 | 1 | Grading library | done |
 | 2 | Bundle validator | done; `npbench audit` adds the checks for a human curation pass |
-| 3 | One task end to end | **done**: task 02 validates clean and self-grades 1.00 |
-| 4 | Inspect AI harness | built; docker sandbox path unverified |
-| 5 | Remaining tasks | all 6 built (01–06) |
+| 3 | One task end to end | **done**: every task validates clean and grades 1.00 |
+| 4 | Inspect AI harness | **done**: runs end to end on a mock model; docker sandbox path still unexecuted |
+| 5 | Remaining tasks | **done**: 9 built (01–09), all eight categories covered |
 | 6 | Difficulty calibration | machinery built (`npbench calibrate`); needs model runs |
 
 Build order was reordered: **task 02 (Salinispora, BGC detection) was built
@@ -184,13 +184,14 @@ does.
 pip install -e ".[dev]"                       # graders, validator, harness
 T=02_salinispora_bgc
 
-make test                                      # 282 tests
+make test                                      # 288 tests
 make validate TASK=$T                          # bundle contract check
 make fetch TASK=$T                             # stage and checksum 191 MB of genomes
 make truth TASK=$T                             # run the reference solution into truth/
 make selfgrade TASK=$T                         # expect 1.00
 make grade TASK=$T OUTPUTS=<dir>               # grade any outputs directory
 make eval TASK=$T MODEL=anthropic/claude-opus-5
+make eval TASK=$T MODEL=mockllm/model          # smoke-test the harness, no API key
 
 make digest                                    # refingerprint truth/ after regenerating it
 make audit                                     # the human curation pass, all tasks

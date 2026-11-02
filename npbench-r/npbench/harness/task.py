@@ -7,10 +7,18 @@ artifact scorer.
     inspect eval npbench/harness/task.py -T task_dir=tasks/02_salinispora_bgc \
         --model anthropic/claude-opus-5
 
-Caveat, recorded rather than hidden: the docker sandbox wiring below has not
-been executed. The session this was written in had no docker daemon, so only
-the scorer and the tools are covered by tests. Treat `sandbox_spec` as the
-first thing to verify when a provisioned machine is available.
+Verified end to end against Inspect's mock model with `--sandbox local`: the
+bundle loads by path, the sample is built from prompt.md, the ReAct loop runs
+with its tools, and the scorer returns a score with its per-artifact reasons
+and metadata. Running it found two defects that no other test could reach,
+both now covered by tests in tests/test_harness.py -- see the class there for
+why importing this module normally cannot catch either.
+
+Caveat, recorded rather than hidden: the **docker** sandbox path is still
+unexecuted. The sessions this was built in had no docker daemon, so
+`sandbox_spec`'s compose and Dockerfile branches are covered only by unit
+tests, and `--sandbox local` is what the end-to-end run used. Treat the docker
+path as the first thing to verify on a provisioned machine.
 """
 
 from __future__ import annotations
@@ -22,9 +30,15 @@ from inspect_ai.agent import react
 from inspect_ai.dataset import Sample
 from inspect_ai.tool import bash_session, python, text_editor
 
-from .adjudicator import Adjudicator, Policy
-from .scorer import artifact_scorer
-from .tools import request_web_access
+# Absolute, not relative. `inspect eval npbench/harness/task.py@npbench_r` --
+# the invocation `make eval` uses and the one Inspect's own docs show -- loads
+# this file as a standalone module by path, and a relative import inside a
+# module with no package context raises ModuleNotFoundError before the task is
+# ever constructed. Absolute imports work under both that path form and the
+# ordinary `npbench.harness.task` module form.
+from npbench.harness.adjudicator import Adjudicator, Policy
+from npbench.harness.scorer import artifact_scorer
+from npbench.harness.tools import request_web_access
 
 # PROJECT.md §10: 32 vCPUs, 128 GB, no GPU, 24 hour cap, matching BixBench3 so
 # results stay comparable.
@@ -44,6 +58,35 @@ Work by writing and running scripts. The inputs are too large to read by eye.
 
 When you are finished, call submit().
 """
+
+
+# <root>/npbench/harness/task.py, so the repository root is three parents up.
+REPO_ROOT = Path(__file__).resolve().parents[2]
+
+
+def resolve_task_dir(task_dir: str) -> Path:
+    """The bundle directory, found whatever the working directory happens to be.
+
+    Inspect loads a task file by path and changes the working directory to that
+    file's own directory first, so a relative `-T task_dir=tasks/03_...` passed
+    from the repository root resolves against `npbench/harness/` and fails. An
+    absolute path is used as given; a relative one is tried against the working
+    directory and then against the repository root, which is what `make eval`
+    passes from.
+    """
+    candidate = Path(task_dir)
+    if candidate.is_absolute():
+        return candidate
+    if (candidate / "task.yaml").is_file():
+        return candidate
+    from_root = REPO_ROOT / candidate
+    if (from_root / "task.yaml").is_file():
+        return from_root
+    raise SystemExit(
+        f"no task bundle at {task_dir!r}: looked in {candidate.resolve()} and "
+        f"{from_root}. Pass -T task_dir=<path> relative to the repository root "
+        f"or as an absolute path."
+    )
 
 
 def load_policy(task_dir: Path) -> Policy:
@@ -77,7 +120,7 @@ def npbench_r(
     time_limit: int = TIME_LIMIT_SECONDS,
 ) -> Task:
     """One NPBench-R task bundle as an Inspect task."""
-    directory = Path(task_dir)
+    directory = resolve_task_dir(task_dir)
     adjudicator = Adjudicator(load_policy(directory))
 
     sample = Sample(

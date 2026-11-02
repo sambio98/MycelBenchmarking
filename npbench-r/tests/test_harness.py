@@ -8,6 +8,8 @@ exercised here with a stand-in reader in place of the sandbox.
 import asyncio
 from pathlib import Path
 
+import importlib.util
+
 import pytest
 
 from npbench.grading import load_grading_config, score_task
@@ -111,3 +113,80 @@ class TestTaskWiring:
 
     def test_sandbox_falls_back_to_local_without_one(self, tmp_path):
         assert sandbox_spec(tmp_path) == "local"
+
+
+class TestTheDocumentedEntrypointLoads:
+    """`inspect eval npbench/harness/task.py@npbench_r` must actually start.
+
+    This is the invocation `make eval` uses and the one Inspect's docs show.
+    Both of the bugs it had were invisible to every other test, because the
+    harness was constructed in-process by its own package and never loaded the
+    way Inspect loads it:
+
+      * Inspect loads the task file **by path**, as a module with no package
+        context, so `from .adjudicator import ...` raised ModuleNotFoundError
+        before the task was built.
+      * Inspect then changes the working directory to the task file's own
+        directory, so a relative `-T task_dir=tasks/03_...` passed from the
+        repository root resolved against `npbench/harness/` and the bundle was
+        not found.
+
+    Neither is reachable by importing the module normally, which is why they
+    survived until the entrypoint was run end to end.
+    """
+
+    TASK_FILE = Path(__file__).resolve().parents[1] / "npbench" / "harness" / "task.py"
+
+    def test_the_task_file_has_no_relative_imports(self):
+        source = self.TASK_FILE.read_text()
+        offenders = [
+            line for line in source.splitlines()
+            if line.startswith("from .") or line.startswith("from ..")
+        ]
+        assert offenders == [], (
+            "a relative import in this file breaks loading it by path: " + "; ".join(offenders)
+        )
+
+    def test_it_loads_as_a_standalone_module_by_path(self):
+        """Exactly how Inspect loads it: a path, as its own top-level module."""
+        spec = importlib.util.spec_from_file_location(str(self.TASK_FILE), self.TASK_FILE)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        assert hasattr(module, "npbench_r")
+
+    def test_a_relative_task_dir_resolves_from_another_working_directory(self, tmp_path, monkeypatch):
+        """Inspect cds into npbench/harness/ before calling the task function."""
+        from npbench.harness.task import resolve_task_dir
+
+        monkeypatch.chdir(self.TASK_FILE.parent)
+        resolved = resolve_task_dir("tasks/03_mibig_cheminformatics")
+        assert (resolved / "task.yaml").is_file()
+
+    def test_the_task_itself_builds_from_another_working_directory(self, monkeypatch):
+        """The resolution has to be wired into npbench_r, not merely available.
+
+        Testing resolve_task_dir on its own passes even when npbench_r still
+        calls Path(task_dir) directly, which was the actual bug. This builds
+        the task the way Inspect does and is the test that catches it.
+        """
+        from npbench.harness.task import npbench_r
+
+        monkeypatch.chdir(self.TASK_FILE.parent)
+        built = npbench_r(task_dir="tasks/03_mibig_cheminformatics")
+        assert built.name == "npbench-r-03_mibig_cheminformatics"
+        assert len(built.dataset) == 1
+        assert built.scorer is not None
+
+    def test_an_absolute_task_dir_is_used_as_given(self):
+        from npbench.harness.task import resolve_task_dir
+
+        bundle = Path(__file__).resolve().parents[1] / "tasks" / "03_mibig_cheminformatics"
+        assert resolve_task_dir(str(bundle)) == bundle
+
+    def test_a_missing_bundle_says_where_it_looked(self):
+        from npbench.harness.task import resolve_task_dir
+
+        with pytest.raises(SystemExit) as caught:
+            resolve_task_dir("tasks/99_does_not_exist")
+        message = str(caught.value)
+        assert "99_does_not_exist" in message and "repository root" in message
