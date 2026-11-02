@@ -204,6 +204,48 @@ Grading needs only numpy, pandas and pyyaml. Inspect AI is an extra
 (`pip install -e ".[harness]"`) so the graders stay installable without
 pulling in a hundred packages.
 
+## Starting from a fresh clone
+
+A clone carries everything except the payloads: `tasks/*/data/` and
+`tasks/*/truth/` are gitignored, so the first run of a task regenerates both.
+Verified by cloning this branch into an empty directory and running it:
+
+```bash
+pip install -e ".[dev]"
+make test                      # 288 tests, no data needed
+T=03_mibig_cheminformatics
+
+make validate TASK=$T          # 0 errors, 1 note: truth/ absent, 8 checks skipped
+make fetch TASK=$T             # stages and checksum-verifies from the manifest
+make truth TASK=$T             # runs the reference solution into truth/
+make validate TASK=$T          # now also checks truth against truth.digest.json
+make selfgrade TASK=$T         # expect 1.00
+```
+
+`make validate` on an unfetched clone reports **0 errors and a note naming the
+checks it skipped**, so it is safe to run before anything is staged.
+
+Three things to know before you budget a machine:
+
+- **Staging is 35.1 GB in total**, and 33.5 GB of that is task 09 alone. Tasks 03
+  and 04 are under 1 MB each and are the right ones to start on.
+- **Regenerating truth is hours for some tasks**, not minutes: ~90 min of GECCO
+  for task 02 and again for task 09, ~70 min of alignment for task 08 before it
+  was reworked to dereplicate, ~2 h for task 09 end to end. Each `task.yaml`
+  records measured per-stage costs under `runtime`.
+- **`truth.digest.json` is how you check your regenerated truth matches ours.**
+  `make validate` compares them automatically once truth/ exists. A mismatch
+  means a dependency moved or a reference database drifted, and it should be
+  explained before any score is trusted — see
+  [`TODO.md`](TODO.md) §4.5 for the one database that serves from an
+  unversioned URL.
+
+Task 09's spectra come through a proxy that throttles to about 1 MB/s sustained
+and returns 429 on a third rapid request, so `make fetch` on it takes roughly an
+hour. `scripts/stage_task09_spectra.py` is the streaming stager used to build
+it, which fetches a batch, extracts features and deletes the payload, keeping
+peak disk at a few hundred MB if you cannot spare 33.5 GB.
+
 ## Grading model
 
 Four metrics, selected per artifact, multiplied into one artifact score. An

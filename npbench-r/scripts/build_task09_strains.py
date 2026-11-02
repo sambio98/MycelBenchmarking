@@ -14,8 +14,16 @@ analytical batch constant -- same sample preparation, same instrumentation,
 same deposit directory -- because comparing metabolomes across extraction
 methods would confound every occurrence call downstream.
 
-    python scripts/build_task09_strains.py --podp <project.json> \
-        --strains tasks/02_salinispora_bgc/strains.tsv --out <strains.tsv>
+    python scripts/build_task09_strains.py \
+        --strains tasks/02_salinispora_bgc/strains.tsv \
+        --out tasks/09_salinispora_paired_omics/strains.tsv
+
+With no --podp it fetches the project record from the Paired Omics Data
+Platform by the id below. Pass --podp <project.json> to use a local copy
+instead. The id is recorded here rather than left in a shell history, because
+without it the join cannot be re-derived and the committed strains.tsv becomes
+a file nobody can reproduce or extend -- to the other two extraction methods,
+for instance.
 """
 
 from __future__ import annotations
@@ -25,6 +33,12 @@ import csv
 import json
 import re
 from pathlib import Path
+
+# The Paired Omics Data Platform's record for MassIVE MSV000078836, the
+# Crusemann 146-strain survey. 360 genome-to-metabolome links, 120 strains
+# across three extraction methods.
+PODP_PROJECT_ID = "297c364c-b154-4edd-a7d5-68decf9effa2.4"
+PODP_API = "https://pairedomicsdata.bioinformatics.nl/api/projects"
 
 EXTRACTION = "Ethyl acetate"
 
@@ -39,6 +53,22 @@ MASSIVE_PREFIX = "ftp://massive.ucsd.edu/MSV000078836/"
 PROXY = "https://massiveproxy.gnps2.org/massiveproxy/MSV000078836/"
 
 
+def fetch_project() -> dict:
+    """The PoDP project record, straight from its API."""
+    import urllib.request
+
+    url = f"{PODP_API}/{PODP_PROJECT_ID}"
+    print(f"fetching {url}", flush=True)
+    with urllib.request.urlopen(url, timeout=120) as response:
+        project = json.loads(response.read().decode())
+    links = project.get("genome_metabolome_links") or []
+    if not links:
+        raise SystemExit(f"{url} returned no genome_metabolome_links")
+    print(f"  {len(links)} genome-to-metabolome links, "
+          f"{len(project.get('genomes') or [])} genomes", flush=True)
+    return project
+
+
 def normalise_strain(label: str) -> str:
     """Strain codes disagree between sources: CNT849 here, CNT-849 there."""
     return re.sub(r"[^A-Z0-9]", "", label.upper())
@@ -46,12 +76,14 @@ def normalise_strain(label: str) -> str:
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--podp", type=Path, required=True)
+    parser.add_argument("--podp", type=Path, default=None,
+                        help=f"local copy of the PoDP project record; "
+                             f"default: fetch {PODP_PROJECT_ID}")
     parser.add_argument("--strains", type=Path, required=True)
     parser.add_argument("--out", type=Path, required=True)
     args = parser.parse_args()
 
-    project = json.loads(args.podp.read_text())
+    project = json.loads(args.podp.read_text()) if args.podp else fetch_project()
     links = [
         link for link in project["genome_metabolome_links"]
         if link["extraction_method_label"] == EXTRACTION

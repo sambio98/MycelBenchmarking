@@ -9,6 +9,12 @@ This is the list of what is *not* done, written so a reviewer can act on it
 without rereading the history. Each item says who it is waiting on and where
 the evidence lives.
 
+A fresh clone was tested: 288 tests pass with no data, `make validate` reports
+0 errors on an unstaged bundle, and `make fetch` stages and checksum-verifies.
+See the README's "Starting from a fresh clone" for the sequence and the time and
+disk it needs. Total staging across all nine tasks is 35.1 GB, of which task 09
+is 33.5 GB.
+
 ---
 
 ## 1. Blocked on access or hardware
