@@ -5,8 +5,10 @@ gene clusters. Agents are given raw deposited data and prescribed methods, and
 must produce structured artifacts that are graded against the ones the original
 authors published.
 
-Read [`PROJECT.md`](PROJECT.md) for the design and the reasoning behind it, and
-[`CLAUDE.md`](CLAUDE.md) for how to work in this directory.
+Read [`PROJECT.md`](PROJECT.md) for the design and the reasoning behind it,
+[`CLAUDE.md`](CLAUDE.md) for how to work in this directory, and
+[`TODO.md`](TODO.md) for what is left — what is blocked on access, what needs a
+decision, and the weaknesses that are documented rather than fixed.
 
 ## State
 
