@@ -14,6 +14,7 @@ campaigns x 4 rungs = **100 graded rungs** and **558 graded components**.
 
 | Component | Path | State |
 |---|---|---|
+| Owner decisions | `docs/decisions.md` | 9 open, each with its constraints and a recommendation |
 | Scoring primitives | `src/npbench_c/grading/primitives.py` | 12 primitives, stdlib-only |
 | Composition policy | `src/npbench_c/grading/compose.py` | product / geometric+floor / min |
 | Rung ladders | `src/npbench_c/grading/ladder.py` | depth, monotonicity, chance floor |
@@ -5036,6 +5037,11 @@ does. Hardened on the way past: the summary printer raised on a report with no
 gates.
 
 ## Open items
+
+What is left is nine OWNER decisions rather than code, and each one is written up
+with its fixed constraints and a recommendation in **`docs/decisions.md`**. The
+items below are the project's own record; that file is the decision list.
+
 
 1. ~~CAI table provenance.~~ **Closed.** The tables are derived from two pinned
    INSDC records by a declared ribosomal-protein rule, the reference set is
