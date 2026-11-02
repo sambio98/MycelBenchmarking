@@ -1,0 +1,319 @@
+campaign_id: frameshift-scoelicolor-01
+template_id: frameshift-response
+track: EX
+family: boundary_and_robustness
+layer: L1_sequence_and_annotation
+np_class: mixed
+version: 1.0.0
+horizon_tier: T-short
+license_class: open
+grader_version: "2.0.0+9fc95658"
+grading_spec_version: "1.0.0"
+min_tool_surface: S1
+tool_surface_note: >
+  Needs Prodigal and nothing else, like the gene-calling campaign on this same
+  contig. R1 reports the tool identity and the baseline call count, so the
+  no-tool ablation fails the first rung, and every rung above it is made of
+  caller runs over mutated copies of the contig.
+
+license_notice:
+  source: >
+    The INSDC record for the Streptomyces coelicolor A3(2) chromosome,
+    AL645882.2, reduced to its bases
+  license: public domain / no restrictions on use (INSDC)
+  attribution: >
+    Sequence from INSDC accession AL645882.2
+    (https://www.ebi.ac.uk/ena/browser/view/AL645882).
+  redistribution: >
+    inputs/contig.fna.gz carries the record's bases unchanged under a published
+    extraction rule. INSDC sequence data carries no redistribution restriction.
+    No annotation is shipped, and the mutated contigs are not shipped either:
+    they follow from the declared rule.
+
+objective: >
+  A frameshift is the cheapest way to break a gene: take out one base and
+  everything downstream reads in the wrong frame until a stop codon turns up.
+  Run the pinned caller over the contig to establish what it calls, select the
+  declared target genes from its own output, then delete a single declared base
+  inside each one, run the caller again, lift its coordinates back past the
+  deletion, and report what became of each broken gene from a closed vocabulary.
+  Then walk the deletion along one gene, and repeat the whole experiment under
+  the caller's other mode.
+
+method_guidance: partial
+
+scope_note: >
+  Gold is the declared projection of a pinned caller's own output over mutated
+  copies of one contig, plus exact arithmetic over it, tier G1.
+
+  This campaign PLANTS the frameshift, and that is the point. "Which locus is a
+  pseudogene" is a judgement nobody can grade: the literature disagrees, the
+  annotation pipelines disagree, and there is no oracle. A frameshift the
+  campaign introduced itself is known by construction, so what is graded is never
+  whether a gene is broken -- it demonstrably is -- but what the caller reports
+  when it is.
+
+  Five things are load-bearing.
+
+  The mode is META here, and the reason is measured. The gene-calling campaign on
+  this same chromosome pins the caller's SINGLE mode, because that mode trains on
+  its input and the retraining is the finding there. Here retraining is noise:
+  deleting one base out of 8.7 megabases moves calls across the whole chromosome
+  in single mode, and the planted frameshift's signature -- one call lost, two
+  gained -- cannot be separated from it. The noise arm measures that rather than
+  asserting it.
+
+  The coordinate contract is a lift PAST THE DELETION. Delete a base at position
+  p and every mutated coordinate at or after p stands for a parent coordinate one
+  higher. Skip that and every call downstream looks moved by one, which turns a
+  surgical result into thousands of spurious differences.
+
+  The verdict is classified by OVERLAP with the target's own span, not inside a
+  window. A frameshifted gene can produce an ORF running past where the original
+  ended, so any fixed window misclassifies it.
+
+  The targets come from the caller's own baseline output under a declared rule,
+  so no annotation is needed to choose them and the selection is reproducible.
+
+  And the verdict is not assumed to be a function of gene length. Whether each
+  half of a broken gene is callable depends on a start codon and a
+  ribosome-binding site falling in the right place downstream of the break, not
+  only on how much room there is, so the campaign reports the verdict per target
+  and grades whether the ladder is monotone rather than grading a threshold. The
+  declared ladder samples one band at a uniform ten-base step for that reason;
+  what the verdicts in it are is the question, and this file does not answer it.
+
+catalog_deviation: >
+  Four changes, each forced by a measurement.
+
+  The catalogued R3 was "which locus is a pseudogene and why, closed enum". The
+  enum is built; the claim is not about which locus IS a pseudogene, because that
+  has no oracle. It is about what the caller does to a locus the campaign broke
+  on purpose, and the "why" is which of the declared responses it shows.
+
+  The catalogued R4 was "an indel is introduced elsewhere -- predict the new
+  pseudogene call". Measured on a long gene, the CALL does not change as the
+  indel moves: every offset from five per cent to ninety-five per cent of the way
+  along produces the same verdict, two overlapping ORFs. What changes is where
+  the gene splits, and the split tracks the indel. So R4 grades the split point
+  rather than the verdict, which is the claim the data supports.
+
+  The catalogued perturbation name was `shift_coordinates`. The perturbation here
+  deletes a base from the SEQUENCE; shifting coordinates would move the
+  annotation and leave the bases alone, which is a different experiment and one a
+  gene caller could not notice.
+
+  And the target ladder is a measurement rather than a set of round numbers. An
+  earlier draft declared eleven lengths from 100 to 20000 in the usual steps, and
+  its verdict list came out in contiguous blocks, which is two cut points in
+  disguise: R3 would have graded one threshold restated once per target. Measured
+  at a ten-base step, the caller's recovery of a broken gene has no threshold, and
+  the round numbers step over the band where that shows. The declared ladder
+  samples that band at a uniform ten-base step, so the band's width is the
+  measurement and no length inside it is chosen over another. The build refuses
+  gold if the verdict list comes out monotone, which is the guard against the
+  earlier draft's failure mode rather than a claim about the data.
+
+  The band's own verdicts are not stated here, in this file or in `reference/`,
+  and that is deliberate: they are what R3 grades. An earlier version of this
+  section listed them, which would have handed over twelve of the twenty-one
+  answers in prose.
+
+template_params:
+  contig_input: inputs/contig.fna.gz
+
+output_contract:
+  frameshift_report.json:
+    accession / baseline_mode / noise_mode / indel_fraction / fixed_flags: >
+      Reported for the record and NOT graded. The accession is the FASTA
+      identifier and the rest are echoes of the pinned rules table.
+    prodigal_version: >
+      What made the calls. With the mode and the flags this is the whole of the
+      pin: the caller is ab initio and reads no database.
+    contig_length / contig_sha256 / baseline_calls: >
+      The contig as you read it -- the digest over the BASES, not the file -- and
+      how many calls the caller makes over it untouched.
+    target_table: >
+      Per declared target length, the baseline call selected for it: start, end,
+      strand, its actual length, and the 1-based position this campaign deletes
+      inside it.
+
+      Keys, exactly: one entry per key the data supplies, each carrying `deleted_at`,
+      `end`, `length`, `start`, `strand`.
+    target_length_summary: >
+      How many targets, and the shortest and longest actual length among them.
+    response_table: >
+      Per declared target, what the caller did once the base was deleted: the
+      verdict, how many new calls overlap the target's span and their lengths,
+      how many of the target's bases are still called, the call totals before and
+      after, and the calls elsewhere that moved -- which a single deleted base
+      can cost.
+
+      Keys, exactly: one entry per key the data supplies, each carrying
+      `bases_of_the_target_still_called`, `calls_after`, `calls_before`, `deleted_at`,
+      `new_call_lengths`, `other_calls_gained`, `other_calls_lost`,
+      `overlapping_new_calls`, `target_end`, `target_length`, `target_start`,
+      `target_strand`, `verdict`.
+    verdict_census / verdict_by_length: >
+      The count per declared verdict, and the verdict for each declared target
+      length in order.
+
+      Keys, exactly: `verdict_census` keys `abolished`, `split_into_two`,
+      `truncated_to_one`, `unchanged`.
+    verdict_is_monotone_in_length: >
+      Whether each verdict occupies one contiguous block as the targets get
+      longer, so that the per-length list is recoverable from its cut points.
+      True or False are both reportable answers and the campaign requires
+      neither; which one holds here is graded, so this file does not say.
+    offset_sweep: >
+      One declared target with the deletion walked across it: per declared
+      fraction, where the base was deleted, how far into the gene that is, the
+      verdict, and the overlapping call lengths.
+
+      Keys, exactly: one entry per key the data supplies, each carrying
+      `bases_into_the_gene`, `bases_of_the_target_still_called`, `deleted_at`,
+      `new_call_lengths`, `verdict`.
+    noise_arm: >
+      The declared subset of targets re-run under the caller's other mode: the
+      verdict, how many moved calls the target itself explains, how many moved
+      elsewhere, and the ratio. Null where the target explains none.
+
+
+      Keys, exactly: one entry per key the data supplies, each carrying
+      `calls_explained_by_the_target`, `deleted_at`, `noise_to_signal`,
+      `other_calls_moved`, `verdict`.
+constraints:
+  reference_dir: reference
+  pinned_tables:
+    - reference/frameshift_rules.json   # modes, targets, offsets, vocabulary
+  external_resources: []
+  external_resources_note: >
+    None. An ab initio caller reads only the sequence it is given, so the version
+    and the mode are the whole of the pin, as in the gene-calling campaign.
+
+snapshots_required:
+  shipped: [insdc@AL645882.2]
+  fetched: []
+  image: [prodigal@2.6.3]
+
+budgets:
+  wall_clock_minutes: 60
+  cpu: 2
+  memory_gb: 4
+  network: off
+  budget_note: >
+    Measured rather than estimated: the reference build takes twelve minutes and
+    forty-seven seconds of wall clock for thirty-two caller runs over an 8.67 Mb
+    contig -- one whole-contig baseline per mode, one run per declared target,
+    five for the offset sweep and one per target in the noise arm. A run in the retraining
+    mode costs several times one in the pinned mode, because that mode trains on
+    the input. Sixty minutes rather than thirty, since a system has to decide
+    what to run as well as run it, and the ladder is twenty-one targets rather
+    than the eleven an earlier draft declared.
+
+rungs:
+  - {rung_id: r1, ordinal: 1, name: execute,        gold_tier: G1, warm_start_bundle: null}
+  - {rung_id: r2, ordinal: 2, name: correct,        gold_tier: G1, warm_start_bundle: gold/warm/r2}
+  - {rung_id: r3, ordinal: 3, name: commit,         gold_tier: G1, warm_start_bundle: gold/warm/r3}
+  - {rung_id: r4, ordinal: 4, name: counterfactual, gold_tier: G1, warm_start_bundle: gold/warm/r4}
+
+# Nothing shipped here is altered: inputs/contig.fna.gz is byte-identical to the
+# gene-calling campaign's extraction of the same accession, digest included. The
+# frameshift is introduced by the declared rule at run time, at a position the
+# rule fixes, which is what makes the broken gene known by construction rather
+# than a judgement -- and it is why the mutated copies are not shipped. The noise
+# arm is the control, and it measures the mode this campaign does not use.
+
+harness:
+  gold_command: ["python3", "-m", "npbench_c.templates.frameshift_response.build", "{campaign}"]
+  solve_command: ["python3", "-m", "npbench_c.templates.frameshift_response.solve", "{campaign}", "{submission}"]
+  measure_command: ["python3", "-m", "npbench_c.templates.frameshift_response.measure", "{campaign}", "{submission}", "{measurement}"]
+  stub_module: npbench_c.sweep.stubs.stub_frameshift
+  stub_args: []
+  stub_levels:
+    - {name: stub-reader,      level: reader, timeout_s: 3600}
+    - {name: stub-respond,     level: respond, reference: true, timeout_s: 3600}
+    - {name: stub-verdict,     level: verdict, timeout_s: 3600}
+    - {name: stub-complete,    level: complete, timeout_s: 3600}
+    - {name: stub-unlifted,    level: unlifted, timeout_s: 3600}
+    - {name: stub-noncompute,  level: noncompute, mode: no_tool, timeout_s: 600}
+
+grading:
+  chance_levels: {r1: 1.0, r2: 0.001, r3: 0.001, r4: 0.001}
+  chance_level_notes:
+    r1: >
+      Nominal rather than measured. The baseline call count and the selected
+      targets cannot be guessed, so the no-tool ablation fails R1 outright; the
+      level stays at 1.0 because any system that reads the contig and runs the
+      caller clears it, and the capped floor is computed over R2 upward.
+
+excluded_from_grading:
+  - field: whether any locus on this chromosome is really a pseudogene
+    reason: >
+      The catalogued R3's literal claim, and it has no oracle. The literature
+      disagrees, the annotation pipelines disagree, and scoring a system against
+      a curator's reading is the human judgement this benchmark excludes from
+      grading. What replaces it is a frameshift the campaign introduced itself,
+      where the broken gene is known by construction and the question is what the
+      caller reports.
+  - field: the verdict as a function of the indel's position
+    reason: >
+      The catalogued R4's claim, and measured it does not vary: on a long gene
+      every declared offset from five to ninety-five per cent of the way along
+      gives the same verdict, two overlapping ORFs. Grading it would grade one
+      answer repeated five times. What the offsets do change is the split point,
+      which the sweep grades instead.
+  - field: accession, baseline_mode, noise_mode, indel_fraction, fixed_flags
+    reason: >
+      Echoes. The accession is the FASTA identifier the input carries and the
+      rest are the pinned rules table read back. Reported so a run records what
+      it was, and not graded.
+  - field: the predicted protein sequences of the broken genes
+    reason: >
+      A function of the coordinates and the mutated contig, so grading them would
+      grade the translation table twice. The coordinates are the claim, and for a
+      frameshifted gene the interesting coordinate is where the new ORFs start
+      and stop.
+
+notes_for_audit:
+  - >
+    These notes say what to recompute and from where. They state no graded
+    value: an auditor has gold and `docs/npbench-c.md`, which carry the numbers,
+    and a system reading this file does not.
+  - >
+    Read `gold/gold.json` against the build's own refusals in
+    `src/npbench_c/templates/frameshift_response/build.py`, which name the
+    conditions that would make each rung measure nothing, and
+    `tests/unit/test_campaign_frameshift.py`, which has one mutation case per
+    refusal. The four worth re-deriving by hand, in this order:
+  - >
+    First, the verdict column against the premise. A planted single-base
+    deletion inside a gene cannot leave the caller reporting that gene's exact
+    coordinates, so each row's verdict is a claim about where the deletion
+    landed and whether the coordinate lift is right -- and both failures produce
+    plausible-looking tables rather than errors. Take one target from
+    `target_table`, cut the base at its `deleted_at` out of the shipped contig
+    yourself, run the pinned caller, lift the coordinates past the cut, and
+    compare.
+  - >
+    Second, the per-length verdict list for contiguity. A list in which each
+    verdict occupies one block is recoverable from its cut points, which would
+    make R3 one threshold restated once per target; the build refuses gold in
+    that case, and the dense part of the declared ladder exists to stop that
+    happening quietly. The check worth doing independently is to re-run two
+    ADJACENT band targets and see whether they agree.
+  - >
+    Third, the offset sweep's first-fragment lengths. They must be distinct and
+    increasing, because the split point tracks the indel: repeats mean the axis
+    measures nothing, and disorder means the coordinates are wrong. The build
+    refuses both.
+  - >
+    Fourth, the noise arm, which is this campaign's justification for its own
+    choice of mode and is a ratio rather than an argument. Read it before taking
+    the baseline mode on trust; if the retraining mode moved no more calls than
+    the target itself explains, the choice would need re-measuring, and the
+    build refuses gold in that case too.
+  - >
+    And the mutated contigs are not shipped and must not be. They follow from
+    the declared rule, and shipping them would hand over both the target
+    positions and the coordinate lift.

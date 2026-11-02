@@ -1,0 +1,32 @@
+{
+  "attribution": "MassBank consortium, MassBank-data release 2026.03 (https://github.com/MassBank/MassBank-data), CC BY 4.0",
+  "census": {
+    "cross_contributor_spectra_before_the_window_filter": 54101,
+    "library_compounds": 154,
+    "library_contributors": 25,
+    "library_spectra": 1195,
+    "node_compounds": 121,
+    "node_instrument": "LC-ESI-ITFT",
+    "nodes": 478,
+    "nodes_whose_compound_is_in_the_library": 114
+  },
+  "cuts": {
+    "ms2_positive": 78646,
+    "protonated": 69038,
+    "records": 139240,
+    "usable": 54599
+  },
+  "files": {
+    "library.json.gz": "ff3f6c6ba08169b1e39b6540e6051b6e64330c18f711cd905fa2d882194f3062",
+    "nodes.json.gz": "ea103728fdafd53e032030d417ee72766debeafc7a0efa750f8d4d6796065458"
+  },
+  "library_rule": "Every usable record from a DIFFERENT contributor whose precursor m/z is within 0.01 Da -- the declared annotation window -- of at least one node's. Excluding the node contributor wholesale is what makes an annotation cross-laboratory. The window filter changes no answer: a spectrum outside every node's window cannot be a candidate for any node, by the definition of the filter, so the filter is a declared function of the shipped nodes and the declared window rather than a choice about what to hide. The unfiltered cross-contributor count is in the census below.",
+  "license": "CC BY 4.0",
+  "node_set_rule": "Every usable record contributed by AAFC on LC-ESI-ITFT: one laboratory, one instrument, which is what a molecular network is built from. Usable means MS2, POSITIVE, [M+H]+, carrying an InChIKey and a precursor m/z, with at least 5 peaks.",
+  "peaks": "sorted by m/z, m/z rounded to 6 decimals, intensity to 4",
+  "release": "2026.03",
+  "release_is_a_tag": "The tag, not the branch. MassBank's dev branch carries a VERSION string that reads like a release -- 2026.03.1-SNAPSHOT -- which no clone can reproduce because dev moves. prepare_input refuses one.",
+  "source": "MassBank-data, release tag 2026.03, cloned shallow from https://github.com/MassBank/MassBank-data",
+  "url": "https://github.com/MassBank/MassBank-data",
+  "what_is_not_shipped": "No identity for the nodes: the compound a node is, is the answer. A node record carries accession, contributor, instrument_type, precursor_mz, precursor_type, peaks and no compound block, InChIKey or formula -- a formula would name the compound almost uniquely inside a precursor window. The identities go to gold/nodes_truth.json, which no sandbox copies and no release ships, and the grading core refuses a node record that carries one. The library does carry compound blocks, because a reference library without identities is not a reference library. The network itself is not shipped either: it follows from the declared edge rule over the shipped nodes."
+}

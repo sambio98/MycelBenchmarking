@@ -1,0 +1,17 @@
+{
+  "description": "Monoisotopic atomic masses, in daltons. Pinned campaign data: gold depends on these being frozen and published, not on their being the latest IUPAC revision.",
+  "source": "Standard monoisotopic masses of the most abundant stable isotope of each element.",
+  "monoisotopic": {
+    "H": 1.0078250319,
+    "C": 12.0,
+    "N": 14.0030740052,
+    "O": 15.9949146221,
+    "P": 30.97376151,
+    "S": 31.97207069,
+    "Cl": 34.96885271,
+    "Br": 78.9183376,
+    "F": 18.9984032,
+    "Fe": 55.9349421,
+    "Zn": 63.9291466
+  }
+}

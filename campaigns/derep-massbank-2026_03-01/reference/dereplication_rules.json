@@ -1,0 +1,36 @@
+{
+  "_what_this_is": "The pinned rules an MS2 dereplication campaign grades against. Every number here is part of gold's definition, not a parameter of the comparison, and each one was measured before it was pinned -- see the grounding section in docs/npbench-c.md.",
+  "search": {
+    "tool": "matchms",
+    "tool_version": "0.30.2",
+    "similarity": "CosineGreedy",
+    "peak_tolerance": 0.01,
+    "peak_tolerance_note": "The baseline, in Da. Measured over 300 queries against the whole library: the top-1 rate is flat across 0.005 to 0.1 (0.877 to 0.890) while 26 of 300 per-query answers move somewhere in that range. So the tolerance is pinned and the grid below is a graded axis rather than a detail.",
+    "precursor_window": 0.01,
+    "precursor_window_note": "Candidates are library spectra whose precursor m/z is within this window, in Da, of the query's. This is the filter dereplication practice applies and the thing an adduct misassignment breaks; measured candidate-set sizes are median 20, mean 29.7, max 149 over the eligible corpus.",
+    "tolerance_grid": [0.005, 0.01, 0.02, 0.05, 0.1],
+    "tolerance_grid_note": "The R4 axis. Changing the tolerance barely moves the aggregate and moves individual answers, which is the campaign's finding.",
+    "ranking_rule": "Candidates are ordered by score descending, then matched-peak count descending, then accession ascending. The third key is not cosmetic: equal scores occur and a rule that stopped at two keys would make the answer depend on the order matchms happened to return."
+  },
+  "confidence": {
+    "rule": [[0.8, 6, "confirmed"], [0.5, 3, "tentative"]],
+    "fallback": "unsupported",
+    "note": "A declared, mechanical class: the first row whose score floor AND matched-peak floor the top match meets. Measured over 300 queries: 135 confirmed, 116 tentative, 48 unsupported, so the class discriminates rather than collapsing. MassBank's own CONFIDENCE field cannot be used -- 95 of 139,240 records carry it, one contributor's convention rather than a corpus-wide field.",
+    "vocabulary": ["confirmed", "tentative", "unsupported", "no_candidate", "no_match"]
+  },
+  "ambiguity": {
+    "margin": 0.05,
+    "note": "An annotation is ambiguous when the best-scoring candidate of a DIFFERENT compound is within this margin of the top score. Measured: a competing compound exists for only 129 of 300 queries at all, and 43 of those 129 sit inside 0.05. So ambiguity is graded as a set over the queries where a competitor exists, and the catalogued 'discriminating fragment' per annotation is not graded -- it is undefined for the 57% of queries whose candidate window holds no other compound."
+  },
+  "adduct_misassignment": {
+    "assumed": "[M+H]+",
+    "misread_as": "[M+Na]+",
+    "proton_mass": 1.00727646,
+    "sodium_mass": 22.98922,
+    "note": "The R4 control, and the measured reason it is a census rather than a per-query verdict: re-reading a protonated precursor as sodiated moves the candidate window 21.98 Da down, and over 300 queries that leaves 246 with NO candidate at all, 54 with a wrong top-1 and 0 correct. A misassigned adduct does not make dereplication wrong, it makes it silent -- which is the finding, and which is why 'predict which annotations survive' would have graded one answer."
+  },
+  "environment": {
+    "interpreter": "the tool prefix's python3.11, invoked as a subprocess",
+    "note": "matchms is a library pin, not a binary. The campaign never imports it: the grading core is stdlib-only, and numpy, scipy and numba stay out of its address space."
+  }
+}

@@ -1,0 +1,157 @@
+{
+  "accession": "BGC0000386",
+  "compounds": [
+    "malleobactin A",
+    "malleobactin B",
+    "malleobactin C",
+    "malleobactin D"
+  ],
+  "monomer_formulas": {
+    "N5-formyl-N5-hydroxyornithine": "C6H12N2O4",
+    "N5-hydroxyornithine": "C5H12N2O3",
+    "aspartic acid": "C4H7NO4",
+    "serine": "C3H7NO3"
+  },
+  "monomers": [
+    "N5-hydroxyornithine",
+    "aspartic acid",
+    "serine",
+    "N5-formyl-N5-hydroxyornithine"
+  ],
+  "n_modules": 4,
+  "naive_assembly_formula": "C18H32N6O11",
+  "naive_assembly_monoisotopic_mass": 508.2129,
+  "peptide_bonds": 3,
+  "per_compound": {
+    "malleobactin A": {
+      "product_formula": "C23H40N8O13",
+      "product_monoisotopic_mass": 636.2715,
+      "residual": {
+        "C": 5,
+        "H": 8,
+        "N": 2,
+        "O": 2
+      },
+      "residual_full": {
+        "Br": 0,
+        "C": 5,
+        "Cl": 0,
+        "F": 0,
+        "Fe": 0,
+        "H": 8,
+        "N": 2,
+        "O": 2,
+        "P": 0,
+        "S": 0,
+        "Zn": 0
+      },
+      "verdict": "additional_chemistry_required"
+    },
+    "malleobactin B": {
+      "product_formula": "C23H42N8O12",
+      "product_monoisotopic_mass": 622.2922,
+      "residual": {
+        "C": 5,
+        "H": 10,
+        "N": 2,
+        "O": 1
+      },
+      "residual_full": {
+        "Br": 0,
+        "C": 5,
+        "Cl": 0,
+        "F": 0,
+        "Fe": 0,
+        "H": 10,
+        "N": 2,
+        "O": 1,
+        "P": 0,
+        "S": 0,
+        "Zn": 0
+      },
+      "verdict": "additional_chemistry_required"
+    },
+    "malleobactin C": {
+      "product_formula": "C23H40N8O12",
+      "product_monoisotopic_mass": 620.2766,
+      "residual": {
+        "C": 5,
+        "H": 8,
+        "N": 2,
+        "O": 1
+      },
+      "residual_full": {
+        "Br": 0,
+        "C": 5,
+        "Cl": 0,
+        "F": 0,
+        "Fe": 0,
+        "H": 8,
+        "N": 2,
+        "O": 1,
+        "P": 0,
+        "S": 0,
+        "Zn": 0
+      },
+      "verdict": "additional_chemistry_required"
+    },
+    "malleobactin D": {
+      "product_formula": "C46H80N16O23",
+      "product_monoisotopic_mass": 1224.5582,
+      "residual": {
+        "C": 28,
+        "H": 48,
+        "N": 10,
+        "O": 12
+      },
+      "residual_full": {
+        "Br": 0,
+        "C": 28,
+        "Cl": 0,
+        "F": 0,
+        "Fe": 0,
+        "H": 48,
+        "N": 10,
+        "O": 12,
+        "P": 0,
+        "S": 0,
+        "Zn": 0
+      },
+      "verdict": "additional_chemistry_required"
+    }
+  },
+  "single_module_deletions": {
+    "1": {
+      "deleted_monomer": "N5-hydroxyornithine",
+      "feasible": true,
+      "formula": "C13H22N4O9",
+      "mass_shift": -130.0742,
+      "monoisotopic_mass": 378.1387,
+      "peptide_bonds": 2
+    },
+    "2": {
+      "deleted_monomer": "aspartic acid",
+      "feasible": true,
+      "formula": "C14H27N5O8",
+      "mass_shift": -115.0269,
+      "monoisotopic_mass": 393.186,
+      "peptide_bonds": 2
+    },
+    "3": {
+      "deleted_monomer": "serine",
+      "feasible": true,
+      "formula": "C15H27N5O9",
+      "mass_shift": -87.032,
+      "monoisotopic_mass": 421.1809,
+      "peptide_bonds": 2
+    },
+    "4": {
+      "deleted_monomer": "N5-formyl-N5-hydroxyornithine",
+      "feasible": true,
+      "formula": "C12H22N4O8",
+      "mass_shift": -158.0691,
+      "monoisotopic_mass": 350.1438,
+      "peptide_bonds": 2
+    }
+  }
+}

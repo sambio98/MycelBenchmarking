@@ -1,0 +1,1164 @@
+{
+  "_headline": {
+    "ci_high": 0.625,
+    "ci_low": 0.625,
+    "ci_note": "single-campaign cluster bootstrap; intervals tighten only with more campaigns, not more repeats",
+    "cold_mean_score": 0.625
+  },
+  "_meta": {
+    "campaign_id": "massbalance-nrps-sevadicin-01",
+    "chance_floor": 0.25265,
+    "infra_failures": 0,
+    "note": "Scores exclude infra failures (timeout/crash); run_status_counts reports them so the headline is not measuring the container.",
+    "repeats": 3,
+    "run_status_counts": {
+      "completed": 60
+    },
+    "stub_based": true,
+    "stub_systems": [
+      "stub-naive",
+      "stub-assembled",
+      "stub-analyst",
+      "stub-complete",
+      "stub-parametric"
+    ],
+    "stub_warning": "A stub-based sweep validates the harness, not the campaign: stub systems are built to reach preset depths, so difficulty, discrimination and monotonicity numbers from one are fixtures. The readiness gate keeps these checks PENDING until a sweep runs real systems.",
+    "systems": [
+      "stub-naive",
+      "stub-assembled",
+      "stub-analyst",
+      "stub-complete",
+      "stub-parametric"
+    ]
+  },
+  "_per_rung_clear_rates": {
+    "r1": 1.0,
+    "r2": 0.75,
+    "r3": 0.5,
+    "r4": 0.25
+  },
+  "_per_system": {
+    "stub-analyst": {
+      "cold_depths": [
+        3,
+        3,
+        3
+      ],
+      "cold_mean_score": 0.75,
+      "is_reference": true,
+      "mode": "tooled",
+      "per_rung": {
+        "r1": {
+          "pass_at_1": 1.0,
+          "pass_at_k": 1.0
+        },
+        "r2": {
+          "pass_at_1": 1.0,
+          "pass_at_k": 1.0
+        },
+        "r3": {
+          "pass_at_1": 1.0,
+          "pass_at_k": 1.0
+        },
+        "r4": {
+          "pass_at_1": 0.0,
+          "pass_at_k": 0.0
+        }
+      }
+    },
+    "stub-assembled": {
+      "cold_depths": [
+        2,
+        2,
+        2
+      ],
+      "cold_mean_score": 0.5,
+      "is_reference": false,
+      "mode": "tooled",
+      "per_rung": {
+        "r1": {
+          "pass_at_1": 1.0,
+          "pass_at_k": 1.0
+        },
+        "r2": {
+          "pass_at_1": 1.0,
+          "pass_at_k": 1.0
+        },
+        "r3": {
+          "pass_at_1": 0.0,
+          "pass_at_k": 0.0
+        },
+        "r4": {
+          "pass_at_1": 0.0,
+          "pass_at_k": 0.0
+        }
+      }
+    },
+    "stub-complete": {
+      "cold_depths": [
+        4,
+        4,
+        4
+      ],
+      "cold_mean_score": 1.0,
+      "is_reference": false,
+      "mode": "tooled",
+      "per_rung": {
+        "r1": {
+          "pass_at_1": 1.0,
+          "pass_at_k": 1.0
+        },
+        "r2": {
+          "pass_at_1": 1.0,
+          "pass_at_k": 1.0
+        },
+        "r3": {
+          "pass_at_1": 1.0,
+          "pass_at_k": 1.0
+        },
+        "r4": {
+          "pass_at_1": 1.0,
+          "pass_at_k": 1.0
+        }
+      }
+    },
+    "stub-naive": {
+      "cold_depths": [
+        1,
+        1,
+        1
+      ],
+      "cold_mean_score": 0.25,
+      "is_reference": false,
+      "mode": "tooled",
+      "per_rung": {
+        "r1": {
+          "pass_at_1": 1.0,
+          "pass_at_k": 1.0
+        },
+        "r2": {
+          "pass_at_1": 0.0,
+          "pass_at_k": 0.0
+        },
+        "r3": {
+          "pass_at_1": 0.0,
+          "pass_at_k": 0.0
+        },
+        "r4": {
+          "pass_at_1": 0.0,
+          "pass_at_k": 0.0
+        }
+      }
+    },
+    "stub-parametric": {
+      "cold_depths": [
+        1,
+        1,
+        1
+      ],
+      "cold_mean_score": 0.25,
+      "is_reference": false,
+      "mode": "no_tool",
+      "per_rung": {
+        "r1": {
+          "pass_at_1": 1.0,
+          "pass_at_k": 1.0
+        },
+        "r2": {
+          "pass_at_1": 0.0,
+          "pass_at_k": 0.0
+        },
+        "r3": {
+          "pass_at_1": 1.0,
+          "pass_at_k": 1.0
+        },
+        "r4": {
+          "pass_at_1": 0.0,
+          "pass_at_k": 0.0
+        }
+      }
+    }
+  },
+  "_runs": [
+    {
+      "depth": 1,
+      "monotonic": true,
+      "run_index": 0,
+      "rung_mode": "cold",
+      "rungs_passed": {
+        "r1": true,
+        "r2": false,
+        "r3": false,
+        "r4": false
+      },
+      "score": 0.25,
+      "status": "completed",
+      "stderr_tail": "",
+      "system": "stub-naive"
+    },
+    {
+      "depth": 1,
+      "monotonic": true,
+      "run_index": 1,
+      "rung_mode": "cold",
+      "rungs_passed": {
+        "r1": true,
+        "r2": false,
+        "r3": false,
+        "r4": false
+      },
+      "score": 0.25,
+      "status": "completed",
+      "stderr_tail": "",
+      "system": "stub-naive"
+    },
+    {
+      "depth": 1,
+      "monotonic": true,
+      "run_index": 2,
+      "rung_mode": "cold",
+      "rungs_passed": {
+        "r1": true,
+        "r2": false,
+        "r3": false,
+        "r4": false
+      },
+      "score": 0.25,
+      "status": "completed",
+      "stderr_tail": "",
+      "system": "stub-naive"
+    },
+    {
+      "depth": 1,
+      "monotonic": true,
+      "run_index": 0,
+      "rung_mode": "warm:r2",
+      "rungs_passed": {
+        "r1": true,
+        "r2": false,
+        "r3": false,
+        "r4": false
+      },
+      "score": 0.25,
+      "status": "completed",
+      "stderr_tail": "",
+      "system": "stub-naive"
+    },
+    {
+      "depth": 1,
+      "monotonic": true,
+      "run_index": 1,
+      "rung_mode": "warm:r2",
+      "rungs_passed": {
+        "r1": true,
+        "r2": false,
+        "r3": false,
+        "r4": false
+      },
+      "score": 0.25,
+      "status": "completed",
+      "stderr_tail": "",
+      "system": "stub-naive"
+    },
+    {
+      "depth": 1,
+      "monotonic": true,
+      "run_index": 2,
+      "rung_mode": "warm:r2",
+      "rungs_passed": {
+        "r1": true,
+        "r2": false,
+        "r3": false,
+        "r4": false
+      },
+      "score": 0.25,
+      "status": "completed",
+      "stderr_tail": "",
+      "system": "stub-naive"
+    },
+    {
+      "depth": 1,
+      "monotonic": true,
+      "run_index": 0,
+      "rung_mode": "warm:r3",
+      "rungs_passed": {
+        "r1": true,
+        "r2": false,
+        "r3": false,
+        "r4": false
+      },
+      "score": 0.25,
+      "status": "completed",
+      "stderr_tail": "",
+      "system": "stub-naive"
+    },
+    {
+      "depth": 1,
+      "monotonic": true,
+      "run_index": 1,
+      "rung_mode": "warm:r3",
+      "rungs_passed": {
+        "r1": true,
+        "r2": false,
+        "r3": false,
+        "r4": false
+      },
+      "score": 0.25,
+      "status": "completed",
+      "stderr_tail": "",
+      "system": "stub-naive"
+    },
+    {
+      "depth": 1,
+      "monotonic": true,
+      "run_index": 2,
+      "rung_mode": "warm:r3",
+      "rungs_passed": {
+        "r1": true,
+        "r2": false,
+        "r3": false,
+        "r4": false
+      },
+      "score": 0.25,
+      "status": "completed",
+      "stderr_tail": "",
+      "system": "stub-naive"
+    },
+    {
+      "depth": 1,
+      "monotonic": true,
+      "run_index": 0,
+      "rung_mode": "warm:r4",
+      "rungs_passed": {
+        "r1": true,
+        "r2": false,
+        "r3": false,
+        "r4": false
+      },
+      "score": 0.25,
+      "status": "completed",
+      "stderr_tail": "",
+      "system": "stub-naive"
+    },
+    {
+      "depth": 1,
+      "monotonic": true,
+      "run_index": 1,
+      "rung_mode": "warm:r4",
+      "rungs_passed": {
+        "r1": true,
+        "r2": false,
+        "r3": false,
+        "r4": false
+      },
+      "score": 0.25,
+      "status": "completed",
+      "stderr_tail": "",
+      "system": "stub-naive"
+    },
+    {
+      "depth": 1,
+      "monotonic": true,
+      "run_index": 2,
+      "rung_mode": "warm:r4",
+      "rungs_passed": {
+        "r1": true,
+        "r2": false,
+        "r3": false,
+        "r4": false
+      },
+      "score": 0.25,
+      "status": "completed",
+      "stderr_tail": "",
+      "system": "stub-naive"
+    },
+    {
+      "depth": 2,
+      "monotonic": true,
+      "run_index": 0,
+      "rung_mode": "cold",
+      "rungs_passed": {
+        "r1": true,
+        "r2": true,
+        "r3": false,
+        "r4": false
+      },
+      "score": 0.5,
+      "status": "completed",
+      "stderr_tail": "",
+      "system": "stub-assembled"
+    },
+    {
+      "depth": 2,
+      "monotonic": true,
+      "run_index": 1,
+      "rung_mode": "cold",
+      "rungs_passed": {
+        "r1": true,
+        "r2": true,
+        "r3": false,
+        "r4": false
+      },
+      "score": 0.5,
+      "status": "completed",
+      "stderr_tail": "",
+      "system": "stub-assembled"
+    },
+    {
+      "depth": 2,
+      "monotonic": true,
+      "run_index": 2,
+      "rung_mode": "cold",
+      "rungs_passed": {
+        "r1": true,
+        "r2": true,
+        "r3": false,
+        "r4": false
+      },
+      "score": 0.5,
+      "status": "completed",
+      "stderr_tail": "",
+      "system": "stub-assembled"
+    },
+    {
+      "depth": 2,
+      "monotonic": true,
+      "run_index": 0,
+      "rung_mode": "warm:r2",
+      "rungs_passed": {
+        "r1": true,
+        "r2": true,
+        "r3": false,
+        "r4": false
+      },
+      "score": 0.5,
+      "status": "completed",
+      "stderr_tail": "",
+      "system": "stub-assembled"
+    },
+    {
+      "depth": 2,
+      "monotonic": true,
+      "run_index": 1,
+      "rung_mode": "warm:r2",
+      "rungs_passed": {
+        "r1": true,
+        "r2": true,
+        "r3": false,
+        "r4": false
+      },
+      "score": 0.5,
+      "status": "completed",
+      "stderr_tail": "",
+      "system": "stub-assembled"
+    },
+    {
+      "depth": 2,
+      "monotonic": true,
+      "run_index": 2,
+      "rung_mode": "warm:r2",
+      "rungs_passed": {
+        "r1": true,
+        "r2": true,
+        "r3": false,
+        "r4": false
+      },
+      "score": 0.5,
+      "status": "completed",
+      "stderr_tail": "",
+      "system": "stub-assembled"
+    },
+    {
+      "depth": 2,
+      "monotonic": true,
+      "run_index": 0,
+      "rung_mode": "warm:r3",
+      "rungs_passed": {
+        "r1": true,
+        "r2": true,
+        "r3": false,
+        "r4": false
+      },
+      "score": 0.5,
+      "status": "completed",
+      "stderr_tail": "",
+      "system": "stub-assembled"
+    },
+    {
+      "depth": 2,
+      "monotonic": true,
+      "run_index": 1,
+      "rung_mode": "warm:r3",
+      "rungs_passed": {
+        "r1": true,
+        "r2": true,
+        "r3": false,
+        "r4": false
+      },
+      "score": 0.5,
+      "status": "completed",
+      "stderr_tail": "",
+      "system": "stub-assembled"
+    },
+    {
+      "depth": 2,
+      "monotonic": true,
+      "run_index": 2,
+      "rung_mode": "warm:r3",
+      "rungs_passed": {
+        "r1": true,
+        "r2": true,
+        "r3": false,
+        "r4": false
+      },
+      "score": 0.5,
+      "status": "completed",
+      "stderr_tail": "",
+      "system": "stub-assembled"
+    },
+    {
+      "depth": 2,
+      "monotonic": true,
+      "run_index": 0,
+      "rung_mode": "warm:r4",
+      "rungs_passed": {
+        "r1": true,
+        "r2": true,
+        "r3": false,
+        "r4": false
+      },
+      "score": 0.5,
+      "status": "completed",
+      "stderr_tail": "",
+      "system": "stub-assembled"
+    },
+    {
+      "depth": 2,
+      "monotonic": true,
+      "run_index": 1,
+      "rung_mode": "warm:r4",
+      "rungs_passed": {
+        "r1": true,
+        "r2": true,
+        "r3": false,
+        "r4": false
+      },
+      "score": 0.5,
+      "status": "completed",
+      "stderr_tail": "",
+      "system": "stub-assembled"
+    },
+    {
+      "depth": 2,
+      "monotonic": true,
+      "run_index": 2,
+      "rung_mode": "warm:r4",
+      "rungs_passed": {
+        "r1": true,
+        "r2": true,
+        "r3": false,
+        "r4": false
+      },
+      "score": 0.5,
+      "status": "completed",
+      "stderr_tail": "",
+      "system": "stub-assembled"
+    },
+    {
+      "depth": 3,
+      "monotonic": true,
+      "run_index": 0,
+      "rung_mode": "cold",
+      "rungs_passed": {
+        "r1": true,
+        "r2": true,
+        "r3": true,
+        "r4": false
+      },
+      "score": 0.75,
+      "status": "completed",
+      "stderr_tail": "",
+      "system": "stub-analyst"
+    },
+    {
+      "depth": 3,
+      "monotonic": true,
+      "run_index": 1,
+      "rung_mode": "cold",
+      "rungs_passed": {
+        "r1": true,
+        "r2": true,
+        "r3": true,
+        "r4": false
+      },
+      "score": 0.75,
+      "status": "completed",
+      "stderr_tail": "",
+      "system": "stub-analyst"
+    },
+    {
+      "depth": 3,
+      "monotonic": true,
+      "run_index": 2,
+      "rung_mode": "cold",
+      "rungs_passed": {
+        "r1": true,
+        "r2": true,
+        "r3": true,
+        "r4": false
+      },
+      "score": 0.75,
+      "status": "completed",
+      "stderr_tail": "",
+      "system": "stub-analyst"
+    },
+    {
+      "depth": 3,
+      "monotonic": true,
+      "run_index": 0,
+      "rung_mode": "warm:r2",
+      "rungs_passed": {
+        "r1": true,
+        "r2": true,
+        "r3": true,
+        "r4": false
+      },
+      "score": 0.75,
+      "status": "completed",
+      "stderr_tail": "",
+      "system": "stub-analyst"
+    },
+    {
+      "depth": 3,
+      "monotonic": true,
+      "run_index": 1,
+      "rung_mode": "warm:r2",
+      "rungs_passed": {
+        "r1": true,
+        "r2": true,
+        "r3": true,
+        "r4": false
+      },
+      "score": 0.75,
+      "status": "completed",
+      "stderr_tail": "",
+      "system": "stub-analyst"
+    },
+    {
+      "depth": 3,
+      "monotonic": true,
+      "run_index": 2,
+      "rung_mode": "warm:r2",
+      "rungs_passed": {
+        "r1": true,
+        "r2": true,
+        "r3": true,
+        "r4": false
+      },
+      "score": 0.75,
+      "status": "completed",
+      "stderr_tail": "",
+      "system": "stub-analyst"
+    },
+    {
+      "depth": 3,
+      "monotonic": true,
+      "run_index": 0,
+      "rung_mode": "warm:r3",
+      "rungs_passed": {
+        "r1": true,
+        "r2": true,
+        "r3": true,
+        "r4": false
+      },
+      "score": 0.75,
+      "status": "completed",
+      "stderr_tail": "",
+      "system": "stub-analyst"
+    },
+    {
+      "depth": 3,
+      "monotonic": true,
+      "run_index": 1,
+      "rung_mode": "warm:r3",
+      "rungs_passed": {
+        "r1": true,
+        "r2": true,
+        "r3": true,
+        "r4": false
+      },
+      "score": 0.75,
+      "status": "completed",
+      "stderr_tail": "",
+      "system": "stub-analyst"
+    },
+    {
+      "depth": 3,
+      "monotonic": true,
+      "run_index": 2,
+      "rung_mode": "warm:r3",
+      "rungs_passed": {
+        "r1": true,
+        "r2": true,
+        "r3": true,
+        "r4": false
+      },
+      "score": 0.75,
+      "status": "completed",
+      "stderr_tail": "",
+      "system": "stub-analyst"
+    },
+    {
+      "depth": 3,
+      "monotonic": true,
+      "run_index": 0,
+      "rung_mode": "warm:r4",
+      "rungs_passed": {
+        "r1": true,
+        "r2": true,
+        "r3": true,
+        "r4": false
+      },
+      "score": 0.75,
+      "status": "completed",
+      "stderr_tail": "",
+      "system": "stub-analyst"
+    },
+    {
+      "depth": 3,
+      "monotonic": true,
+      "run_index": 1,
+      "rung_mode": "warm:r4",
+      "rungs_passed": {
+        "r1": true,
+        "r2": true,
+        "r3": true,
+        "r4": false
+      },
+      "score": 0.75,
+      "status": "completed",
+      "stderr_tail": "",
+      "system": "stub-analyst"
+    },
+    {
+      "depth": 3,
+      "monotonic": true,
+      "run_index": 2,
+      "rung_mode": "warm:r4",
+      "rungs_passed": {
+        "r1": true,
+        "r2": true,
+        "r3": true,
+        "r4": false
+      },
+      "score": 0.75,
+      "status": "completed",
+      "stderr_tail": "",
+      "system": "stub-analyst"
+    },
+    {
+      "depth": 4,
+      "monotonic": true,
+      "run_index": 0,
+      "rung_mode": "cold",
+      "rungs_passed": {
+        "r1": true,
+        "r2": true,
+        "r3": true,
+        "r4": true
+      },
+      "score": 1.0,
+      "status": "completed",
+      "stderr_tail": "",
+      "system": "stub-complete"
+    },
+    {
+      "depth": 4,
+      "monotonic": true,
+      "run_index": 1,
+      "rung_mode": "cold",
+      "rungs_passed": {
+        "r1": true,
+        "r2": true,
+        "r3": true,
+        "r4": true
+      },
+      "score": 1.0,
+      "status": "completed",
+      "stderr_tail": "",
+      "system": "stub-complete"
+    },
+    {
+      "depth": 4,
+      "monotonic": true,
+      "run_index": 2,
+      "rung_mode": "cold",
+      "rungs_passed": {
+        "r1": true,
+        "r2": true,
+        "r3": true,
+        "r4": true
+      },
+      "score": 1.0,
+      "status": "completed",
+      "stderr_tail": "",
+      "system": "stub-complete"
+    },
+    {
+      "depth": 4,
+      "monotonic": true,
+      "run_index": 0,
+      "rung_mode": "warm:r2",
+      "rungs_passed": {
+        "r1": true,
+        "r2": true,
+        "r3": true,
+        "r4": true
+      },
+      "score": 1.0,
+      "status": "completed",
+      "stderr_tail": "",
+      "system": "stub-complete"
+    },
+    {
+      "depth": 4,
+      "monotonic": true,
+      "run_index": 1,
+      "rung_mode": "warm:r2",
+      "rungs_passed": {
+        "r1": true,
+        "r2": true,
+        "r3": true,
+        "r4": true
+      },
+      "score": 1.0,
+      "status": "completed",
+      "stderr_tail": "",
+      "system": "stub-complete"
+    },
+    {
+      "depth": 4,
+      "monotonic": true,
+      "run_index": 2,
+      "rung_mode": "warm:r2",
+      "rungs_passed": {
+        "r1": true,
+        "r2": true,
+        "r3": true,
+        "r4": true
+      },
+      "score": 1.0,
+      "status": "completed",
+      "stderr_tail": "",
+      "system": "stub-complete"
+    },
+    {
+      "depth": 4,
+      "monotonic": true,
+      "run_index": 0,
+      "rung_mode": "warm:r3",
+      "rungs_passed": {
+        "r1": true,
+        "r2": true,
+        "r3": true,
+        "r4": true
+      },
+      "score": 1.0,
+      "status": "completed",
+      "stderr_tail": "",
+      "system": "stub-complete"
+    },
+    {
+      "depth": 4,
+      "monotonic": true,
+      "run_index": 1,
+      "rung_mode": "warm:r3",
+      "rungs_passed": {
+        "r1": true,
+        "r2": true,
+        "r3": true,
+        "r4": true
+      },
+      "score": 1.0,
+      "status": "completed",
+      "stderr_tail": "",
+      "system": "stub-complete"
+    },
+    {
+      "depth": 4,
+      "monotonic": true,
+      "run_index": 2,
+      "rung_mode": "warm:r3",
+      "rungs_passed": {
+        "r1": true,
+        "r2": true,
+        "r3": true,
+        "r4": true
+      },
+      "score": 1.0,
+      "status": "completed",
+      "stderr_tail": "",
+      "system": "stub-complete"
+    },
+    {
+      "depth": 4,
+      "monotonic": true,
+      "run_index": 0,
+      "rung_mode": "warm:r4",
+      "rungs_passed": {
+        "r1": true,
+        "r2": true,
+        "r3": true,
+        "r4": true
+      },
+      "score": 1.0,
+      "status": "completed",
+      "stderr_tail": "",
+      "system": "stub-complete"
+    },
+    {
+      "depth": 4,
+      "monotonic": true,
+      "run_index": 1,
+      "rung_mode": "warm:r4",
+      "rungs_passed": {
+        "r1": true,
+        "r2": true,
+        "r3": true,
+        "r4": true
+      },
+      "score": 1.0,
+      "status": "completed",
+      "stderr_tail": "",
+      "system": "stub-complete"
+    },
+    {
+      "depth": 4,
+      "monotonic": true,
+      "run_index": 2,
+      "rung_mode": "warm:r4",
+      "rungs_passed": {
+        "r1": true,
+        "r2": true,
+        "r3": true,
+        "r4": true
+      },
+      "score": 1.0,
+      "status": "completed",
+      "stderr_tail": "",
+      "system": "stub-complete"
+    },
+    {
+      "depth": 1,
+      "monotonic": false,
+      "run_index": 0,
+      "rung_mode": "cold",
+      "rungs_passed": {
+        "r1": true,
+        "r2": false,
+        "r3": true,
+        "r4": false
+      },
+      "score": 0.25,
+      "status": "completed",
+      "stderr_tail": "",
+      "system": "stub-parametric"
+    },
+    {
+      "depth": 1,
+      "monotonic": false,
+      "run_index": 1,
+      "rung_mode": "cold",
+      "rungs_passed": {
+        "r1": true,
+        "r2": false,
+        "r3": true,
+        "r4": false
+      },
+      "score": 0.25,
+      "status": "completed",
+      "stderr_tail": "",
+      "system": "stub-parametric"
+    },
+    {
+      "depth": 1,
+      "monotonic": false,
+      "run_index": 2,
+      "rung_mode": "cold",
+      "rungs_passed": {
+        "r1": true,
+        "r2": false,
+        "r3": true,
+        "r4": false
+      },
+      "score": 0.25,
+      "status": "completed",
+      "stderr_tail": "",
+      "system": "stub-parametric"
+    },
+    {
+      "depth": 1,
+      "monotonic": false,
+      "run_index": 0,
+      "rung_mode": "warm:r2",
+      "rungs_passed": {
+        "r1": true,
+        "r2": false,
+        "r3": true,
+        "r4": false
+      },
+      "score": 0.25,
+      "status": "completed",
+      "stderr_tail": "",
+      "system": "stub-parametric"
+    },
+    {
+      "depth": 1,
+      "monotonic": false,
+      "run_index": 1,
+      "rung_mode": "warm:r2",
+      "rungs_passed": {
+        "r1": true,
+        "r2": false,
+        "r3": true,
+        "r4": false
+      },
+      "score": 0.25,
+      "status": "completed",
+      "stderr_tail": "",
+      "system": "stub-parametric"
+    },
+    {
+      "depth": 1,
+      "monotonic": false,
+      "run_index": 2,
+      "rung_mode": "warm:r2",
+      "rungs_passed": {
+        "r1": true,
+        "r2": false,
+        "r3": true,
+        "r4": false
+      },
+      "score": 0.25,
+      "status": "completed",
+      "stderr_tail": "",
+      "system": "stub-parametric"
+    },
+    {
+      "depth": 1,
+      "monotonic": false,
+      "run_index": 0,
+      "rung_mode": "warm:r3",
+      "rungs_passed": {
+        "r1": true,
+        "r2": false,
+        "r3": true,
+        "r4": false
+      },
+      "score": 0.25,
+      "status": "completed",
+      "stderr_tail": "",
+      "system": "stub-parametric"
+    },
+    {
+      "depth": 1,
+      "monotonic": false,
+      "run_index": 1,
+      "rung_mode": "warm:r3",
+      "rungs_passed": {
+        "r1": true,
+        "r2": false,
+        "r3": true,
+        "r4": false
+      },
+      "score": 0.25,
+      "status": "completed",
+      "stderr_tail": "",
+      "system": "stub-parametric"
+    },
+    {
+      "depth": 1,
+      "monotonic": false,
+      "run_index": 2,
+      "rung_mode": "warm:r3",
+      "rungs_passed": {
+        "r1": true,
+        "r2": false,
+        "r3": true,
+        "r4": false
+      },
+      "score": 0.25,
+      "status": "completed",
+      "stderr_tail": "",
+      "system": "stub-parametric"
+    },
+    {
+      "depth": 1,
+      "monotonic": false,
+      "run_index": 0,
+      "rung_mode": "warm:r4",
+      "rungs_passed": {
+        "r1": true,
+        "r2": false,
+        "r3": true,
+        "r4": false
+      },
+      "score": 0.25,
+      "status": "completed",
+      "stderr_tail": "",
+      "system": "stub-parametric"
+    },
+    {
+      "depth": 1,
+      "monotonic": false,
+      "run_index": 1,
+      "rung_mode": "warm:r4",
+      "rungs_passed": {
+        "r1": true,
+        "r2": false,
+        "r3": true,
+        "r4": false
+      },
+      "score": 0.25,
+      "status": "completed",
+      "stderr_tail": "",
+      "system": "stub-parametric"
+    },
+    {
+      "depth": 1,
+      "monotonic": false,
+      "run_index": 2,
+      "rung_mode": "warm:r4",
+      "rungs_passed": {
+        "r1": true,
+        "r2": false,
+        "r3": true,
+        "r4": false
+      },
+      "score": 0.25,
+      "status": "completed",
+      "stderr_tail": "",
+      "system": "stub-parametric"
+    }
+  ],
+  "difficulty_gate": {
+    "detail": "reference 'stub-analyst' lower rungs [1.0, 1.0] (each >= 0.5), upper rungs [1.0, 0.0] (min <= 0.5); difficulty must sit at R3/R4",
+    "pass": true
+  },
+  "discrimination": {
+    "detail": "distinct cold depths [1, 2, 3, 4], mean score 0.625; needs >=2 depths and 0 < mean < 1",
+    "pass": true
+  },
+  "leakage_no_tool_ablation": {
+    "detail": "no-tool score 0.2500 vs chance floor 0.2526, SE 0.0000, z -inf; kill above z=2.0",
+    "pass": true
+  },
+  "monotonicity_measured": {
+    "detail": "clear rates by rung {'r1': 1.0, 'r2': 0.75, 'r3': 0.5, 'r4': 0.25}; non-increasing required (warm for r2+, cold for r1)",
+    "pass": true
+  },
+  "r1_clear_rate": {
+    "detail": "R1 pass@1 for generic tooled systems = 1.0; minimum 0.8 (below this the campaign measures environment setup, not science)",
+    "pass": true
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "admitted_by_target": {
+    "CHEMBL3038482": 527,
+    "CHEMBL3038508": 212
+  },
+  "aggregated_by_target": {
+    "CHEMBL3038482": 469,
+    "CHEMBL3038508": 199
+  },
+  "aggregated_pairs": 668,
+  "eligible_molecules": 173,
+  "rejected_by_target": {
+    "CHEMBL3038482": {
+      "censored_or_missing_relation": 178,
+      "flagged_by_chembl": 27,
+      "low_confidence_assay": 0,
+      "no_value": 0,
+      "non_positive": 0,
+      "potential_duplicate": 23,
+      "unconvertible_units": 73
+    },
+    "CHEMBL3038508": {
+      "censored_or_missing_relation": 57,
+      "flagged_by_chembl": 6,
+      "low_confidence_assay": 0,
+      "no_value": 0,
+      "non_positive": 0,
+      "potential_duplicate": 6,
+      "unconvertible_units": 8
+    }
+  }
+}

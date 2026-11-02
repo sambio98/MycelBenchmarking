@@ -1,0 +1,38 @@
+{
+  "homology": {
+    "search_tool": "mmseqs2",
+    "sensitivity": 4.0,
+    "sensitivity_note": "Declared rather than defaulted, because it is the knob that moves recall and leaving it implicit would make the campaign a measurement of a default. Measured on this corpus at 4.0: the search recovers most of what InterPro calls one family and misses a sixth of it, which is the regime the campaign exists to measure. A higher sensitivity narrows that gap and a lower one widens it, so the number is part of the pin and not a detail.",
+    "evalue": 0.001,
+    "evalue_note": "The reporting threshold. Loose on purpose: a strict cutoff would turn 'the search did not find it' into 'the campaign did not ask for it', and the distinction between a missing hit and a filtered one is the campaign's subject.",
+    "max_seqs": 4200,
+    "max_seqs_note": "Above the corpus size, deliberately. MMseqs2's --max-seqs caps the targets reported per query, and a cap below the corpus size makes every hit count a function of the cap rather than of the search. The upstream thread-dependence issue (#277) is about --max-seqs interacting with core count, which is why the value is explicit rather than left at its default.",
+    "threads": 1,
+    "threads_note": "Fixed, as the tool registry requires for this tool. MMseqs2's multithreaded runs emit the same hit SET in a different order on this project's own measurement, and no flag changes that, so the order is fixed by the declared canonicalisation below rather than by the thread count. One thread also makes the run reproducible on any machine rather than on a two-core one.",
+    "line_order": "sorted",
+    "line_order_note": "The declared canonicalisation: the tabular output has no header and each line is an independent record, so sorting by line before anything reads it is sound and is what the tool registry declares for this tool.",
+    "format_fields": ["query", "target", "fident", "alnlen", "evalue", "bits"],
+    "format_fields_note": "The declared projection of a hit. Alignment start and end positions are dropped because they move with the aligner's banding and are not what a hit is; bits and evalue are kept because the campaign's bands are about how weak a hit is.",
+
+    "label_resource": "InterPro 110.0",
+    "family_types": ["family"],
+    "superfamily_types": ["homologous_superfamily"],
+    "label_note": "The homology label is InterPro's own, not this project's. Two proteins sharing an entry of type `family` are related by a published assertion with a release; two sharing only a `homologous_superfamily` entry are related more distantly by the same resource's own hierarchy. What the campaign never claims is that a pair sharing no entry is NOT homologous: InterPro records what has been classified, which is not the same as what is related. The vocabulary below keeps that distinction.",
+    "corpus_superfamily": "IPR036188",
+    "corpus_superfamily_note": "Every corpus member cross-references this homologous superfamily, which is how the corpus was selected. So every pair in the corpus is a pair InterPro places in one superfamily, and the question is only ever whether the pairwise search can see it.",
+
+    "identity_bands": [[0.0, 0.25], [0.25, 0.35], [1.0, 1.0]],
+    "identity_bands_note": "Half-open on the low side, so a hit at exactly 0.25 falls in the middle band. The third entry is a sentinel for everything at or above 0.35. The 25-35 per cent band is the twilight zone this campaign is named for: measured on this corpus, it holds same-family pairs and superfamily-only pairs in comparable numbers, which is what makes it the regime where identity alone cannot separate them.",
+    "band_labels": ["under_25", "25_to_35", "over_35"],
+
+    "queries": 5,
+    "query_rule_note": "The declared query set: for each of the largest InterPro families in the corpus, in descending size with ties broken by entry accession, the lexicographically first member not already taken. The taken set matters -- one accession can be the first member of two families, and auditing it twice would make a family stand for nothing -- and the build refuses if a collision cannot be resolved.",
+
+    "shuffle_windows": [0, 60, 120, 240],
+    "shuffle_windows_note": "The R4 ladder, as window LENGTHS in residues centred on the query's midpoint. Zero is the identity control. The catalogued R4 shuffled 'the region carrying the shared motif', which is degenerate here and measured to be so: an InterPro family match on these proteins spans almost the whole sequence (7..482 of 518 on the halogenase this project uses elsewhere), so shuffling it destroys the protein and nothing survives, which grades one answer. A window ladder on the same residues asks the gradable question instead -- how much local disorder a hit survives -- and measured, the answer is not uniform: some queries hold flat to 120 residues and collapse at 240, others degrade from 60 upward.",
+    "shuffle_seed_rule": "sha256 of the query accession and the window length, as a decimal integer, seeded into the standard library's Mersenne Twister. Declared because a shuffle has to be reproducible for the counterfactual to be gold, and because a seed derived from the query means the same window on two queries is not the same permutation.",
+
+    "verdicts": ["separable", "overlapping", "search_only", "unresolved"],
+    "verdicts_note": "Closed, and computed from the per-band censuses by the declared rule rather than judged. `separable` means the band holds same-family hits and no superfamily-only hits, so identity alone would classify it. `overlapping` means it holds both, which is the twilight-zone finding. `search_only` means it holds superfamily-only hits and no same-family hits. `unresolved` means the band holds no hit at all, which is a fact about the search and not a verdict about homology."
+  }
+}

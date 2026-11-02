@@ -13,6 +13,7 @@ into a JSONL file so you can score them however you like afterward.
 
 ## Table of contents
 
+- [NPBench-C](#npbench-c) — the benchmark suite in this repository
 - [Why this exists](#why-this-exists)
 - [How it works](#how-it-works)
 - [Install](#install)
@@ -30,6 +31,56 @@ into a JSONL file so you can score them however you like afterward.
 - [Project layout](#project-layout)
 
 ---
+
+## NPBench-C
+
+This repository also carries **NPBench-C**, a benchmark of 25 campaigns for
+natural-product and BGC computational agents: four-rung ladders, deterministic
+grading, no LLM anywhere in the scoring path. It is independent of the Biomni
+harness described in the rest of this README and shares none of its
+dependencies.
+
+- **`docs/npbench-c.md`** — build notes: the ladder design, every campaign, the
+  readiness gate's 28 mechanical checks and what each one caught.
+- **`docs/decisions.md`** — the nine decisions still open, each with its fixed
+  constraints and a recommendation. Start here if you are picking the work up.
+- **`docs/catalog.md`**, **`docs/environment.md`** — the campaign catalogue, and
+  the tools and reference data each campaign needs.
+
+### Running it without installing anything
+
+The grading core is **stdlib-only by design**, so a numpy or pandas version bump
+can never move a published score. Nothing in NPBench-C needs the Biomni
+dependencies, and `pip install -e .` would pull them in for no reason.
+
+```bash
+python3 -m pip install pyyaml            # the readiness gate; outside the scoring path
+export PYTHONPATH=src
+
+python3 -m npbench_c.readiness.gate campaigns/pocket-rebh-01   # one campaign's gate
+python3 -m npbench_c.sweep.prompt      campaigns/pocket-rebh-01   # what an agent is told
+python3 -m npbench_c.release.package   /somewhere/outside/npbench-c-1.0.0
+```
+
+Python 3.11 or newer. For the test suite add `pytest`; for the pinned-tool image
+you need Docker and about 30 GB of free disk:
+
+```bash
+python3 -m pip install pytest && PYTHONPATH=src python3 -m pytest tests/ -q
+docker build -f image/Dockerfile -t npbench-c-tools:phase1 .
+```
+
+### Running a sweep over your own agents
+
+```bash
+cp sweep_systems.example.json my-agents.json   # three roles: reference, tooled, no-tool
+python3 -m npbench_c.sweep.cli campaigns/<id> --systems my-agents.json
+```
+
+The five checks the gate reports as PENDING need that sweep over **real**
+systems; a stub sweep leaves them pending by design. See "Running a sweep over
+your own agents" in `docs/npbench-c.md` for the roles, the budget-derived
+timeouts, and why a trial run wants `--no-record`.
 
 ## Why this exists
 

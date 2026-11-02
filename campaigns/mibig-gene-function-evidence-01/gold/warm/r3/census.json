@@ -1,0 +1,26 @@
+{
+  "backed_by_function": {
+    "Activation / processing": 32,
+    "Precursor biosynthesis": 134,
+    "Regulation": 82,
+    "Resistance/immunity": 21,
+    "Scaffold biosynthesis": 355,
+    "Tailoring": 303,
+    "Transport": 23
+  },
+  "function_evidence_method_totals": {
+    "Activity assay": 272,
+    "Heterologous expression": 44,
+    "Knock-out": 627,
+    "Other in vivo study": 159
+  },
+  "unbacked_by_function": {
+    "Activation / processing": 51,
+    "Precursor biosynthesis": 269,
+    "Regulation": 151,
+    "Resistance/immunity": 22,
+    "Scaffold biosynthesis": 636,
+    "Tailoring": 334,
+    "Transport": 153
+  }
+}

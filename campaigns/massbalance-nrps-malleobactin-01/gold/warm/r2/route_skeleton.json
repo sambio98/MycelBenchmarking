@@ -1,0 +1,15 @@
+{
+  "compounds": [
+    "malleobactin A",
+    "malleobactin B",
+    "malleobactin C",
+    "malleobactin D"
+  ],
+  "monomers": [
+    "N5-hydroxyornithine",
+    "aspartic acid",
+    "serine",
+    "N5-formyl-N5-hydroxyornithine"
+  ],
+  "n_modules": 4
+}

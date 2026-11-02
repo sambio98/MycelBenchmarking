@@ -1,0 +1,11 @@
+{
+  "activities_of_declared_type": 1117,
+  "activities_total": 1749,
+  "assay_confidence_scores": {
+    "7": 105
+  },
+  "distinct_assays": 105,
+  "focal_target": "CHEMBL3038482",
+  "reference_target": "CHEMBL3038508",
+  "release": "ChEMBL_37"
+}

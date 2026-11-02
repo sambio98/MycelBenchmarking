@@ -1,0 +1,293 @@
+{
+  "campaign_id": "mibig-diff-3_1-to-4_0-01",
+  "template_id": "mibig-release-diff",
+  "grading_spec_version": "1.0.0",
+  "rungs": [
+    {
+      "rung_id": "r1",
+      "ordinal": 1,
+      "name": "execute",
+      "gold_tier": "G1",
+      "composition": "product",
+      "pass_threshold": 1.0,
+      "chance_level": 1.0,
+      "components": [
+        {
+          "name": "report_present",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:present.report",
+            "gold": 1
+          }
+        },
+        {
+          "name": "source_entries",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:source_entries",
+            "gold": "gold:source_entries"
+          }
+        },
+        {
+          "name": "target_entries",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:target_entries",
+            "gold": "gold:target_entries"
+          }
+        },
+        {
+          "name": "fields_enumerated",
+          "scorer": "set_exact",
+          "args": {
+            "pred": "pred:fields",
+            "gold": "gold:fields"
+          }
+        }
+      ],
+      "chance_level_note": "R1 asks that both archives be opened and counted. Unlike the other S0 campaigns built so far, that is NOT free: the entry counts cannot be guessed, so the no-computation ablation fails R1 outright and the chance level here is nominal rather than measured at 1.0. Retained at 1.0 because any system that reads the inputs clears it, and the discriminating floor is computed over R2 upward regardless.\n"
+    },
+    {
+      "rung_id": "r2",
+      "ordinal": 2,
+      "name": "correct",
+      "gold_tier": "G1",
+      "composition": "product",
+      "pass_threshold": 1.0,
+      "chance_level": 0.005,
+      "components": [
+        {
+          "name": "only_in_source",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:only_in_source",
+            "gold": "gold:only_in_source"
+          }
+        },
+        {
+          "name": "only_in_target",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:only_in_target",
+            "gold": "gold:only_in_target"
+          }
+        },
+        {
+          "name": "shared_entries",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:shared_entries",
+            "gold": "gold:shared_entries"
+          }
+        },
+        {
+          "name": "shared_status",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:shared_status_in_target",
+            "gold": "gold:shared_status_in_target"
+          }
+        },
+        {
+          "name": "raw_diff_biosynthetic_class",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:raw_difference_counts.biosynthetic_class",
+            "gold": "gold:raw_difference_counts.biosynthetic_class"
+          }
+        },
+        {
+          "name": "raw_diff_compound_formulas",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:raw_difference_counts.compound_formulas",
+            "gold": "gold:raw_difference_counts.compound_formulas"
+          }
+        },
+        {
+          "name": "raw_diff_compound_names",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:raw_difference_counts.compound_names",
+            "gold": "gold:raw_difference_counts.compound_names"
+          }
+        },
+        {
+          "name": "raw_diff_locus_accession",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:raw_difference_counts.locus_accession",
+            "gold": "gold:raw_difference_counts.locus_accession"
+          }
+        },
+        {
+          "name": "raw_diff_ncbi_tax_id",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:raw_difference_counts.ncbi_tax_id",
+            "gold": "gold:raw_difference_counts.ncbi_tax_id"
+          }
+        },
+        {
+          "name": "raw_diff_organism",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:raw_difference_counts.organism",
+            "gold": "gold:raw_difference_counts.organism"
+          }
+        }
+      ]
+    },
+    {
+      "rung_id": "r3",
+      "ordinal": 3,
+      "name": "commit",
+      "gold_tier": "G1",
+      "composition": "product",
+      "pass_threshold": 1.0,
+      "chance_level": 0.001,
+      "components": [
+        {
+          "name": "verdicts_biosynthetic_class",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:classified_verdict_counts.biosynthetic_class",
+            "gold": "gold:classified_verdict_counts.biosynthetic_class"
+          }
+        },
+        {
+          "name": "verdicts_compound_formulas",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:classified_verdict_counts.compound_formulas",
+            "gold": "gold:classified_verdict_counts.compound_formulas"
+          }
+        },
+        {
+          "name": "verdicts_compound_names",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:classified_verdict_counts.compound_names",
+            "gold": "gold:classified_verdict_counts.compound_names"
+          }
+        },
+        {
+          "name": "verdicts_locus_accession",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:classified_verdict_counts.locus_accession",
+            "gold": "gold:classified_verdict_counts.locus_accession"
+          }
+        },
+        {
+          "name": "verdicts_ncbi_tax_id",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:classified_verdict_counts.ncbi_tax_id",
+            "gold": "gold:classified_verdict_counts.ncbi_tax_id"
+          }
+        },
+        {
+          "name": "verdicts_organism",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:classified_verdict_counts.organism",
+            "gold": "gold:classified_verdict_counts.organism"
+          }
+        }
+      ]
+    },
+    {
+      "rung_id": "r4",
+      "ordinal": 4,
+      "name": "counterfactual",
+      "gold_tier": "G1",
+      "composition": "product",
+      "pass_threshold": 1.0,
+      "chance_level": 0.002,
+      "components": [
+        {
+          "name": "perturbation_p1_taxid_type_only",
+          "scorer": "enum_exact",
+          "args": {
+            "pred": "pred:perturbations.p1_taxid_type_only.verdict",
+            "gold": "gold:perturbations.p1_taxid_type_only.verdict",
+            "vocabulary": [
+              "unchanged",
+              "representation_only",
+              "substantive_change",
+              "absent_in_source",
+              "absent_in_target",
+              "no_counterpart_in_target"
+            ]
+          }
+        },
+        {
+          "name": "perturbation_p2_taxid_value",
+          "scorer": "enum_exact",
+          "args": {
+            "pred": "pred:perturbations.p2_taxid_value.verdict",
+            "gold": "gold:perturbations.p2_taxid_value.verdict",
+            "vocabulary": [
+              "unchanged",
+              "representation_only",
+              "substantive_change",
+              "absent_in_source",
+              "absent_in_target",
+              "no_counterpart_in_target"
+            ]
+          }
+        },
+        {
+          "name": "perturbation_p3_formula_altered",
+          "scorer": "enum_exact",
+          "args": {
+            "pred": "pred:perturbations.p3_formula_altered.verdict",
+            "gold": "gold:perturbations.p3_formula_altered.verdict",
+            "vocabulary": [
+              "unchanged",
+              "representation_only",
+              "substantive_change",
+              "absent_in_source",
+              "absent_in_target",
+              "no_counterpart_in_target"
+            ]
+          }
+        },
+        {
+          "name": "perturbation_p4_class_retired",
+          "scorer": "enum_exact",
+          "args": {
+            "pred": "pred:perturbations.p4_class_retired.verdict",
+            "gold": "gold:perturbations.p4_class_retired.verdict",
+            "vocabulary": [
+              "unchanged",
+              "representation_only",
+              "substantive_change",
+              "absent_in_source",
+              "absent_in_target",
+              "no_counterpart_in_target"
+            ]
+          }
+        },
+        {
+          "name": "perturbation_p5_organism_removed",
+          "scorer": "enum_exact",
+          "args": {
+            "pred": "pred:perturbations.p5_organism_removed.verdict",
+            "gold": "gold:perturbations.p5_organism_removed.verdict",
+            "vocabulary": [
+              "unchanged",
+              "representation_only",
+              "substantive_change",
+              "absent_in_source",
+              "absent_in_target",
+              "no_counterpart_in_target"
+            ]
+          }
+        }
+      ],
+      "chance_level_note": "Five verdicts from a six-member vocabulary would be 1/7776 if guessed independently, but a system that has understood the normalisation gets all five and one that has not gets p1 wrong at minimum, so the cases are correlated rather than independent. This figure reflects that.\n"
+    }
+  ]
+}

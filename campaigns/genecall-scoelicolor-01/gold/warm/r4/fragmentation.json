@@ -1,0 +1,505 @@
+{
+  "fragmented_baseline_calls": 7738,
+  "fragmented_call_census": {
+    "calls": 7779,
+    "coding_bases": 7673622,
+    "coding_fraction": 0.885332,
+    "longest": 22392,
+    "median_length": 852.0,
+    "on_the_forward_strand": 3989,
+    "on_the_reverse_strand": 3790,
+    "shortest": 60
+  },
+  "fragmented_fragmented_calls": 7779,
+  "fragmented_gained": 93,
+  "fragmented_gained_partial_census": {
+    "00": 7,
+    "01": 42,
+    "10": 44,
+    "11": 0
+  },
+  "fragmented_loss_verdicts": {
+    "crosses_a_cut": 43,
+    "distant_from_every_cut": 5,
+    "near_a_cut": 4
+  },
+  "fragmented_lost": 52,
+  "fragmented_lost_table": [
+    {
+      "end": 173984,
+      "fragment": "frag_0001",
+      "partial": "00",
+      "start": 172170,
+      "start_type": "GTG",
+      "strand": "+",
+      "verdict": "crosses_a_cut"
+    },
+    {
+      "end": 174946,
+      "fragment": "frag_0001",
+      "partial": "00",
+      "start": 174131,
+      "start_type": "ATG",
+      "strand": "+",
+      "verdict": "near_a_cut"
+    },
+    {
+      "end": 347706,
+      "fragment": "frag_0001",
+      "partial": "00",
+      "start": 345817,
+      "start_type": "GTG",
+      "strand": "-",
+      "verdict": "crosses_a_cut"
+    },
+    {
+      "end": 524920,
+      "fragment": "frag_0001",
+      "partial": "00",
+      "start": 513989,
+      "start_type": "ATG",
+      "strand": "-",
+      "verdict": "crosses_a_cut"
+    },
+    {
+      "end": 693445,
+      "fragment": "frag_0001",
+      "partial": "00",
+      "start": 692894,
+      "start_type": "ATG",
+      "strand": "+",
+      "verdict": "crosses_a_cut"
+    },
+    {
+      "end": 694416,
+      "fragment": "frag_0001",
+      "partial": "00",
+      "start": 693442,
+      "start_type": "ATG",
+      "strand": "+",
+      "verdict": "near_a_cut"
+    },
+    {
+      "end": 867038,
+      "fragment": "frag_0001",
+      "partial": "00",
+      "start": 865560,
+      "start_type": "ATG",
+      "strand": "+",
+      "verdict": "crosses_a_cut"
+    },
+    {
+      "end": 1040561,
+      "fragment": "frag_0001",
+      "partial": "00",
+      "start": 1038243,
+      "start_type": "GTG",
+      "strand": "+",
+      "verdict": "crosses_a_cut"
+    },
+    {
+      "end": 1214068,
+      "fragment": "frag_0001",
+      "partial": "00",
+      "start": 1211555,
+      "start_type": "GTG",
+      "strand": "+",
+      "verdict": "crosses_a_cut"
+    },
+    {
+      "end": 1347289,
+      "fragment": "frag_0001",
+      "partial": "00",
+      "start": 1346840,
+      "start_type": "ATG",
+      "strand": "+",
+      "verdict": "distant_from_every_cut"
+    },
+    {
+      "end": 1387054,
+      "fragment": "frag_0001",
+      "partial": "00",
+      "start": 1386707,
+      "start_type": "ATG",
+      "strand": "-",
+      "verdict": "crosses_a_cut"
+    },
+    {
+      "end": 1560284,
+      "fragment": "frag_0001",
+      "partial": "00",
+      "start": 1559931,
+      "start_type": "ATG",
+      "strand": "-",
+      "verdict": "crosses_a_cut"
+    },
+    {
+      "end": 1734874,
+      "fragment": "frag_0001",
+      "partial": "00",
+      "start": 1732259,
+      "start_type": "GTG",
+      "strand": "-",
+      "verdict": "crosses_a_cut"
+    },
+    {
+      "end": 1907228,
+      "fragment": "frag_0001",
+      "partial": "00",
+      "start": 1906323,
+      "start_type": "TTG",
+      "strand": "-",
+      "verdict": "crosses_a_cut"
+    },
+    {
+      "end": 2081153,
+      "fragment": "frag_0001",
+      "partial": "00",
+      "start": 2080143,
+      "start_type": "GTG",
+      "strand": "-",
+      "verdict": "crosses_a_cut"
+    },
+    {
+      "end": 2254698,
+      "fragment": "frag_0001",
+      "partial": "00",
+      "start": 2252308,
+      "start_type": "ATG",
+      "strand": "+",
+      "verdict": "crosses_a_cut"
+    },
+    {
+      "end": 2430237,
+      "fragment": "frag_0001",
+      "partial": "00",
+      "start": 2426233,
+      "start_type": "GTG",
+      "strand": "-",
+      "verdict": "crosses_a_cut"
+    },
+    {
+      "end": 2601529,
+      "fragment": "frag_0001",
+      "partial": "00",
+      "start": 2600318,
+      "start_type": "ATG",
+      "strand": "+",
+      "verdict": "near_a_cut"
+    },
+    {
+      "end": 2823606,
+      "fragment": "frag_0001",
+      "partial": "00",
+      "start": 2823448,
+      "start_type": "ATG",
+      "strand": "-",
+      "verdict": "distant_from_every_cut"
+    },
+    {
+      "end": 3121199,
+      "fragment": "frag_0001",
+      "partial": "00",
+      "start": 3118032,
+      "start_type": "ATG",
+      "strand": "+",
+      "verdict": "crosses_a_cut"
+    },
+    {
+      "end": 3294226,
+      "fragment": "frag_0001",
+      "partial": "00",
+      "start": 3293009,
+      "start_type": "ATG",
+      "strand": "+",
+      "verdict": "crosses_a_cut"
+    },
+    {
+      "end": 3467063,
+      "fragment": "frag_0001",
+      "partial": "00",
+      "start": 3466524,
+      "start_type": "ATG",
+      "strand": "-",
+      "verdict": "crosses_a_cut"
+    },
+    {
+      "end": 3641611,
+      "fragment": "frag_0001",
+      "partial": "00",
+      "start": 3640178,
+      "start_type": "ATG",
+      "strand": "+",
+      "verdict": "crosses_a_cut"
+    },
+    {
+      "end": 3814025,
+      "fragment": "frag_0001",
+      "partial": "00",
+      "start": 3812961,
+      "start_type": "ATG",
+      "strand": "-",
+      "verdict": "crosses_a_cut"
+    },
+    {
+      "end": 3987855,
+      "fragment": "frag_0001",
+      "partial": "00",
+      "start": 3985924,
+      "start_type": "ATG",
+      "strand": "+",
+      "verdict": "crosses_a_cut"
+    },
+    {
+      "end": 4161347,
+      "fragment": "frag_0001",
+      "partial": "00",
+      "start": 4160268,
+      "start_type": "ATG",
+      "strand": "-",
+      "verdict": "crosses_a_cut"
+    },
+    {
+      "end": 4333930,
+      "fragment": "frag_0001",
+      "partial": "00",
+      "start": 4333790,
+      "start_type": "ATG",
+      "strand": "+",
+      "verdict": "near_a_cut"
+    },
+    {
+      "end": 4681728,
+      "fragment": "frag_0001",
+      "partial": "00",
+      "start": 4680295,
+      "start_type": "GTG",
+      "strand": "-",
+      "verdict": "crosses_a_cut"
+    },
+    {
+      "end": 4853965,
+      "fragment": "frag_0001",
+      "partial": "00",
+      "start": 4853069,
+      "start_type": "ATG",
+      "strand": "+",
+      "verdict": "crosses_a_cut"
+    },
+    {
+      "end": 5027629,
+      "fragment": "frag_0001",
+      "partial": "00",
+      "start": 5027036,
+      "start_type": "ATG",
+      "strand": "+",
+      "verdict": "crosses_a_cut"
+    },
+    {
+      "end": 5105869,
+      "fragment": "frag_0001",
+      "partial": "00",
+      "start": 5104850,
+      "start_type": "GTG",
+      "strand": "-",
+      "verdict": "distant_from_every_cut"
+    },
+    {
+      "end": 5201109,
+      "fragment": "frag_0001",
+      "partial": "00",
+      "start": 5199496,
+      "start_type": "ATG",
+      "strand": "+",
+      "verdict": "crosses_a_cut"
+    },
+    {
+      "end": 5373932,
+      "fragment": "frag_0001",
+      "partial": "00",
+      "start": 5373018,
+      "start_type": "ATG",
+      "strand": "+",
+      "verdict": "crosses_a_cut"
+    },
+    {
+      "end": 5547831,
+      "fragment": "frag_0001",
+      "partial": "00",
+      "start": 5546599,
+      "start_type": "GTG",
+      "strand": "+",
+      "verdict": "crosses_a_cut"
+    },
+    {
+      "end": 5600191,
+      "fragment": "frag_0001",
+      "partial": "00",
+      "start": 5599076,
+      "start_type": "GTG",
+      "strand": "-",
+      "verdict": "distant_from_every_cut"
+    },
+    {
+      "end": 5721330,
+      "fragment": "frag_0001",
+      "partial": "00",
+      "start": 5720101,
+      "start_type": "GTG",
+      "strand": "+",
+      "verdict": "crosses_a_cut"
+    },
+    {
+      "end": 5894405,
+      "fragment": "frag_0001",
+      "partial": "00",
+      "start": 5892975,
+      "start_type": "ATG",
+      "strand": "-",
+      "verdict": "crosses_a_cut"
+    },
+    {
+      "end": 6031510,
+      "fragment": "frag_0001",
+      "partial": "00",
+      "start": 6029174,
+      "start_type": "ATG",
+      "strand": "+",
+      "verdict": "distant_from_every_cut"
+    },
+    {
+      "end": 6067720,
+      "fragment": "frag_0001",
+      "partial": "00",
+      "start": 6067211,
+      "start_type": "ATG",
+      "strand": "+",
+      "verdict": "crosses_a_cut"
+    },
+    {
+      "end": 6240885,
+      "fragment": "frag_0001",
+      "partial": "00",
+      "start": 6239617,
+      "start_type": "ATG",
+      "strand": "-",
+      "verdict": "crosses_a_cut"
+    },
+    {
+      "end": 6414875,
+      "fragment": "frag_0001",
+      "partial": "00",
+      "start": 6413538,
+      "start_type": "TTG",
+      "strand": "-",
+      "verdict": "crosses_a_cut"
+    },
+    {
+      "end": 6588007,
+      "fragment": "frag_0001",
+      "partial": "00",
+      "start": 6587099,
+      "start_type": "GTG",
+      "strand": "+",
+      "verdict": "crosses_a_cut"
+    },
+    {
+      "end": 6761426,
+      "fragment": "frag_0001",
+      "partial": "00",
+      "start": 6760581,
+      "start_type": "ATG",
+      "strand": "-",
+      "verdict": "crosses_a_cut"
+    },
+    {
+      "end": 6934464,
+      "fragment": "frag_0001",
+      "partial": "00",
+      "start": 6933604,
+      "start_type": "GTG",
+      "strand": "+",
+      "verdict": "crosses_a_cut"
+    },
+    {
+      "end": 7108176,
+      "fragment": "frag_0001",
+      "partial": "00",
+      "start": 7106284,
+      "start_type": "ATG",
+      "strand": "+",
+      "verdict": "crosses_a_cut"
+    },
+    {
+      "end": 7281006,
+      "fragment": "frag_0001",
+      "partial": "00",
+      "start": 7279753,
+      "start_type": "ATG",
+      "strand": "+",
+      "verdict": "crosses_a_cut"
+    },
+    {
+      "end": 7454358,
+      "fragment": "frag_0001",
+      "partial": "00",
+      "start": 7453156,
+      "start_type": "GTG",
+      "strand": "-",
+      "verdict": "crosses_a_cut"
+    },
+    {
+      "end": 7801600,
+      "fragment": "frag_0001",
+      "partial": "00",
+      "start": 7800107,
+      "start_type": "GTG",
+      "strand": "+",
+      "verdict": "crosses_a_cut"
+    },
+    {
+      "end": 7977242,
+      "fragment": "frag_0001",
+      "partial": "00",
+      "start": 7973481,
+      "start_type": "TTG",
+      "strand": "-",
+      "verdict": "crosses_a_cut"
+    },
+    {
+      "end": 8148431,
+      "fragment": "frag_0001",
+      "partial": "00",
+      "start": 8146713,
+      "start_type": "ATG",
+      "strand": "-",
+      "verdict": "crosses_a_cut"
+    },
+    {
+      "end": 8320994,
+      "fragment": "frag_0001",
+      "partial": "00",
+      "start": 8319174,
+      "start_type": "GTG",
+      "strand": "+",
+      "verdict": "crosses_a_cut"
+    },
+    {
+      "end": 8494580,
+      "fragment": "frag_0001",
+      "partial": "00",
+      "start": 8493549,
+      "start_type": "GTG",
+      "strand": "-",
+      "verdict": "crosses_a_cut"
+    }
+  ],
+  "fragmented_partial_census": {
+    "00": 7693,
+    "01": 42,
+    "10": 44,
+    "11": 0
+  },
+  "fragmented_retained": 7686,
+  "fragmented_retained_but_truncated": 0
+}

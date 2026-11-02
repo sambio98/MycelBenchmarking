@@ -1,0 +1,51 @@
+{
+  "description": "The unit convention BRENDA applies to each kinetic field, and the counting rules that follow from it. BRENDA records NO units in its JSON: a value is a string like '0.05 {benzyl alcohol}', a number and the substrate in braces. The units are a property of the field, not of the record, so a system that does not know them cannot relate the three constants at all -- and one that assumes the wrong one is wrong by exactly the factor this campaign measures.",
+  "fields": {
+    "km_value": {
+      "quantity": "Michaelis constant Km",
+      "unit": "mM",
+      "note": "Millimolar. The commonest error against this convention is to read micromolar, which is a factor of 1000."
+    },
+    "turnover_number": {
+      "quantity": "catalytic constant kcat",
+      "unit": "s^-1",
+      "note": "Per second. The commonest error against this convention is to read per minute, which is a factor of 60."
+    },
+    "kcat_km_value": {
+      "quantity": "catalytic efficiency kcat/Km",
+      "unit": "mM^-1 s^-1",
+      "note": "Follows from the other two, which is what makes the three arithmetically linked and this campaign possible."
+    }
+  },
+  "identity_rule": {
+    "value_grammar": "A value string is a decimal number, optionally in exponent form, optionally followed by the substrate in braces. Anything else -- a range like '0.05 - 0.1', a qualifier, an empty brace -- is UNPARSED and counted separately rather than coerced.",
+    "missing_value_sentinel": "-999",
+    "missing_value_rule": "A value whose number is -999 is BRENDA's missing-data sentinel, not a measurement. It is excluded from every statistic and counted separately. Treating it as a number is the single most damaging thing a naive pass can do here: it is large, negative, and present in thousands of records.",
+    "triple_key": "(proteins, substrate, references). All three fields must carry the same key for their values to be comparable: the same protein entry, the same substrate, and the same literature reference. Relaxing any part of the key would pair measurements from different papers or different enzymes and the disagreement rate would stop meaning anything.",
+    "triple_rule": "A key is a COMPLETE TRIPLE when all three fields carry a parsed, non-sentinel value for it. Only complete triples enter the consistency check."
+  },
+  "consistency_rule": {
+    "computed": "kcat / Km, with kcat in s^-1 and Km in mM, giving mM^-1 s^-1 -- the same unit as the stored kcat_km_value.",
+    "ratio": "computed divided by stored. Reported to 6 decimals.",
+    "excluded": "A triple whose Km or stored kcat/Km is zero or negative is excluded from the ratio and counted separately: the ratio is undefined and a sign-carrying value is not a measurement.",
+    "agreement_bands": [
+      {"name": "agree", "low": 0.95, "high": 1.05,
+       "meaning": "within five percent; the three constants are consistent to the precision they are reported at"},
+      {"name": "near", "low": 0.8, "high": 1.25,
+       "meaning": "within a quarter; rounding and reporting precision rather than a different quantity"},
+      {"name": "factor_60", "low": 55.0, "high": 65.0,
+       "meaning": "kcat reported per minute where the convention is per second, or the reciprocal",
+       "reciprocal": true},
+      {"name": "factor_1000", "low": 900.0, "high": 1100.0,
+       "meaning": "Km read in micromolar where the convention is millimolar, or the reciprocal",
+       "reciprocal": true}
+    ],
+    "band_assignment": "Bands are tried in the order listed and a triple takes the FIRST band it falls in; anything matching none is 'other'. The order matters and is declared, because 'near' contains 'agree' and testing them in the other order would empty the tighter band.",
+    "reciprocal_rule": "A band marked reciprocal also matches when 1/ratio falls in its range, because the mix-up can run in either direction and both are the same error."
+  },
+  "counting_rules": {
+    "record_unit": "One entry in a field's array. An EC with 1051 km_value entries contributes 1051 records.",
+    "per_field": "Every census is per field, because the fields have different units and different sentinel rates and summing them would mean nothing.",
+    "distinct_ec": "An EC number counts once however many records it carries."
+  }
+}

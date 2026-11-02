@@ -1,0 +1,11 @@
+{
+  "accession": "AL645882.2",
+  "annotation_discarded": "the source record carries 7825 CDS features and none of them is shipped. This campaign selects the genes it breaks from the pinned caller's OWN baseline output, under a declared length rule, so a curated annotation is not needed to choose them -- and shipping one would invite selecting them from the annotation instead, which no other run could reproduce. The count is recorded here for the provenance and is not graded.",
+  "extraction_rule": "the bases of the source record's ORIGIN block, upper-cased and wrapped at 70 columns, under the accession as the single FASTA identifier",
+  "file": "contig.fna.gz",
+  "license": "public domain / no restrictions on use (INSDC)",
+  "note": "Sequence only, and the same extraction as the gene-calling campaign on this accession, so the two are comparable: identical bases, identical digest, opposite caller modes. The mutated copies this campaign calls over are not shipped -- they follow from the declared deletion rule, and shipping them would hand over both the target positions and the coordinate lift.",
+  "sha256": "09c59fadf66353e39bc951c1ae96eef21887570b857ea006e178210a39d9dd78",
+  "source": "EMBL-EBI/GenBank record for the Streptomyces coelicolor A3(2) chromosome",
+  "url": "https://www.ebi.ac.uk/ena/browser/view/AL645882"
+}

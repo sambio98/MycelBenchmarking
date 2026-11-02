@@ -1,0 +1,204 @@
+{
+  "campaign_id": "genecall-scoelicolor-01",
+  "template_id": "gene-calling",
+  "grading_spec_version": "1.0.0",
+  "rungs": [
+    {
+      "rung_id": "r1",
+      "ordinal": 1,
+      "name": "execute",
+      "gold_tier": "G1",
+      "composition": "product",
+      "pass_threshold": 1.0,
+      "chance_level": 1.0,
+      "components": [
+        {
+          "name": "report_present",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:present.report",
+            "gold": 1
+          }
+        },
+        {
+          "name": "contig_length",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:contig_length",
+            "gold": "gold:contig_length"
+          }
+        },
+        {
+          "name": "contig_sha256",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:contig_sha256",
+            "gold": "gold:contig_sha256"
+          }
+        },
+        {
+          "name": "gc_fraction",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:gc_fraction",
+            "gold": "gold:gc_fraction"
+          }
+        },
+        {
+          "name": "call_census",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:call_census",
+            "gold": "gold:call_census"
+          }
+        },
+        {
+          "name": "partial_census",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:partial_census",
+            "gold": "gold:partial_census"
+          }
+        },
+        {
+          "name": "start_type_census",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:start_type_census",
+            "gold": "gold:start_type_census"
+          }
+        },
+        {
+          "name": "breakpoint_census",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:breakpoint_census",
+            "gold": "gold:breakpoint_census"
+          }
+        },
+        {
+          "name": "environment",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:environment",
+            "gold": "gold:environment"
+          }
+        }
+      ],
+      "chance_level_note": "Nominal rather than measured. The call census and the tool identity cannot be guessed, so the no-tool ablation fails R1 outright; the level stays at 1.0 because any system that reads the contig and runs the caller clears it, and the capped floor is computed over R2 upward.\n"
+    },
+    {
+      "rung_id": "r2",
+      "ordinal": 2,
+      "name": "correct",
+      "gold_tier": "G1",
+      "composition": "product",
+      "pass_threshold": 1.0,
+      "chance_level": 0.001,
+      "components": [
+        {
+          "name": "call_table",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:call_table",
+            "gold": "gold:call_table"
+          }
+        },
+        {
+          "name": "call_span",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:call_span",
+            "gold": "gold:call_span"
+          }
+        }
+      ]
+    },
+    {
+      "rung_id": "r3",
+      "ordinal": 3,
+      "name": "commit",
+      "gold_tier": "G1",
+      "composition": "product",
+      "pass_threshold": 1.0,
+      "chance_level": 0.001,
+      "components": [
+        {
+          "name": "fragmentation_summary",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:fragmentation_summary",
+            "gold": "gold:fragmentation_summary"
+          }
+        },
+        {
+          "name": "fragmented_loss_verdicts",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:fragmented_loss_verdicts",
+            "gold": "gold:fragmented_loss_verdicts"
+          }
+        },
+        {
+          "name": "fragmented_lost_table",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:fragmented_lost_table",
+            "gold": "gold:fragmented_lost_table"
+          }
+        },
+        {
+          "name": "fragmented_partial_census",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:fragmented_partial_census",
+            "gold": "gold:fragmented_partial_census"
+          }
+        },
+        {
+          "name": "fragmented_gained_partial_census",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:fragmented_gained_partial_census",
+            "gold": "gold:fragmented_gained_partial_census"
+          }
+        },
+        {
+          "name": "fragmented_call_census",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:fragmented_call_census",
+            "gold": "gold:fragmented_call_census"
+          }
+        }
+      ]
+    },
+    {
+      "rung_id": "r4",
+      "ordinal": 4,
+      "name": "counterfactual",
+      "gold_tier": "G1",
+      "composition": "product",
+      "pass_threshold": 1.0,
+      "chance_level": 0.001,
+      "components": [
+        {
+          "name": "fragmentation_grid",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:fragmentation_grid",
+            "gold": "gold:fragmentation_grid"
+          }
+        },
+        {
+          "name": "mode_difference",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:mode_difference",
+            "gold": "gold:mode_difference"
+          }
+        }
+      ]
+    }
+  ]
+}

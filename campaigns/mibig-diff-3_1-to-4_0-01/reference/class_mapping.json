@@ -1,0 +1,16 @@
+{
+  "description": "MIBiG 3.1 biosynthetic-class vocabulary mapped to MIBiG 4.0. Null means the 3.1 term has no direct counterpart in 4.0 and its entries were reclassified.",
+  "source_vocabulary": ["NRP", "Polyketide", "Other", "Terpene", "RiPP", "Alkaloid", "Saccharide"],
+  "target_vocabulary": ["NRPS", "PKS", "other", "terpene", "ribosomal", "saccharide"],
+  "mapping": {
+    "NRP": "NRPS",
+    "Polyketide": "PKS",
+    "Other": "other",
+    "Terpene": "terpene",
+    "RiPP": "ribosomal",
+    "Saccharide": "saccharide",
+    "Alkaloid": null
+  },
+  "retired_terms": ["Alkaloid"],
+  "retired_terms_note": "4.0 has no alkaloid class. Entries carrying it in 3.1 were reclassified, most into 'other', sometimes alongside a retained class."
+}

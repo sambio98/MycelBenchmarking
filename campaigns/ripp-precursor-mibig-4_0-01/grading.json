@@ -1,0 +1,236 @@
+{
+  "campaign_id": "ripp-precursor-mibig-4_0-01",
+  "template_id": "ripp-precursor-audit",
+  "grading_spec_version": "1.0.0",
+  "rungs": [
+    {
+      "rung_id": "r1",
+      "ordinal": 1,
+      "name": "execute",
+      "gold_tier": "G1",
+      "composition": "product",
+      "pass_threshold": 1.0,
+      "chance_level": 1.0,
+      "components": [
+        {
+          "name": "report_present",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:present.report",
+            "gold": 1
+          }
+        },
+        {
+          "name": "selection_census",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:selection_census",
+            "gold": "gold:selection_census"
+          }
+        },
+        {
+          "name": "core_sequence_shape_census",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:core_sequence_shape_census",
+            "gold": "gold:core_sequence_shape_census"
+          }
+        },
+        {
+          "name": "core_sequence_case_census",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:core_sequence_case_census",
+            "gold": "gold:core_sequence_case_census"
+          }
+        },
+        {
+          "name": "records_declaring_a_cleavage_location",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:records_declaring_a_cleavage_location",
+            "gold": "gold:records_declaring_a_cleavage_location"
+          }
+        },
+        {
+          "name": "ripp_type_census",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:ripp_type_census",
+            "gold": "gold:ripp_type_census"
+          }
+        },
+        {
+          "name": "status_census",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:status_census",
+            "gold": "gold:status_census"
+          }
+        },
+        {
+          "name": "precursor_length_summary",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:precursor_length_summary",
+            "gold": "gold:precursor_length_summary"
+          }
+        },
+        {
+          "name": "environment",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:environment",
+            "gold": "gold:environment"
+          }
+        }
+      ],
+      "chance_level_note": "Nominal rather than measured. The selection census and the tool identity cannot be guessed, so the no-tool ablation fails R1 outright; the level stays at 1.0 because any system that reads the inputs and runs the tool clears it, and the capped floor is computed over R2 upward.\n"
+    },
+    {
+      "rung_id": "r2",
+      "ordinal": 2,
+      "name": "correct",
+      "gold_tier": "G1",
+      "composition": "product",
+      "pass_threshold": 1.0,
+      "chance_level": 0.001,
+      "components": [
+        {
+          "name": "localisation_table",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:localisation_table",
+            "gold": "gold:localisation_table"
+          }
+        },
+        {
+          "name": "localisation_census",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:localisation_census",
+            "gold": "gold:localisation_census"
+          }
+        },
+        {
+          "name": "leader_length_summary",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:leader_length_summary",
+            "gold": "gold:leader_length_summary"
+          }
+        }
+      ]
+    },
+    {
+      "rung_id": "r3",
+      "ordinal": 3,
+      "name": "commit",
+      "gold_tier": "G1",
+      "composition": "product",
+      "pass_threshold": 1.0,
+      "chance_level": 0.001,
+      "components": [
+        {
+          "name": "convention_tally",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:convention_tally",
+            "gold": "gold:convention_tally"
+          }
+        },
+        {
+          "name": "elected_convention",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:elected_convention",
+            "gold": "gold:elected_convention"
+          }
+        },
+        {
+          "name": "cleavage_table",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:cleavage_table",
+            "gold": "gold:cleavage_table"
+          }
+        },
+        {
+          "name": "domain_table",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:domain_table",
+            "gold": "gold:domain_table"
+          }
+        },
+        {
+          "name": "panel_census",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:panel_census",
+            "gold": "gold:panel_census"
+          }
+        },
+        {
+          "name": "records_with_a_panel_hit",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:records_with_a_panel_hit",
+            "gold": "gold:records_with_a_panel_hit"
+          }
+        },
+        {
+          "name": "boundary_relation_census",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:boundary_relation_census",
+            "gold": "gold:boundary_relation_census"
+          }
+        },
+        {
+          "name": "boundary_offset_summary",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:boundary_offset_summary",
+            "gold": "gold:boundary_offset_summary"
+          }
+        }
+      ]
+    },
+    {
+      "rung_id": "r4",
+      "ordinal": 4,
+      "name": "counterfactual",
+      "gold_tier": "G1",
+      "composition": "product",
+      "pass_threshold": 1.0,
+      "chance_level": 0.001,
+      "components": [
+        {
+          "name": "policy_sweep",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:policy_sweep",
+            "gold": "gold:policy_sweep"
+          }
+        },
+        {
+          "name": "deletion_table",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:deletion_table",
+            "gold": "gold:deletion_table"
+          }
+        },
+        {
+          "name": "deletion_census",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:deletion_census",
+            "gold": "gold:deletion_census"
+          }
+        }
+      ]
+    }
+  ]
+}

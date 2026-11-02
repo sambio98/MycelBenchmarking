@@ -1,0 +1,369 @@
+{
+  "region_span": {
+    "max": 80654,
+    "median": 29788.0,
+    "min": 10216
+  },
+  "region_table": [
+    {
+      "contig_edge": false,
+      "end": 139654,
+      "end_one_based": 139654,
+      "length": 53018,
+      "number": 1,
+      "products": [
+        "T1PKS",
+        "hglE-KS"
+      ],
+      "start": 86636,
+      "start_one_based": 86637
+    },
+    {
+      "contig_edge": false,
+      "end": 192038,
+      "end_one_based": 192038,
+      "length": 28271,
+      "number": 2,
+      "products": [
+        "terpene"
+      ],
+      "start": 163767,
+      "start_one_based": 163768
+    },
+    {
+      "contig_edge": false,
+      "end": 271084,
+      "end_one_based": 271084,
+      "length": 24559,
+      "number": 3,
+      "products": [
+        "lanthipeptide-class-i"
+      ],
+      "start": 246525,
+      "start_one_based": 246526
+    },
+    {
+      "contig_edge": false,
+      "end": 552325,
+      "end_one_based": 552325,
+      "length": 58337,
+      "number": 4,
+      "products": [
+        "NRP-metallophore",
+        "NRPS"
+      ],
+      "start": 493988,
+      "start_one_based": 493989
+    },
+    {
+      "contig_edge": false,
+      "end": 621488,
+      "end_one_based": 621488,
+      "length": 23638,
+      "number": 5,
+      "products": [
+        "terpene-precursor"
+      ],
+      "start": 597850,
+      "start_one_based": 597851
+    },
+    {
+      "contig_edge": false,
+      "end": 801799,
+      "end_one_based": 801799,
+      "length": 10216,
+      "number": 6,
+      "products": [
+        "RiPP-like"
+      ],
+      "start": 791583,
+      "start_one_based": 791584
+    },
+    {
+      "contig_edge": false,
+      "end": 1298749,
+      "end_one_based": 1298749,
+      "length": 41125,
+      "number": 7,
+      "products": [
+        "T3PKS"
+      ],
+      "start": 1257624,
+      "start_one_based": 1257625
+    },
+    {
+      "contig_edge": false,
+      "end": 2005898,
+      "end_one_based": 2005898,
+      "length": 10399,
+      "number": 8,
+      "products": [
+        "ectoine"
+      ],
+      "start": 1995499,
+      "start_one_based": 1995500
+    },
+    {
+      "contig_edge": false,
+      "end": 2949875,
+      "end_one_based": 2949875,
+      "length": 10570,
+      "number": 9,
+      "products": [
+        "melanin"
+      ],
+      "start": 2939305,
+      "start_one_based": 2939306
+    },
+    {
+      "contig_edge": false,
+      "end": 3054682,
+      "end_one_based": 3054682,
+      "length": 29788,
+      "number": 10,
+      "products": [
+        "NI-siderophore"
+      ],
+      "start": 3024894,
+      "start_one_based": 3024895
+    },
+    {
+      "contig_edge": false,
+      "end": 3603988,
+      "end_one_based": 3603988,
+      "length": 80654,
+      "number": 11,
+      "products": [
+        "NRPS"
+      ],
+      "start": 3523334,
+      "start_one_based": 3523335
+    },
+    {
+      "contig_edge": false,
+      "end": 5567424,
+      "end_one_based": 5567424,
+      "length": 72624,
+      "number": 12,
+      "products": [
+        "T2PKS"
+      ],
+      "start": 5494800,
+      "start_one_based": 5494801
+    },
+    {
+      "contig_edge": false,
+      "end": 5692101,
+      "end_one_based": 5692101,
+      "length": 21086,
+      "number": 13,
+      "products": [
+        "terpene"
+      ],
+      "start": 5671015,
+      "start_one_based": 5671016
+    },
+    {
+      "contig_edge": false,
+      "end": 5722276,
+      "end_one_based": 5722276,
+      "length": 21161,
+      "number": 14,
+      "products": [
+        "terpene-precursor"
+      ],
+      "start": 5701115,
+      "start_one_based": 5701116
+    },
+    {
+      "contig_edge": false,
+      "end": 5824487,
+      "end_one_based": 5824487,
+      "length": 72543,
+      "number": 15,
+      "products": [
+        "T2PKS"
+      ],
+      "start": 5751944,
+      "start_one_based": 5751945
+    },
+    {
+      "contig_edge": false,
+      "end": 6356533,
+      "end_one_based": 6356533,
+      "length": 29947,
+      "number": 16,
+      "products": [
+        "NI-siderophore"
+      ],
+      "start": 6326586,
+      "start_one_based": 6326587
+    },
+    {
+      "contig_edge": false,
+      "end": 6476442,
+      "end_one_based": 6476442,
+      "length": 52775,
+      "number": 17,
+      "products": [
+        "NRPS-like",
+        "T1PKS",
+        "prodigiosin"
+      ],
+      "start": 6423667,
+      "start_one_based": 6423668
+    },
+    {
+      "contig_edge": false,
+      "end": 6643659,
+      "end_one_based": 6643659,
+      "length": 11317,
+      "number": 18,
+      "products": [
+        "RiPP-like"
+      ],
+      "start": 6632342,
+      "start_one_based": 6632343
+    },
+    {
+      "contig_edge": false,
+      "end": 6678399,
+      "end_one_based": 6678399,
+      "length": 22181,
+      "number": 19,
+      "products": [
+        "terpene"
+      ],
+      "start": 6656218,
+      "start_one_based": 6656219
+    },
+    {
+      "contig_edge": false,
+      "end": 6864522,
+      "end_one_based": 6864522,
+      "length": 31208,
+      "number": 20,
+      "products": [
+        "NI-siderophore"
+      ],
+      "start": 6833314,
+      "start_one_based": 6833315
+    },
+    {
+      "contig_edge": false,
+      "end": 6956537,
+      "end_one_based": 6956537,
+      "length": 75640,
+      "number": 21,
+      "products": [
+        "T1PKS",
+        "butyrolactone",
+        "hydrogen-cyanide"
+      ],
+      "start": 6880897,
+      "start_one_based": 6880898
+    },
+    {
+      "contig_edge": false,
+      "end": 7142447,
+      "end_one_based": 7142447,
+      "length": 54184,
+      "number": 22,
+      "products": [
+        "NRPS",
+        "thioamide-NRP"
+      ],
+      "start": 7088263,
+      "start_one_based": 7088264
+    },
+    {
+      "contig_edge": false,
+      "end": 7432456,
+      "end_one_based": 7432456,
+      "length": 22793,
+      "number": 23,
+      "products": [
+        "lanthipeptide-class-iii"
+      ],
+      "start": 7409663,
+      "start_one_based": 7409664
+    },
+    {
+      "contig_edge": false,
+      "end": 7532758,
+      "end_one_based": 7532758,
+      "length": 26742,
+      "number": 24,
+      "products": [
+        "terpene"
+      ],
+      "start": 7506016,
+      "start_one_based": 7506017
+    },
+    {
+      "contig_edge": false,
+      "end": 7618555,
+      "end_one_based": 7618555,
+      "length": 48144,
+      "number": 25,
+      "products": [
+        "PKS-like",
+        "T1PKS"
+      ],
+      "start": 7570411,
+      "start_one_based": 7570412
+    },
+    {
+      "contig_edge": false,
+      "end": 7709360,
+      "end_one_based": 7709360,
+      "length": 26454,
+      "number": 26,
+      "products": [
+        "lanthipeptide-class-i"
+      ],
+      "start": 7682906,
+      "start_one_based": 7682907
+    },
+    {
+      "contig_edge": false,
+      "end": 8047475,
+      "end_one_based": 8047475,
+      "length": 74006,
+      "number": 27,
+      "products": [
+        "T3PKS",
+        "other"
+      ],
+      "start": 7973469,
+      "start_one_based": 7973470
+    },
+    {
+      "contig_edge": false,
+      "end": 8290764,
+      "end_one_based": 8290764,
+      "length": 21128,
+      "number": 28,
+      "products": [
+        "indole"
+      ],
+      "start": 8269636,
+      "start_one_based": 8269637
+    },
+    {
+      "contig_edge": false,
+      "end": 8549581,
+      "end_one_based": 8549581,
+      "length": 74480,
+      "number": 29,
+      "products": [
+        "NRP-metallophore",
+        "NRPS",
+        "T3PKS",
+        "terpene"
+      ],
+      "start": 8475101,
+      "start_one_based": 8475102
+    }
+  ]
+}

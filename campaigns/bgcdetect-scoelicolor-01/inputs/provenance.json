@@ -1,0 +1,17 @@
+{
+  "accession": "AL645882.2",
+  "attribution": "Streptomyces coelicolor A3(2) chromosome AL645882.2 from NCBI Nucleotide; curated cluster boundaries from MIBiG 4.0 (CC BY 4.0, https://mibig.secondarymetabolites.org/)",
+  "curated_loci": 15,
+  "files": {
+    "curated_loci": "mibig_loci_AL645882.2.json",
+    "sequence": "AL645882.2.gb.gz"
+  },
+  "license": "NCBI GenBank records carry no copyright claim; MIBiG 4.0 is CC BY 4.0",
+  "locus_line": "LOCUS       AL645882             8667507 bp    DNA     linear   CON 04-OCT-2024",
+  "note": "The COMPLETE chromosome, unsliced. A slice truncates CDS features at its edges, which antiSMASH refuses, and sets the boundary of any region that reaches it. All 29 regions on the whole record come back contig_edge=False.",
+  "sequence_source": "NCBI Nucleotide efetch, rettype=gbwithparts",
+  "sha256": {
+    "AL645882.2.gb.gz": "56a79c6e7f39b23f98b892c20be40a254c0e36b99ae38ede53f37e82ee1e67bf",
+    "mibig_loci_AL645882.2.json": "58e9462a0d60190a722de42f2657f5dc7de39183d2902e8fe5654dd060b14d45"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "fields": [
+    "biosynthetic_class",
+    "compound_formulas",
+    "compound_names",
+    "locus_accession",
+    "ncbi_tax_id",
+    "organism"
+  ],
+  "source_entries": 2502,
+  "target_entries": 3013
+}

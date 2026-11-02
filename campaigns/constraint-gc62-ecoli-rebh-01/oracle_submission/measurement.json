@@ -1,0 +1,86 @@
+{
+  "admissible_codon_counts": {
+    "*": 3,
+    "A": 2,
+    "C": 2,
+    "D": 2,
+    "E": 2,
+    "F": 2,
+    "G": 2,
+    "H": 2,
+    "I": 3,
+    "K": 2,
+    "L": 6,
+    "M": 1,
+    "N": 2,
+    "P": 2,
+    "Q": 2,
+    "R": 4,
+    "S": 6,
+    "T": 4,
+    "V": 4,
+    "W": 1,
+    "Y": 2
+  },
+  "claims_satisfying_design": 0,
+  "codon_counts_reported": 1,
+  "conflicting_constraints": [
+    "forbidden_codons",
+    "gc_global_min"
+  ],
+  "constraints_assessed": [
+    "direct_repeat",
+    "forbidden_codons",
+    "forbidden_sites",
+    "gc_global_min",
+    "gc_window",
+    "homopolymer",
+    "internal_rbs"
+  ],
+  "orf_length_nt": 1593,
+  "present": {
+    "report": 1
+  },
+  "relaxations": {
+    "direct_repeat": {
+      "gc_requirement_reachable": false,
+      "max_achievable_gc": 0.584432
+    },
+    "forbidden_codons": {
+      "gc_requirement_reachable": true,
+      "max_achievable_gc": 0.677338
+    },
+    "forbidden_sites": {
+      "gc_requirement_reachable": false,
+      "max_achievable_gc": 0.584432
+    },
+    "gc_global_min": {
+      "gc_requirement_reachable": true,
+      "max_achievable_gc": 0.584432
+    },
+    "gc_window": {
+      "gc_requirement_reachable": false,
+      "max_achievable_gc": 0.584432
+    },
+    "homopolymer": {
+      "gc_requirement_reachable": false,
+      "max_achievable_gc": 0.584432
+    },
+    "internal_rbs": {
+      "gc_requirement_reachable": false,
+      "max_achievable_gc": 0.584432
+    }
+  },
+  "restricted_gc_max": 0.584432,
+  "restricted_gc_min": 0.308223,
+  "supplied_design_check": {
+    "supplied": false
+  },
+  "unrestricted_gc_max": 0.677338,
+  "unrestricted_gc_min": 0.308223,
+  "verdict": "infeasible_gc_unreachable",
+  "witness": {
+    "max_achievable_gc_under_forbidden_codons": 0.584432,
+    "required_gc_min": 0.62
+  }
+}

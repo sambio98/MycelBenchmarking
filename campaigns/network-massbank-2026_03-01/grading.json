@@ -1,0 +1,148 @@
+{
+  "campaign_id": "network-massbank-2026_03-01",
+  "template_id": "ms2-networking",
+  "grading_spec_version": "1.0.0",
+  "rungs": [
+    {
+      "rung_id": "r1",
+      "ordinal": 1,
+      "name": "execute",
+      "gold_tier": "G1",
+      "composition": "product",
+      "pass_threshold": 1.0,
+      "chance_level": 1.0,
+      "components": [
+        {
+          "name": "report_present",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:present.report",
+            "gold": 1
+          }
+        },
+        {
+          "name": "environment",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:environment",
+            "gold": "gold:environment"
+          }
+        },
+        {
+          "name": "network_census",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:network_census",
+            "gold": "gold:network_census"
+          }
+        },
+        {
+          "name": "edges",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:edges",
+            "gold": "gold:edges"
+          }
+        }
+      ],
+      "chance_level_note": "Nominal rather than measured. The edge table cannot be guessed and the similarity library's version is not in the sandbox, so the no-tool ablation fails R1 outright; the level stays at 1.0 because any system that scores the node set and applies the declared edge rule clears it, and the capped floor is computed over R2 upward.\n"
+    },
+    {
+      "rung_id": "r2",
+      "ordinal": 2,
+      "name": "correct",
+      "gold_tier": "G1",
+      "composition": "product",
+      "pass_threshold": 1.0,
+      "chance_level": 0.001,
+      "components": [
+        {
+          "name": "annotation_census",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:annotation_census",
+            "gold": "gold:annotation_census"
+          }
+        },
+        {
+          "name": "top_matches",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:top_matches",
+            "gold": "gold:top_matches"
+          }
+        },
+        {
+          "name": "component_annotation_census",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:component_annotation_census",
+            "gold": "gold:component_annotation_census"
+          }
+        }
+      ]
+    },
+    {
+      "rung_id": "r3",
+      "ordinal": 3,
+      "name": "commit",
+      "gold_tier": "G1",
+      "composition": "product",
+      "pass_threshold": 1.0,
+      "chance_level": 0.001,
+      "components": [
+        {
+          "name": "propagation_claims",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:propagation_claims",
+            "gold": "gold:propagation_claims"
+          }
+        },
+        {
+          "name": "propagation_census",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:propagation_census",
+            "gold": "gold:propagation_census"
+          }
+        },
+        {
+          "name": "mass_shifts",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:mass_shifts",
+            "gold": "gold:mass_shifts"
+          }
+        }
+      ]
+    },
+    {
+      "rung_id": "r4",
+      "ordinal": 4,
+      "name": "counterfactual",
+      "gold_tier": "G1",
+      "composition": "product",
+      "pass_threshold": 1.0,
+      "chance_level": 0.001,
+      "components": [
+        {
+          "name": "threshold_grid",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:threshold_grid",
+            "gold": "gold:threshold_grid"
+          }
+        },
+        {
+          "name": "dropped_tier",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:dropped_tier",
+            "gold": "gold:dropped_tier"
+          }
+        }
+      ]
+    }
+  ]
+}

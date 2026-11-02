@@ -1,0 +1,64 @@
+{
+  "annotated_positions_uniprot": [
+    357,
+    454,
+    455,
+    461,
+    465
+  ],
+  "annotation_precision": 0.357143,
+  "annotation_recall": 1.0,
+  "centroid": {
+    "x": 4.082,
+    "y": 34.134,
+    "z": -9.043
+  },
+  "confirmation_sets": {
+    "annotated_not_in_contact": [],
+    "confirmed": [
+      357,
+      454,
+      455,
+      461,
+      465
+    ],
+    "contact_not_annotated": [
+      52,
+      53,
+      79,
+      82,
+      109,
+      110,
+      111,
+      466,
+      470
+    ]
+  },
+  "contact_positions_uniprot": [
+    52,
+    53,
+    79,
+    82,
+    109,
+    110,
+    111,
+    357,
+    454,
+    455,
+    461,
+    465,
+    466,
+    470
+  ],
+  "focal_copy": "TRP:A:1001",
+  "focal_ligand": "ChEBI:CHEBI:57912",
+  "grid_census": {
+    "grid_points_near_ligand": 1236,
+    "grid_points_rejected_bulk": 0,
+    "grid_points_rejected_clash": 1179
+  },
+  "heavy_atoms": 15,
+  "pocket_grid_points": 57,
+  "pocket_volume_a3": 57.0,
+  "radius_of_gyration": 2.698
+}

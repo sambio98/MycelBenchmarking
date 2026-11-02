@@ -1,0 +1,11 @@
+{
+  "complete_triples": 2528,
+  "completeness_counts": {
+    "1": 7967,
+    "2": 2486,
+    "3": 2528
+  },
+  "distinct_substrates_in_complete_triples": 737,
+  "ec_with_complete_triples": 213,
+  "triple_keys_total": 12981
+}

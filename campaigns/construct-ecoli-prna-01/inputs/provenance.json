@@ -1,0 +1,11 @@
+{
+  "accession": "P95480",
+  "length_aa": 538,
+  "license": "CC BY 4.0",
+  "note": "Tryptophan 7-halogenase PrnA from Pseudomonas fluorescens, reviewed. Second instantiation of the construct-design template; the instantiation axis is the enzyme, with the host swap staying as R4. PrnA comes from a low-GC proteobacterium where RebH comes from a high-GC actinomycete, so the two instantiations are not near-duplicates.",
+  "retrieved": "2026-10-02",
+  "sequence_version": 1,
+  "sequence_version_source": "FASTA header SV=1",
+  "sha256_sequence": "f6ad6a376a4ccae7",
+  "source": "UniProtKB"
+}

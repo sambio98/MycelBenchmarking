@@ -1,0 +1,142 @@
+{
+  "accession": "AL645882.2",
+  "loci": [
+    {
+      "bgc": "BGC0000325",
+      "classes": [
+        "NRPS"
+      ],
+      "completeness": "unknown",
+      "from": 510823,
+      "to": 533448
+    },
+    {
+      "bgc": "BGC0002127",
+      "classes": [
+        "PKS"
+      ],
+      "completeness": "unknown",
+      "from": 1277478,
+      "to": 1280491
+    },
+    {
+      "bgc": "BGC0000910",
+      "classes": [
+        "other"
+      ],
+      "completeness": "unknown",
+      "from": 2943456,
+      "to": 2944875
+    },
+    {
+      "bgc": "BGC0000940",
+      "classes": [
+        "other"
+      ],
+      "completeness": "complete",
+      "from": 3033355,
+      "to": 3040682
+    },
+    {
+      "bgc": "BGC0000315",
+      "classes": [
+        "NRPS"
+      ],
+      "completeness": "complete",
+      "from": 3519449,
+      "to": 3602320
+    },
+    {
+      "bgc": "BGC0000194",
+      "classes": [
+        "PKS"
+      ],
+      "completeness": "complete",
+      "from": 5513809,
+      "to": 5535091
+    },
+    {
+      "bgc": "BGC0000660",
+      "classes": [
+        "terpene"
+      ],
+      "completeness": "unknown",
+      "from": 5681016,
+      "to": 5683483
+    },
+    {
+      "bgc": "BGC0001063",
+      "classes": [
+        "NRPS",
+        "PKS"
+      ],
+      "completeness": "unknown",
+      "from": 6432566,
+      "to": 6464206
+    },
+    {
+      "bgc": "BGC0001181",
+      "classes": [
+        "terpene"
+      ],
+      "completeness": "unknown",
+      "from": 6666219,
+      "to": 6668399
+    },
+    {
+      "bgc": "BGC0000849",
+      "classes": [
+        "other"
+      ],
+      "completeness": "complete",
+      "from": 6890528,
+      "to": 6892237
+    },
+    {
+      "bgc": "BGC0000038",
+      "classes": [
+        "PKS"
+      ],
+      "completeness": "complete",
+      "from": 6890528,
+      "to": 6948414
+    },
+    {
+      "bgc": "BGC0000551",
+      "classes": [
+        "ribosomal"
+      ],
+      "completeness": "complete",
+      "from": 7419664,
+      "to": 7426391
+    },
+    {
+      "bgc": "BGC0000663",
+      "classes": [
+        "terpene"
+      ],
+      "completeness": "unknown",
+      "from": 7516017,
+      "to": 7529773
+    },
+    {
+      "bgc": "BGC0002128",
+      "classes": [
+        "other"
+      ],
+      "completeness": "unknown",
+      "from": 8279373,
+      "to": 8288044
+    },
+    {
+      "bgc": "BGC0000324",
+      "classes": [
+        "NRPS"
+      ],
+      "completeness": "unknown",
+      "from": 8504461,
+      "to": 8529581
+    }
+  ],
+  "release": "MIBiG 4.0"
+}

@@ -1,0 +1,57 @@
+{
+  "_what_this_is": "The hand-written declaration the pinned codon tables are derived from. prepare_tables.py reads it, reads the two records it names, and writes codon_tables.json. Nothing in codon_tables.json is typed by hand: edit this file and regenerate.",
+  "hosts": {
+    "ecoli_bl21": {
+      "accession": "CP001509.3",
+      "design_window": {
+        "gc_global": [
+          0.48,
+          0.555
+        ],
+        "gc_window": [
+          0.35,
+          0.65
+        ]
+      },
+      "design_window_basis": "A synthesis vendor's declared acceptance window for this host, not a measurement of the genome. It is checked against the record: the pinned genome's own GC fraction must fall inside gc_global, or the table refuses to build.",
+      "gene_set_sha256": "a0f156b8b2cdb639600ef0af51b86e32e3268ba2dc18f02df9744fc4b386b75d",
+      "genes": 54,
+      "label": "Escherichia coli BL21(DE3)",
+      "license": "public domain / no restrictions on use (INSDC)",
+      "organism": "Escherichia coli BL21(DE3)",
+      "record_sha256_when_derived": "cec64b722967dd8f6cc951d93c484b43483618e7445c82e195068ddc34f2475e",
+      "repository_copy": "audit/records/CP001509.3.gb.gz",
+      "source": "GenBank record for the Escherichia coli BL21(DE3) complete genome, fetched as rettype=gbwithparts",
+      "url": "https://www.ncbi.nlm.nih.gov/nuccore/CP001509.3"
+    },
+    "streptomyces_coelicolor": {
+      "accession": "AL645882.2",
+      "design_window": {
+        "gc_global": [
+          0.62,
+          0.75
+        ],
+        "gc_window": [
+          0.45,
+          0.88
+        ]
+      },
+      "design_window_basis": "A synthesis vendor's declared acceptance window for this host, not a measurement of the genome. It is checked against the record: the pinned genome's own GC fraction must fall inside gc_global, or the table refuses to build.",
+      "gene_set_sha256": "75f52bb1f779699d301b0786fcb2bd9fb98445a68b55931167292845dca6dafb",
+      "genes": 60,
+      "label": "Streptomyces coelicolor A3(2)",
+      "license": "public domain / no restrictions on use (INSDC)",
+      "organism": "Streptomyces coelicolor A3(2)",
+      "record_sha256_when_derived": "56a79c6e7f39b23f98b892c20be40a254c0e36b99ae38ede53f37e82ee1e67bf",
+      "repository_copy": "campaigns/bgcdetect-scoelicolor-01/inputs/AL645882.2.gb.gz",
+      "source": "GenBank record for the Streptomyces coelicolor A3(2) chromosome. The same file is shipped as the input of campaigns/bgcdetect-scoelicolor-01, so this host's table is recomputable from the repository alone.",
+      "url": "https://www.ebi.ac.uk/ena/browser/view/AL645882"
+    }
+  },
+  "reference_set": {
+    "product_pattern": "^(putative|probable|possible)?\\s*(30S|50S)?\\s*ribosomal\\s+(subunit\\s+)?protein\\s+[SL]\\d+[A-Za-z]?(/[SL]?\\d+[A-Za-z]?)?\\.?$",
+    "pseudocount": 0.5,
+    "rule": "Every CDS feature of the record whose /product matches product_pattern (case-insensitive), that is not /pseudo, whose location is a single contiguous range, whose /codon_start is 1 and /transl_table is 11, whose extracted bases are a whole number of ACGT codons ending in exactly one stop, and whose translation under the standard code equals the record's own /translation. Relative adaptiveness is then count / max(count in the synonymous family), over all codons of those genes including each terminal stop, with an unobserved codon given `pseudocount` observations first (Sharp & Li 1987, Nucleic Acids Res 15:1281).",
+    "why_ribosomal": "CAI needs a reference set of genes under strong translational selection, and the ribosomal proteins are the set every host has, annotated under a name that can be matched mechanically. The alternative -- a genome-wide table -- measures mutational bias as much as selection, which is what the pinned weights are supposed to distinguish."
+  }
+}

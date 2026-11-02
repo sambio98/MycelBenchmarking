@@ -1,0 +1,11 @@
+{
+  "accession": "AL645882.2",
+  "annotation_discarded": "the source record carries 7825 CDS features and none of them is shipped. A gene caller predicts coding sequences, so an annotated record is the answer to this campaign's first rung. The count is recorded here for the provenance and is not graded.",
+  "extraction_rule": "the bases of the source record's ORIGIN block, upper-cased and wrapped at 70 columns, under the accession as the single FASTA identifier",
+  "file": "contig.fna.gz",
+  "license": "public domain / no restrictions on use (INSDC)",
+  "note": "Sequence only. The detection campaign on this same accession ships the annotated GenBank, because there the annotation is what the tool reads; here it is what the tool is asked to reproduce.",
+  "sha256": "09c59fadf66353e39bc951c1ae96eef21887570b857ea006e178210a39d9dd78",
+  "source": "EMBL-EBI/GenBank record for the Streptomyces coelicolor A3(2) chromosome",
+  "url": "https://www.ebi.ac.uk/ena/browser/view/AL645882"
+}

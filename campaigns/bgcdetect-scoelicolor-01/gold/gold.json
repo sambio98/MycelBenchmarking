@@ -1,0 +1,707 @@
+{
+  "accession": "AL645882.2",
+  "antismash_version": "antiSMASH 8.0.4",
+  "contig_edge_regions": 0,
+  "coordinate_convention": "0-based half-open",
+  "deletion_outcomes": {
+    "v0_identity": {
+      "deleted_genes": [],
+      "gained_products": [],
+      "lost_products": [],
+      "regions": 29,
+      "regions_gained": 0,
+      "regions_lost": 0,
+      "regions_unchanged": 29
+    },
+    "v1_t2pks_core_both": {
+      "deleted_genes": [
+        "SCO5087",
+        "SCO5088"
+      ],
+      "gained_products": [],
+      "lost_products": [
+        "T2PKS"
+      ],
+      "regions": 28,
+      "regions_gained": 0,
+      "regions_lost": 1,
+      "regions_unchanged": 28
+    },
+    "v2_t2pks_core_one": {
+      "deleted_genes": [
+        "SCO5087"
+      ],
+      "gained_products": [],
+      "lost_products": [
+        "T2PKS"
+      ],
+      "regions": 28,
+      "regions_gained": 0,
+      "regions_lost": 1,
+      "regions_unchanged": 28
+    },
+    "v3_nrps_core": {
+      "deleted_genes": [
+        "SCO3230",
+        "SCO3231",
+        "SCO3232"
+      ],
+      "gained_products": [],
+      "lost_products": [
+        "NRPS"
+      ],
+      "regions": 28,
+      "regions_gained": 0,
+      "regions_lost": 1,
+      "regions_unchanged": 28
+    },
+    "v4_lanthipeptide_core": {
+      "deleted_genes": [
+        "SCO6681"
+      ],
+      "gained_products": [],
+      "lost_products": [
+        "lanthipeptide-class-iii"
+      ],
+      "regions": 28,
+      "regions_gained": 0,
+      "regions_lost": 1,
+      "regions_unchanged": 28
+    },
+    "v5_additional_not_core": {
+      "deleted_genes": [
+        "SCO5089"
+      ],
+      "gained_products": [],
+      "lost_products": [],
+      "regions": 29,
+      "regions_gained": 0,
+      "regions_lost": 0,
+      "regions_unchanged": 29
+    },
+    "v6_multiproduct_one_product": {
+      "deleted_genes": [
+        "SCO6266"
+      ],
+      "gained_products": [
+        "T1PKS",
+        "hydrogen-cyanide"
+      ],
+      "lost_products": [
+        "T1PKS",
+        "butyrolactone",
+        "hydrogen-cyanide"
+      ],
+      "regions": 29,
+      "regions_gained": 1,
+      "regions_lost": 1,
+      "regions_unchanged": 28
+    }
+  },
+  "deletion_summary": {
+    "v0_identity": {
+      "gained_products": [],
+      "lost_products": [],
+      "regions": 29,
+      "regions_gained": 0,
+      "regions_lost": 0,
+      "regions_unchanged": 29
+    },
+    "v1_t2pks_core_both": {
+      "gained_products": [],
+      "lost_products": [
+        "T2PKS"
+      ],
+      "regions": 28,
+      "regions_gained": 0,
+      "regions_lost": 1,
+      "regions_unchanged": 28
+    },
+    "v2_t2pks_core_one": {
+      "gained_products": [],
+      "lost_products": [
+        "T2PKS"
+      ],
+      "regions": 28,
+      "regions_gained": 0,
+      "regions_lost": 1,
+      "regions_unchanged": 28
+    },
+    "v3_nrps_core": {
+      "gained_products": [],
+      "lost_products": [
+        "NRPS"
+      ],
+      "regions": 28,
+      "regions_gained": 0,
+      "regions_lost": 1,
+      "regions_unchanged": 28
+    },
+    "v4_lanthipeptide_core": {
+      "gained_products": [],
+      "lost_products": [
+        "lanthipeptide-class-iii"
+      ],
+      "regions": 28,
+      "regions_gained": 0,
+      "regions_lost": 1,
+      "regions_unchanged": 28
+    },
+    "v5_additional_not_core": {
+      "gained_products": [],
+      "lost_products": [],
+      "regions": 29,
+      "regions_gained": 0,
+      "regions_lost": 0,
+      "regions_unchanged": 29
+    },
+    "v6_multiproduct_one_product": {
+      "gained_products": [
+        "T1PKS",
+        "hydrogen-cyanide"
+      ],
+      "lost_products": [
+        "T1PKS",
+        "butyrolactone",
+        "hydrogen-cyanide"
+      ],
+      "regions": 29,
+      "regions_gained": 1,
+      "regions_lost": 1,
+      "regions_unchanged": 28
+    }
+  },
+  "detection_rule_fingerprint": "04add3eb0e86a816",
+  "distinct_products": 22,
+  "environment": {
+    "antismash_version": "antiSMASH 8.0.4",
+    "detection_rule_fingerprint": "04add3eb0e86a816"
+  },
+  "fraction_of_record": 0.130255,
+  "jaccard_max": 0.934303,
+  "jaccard_median": 0.295178,
+  "jaccard_min": 0.022607,
+  "jaccard_summary": {
+    "max": 0.934303,
+    "median": 0.295178,
+    "min": 0.022607
+  },
+  "loci_total": 15,
+  "per_locus": [
+    {
+      "bgc": "BGC0000038",
+      "coverage": 1.0,
+      "jaccard": 0.765296,
+      "region": 21,
+      "verdict": "contained_generous"
+    },
+    {
+      "bgc": "BGC0000194",
+      "coverage": 1.0,
+      "jaccard": 0.293057,
+      "region": 12,
+      "verdict": "contained_much_larger"
+    },
+    {
+      "bgc": "BGC0000315",
+      "coverage": 0.953108,
+      "jaccard": 0.934303,
+      "region": 11,
+      "verdict": "partial"
+    },
+    {
+      "bgc": "BGC0000324",
+      "coverage": 1.0,
+      "jaccard": 0.337285,
+      "region": 29,
+      "verdict": "contained_much_larger"
+    },
+    {
+      "bgc": "BGC0000325",
+      "coverage": 1.0,
+      "jaccard": 0.38785,
+      "region": 4,
+      "verdict": "contained_much_larger"
+    },
+    {
+      "bgc": "BGC0000551",
+      "coverage": 1.0,
+      "jaccard": 0.295178,
+      "region": 23,
+      "verdict": "contained_much_larger"
+    },
+    {
+      "bgc": "BGC0000660",
+      "coverage": 1.0,
+      "jaccard": 0.117044,
+      "region": 13,
+      "verdict": "contained_much_larger"
+    },
+    {
+      "bgc": "BGC0000663",
+      "coverage": 1.0,
+      "jaccard": 0.514434,
+      "region": 24,
+      "verdict": "contained_generous"
+    },
+    {
+      "bgc": "BGC0000849",
+      "coverage": 1.0,
+      "jaccard": 0.022607,
+      "region": 21,
+      "verdict": "contained_much_larger"
+    },
+    {
+      "bgc": "BGC0000910",
+      "coverage": 1.0,
+      "jaccard": 0.134342,
+      "region": 9,
+      "verdict": "contained_much_larger"
+    },
+    {
+      "bgc": "BGC0000940",
+      "coverage": 1.0,
+      "jaccard": 0.246005,
+      "region": 10,
+      "verdict": "contained_much_larger"
+    },
+    {
+      "bgc": "BGC0001063",
+      "coverage": 1.0,
+      "jaccard": 0.599545,
+      "region": 17,
+      "verdict": "contained_generous"
+    },
+    {
+      "bgc": "BGC0001181",
+      "coverage": 1.0,
+      "jaccard": 0.098327,
+      "region": 19,
+      "verdict": "contained_much_larger"
+    },
+    {
+      "bgc": "BGC0002127",
+      "coverage": 1.0,
+      "jaccard": 0.073289,
+      "region": 7,
+      "verdict": "contained_much_larger"
+    },
+    {
+      "bgc": "BGC0002128",
+      "coverage": 1.0,
+      "jaccard": 0.410451,
+      "region": 28,
+      "verdict": "contained_much_larger"
+    }
+  ],
+  "product_census": {
+    "NI-siderophore": 3,
+    "NRP-metallophore": 2,
+    "NRPS": 4,
+    "NRPS-like": 1,
+    "PKS-like": 1,
+    "RiPP-like": 2,
+    "T1PKS": 4,
+    "T2PKS": 2,
+    "T3PKS": 3,
+    "butyrolactone": 1,
+    "ectoine": 1,
+    "hglE-KS": 1,
+    "hydrogen-cyanide": 1,
+    "indole": 1,
+    "lanthipeptide-class-i": 2,
+    "lanthipeptide-class-iii": 1,
+    "melanin": 1,
+    "other": 1,
+    "prodigiosin": 1,
+    "terpene": 5,
+    "terpene-precursor": 2,
+    "thioamide-NRP": 1
+  },
+  "record_length": 8667507,
+  "region_bases": 1128988,
+  "region_span": {
+    "max": 80654,
+    "median": 29788.0,
+    "min": 10216
+  },
+  "region_table": [
+    {
+      "contig_edge": false,
+      "end": 139654,
+      "end_one_based": 139654,
+      "length": 53018,
+      "number": 1,
+      "products": [
+        "T1PKS",
+        "hglE-KS"
+      ],
+      "start": 86636,
+      "start_one_based": 86637
+    },
+    {
+      "contig_edge": false,
+      "end": 192038,
+      "end_one_based": 192038,
+      "length": 28271,
+      "number": 2,
+      "products": [
+        "terpene"
+      ],
+      "start": 163767,
+      "start_one_based": 163768
+    },
+    {
+      "contig_edge": false,
+      "end": 271084,
+      "end_one_based": 271084,
+      "length": 24559,
+      "number": 3,
+      "products": [
+        "lanthipeptide-class-i"
+      ],
+      "start": 246525,
+      "start_one_based": 246526
+    },
+    {
+      "contig_edge": false,
+      "end": 552325,
+      "end_one_based": 552325,
+      "length": 58337,
+      "number": 4,
+      "products": [
+        "NRP-metallophore",
+        "NRPS"
+      ],
+      "start": 493988,
+      "start_one_based": 493989
+    },
+    {
+      "contig_edge": false,
+      "end": 621488,
+      "end_one_based": 621488,
+      "length": 23638,
+      "number": 5,
+      "products": [
+        "terpene-precursor"
+      ],
+      "start": 597850,
+      "start_one_based": 597851
+    },
+    {
+      "contig_edge": false,
+      "end": 801799,
+      "end_one_based": 801799,
+      "length": 10216,
+      "number": 6,
+      "products": [
+        "RiPP-like"
+      ],
+      "start": 791583,
+      "start_one_based": 791584
+    },
+    {
+      "contig_edge": false,
+      "end": 1298749,
+      "end_one_based": 1298749,
+      "length": 41125,
+      "number": 7,
+      "products": [
+        "T3PKS"
+      ],
+      "start": 1257624,
+      "start_one_based": 1257625
+    },
+    {
+      "contig_edge": false,
+      "end": 2005898,
+      "end_one_based": 2005898,
+      "length": 10399,
+      "number": 8,
+      "products": [
+        "ectoine"
+      ],
+      "start": 1995499,
+      "start_one_based": 1995500
+    },
+    {
+      "contig_edge": false,
+      "end": 2949875,
+      "end_one_based": 2949875,
+      "length": 10570,
+      "number": 9,
+      "products": [
+        "melanin"
+      ],
+      "start": 2939305,
+      "start_one_based": 2939306
+    },
+    {
+      "contig_edge": false,
+      "end": 3054682,
+      "end_one_based": 3054682,
+      "length": 29788,
+      "number": 10,
+      "products": [
+        "NI-siderophore"
+      ],
+      "start": 3024894,
+      "start_one_based": 3024895
+    },
+    {
+      "contig_edge": false,
+      "end": 3603988,
+      "end_one_based": 3603988,
+      "length": 80654,
+      "number": 11,
+      "products": [
+        "NRPS"
+      ],
+      "start": 3523334,
+      "start_one_based": 3523335
+    },
+    {
+      "contig_edge": false,
+      "end": 5567424,
+      "end_one_based": 5567424,
+      "length": 72624,
+      "number": 12,
+      "products": [
+        "T2PKS"
+      ],
+      "start": 5494800,
+      "start_one_based": 5494801
+    },
+    {
+      "contig_edge": false,
+      "end": 5692101,
+      "end_one_based": 5692101,
+      "length": 21086,
+      "number": 13,
+      "products": [
+        "terpene"
+      ],
+      "start": 5671015,
+      "start_one_based": 5671016
+    },
+    {
+      "contig_edge": false,
+      "end": 5722276,
+      "end_one_based": 5722276,
+      "length": 21161,
+      "number": 14,
+      "products": [
+        "terpene-precursor"
+      ],
+      "start": 5701115,
+      "start_one_based": 5701116
+    },
+    {
+      "contig_edge": false,
+      "end": 5824487,
+      "end_one_based": 5824487,
+      "length": 72543,
+      "number": 15,
+      "products": [
+        "T2PKS"
+      ],
+      "start": 5751944,
+      "start_one_based": 5751945
+    },
+    {
+      "contig_edge": false,
+      "end": 6356533,
+      "end_one_based": 6356533,
+      "length": 29947,
+      "number": 16,
+      "products": [
+        "NI-siderophore"
+      ],
+      "start": 6326586,
+      "start_one_based": 6326587
+    },
+    {
+      "contig_edge": false,
+      "end": 6476442,
+      "end_one_based": 6476442,
+      "length": 52775,
+      "number": 17,
+      "products": [
+        "NRPS-like",
+        "T1PKS",
+        "prodigiosin"
+      ],
+      "start": 6423667,
+      "start_one_based": 6423668
+    },
+    {
+      "contig_edge": false,
+      "end": 6643659,
+      "end_one_based": 6643659,
+      "length": 11317,
+      "number": 18,
+      "products": [
+        "RiPP-like"
+      ],
+      "start": 6632342,
+      "start_one_based": 6632343
+    },
+    {
+      "contig_edge": false,
+      "end": 6678399,
+      "end_one_based": 6678399,
+      "length": 22181,
+      "number": 19,
+      "products": [
+        "terpene"
+      ],
+      "start": 6656218,
+      "start_one_based": 6656219
+    },
+    {
+      "contig_edge": false,
+      "end": 6864522,
+      "end_one_based": 6864522,
+      "length": 31208,
+      "number": 20,
+      "products": [
+        "NI-siderophore"
+      ],
+      "start": 6833314,
+      "start_one_based": 6833315
+    },
+    {
+      "contig_edge": false,
+      "end": 6956537,
+      "end_one_based": 6956537,
+      "length": 75640,
+      "number": 21,
+      "products": [
+        "T1PKS",
+        "butyrolactone",
+        "hydrogen-cyanide"
+      ],
+      "start": 6880897,
+      "start_one_based": 6880898
+    },
+    {
+      "contig_edge": false,
+      "end": 7142447,
+      "end_one_based": 7142447,
+      "length": 54184,
+      "number": 22,
+      "products": [
+        "NRPS",
+        "thioamide-NRP"
+      ],
+      "start": 7088263,
+      "start_one_based": 7088264
+    },
+    {
+      "contig_edge": false,
+      "end": 7432456,
+      "end_one_based": 7432456,
+      "length": 22793,
+      "number": 23,
+      "products": [
+        "lanthipeptide-class-iii"
+      ],
+      "start": 7409663,
+      "start_one_based": 7409664
+    },
+    {
+      "contig_edge": false,
+      "end": 7532758,
+      "end_one_based": 7532758,
+      "length": 26742,
+      "number": 24,
+      "products": [
+        "terpene"
+      ],
+      "start": 7506016,
+      "start_one_based": 7506017
+    },
+    {
+      "contig_edge": false,
+      "end": 7618555,
+      "end_one_based": 7618555,
+      "length": 48144,
+      "number": 25,
+      "products": [
+        "PKS-like",
+        "T1PKS"
+      ],
+      "start": 7570411,
+      "start_one_based": 7570412
+    },
+    {
+      "contig_edge": false,
+      "end": 7709360,
+      "end_one_based": 7709360,
+      "length": 26454,
+      "number": 26,
+      "products": [
+        "lanthipeptide-class-i"
+      ],
+      "start": 7682906,
+      "start_one_based": 7682907
+    },
+    {
+      "contig_edge": false,
+      "end": 8047475,
+      "end_one_based": 8047475,
+      "length": 74006,
+      "number": 27,
+      "products": [
+        "T3PKS",
+        "other"
+      ],
+      "start": 7973469,
+      "start_one_based": 7973470
+    },
+    {
+      "contig_edge": false,
+      "end": 8290764,
+      "end_one_based": 8290764,
+      "length": 21128,
+      "number": 28,
+      "products": [
+        "indole"
+      ],
+      "start": 8269636,
+      "start_one_based": 8269637
+    },
+    {
+      "contig_edge": false,
+      "end": 8549581,
+      "end_one_based": 8549581,
+      "length": 74480,
+      "number": 29,
+      "products": [
+        "NRP-metallophore",
+        "NRPS",
+        "T3PKS",
+        "terpene"
+      ],
+      "start": 8475101,
+      "start_one_based": 8475102
+    }
+  ],
+  "regions": 29,
+  "regions_holding_several_loci": [
+    21
+  ],
+  "regions_matching_a_locus": 14,
+  "regions_without_a_locus": 15,
+  "search_flags": [
+    "--minimal"
+  ],
+  "verdict_census": {
+    "congruent": 0,
+    "contained_generous": 3,
+    "contained_much_larger": 11,
+    "marginal": 0,
+    "not_detected": 0,
+    "partial": 1
+  }
+}

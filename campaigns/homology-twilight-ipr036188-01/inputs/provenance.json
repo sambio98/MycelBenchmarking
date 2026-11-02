@@ -1,0 +1,20 @@
+{
+  "corpus": {
+    "attribution": "UniProt Consortium, UniProtKB release 2026_03 (https://www.uniprot.org/).",
+    "file": "corpus_ipr036188_reviewed_2026_03.fasta.gz",
+    "license": "CC BY 4.0 (UniProt)",
+    "query": "xref:interpro-IPR036188 AND reviewed:true",
+    "selection_rule": "every reviewed UniProtKB entry cross-referencing the InterPro homologous superfamily IPR036188 (FAD/NAD(P)-binding domain superfamily), fetched in full and sorted by accession. Nothing is sampled or filtered: the whole reviewed set is the corpus, so the corpus is reproducible from the query and the release alone.",
+    "sha256": "3190ef287f98e411967aa8c0bc175c7f64d524a8b5749e2a509ee7f00e178cce",
+    "source": "UniProtKB reviewed (Swiss-Prot), release 2026_03"
+  },
+  "labels": {
+    "attribution": "InterPro release 110.0 (https://www.ebi.ac.uk/interpro/).",
+    "file": "interpro_labels_110_0.json.gz",
+    "license": "CC0 1.0 (InterPro)",
+    "sha256": "3f0a465a8b335689a2bba73ec34695467c951939a0419e924ece9fbf9fb1cf06",
+    "source": "InterPro 110.0, via the InterPro REST API for the entry types and UniProtKB 2026_03 cross-references for the per-protein assignments",
+    "why_it_is_shipped": "It is the campaign's declared homology label and the campaign cannot be posed without it. It is not the answer: the answer is what the pinned search reports, which this file does not contain."
+  },
+  "note": "No Pfam release is involved. The pinned image carries Pfam 35.0 for other campaigns; this label comes from InterPro 110.0, which is a different release of a different resource, and nothing here reads the image's Pfam library."
+}

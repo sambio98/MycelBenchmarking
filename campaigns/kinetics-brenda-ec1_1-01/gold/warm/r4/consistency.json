@@ -1,0 +1,13 @@
+{
+  "agreement_rate": 0.63212,
+  "band_counts": {
+    "agree": 1598,
+    "factor_1000": 31,
+    "factor_60": 25,
+    "near": 166,
+    "other": 708
+  },
+  "checked": 2528,
+  "excluded_non_positive": 0,
+  "unit_mixup_total": 56
+}

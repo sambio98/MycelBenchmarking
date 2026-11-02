@@ -1,0 +1,22 @@
+{
+  "derivation_note": "Atom counting plus valence-implied hydrogens, which is stable across RDKit versions. Canonical SMILES is not stable and is never used as a key.",
+  "derived_with": "rdkit 2026.03.6 CalcMolFormula",
+  "description": "Monomer molecular formulas for the monomers this entry's modules load, derived from the SMILES MIBiG supplies for each A-domain substrate.",
+  "monomers": {
+    "alanine": {
+      "formula": "C3H7NO2",
+      "proteinogenic": true,
+      "smiles_source": "C[C@@H](C(=O)O)N"
+    },
+    "phenylalanine": {
+      "formula": "C9H11NO2",
+      "proteinogenic": true,
+      "smiles_source": "C1=CC=C(C=C1)C[C@@H](C(=O)O)N"
+    },
+    "tryptophan": {
+      "formula": "C11H12N2O2",
+      "proteinogenic": true,
+      "smiles_source": "C1=CC=C2C(=C1)C(=CN2)C[C@@H](C(=O)O)N"
+    }
+  }
+}

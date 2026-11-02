@@ -1,0 +1,17 @@
+{
+  "diamond_version": "diamond version 2.2.8",
+  "distinct_ec_codes": 587,
+  "ec_codes_per_entry": {
+    "1": 4186,
+    "2": 390,
+    "3": 36,
+    "4": 15,
+    "5": 5
+  },
+  "ec_prefix": "1.14",
+  "entries_total": 4632,
+  "entries_with_multiple_ec": 446,
+  "partial_ec_mentions": 1850,
+  "release": "2026_03",
+  "tie_break": "bitscore descending, then subject accession ascending"
+}

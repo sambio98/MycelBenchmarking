@@ -1,0 +1,296 @@
+campaign_id: genecall-scoelicolor-01
+template_id: gene-calling
+track: EX
+family: boundary_and_robustness
+layer: L1_sequence_and_annotation
+np_class: mixed
+version: 1.0.0
+horizon_tier: T-short
+license_class: open
+grader_version: "2.0.0+9fc95658"
+grading_spec_version: "1.0.0"
+min_tool_surface: S1
+tool_surface_note: >
+  Needs Prodigal, and nothing else. This is the first tool-running campaign here
+  with no reference database to pin: the caller is ab initio, so the version and
+  the mode are the whole of the pin. R1 reports the tool identity and the call
+  census, so the no-tool ablation fails the first rung, and every rung above it
+  is made of gene-calling runs.
+
+license_notice:
+  source: >
+    The INSDC record for the Streptomyces coelicolor A3(2) chromosome,
+    AL645882.2, reduced to its bases
+  license: public domain / no restrictions on use (INSDC)
+  attribution: >
+    Sequence from INSDC accession AL645882.2
+    (https://www.ebi.ac.uk/ena/browser/view/AL645882).
+  redistribution: >
+    inputs/contig.fna.gz carries the record's bases unchanged under a published
+    extraction rule, with the source archive's digest in
+    inputs/provenance.json. INSDC sequence data carries no redistribution
+    restriction. No annotation is shipped.
+
+objective: >
+  A gene caller reads a contig and predicts coding sequences. Run the pinned
+  caller over the whole chromosome at the declared mode and flags and report the
+  calls it makes. Then cut the same contig at the declared breakpoints, run the
+  caller again, lift its coordinates back onto the parent, and reconcile the two
+  call sets: what survives, what is lost, what is new, and -- for each loss --
+  whether a breakpoint can explain it. Then report how all of that moves across
+  the declared fragmentation series and under the other declared mode.
+
+method_guidance: partial
+
+scope_note: >
+  Gold is the declared projection of a pinned tool's own output and exact
+  arithmetic over it, tier G1. No rung asks whether a call is a real gene: the
+  curated annotation of this chromosome is not shipped and is not the reference.
+  Every verdict compares two runs of the same caller over the same bases.
+
+  Five things are load-bearing.
+
+  Nothing annotated is shipped. A gene-calling campaign cannot hand over a record
+  carrying CDS features, because that is the answer. The input is the sequence
+  alone, which is why this campaign ships a FASTA where the detection campaign on
+  this same accession ships a GenBank -- there the annotation is what the tool
+  reads, here it is what the tool is asked to reproduce.
+
+  The fragmentation is a declared RULE and not a shipped file. The breakpoints
+  are arithmetic over the sequence length, so you cut the contig yourself.
+  Shipping pre-cut fragments would put each fragment's offset in the input, and
+  the offsets are the coordinate contract.
+
+  The coordinate contract is the trap. The tool reports 1-based inclusive
+  positions ON THE FRAGMENT; a parent coordinate is that plus the fragment's
+  0-based offset. Compare fragment coordinates against whole-contig coordinates
+  and you will report almost every call as lost and almost every call as new,
+  with counts that still look plausible.
+
+  The mode is pinned and varied, because the caller's single mode TRAINS on the
+  input it is given and its meta mode does not. So fragmenting the contig changes
+  the training set in one mode and not the other, and the campaign separates the
+  local effect of a cut from the global effect of retraining.
+
+  And a loss is classified by geometry rather than by guesswork. A lost call
+  either spans a breakpoint, lies within the declared window of one, or is
+  distant from every one of them. The third term is the retraining effect, and
+  whether it is empty is measured per mode rather than assumed.
+
+catalog_deviation: >
+  Two changes, both forced by a measurement.
+
+  The catalogued R2 was to be scored by overlap-F1 within a measured tolerance.
+  It is scored exactly instead, for the reason the domain-architecture campaign
+  found: overlap-F1 exists to absorb boundary disagreement between two
+  independent predictions, and both sides here come from the same pinned caller
+  over the same bytes. The caller's GFF is byte-identical on re-run -- it stamps
+  no date and no command line, unlike HMMER -- so there is no spread to take a
+  tolerance from, and any tolerance would absorb a difference that cannot occur
+  while hiding one that can.
+
+  The catalogued R3 was "which genes are truncated at a contig boundary, from a
+  closed enum". That is built, and the enum is the caller's OWN `partial` flag
+  rather than one this campaign invents. What is added is the thing that makes
+  the rung a measurement rather than a lookup: the losses are classified against
+  the breakpoints, because a call the cuts cannot explain is the tool reacting to
+  its input and that is a different finding from geometry.
+
+template_params:
+  contig_input: inputs/contig.fna.gz
+
+output_contract:
+  calling_report.json:
+    accession / baseline_mode / baseline_fragments / locality_window / fixed_flags: >
+      Reported for the record and NOT graded. The accession is the FASTA
+      identifier and the rest are echoes of the pinned rules table, so nothing in
+      the world would have to change for their values to change.
+    prodigal_version: >
+      What made the calls. Together with the mode and the flags this is the whole
+      of the pin: the caller is ab initio and reads no database.
+    contig_length / contig_sha256 / gc_fraction: >
+      The contig as you read it. The digest is over the BASES -- upper-cased,
+      newlines removed -- and not over the file, so a FASTA rewrapped at another
+      width fingerprints the same.
+    call_census: >
+      Over the whole unfragmented contig: calls, the split by strand, the
+      shortest, median and longest call length, the coding bases and their
+      fraction of the contig.
+
+      Keys, exactly: `calls`, `coding_bases`, `coding_fraction`, `longest`,
+      `median_length`, `on_the_forward_strand`, `on_the_reverse_strand`, `shortest`.
+    partial_census / start_type_census: >
+      The caller's own `partial` flag over the declared four-term vocabulary, and
+      the start codons it chose. The start types are open-ended: the keys are
+      whichever codons the contig uses, and types with no members are omitted.
+    breakpoint_census: >
+      Per declared fragment count, how many interior cuts the rule produces.
+    call_table: >
+      Every call on the whole contig, in parent coordinates, sorted by start then
+      end then strand, projected to the declared columns.
+
+      Keys, exactly: each row carries `end`, `fragment`, `partial`, `start`,
+      `start_type`, `strand`.
+    call_span: >
+      The first call's start, the last call's end, and the uncalled bases before
+      and after them.
+
+      Keys, exactly: `bases_after_the_last_call`, `bases_before_the_first_call`,
+      `first_call_start`, `last_call_end`.
+    fragmented_baseline_calls / fragmented_fragmented_calls / fragmented_retained / fragmented_lost / fragmented_gained / fragmented_retained_but_truncated: >
+      At the declared baseline fragmentation: the calls on each side, how many
+      survive with identical coordinates, how many are lost, how many are new,
+      and how many survive with the caller's partial flag changed. These six are
+      graded as one claim about what the cuts did, so a run that mis-lifted every
+      coordinate loses the claim rather than one count of six.
+    fragmented_loss_verdicts / fragmented_lost_table: >
+      The count per declared loss verdict, and every lost call with its verdict,
+      in the same order as the call table.
+
+      Keys, exactly: `fragmented_loss_verdicts` keys `crosses_a_cut`,
+      `distant_from_every_cut`, `near_a_cut`; `fragmented_lost_table` each row carries
+      `end`, `fragment`, `partial`, `start`, `start_type`, `strand`, `verdict`.
+    fragmented_partial_census / fragmented_gained_partial_census / fragmented_call_census: >
+      The partial flags over the whole fragmented run, the partial flags over the
+      new calls alone, and the same census as R1 recomputed on the fragmented
+      run.
+
+      Keys, exactly: `fragmented_call_census` keys `calls`, `coding_bases`,
+      `coding_fraction`, `longest`, `median_length`, `on_the_forward_strand`,
+      `on_the_reverse_strand`, `shortest`.
+    fragmentation_grid: >
+      One cell per (mode, fragment count), keyed `mode|count`, each comparing
+      that mode's fragmented run against that mode's OWN unfragmented run --
+      not against the baseline mode's, which would add the mode difference to
+      the fragmentation difference and report the sum as fragmentation.
+
+      Keys, exactly: one entry per key the data supplies, each carrying
+      `baseline_calls`, `fragmented_calls`, `gained`, `loss_verdicts`, `lost`,
+      `retained`, `retained_but_truncated`; `loss_verdicts` keys `crosses_a_cut`,
+      `distant_from_every_cut`, `near_a_cut`.
+    mode_difference: >
+      The two modes on the same unfragmented contig: shared calls, and the calls
+      only one of them makes. This is the comparison that isolates the flag from
+      the assembly, because the input bytes are identical on both sides.
+
+
+      Keys, exactly: `single_vs_meta`; `single_vs_meta` keys `only_in_meta`,
+      `only_in_single`, `shared`.
+constraints:
+  reference_dir: reference
+  pinned_tables:
+    - reference/calling_rules.json   # modes, flags, grid, contract, vocabularies
+  external_resources: []
+  external_resources_note: >
+    None, and that is worth saying. Every other tool-running campaign here reads
+    a reference database from the image and has to pin it by path and digest. An
+    ab initio caller reads only the sequence it is given, so the version and the
+    mode are the whole of the pin and there is nothing outside the campaign to
+    fingerprint.
+
+snapshots_required:
+  shipped: [insdc@AL645882.2]
+  fetched: []
+  image: [prodigal@2.6.3]
+
+budgets:
+  wall_clock_minutes: 25
+  cpu: 2
+  memory_gb: 4
+  network: off
+  budget_note: >
+    Eight caller runs over an 8.67 Mb contig, about fifteen seconds each, so two
+    minutes of tool time. The rest is for cutting the contig, lifting several
+    thousand coordinates and comparing the sets.
+
+rungs:
+  - {rung_id: r1, ordinal: 1, name: execute,        gold_tier: G1, warm_start_bundle: null}
+  - {rung_id: r2, ordinal: 2, name: correct,        gold_tier: G1, warm_start_bundle: gold/warm/r2}
+  - {rung_id: r3, ordinal: 3, name: commit,         gold_tier: G1, warm_start_bundle: gold/warm/r3}
+  - {rung_id: r4, ordinal: 4, name: counterfactual, gold_tier: G1, warm_start_bundle: gold/warm/r4}
+
+# Nothing is planted. The verification is one run of the caller against another
+# over the same bases; the control is the unfragmented cell of the grid, which
+# must lose and gain nothing against itself.
+
+harness:
+  gold_command: ["python3", "-m", "npbench_c.templates.gene_calling.build", "{campaign}"]
+  solve_command: ["python3", "-m", "npbench_c.templates.gene_calling.solve", "{campaign}", "{submission}"]
+  measure_command: ["python3", "-m", "npbench_c.templates.gene_calling.measure", "{campaign}", "{submission}", "{measurement}"]
+  stub_module: npbench_c.sweep.stubs.stub_genecall
+  stub_args: []
+  stub_levels:
+    - {name: stub-reader,      level: reader, timeout_s: 1800}
+    - {name: stub-caller,      level: caller, reference: true, timeout_s: 1800}
+    - {name: stub-reconcile,   level: reconcile, timeout_s: 1800}
+    - {name: stub-complete,    level: complete, timeout_s: 1800}
+    - {name: stub-unlifted,    level: unlifted, timeout_s: 1800}
+    - {name: stub-noncompute,  level: noncompute, mode: no_tool, timeout_s: 600}
+
+grading:
+  chance_levels: {r1: 1.0, r2: 0.001, r3: 0.001, r4: 0.001}
+  chance_level_notes:
+    r1: >
+      Nominal rather than measured. The call census and the tool identity cannot
+      be guessed, so the no-tool ablation fails R1 outright; the level stays at
+      1.0 because any system that reads the contig and runs the caller clears it,
+      and the capped floor is computed over R2 upward.
+
+excluded_from_grading:
+  - field: the curated CDS annotation of this chromosome
+    reason: >
+      Not shipped, and not the reference. The source record carries thousands of
+      CDS features and they are what a gene caller predicts, so shipping them
+      would answer R1 and R2 from the input. Using them as gold would also make
+      the campaign about calling ACCURACY against an annotation that is itself
+      largely pipeline output, which is a different and much more derived claim
+      than "what does this pinned caller do to this contig, and what does cutting
+      the contig do to that". The count discarded is recorded in the input
+      provenance.
+  - field: accession, baseline_mode, baseline_fragments, locality_window, fixed_flags
+    reason: >
+      Echoes. The accession is the FASTA identifier the input already carries and
+      the rest are the pinned rules table read back. Reported so a run records
+      what it was, and not graded: nothing in the world would have to change for
+      the value to change, only the campaign's own declaration.
+  - field: the caller's confidence and component scores
+    reason: >
+      Dropped from the declared projection. The caller reports a confidence and
+      half a dozen component scores per call; a float's last digits are not what
+      a call is, and nothing the campaign grades needs them to say where a gene
+      is. Grading several thousand floats would also dominate the conjunctive
+      product while testing one run repeatedly.
+  - field: the predicted protein sequences
+    reason: >
+      A function of the coordinates and the contig, so grading them would grade
+      the translation table twice: once in the coordinates and once in the
+      sequence they imply. The coordinates are the claim.
+
+notes_for_audit:
+  - >
+    Check the partial-flag census on the unfragmented contig first. Every call
+    should carry the caller's "neither end runs off" flag, because a complete
+    record has no edge for a call to run off. If any does not, the shipped input
+    is not the whole chromosome and R3's comparison is between two cut
+    assemblies rather than between a whole one and a cut one. The build refuses
+    to emit gold in that case.
+  - >
+    Then check the unfragmented cells of the grid. Each compares a mode's whole
+    contig against itself and must lose and gain nothing; anything else means the
+    comparison is reading two different runs. The build refuses that too.
+  - >
+    Then check that some lost call spans a breakpoint. That is the one loss the
+    geometry guarantees, so if none does, either the coordinate lift or the
+    breakpoint rule is wrong -- and both failures produce plausible-looking
+    counts rather than an error.
+  - >
+    The distant-from-every-cut verdict is the campaign's point. A lost call that
+    no breakpoint comes within the declared window of cannot be explained by the
+    cut; it is the caller reacting to a changed training set. Whether that term
+    is populated is a property of the MODE, and the grid reports it per cell
+    rather than the campaign asserting it.
+  - >
+    The mode comparison is on identical input bytes, so every call it separates
+    is attributable to the flag alone. Compare its magnitude with the
+    fragmentation column of the grid before reading the campaign as being about
+    assembly quality.

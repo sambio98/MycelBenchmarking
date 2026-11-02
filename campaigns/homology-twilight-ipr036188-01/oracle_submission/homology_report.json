@@ -1,0 +1,557 @@
+{
+  "band_census": {
+    "A0A084GDU5": {
+      "25_to_35": {
+        "same_family": 9,
+        "superfamily_only": 0,
+        "unclassified_pair": 0
+      },
+      "over_35": {
+        "same_family": 4,
+        "superfamily_only": 1,
+        "unclassified_pair": 0
+      },
+      "under_25": {
+        "same_family": 4,
+        "superfamily_only": 0,
+        "unclassified_pair": 0
+      }
+    },
+    "A0AI79": {
+      "25_to_35": {
+        "same_family": 52,
+        "superfamily_only": 0,
+        "unclassified_pair": 0
+      },
+      "over_35": {
+        "same_family": 693,
+        "superfamily_only": 0,
+        "unclassified_pair": 0
+      },
+      "under_25": {
+        "same_family": 26,
+        "superfamily_only": 0,
+        "unclassified_pair": 0
+      }
+    },
+    "A0AMD1": {
+      "25_to_35": {
+        "same_family": 57,
+        "superfamily_only": 0,
+        "unclassified_pair": 0
+      },
+      "over_35": {
+        "same_family": 794,
+        "superfamily_only": 0,
+        "unclassified_pair": 0
+      },
+      "under_25": {
+        "same_family": 5,
+        "superfamily_only": 0,
+        "unclassified_pair": 0
+      }
+    },
+    "A0LDC6": {
+      "25_to_35": {
+        "same_family": 54,
+        "superfamily_only": 0,
+        "unclassified_pair": 0
+      },
+      "over_35": {
+        "same_family": 365,
+        "superfamily_only": 0,
+        "unclassified_pair": 0
+      },
+      "under_25": {
+        "same_family": 265,
+        "superfamily_only": 0,
+        "unclassified_pair": 0
+      }
+    },
+    "A1AIE2": {
+      "25_to_35": {
+        "same_family": 61,
+        "superfamily_only": 7,
+        "unclassified_pair": 0
+      },
+      "over_35": {
+        "same_family": 93,
+        "superfamily_only": 7,
+        "unclassified_pair": 0
+      },
+      "under_25": {
+        "same_family": 5,
+        "superfamily_only": 15,
+        "unclassified_pair": 0
+      }
+    }
+  },
+  "band_verdicts": {
+    "A0A084GDU5": {
+      "25_to_35": "separable",
+      "over_35": "overlapping",
+      "under_25": "separable"
+    },
+    "A0AI79": {
+      "25_to_35": "separable",
+      "over_35": "separable",
+      "under_25": "separable"
+    },
+    "A0AMD1": {
+      "25_to_35": "separable",
+      "over_35": "separable",
+      "under_25": "separable"
+    },
+    "A0LDC6": {
+      "25_to_35": "separable",
+      "over_35": "separable",
+      "under_25": "separable"
+    },
+    "A1AIE2": {
+      "25_to_35": "overlapping",
+      "over_35": "overlapping",
+      "under_25": "overlapping"
+    }
+  },
+  "baseline_band_sizes": {
+    "A0A084GDU5": {
+      "25_to_35": 9,
+      "over_35": 5,
+      "under_25": 4
+    },
+    "A0AI79": {
+      "25_to_35": 52,
+      "over_35": 693,
+      "under_25": 26
+    },
+    "A0AMD1": {
+      "25_to_35": 57,
+      "over_35": 794,
+      "under_25": 5
+    },
+    "A0LDC6": {
+      "25_to_35": 54,
+      "over_35": 365,
+      "under_25": 265
+    },
+    "A1AIE2": {
+      "25_to_35": 68,
+      "over_35": 100,
+      "under_25": 20
+    }
+  },
+  "baseline_hits": {
+    "A0A084GDU5": 18,
+    "A0AI79": 771,
+    "A0AMD1": 856,
+    "A0LDC6": 684,
+    "A1AIE2": 188
+  },
+  "corpus_sequences": 4105,
+  "corpus_sha256": "712a00435a3d7faceb88a8b191e64836f7c3d0996296a89154aad35d20ec6dd2",
+  "corpus_superfamily": "IPR036188",
+  "evalue": 0.001,
+  "format_fields": [
+    "query",
+    "target",
+    "fident",
+    "alnlen",
+    "evalue",
+    "bits"
+  ],
+  "label_resource": "InterPro 110.0",
+  "max_seqs": 4200,
+  "mmseqs_version": "18.8cc5c",
+  "query_table": {
+    "IPR001100": {
+      "accession": "A1AIE2",
+      "family_members": 238,
+      "family_name": "Pyridine nucleotide-disulphide oxidoreductase, class I",
+      "length": 466
+    },
+    "IPR002218": {
+      "accession": "A0AI79",
+      "family_members": 888,
+      "family_name": "tRNA uridine 5-carboxymethylaminomethyl modification enzyme MnmG-related",
+      "length": 434
+    },
+    "IPR004416": {
+      "accession": "A0AMD1",
+      "family_members": 630,
+      "family_name": "tRNA uridine 5-carboxymethylaminomethyl modification enzyme MnmG",
+      "length": 629
+    },
+    "IPR004417": {
+      "accession": "A0LDC6",
+      "family_members": 256,
+      "family_name": "Methylenetetrahydrofolate--tRNA-(uracil-5-)-methyltransferase TrmFO",
+      "length": 439
+    },
+    "IPR050097": {
+      "accession": "A0A084GDU5",
+      "family_members": 313,
+      "family_name": "Ferredoxin--NADP / Thioredoxin reductase",
+      "length": 322
+    }
+  },
+  "recovery": {
+    "A0A084GDU5": {
+      "hits": 18,
+      "recovery_rate": 0.054487,
+      "same_family_asserted": 312,
+      "same_family_detected": 17,
+      "same_family_missed": 295,
+      "superfamily_only_detected": 1
+    },
+    "A0AI79": {
+      "hits": 771,
+      "recovery_rate": 0.869222,
+      "same_family_asserted": 887,
+      "same_family_detected": 771,
+      "same_family_missed": 116,
+      "superfamily_only_detected": 0
+    },
+    "A0AMD1": {
+      "hits": 856,
+      "recovery_rate": 0.965051,
+      "same_family_asserted": 887,
+      "same_family_detected": 856,
+      "same_family_missed": 31,
+      "superfamily_only_detected": 0
+    },
+    "A0LDC6": {
+      "hits": 684,
+      "recovery_rate": 0.771139,
+      "same_family_asserted": 887,
+      "same_family_detected": 684,
+      "same_family_missed": 203,
+      "superfamily_only_detected": 0
+    },
+    "A1AIE2": {
+      "hits": 188,
+      "recovery_rate": 0.657025,
+      "same_family_asserted": 242,
+      "same_family_detected": 159,
+      "same_family_missed": 83,
+      "superfamily_only_detected": 29
+    }
+  },
+  "sensitivity": 4.0,
+  "shuffle_ladder": {
+    "0": {
+      "A0A084GDU5": {
+        "band_order_held": true,
+        "hits": 18,
+        "loss_rate_by_band": {
+          "25_to_35": 0.0,
+          "over_35": 0.0,
+          "under_25": 0.0
+        },
+        "lost": 0,
+        "lost_by_band": {
+          "25_to_35": 0,
+          "over_35": 0,
+          "under_25": 0
+        }
+      },
+      "A0AI79": {
+        "band_order_held": true,
+        "hits": 771,
+        "loss_rate_by_band": {
+          "25_to_35": 0.0,
+          "over_35": 0.0,
+          "under_25": 0.0
+        },
+        "lost": 0,
+        "lost_by_band": {
+          "25_to_35": 0,
+          "over_35": 0,
+          "under_25": 0
+        }
+      },
+      "A0AMD1": {
+        "band_order_held": true,
+        "hits": 856,
+        "loss_rate_by_band": {
+          "25_to_35": 0.0,
+          "over_35": 0.0,
+          "under_25": 0.0
+        },
+        "lost": 0,
+        "lost_by_band": {
+          "25_to_35": 0,
+          "over_35": 0,
+          "under_25": 0
+        }
+      },
+      "A0LDC6": {
+        "band_order_held": true,
+        "hits": 684,
+        "loss_rate_by_band": {
+          "25_to_35": 0.0,
+          "over_35": 0.0,
+          "under_25": 0.0
+        },
+        "lost": 0,
+        "lost_by_band": {
+          "25_to_35": 0,
+          "over_35": 0,
+          "under_25": 0
+        }
+      },
+      "A1AIE2": {
+        "band_order_held": true,
+        "hits": 188,
+        "loss_rate_by_band": {
+          "25_to_35": 0.0,
+          "over_35": 0.0,
+          "under_25": 0.0
+        },
+        "lost": 0,
+        "lost_by_band": {
+          "25_to_35": 0,
+          "over_35": 0,
+          "under_25": 0
+        }
+      }
+    },
+    "120": {
+      "A0A084GDU5": {
+        "band_order_held": true,
+        "hits": 9,
+        "loss_rate_by_band": {
+          "25_to_35": 0.555556,
+          "over_35": 0.0,
+          "under_25": 1.0
+        },
+        "lost": 9,
+        "lost_by_band": {
+          "25_to_35": 5,
+          "over_35": 0,
+          "under_25": 4
+        }
+      },
+      "A0AI79": {
+        "band_order_held": true,
+        "hits": 771,
+        "loss_rate_by_band": {
+          "25_to_35": 0.0,
+          "over_35": 0.0,
+          "under_25": 0.0
+        },
+        "lost": 0,
+        "lost_by_band": {
+          "25_to_35": 0,
+          "over_35": 0,
+          "under_25": 0
+        }
+      },
+      "A0AMD1": {
+        "band_order_held": true,
+        "hits": 634,
+        "loss_rate_by_band": {
+          "25_to_35": 0.982456,
+          "over_35": 0.202771,
+          "under_25": 1.0
+        },
+        "lost": 222,
+        "lost_by_band": {
+          "25_to_35": 56,
+          "over_35": 161,
+          "under_25": 5
+        }
+      },
+      "A0LDC6": {
+        "band_order_held": true,
+        "hits": 684,
+        "loss_rate_by_band": {
+          "25_to_35": 0.0,
+          "over_35": 0.0,
+          "under_25": 0.0
+        },
+        "lost": 0,
+        "lost_by_band": {
+          "25_to_35": 0,
+          "over_35": 0,
+          "under_25": 0
+        }
+      },
+      "A1AIE2": {
+        "band_order_held": true,
+        "hits": 164,
+        "loss_rate_by_band": {
+          "25_to_35": 0.147059,
+          "over_35": 0.0,
+          "under_25": 0.7
+        },
+        "lost": 24,
+        "lost_by_band": {
+          "25_to_35": 10,
+          "over_35": 0,
+          "under_25": 14
+        }
+      }
+    },
+    "240": {
+      "A0A084GDU5": {
+        "band_order_held": true,
+        "hits": 3,
+        "loss_rate_by_band": {
+          "25_to_35": 1.0,
+          "over_35": 0.6,
+          "under_25": 1.0
+        },
+        "lost": 16,
+        "lost_by_band": {
+          "25_to_35": 9,
+          "over_35": 3,
+          "under_25": 4
+        }
+      },
+      "A0AI79": {
+        "band_order_held": true,
+        "hits": 274,
+        "loss_rate_by_band": {
+          "25_to_35": 0.923077,
+          "over_35": 0.61039,
+          "under_25": 1.0
+        },
+        "lost": 497,
+        "lost_by_band": {
+          "25_to_35": 48,
+          "over_35": 423,
+          "under_25": 26
+        }
+      },
+      "A0AMD1": {
+        "band_order_held": true,
+        "hits": 631,
+        "loss_rate_by_band": {
+          "25_to_35": 1.0,
+          "over_35": 0.20529,
+          "under_25": 1.0
+        },
+        "lost": 225,
+        "lost_by_band": {
+          "25_to_35": 57,
+          "over_35": 163,
+          "under_25": 5
+        }
+      },
+      "A0LDC6": {
+        "band_order_held": true,
+        "hits": 262,
+        "loss_rate_by_band": {
+          "25_to_35": 0.925926,
+          "over_35": 0.309589,
+          "under_25": 0.981132
+        },
+        "lost": 423,
+        "lost_by_band": {
+          "25_to_35": 50,
+          "over_35": 113,
+          "under_25": 260
+        }
+      },
+      "A1AIE2": {
+        "band_order_held": true,
+        "hits": 153,
+        "loss_rate_by_band": {
+          "25_to_35": 0.264706,
+          "over_35": 0.0,
+          "under_25": 0.85
+        },
+        "lost": 35,
+        "lost_by_band": {
+          "25_to_35": 18,
+          "over_35": 0,
+          "under_25": 17
+        }
+      }
+    },
+    "60": {
+      "A0A084GDU5": {
+        "band_order_held": true,
+        "hits": 15,
+        "loss_rate_by_band": {
+          "25_to_35": 0.111111,
+          "over_35": 0.0,
+          "under_25": 0.5
+        },
+        "lost": 3,
+        "lost_by_band": {
+          "25_to_35": 1,
+          "over_35": 0,
+          "under_25": 2
+        }
+      },
+      "A0AI79": {
+        "band_order_held": true,
+        "hits": 771,
+        "loss_rate_by_band": {
+          "25_to_35": 0.0,
+          "over_35": 0.0,
+          "under_25": 0.0
+        },
+        "lost": 0,
+        "lost_by_band": {
+          "25_to_35": 0,
+          "over_35": 0,
+          "under_25": 0
+        }
+      },
+      "A0AMD1": {
+        "band_order_held": true,
+        "hits": 764,
+        "loss_rate_by_band": {
+          "25_to_35": 0.614035,
+          "over_35": 0.066751,
+          "under_25": 0.8
+        },
+        "lost": 92,
+        "lost_by_band": {
+          "25_to_35": 35,
+          "over_35": 53,
+          "under_25": 4
+        }
+      },
+      "A0LDC6": {
+        "band_order_held": true,
+        "hits": 684,
+        "loss_rate_by_band": {
+          "25_to_35": 0.0,
+          "over_35": 0.0,
+          "under_25": 0.0
+        },
+        "lost": 0,
+        "lost_by_band": {
+          "25_to_35": 0,
+          "over_35": 0,
+          "under_25": 0
+        }
+      },
+      "A1AIE2": {
+        "band_order_held": true,
+        "hits": 179,
+        "loss_rate_by_band": {
+          "25_to_35": 0.058824,
+          "over_35": 0.0,
+          "under_25": 0.25
+        },
+        "lost": 9,
+        "lost_by_band": {
+          "25_to_35": 4,
+          "over_35": 0,
+          "under_25": 5
+        }
+      }
+    }
+  },
+  "threads": 1,
+  "verdict_census": {
+    "overlapping": 4,
+    "search_only": 0,
+    "separable": 11,
+    "unresolved": 0
+  }
+}

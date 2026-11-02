@@ -1,0 +1,371 @@
+{
+  "campaign_id": "construct-ecoli-rebh-01",
+  "template_id": "construct-design",
+  "grading_spec_version": "1.1.0",
+  "rungs": [
+    {
+      "rung_id": "r1",
+      "ordinal": 1,
+      "name": "execute",
+      "gold_tier": "G1",
+      "composition": "product",
+      "pass_threshold": 1.0,
+      "chance_level": 1.0,
+      "components": [
+        {
+          "name": "orf_present",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:present.orf_ecoli",
+            "gold": 1
+          }
+        },
+        {
+          "name": "analysis_present",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:present.analysis",
+            "gold": 1
+          }
+        },
+        {
+          "name": "schema_valid_alphabet",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:ecoli.schema.valid_alphabet",
+            "gold": 1
+          }
+        },
+        {
+          "name": "schema_in_frame",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:ecoli.schema.in_frame",
+            "gold": 1
+          }
+        },
+        {
+          "name": "schema_starts_atg",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:ecoli.schema.starts_atg",
+            "gold": 1
+          }
+        },
+        {
+          "name": "schema_ends_stop",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:ecoli.schema.ends_stop",
+            "gold": 1
+          }
+        },
+        {
+          "name": "schema_no_internal_stop",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:ecoli.schema.no_internal_stop",
+            "gold": 1
+          }
+        },
+        {
+          "name": "schema_length_matches_protein",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:ecoli.schema.length_matches_protein",
+            "gold": 1
+          }
+        }
+      ]
+    },
+    {
+      "rung_id": "r2",
+      "ordinal": 2,
+      "name": "correct",
+      "gold_tier": "G1",
+      "composition": "product",
+      "pass_threshold": 1.0,
+      "chance_level": 0.02,
+      "components": [
+        {
+          "name": "protein_identity",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:ecoli.protein_identity",
+            "gold": 1
+          }
+        },
+        {
+          "name": "all_constraints_satisfied",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:ecoli.all_constraints_satisfied",
+            "gold": 1
+          }
+        },
+        {
+          "name": "cai_floor",
+          "scorer": "floor_match",
+          "args": {
+            "pred": "pred:ecoli.cai",
+            "floor": "gold:hosts.ecoli.cai_floor"
+          }
+        },
+        {
+          "name": "zero_forbidden_sites",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:ecoli.violations.forbidden_sites",
+            "gold": 0
+          }
+        },
+        {
+          "name": "zero_gc_window",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:ecoli.violations.gc_window",
+            "gold": 0
+          }
+        },
+        {
+          "name": "zero_gc_global",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:ecoli.violations.gc_global",
+            "gold": 0
+          }
+        },
+        {
+          "name": "zero_homopolymer",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:ecoli.violations.homopolymer",
+            "gold": 0
+          }
+        },
+        {
+          "name": "zero_direct_repeat",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:ecoli.violations.direct_repeat",
+            "gold": 0
+          }
+        },
+        {
+          "name": "zero_internal_rbs",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:ecoli.violations.internal_rbs",
+            "gold": 0
+          }
+        }
+      ]
+    },
+    {
+      "rung_id": "r3",
+      "ordinal": 3,
+      "name": "commit",
+      "gold_tier": "G1",
+      "composition": "product",
+      "pass_threshold": 1.0,
+      "chance_level": 0.001,
+      "components": [
+        {
+          "name": "uv_forbidden_sites",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:claims.r3.unconstrained_violations.forbidden_sites",
+            "gold": "gold:hosts.ecoli.unconstrained_violations.forbidden_sites"
+          }
+        },
+        {
+          "name": "uv_gc_window",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:claims.r3.unconstrained_violations.gc_window",
+            "gold": "gold:hosts.ecoli.unconstrained_violations.gc_window"
+          }
+        },
+        {
+          "name": "uv_gc_global",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:claims.r3.unconstrained_violations.gc_global",
+            "gold": "gold:hosts.ecoli.unconstrained_violations.gc_global"
+          }
+        },
+        {
+          "name": "uv_homopolymer",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:claims.r3.unconstrained_violations.homopolymer",
+            "gold": "gold:hosts.ecoli.unconstrained_violations.homopolymer"
+          }
+        },
+        {
+          "name": "uv_direct_repeat",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:claims.r3.unconstrained_violations.direct_repeat",
+            "gold": "gold:hosts.ecoli.unconstrained_violations.direct_repeat"
+          }
+        },
+        {
+          "name": "uv_internal_rbs",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:claims.r3.unconstrained_violations.internal_rbs",
+            "gold": "gold:hosts.ecoli.unconstrained_violations.internal_rbs"
+          }
+        },
+        {
+          "name": "binding_constraint",
+          "scorer": "enum_exact",
+          "args": {
+            "pred": "pred:claims.r3.binding_constraint",
+            "gold": "gold:hosts.ecoli.binding_constraint",
+            "vocabulary": [
+              "forbidden_sites",
+              "gc_window",
+              "gc_global",
+              "homopolymer",
+              "direct_repeat",
+              "internal_rbs"
+            ]
+          }
+        },
+        {
+          "name": "non_binding_set",
+          "scorer": "set_exact",
+          "args": {
+            "pred": "pred:claims.r3.non_binding_constraints",
+            "gold": "gold:hosts.ecoli.non_binding_constraints"
+          }
+        }
+      ]
+    },
+    {
+      "rung_id": "r4",
+      "ordinal": 4,
+      "name": "counterfactual",
+      "gold_tier": "G1",
+      "composition": "product",
+      "pass_threshold": 1.0,
+      "chance_level": 0.001,
+      "components": [
+        {
+          "name": "swap_orf_present",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:present.orf_streptomyces",
+            "gold": 1
+          }
+        },
+        {
+          "name": "swap_protein_identity",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:streptomyces.protein_identity",
+            "gold": 1
+          }
+        },
+        {
+          "name": "swap_constraints_satisfied",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:streptomyces.all_constraints_satisfied",
+            "gold": 1
+          }
+        },
+        {
+          "name": "swap_cai_floor",
+          "scorer": "floor_match",
+          "args": {
+            "pred": "pred:streptomyces.cai",
+            "floor": "gold:hosts.streptomyces.cai_floor"
+          }
+        },
+        {
+          "name": "swap_uv_forbidden_sites",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:claims.r4.unconstrained_violations.forbidden_sites",
+            "gold": "gold:hosts.streptomyces.unconstrained_violations.forbidden_sites"
+          }
+        },
+        {
+          "name": "swap_uv_gc_window",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:claims.r4.unconstrained_violations.gc_window",
+            "gold": "gold:hosts.streptomyces.unconstrained_violations.gc_window"
+          }
+        },
+        {
+          "name": "swap_uv_gc_global",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:claims.r4.unconstrained_violations.gc_global",
+            "gold": "gold:hosts.streptomyces.unconstrained_violations.gc_global"
+          }
+        },
+        {
+          "name": "swap_uv_homopolymer",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:claims.r4.unconstrained_violations.homopolymer",
+            "gold": "gold:hosts.streptomyces.unconstrained_violations.homopolymer"
+          }
+        },
+        {
+          "name": "swap_uv_direct_repeat",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:claims.r4.unconstrained_violations.direct_repeat",
+            "gold": "gold:hosts.streptomyces.unconstrained_violations.direct_repeat"
+          }
+        },
+        {
+          "name": "swap_uv_internal_rbs",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:claims.r4.unconstrained_violations.internal_rbs",
+            "gold": "gold:hosts.streptomyces.unconstrained_violations.internal_rbs"
+          }
+        },
+        {
+          "name": "swap_binding_constraint",
+          "scorer": "enum_exact",
+          "args": {
+            "pred": "pred:claims.r4.binding_constraint",
+            "gold": "gold:hosts.streptomyces.binding_constraint",
+            "vocabulary": [
+              "forbidden_sites",
+              "gc_window",
+              "gc_global",
+              "homopolymer",
+              "direct_repeat",
+              "internal_rbs"
+            ]
+          }
+        },
+        {
+          "name": "swap_non_binding_set",
+          "scorer": "set_exact",
+          "args": {
+            "pred": "pred:claims.r4.non_binding_constraints",
+            "gold": "gold:hosts.streptomyces.non_binding_constraints"
+          }
+        },
+        {
+          "name": "flipped_constraints",
+          "scorer": "set_exact",
+          "args": {
+            "pred": "pred:claims.r4.flipped_constraints",
+            "gold": "gold:flipped_constraints"
+          }
+        }
+      ]
+    }
+  ]
+}

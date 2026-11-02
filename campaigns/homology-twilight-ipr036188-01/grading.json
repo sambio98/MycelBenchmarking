@@ -1,0 +1,148 @@
+{
+  "campaign_id": "homology-twilight-ipr036188-01",
+  "template_id": "remote-homology",
+  "grading_spec_version": "1.0.0",
+  "rungs": [
+    {
+      "rung_id": "r1",
+      "ordinal": 1,
+      "name": "execute",
+      "gold_tier": "G1",
+      "composition": "product",
+      "pass_threshold": 1.0,
+      "chance_level": 1.0,
+      "components": [
+        {
+          "name": "report_present",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:present.report",
+            "gold": 1
+          }
+        },
+        {
+          "name": "corpus_sequences",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:corpus_sequences",
+            "gold": "gold:corpus_sequences"
+          }
+        },
+        {
+          "name": "corpus_sha256",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:corpus_sha256",
+            "gold": "gold:corpus_sha256"
+          }
+        },
+        {
+          "name": "query_table",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:query_table",
+            "gold": "gold:query_table"
+          }
+        },
+        {
+          "name": "baseline_hits",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:baseline_hits",
+            "gold": "gold:baseline_hits"
+          }
+        },
+        {
+          "name": "baseline_band_sizes",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:baseline_band_sizes",
+            "gold": "gold:baseline_band_sizes"
+          }
+        },
+        {
+          "name": "environment",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:environment",
+            "gold": "gold:environment"
+          }
+        }
+      ],
+      "chance_level_note": "Nominal rather than measured. The per-query hit counts and the corpus digest cannot be guessed, so the no-tool ablation fails R1 outright; the level stays at 1.0 because any system that parses the corpus and runs the search clears it, and the capped floor is computed over R2 upward.\n"
+    },
+    {
+      "rung_id": "r2",
+      "ordinal": 2,
+      "name": "correct",
+      "gold_tier": "G1",
+      "composition": "product",
+      "pass_threshold": 1.0,
+      "chance_level": 0.001,
+      "components": [
+        {
+          "name": "recovery",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:recovery",
+            "gold": "gold:recovery"
+          }
+        },
+        {
+          "name": "band_census",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:band_census",
+            "gold": "gold:band_census"
+          }
+        }
+      ]
+    },
+    {
+      "rung_id": "r3",
+      "ordinal": 3,
+      "name": "commit",
+      "gold_tier": "G1",
+      "composition": "product",
+      "pass_threshold": 1.0,
+      "chance_level": 0.001,
+      "components": [
+        {
+          "name": "band_verdicts",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:band_verdicts",
+            "gold": "gold:band_verdicts"
+          }
+        },
+        {
+          "name": "verdict_census",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:verdict_census",
+            "gold": "gold:verdict_census"
+          }
+        }
+      ]
+    },
+    {
+      "rung_id": "r4",
+      "ordinal": 4,
+      "name": "counterfactual",
+      "gold_tier": "G1",
+      "composition": "product",
+      "pass_threshold": 1.0,
+      "chance_level": 0.001,
+      "components": [
+        {
+          "name": "shuffle_ladder",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:shuffle_ladder",
+            "gold": "gold:shuffle_ladder"
+          }
+        }
+      ]
+    }
+  ]
+}

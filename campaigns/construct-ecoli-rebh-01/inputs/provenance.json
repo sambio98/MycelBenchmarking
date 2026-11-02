@@ -1,0 +1,12 @@
+{
+  "accession": "Q8KHZ8",
+  "length_aa": 530,
+  "license": "CC BY 4.0",
+  "note": "Tryptophan 7-halogenase RebH from Lentzea aerocolonigenes, reviewed. First instantiation of the construct-design template. This file was added later than the data: the second instantiation (construct-ecoli-prna-01) shipped with a provenance record and this one did not, which the release packager caught -- it refuses to publish data that states no licence, and UniProtKB is CC BY 4.0 where attribution is a condition rather than a courtesy.",
+  "retrieved": "2026-10-02",
+  "sequence_version": 1,
+  "sequence_version_source": "FASTA header SV=1",
+  "sha256_sequence": "2853460230442a06",
+  "source": "UniProtKB",
+  "url": "https://rest.uniprot.org/uniprotkb/Q8KHZ8.json"
+}

@@ -1,0 +1,131 @@
+{
+  "band_census": {
+    "A0A084GDU5": {
+      "25_to_35": {
+        "same_family": 9,
+        "superfamily_only": 0,
+        "unclassified_pair": 0
+      },
+      "over_35": {
+        "same_family": 4,
+        "superfamily_only": 1,
+        "unclassified_pair": 0
+      },
+      "under_25": {
+        "same_family": 4,
+        "superfamily_only": 0,
+        "unclassified_pair": 0
+      }
+    },
+    "A0AI79": {
+      "25_to_35": {
+        "same_family": 52,
+        "superfamily_only": 0,
+        "unclassified_pair": 0
+      },
+      "over_35": {
+        "same_family": 693,
+        "superfamily_only": 0,
+        "unclassified_pair": 0
+      },
+      "under_25": {
+        "same_family": 26,
+        "superfamily_only": 0,
+        "unclassified_pair": 0
+      }
+    },
+    "A0AMD1": {
+      "25_to_35": {
+        "same_family": 57,
+        "superfamily_only": 0,
+        "unclassified_pair": 0
+      },
+      "over_35": {
+        "same_family": 794,
+        "superfamily_only": 0,
+        "unclassified_pair": 0
+      },
+      "under_25": {
+        "same_family": 5,
+        "superfamily_only": 0,
+        "unclassified_pair": 0
+      }
+    },
+    "A0LDC6": {
+      "25_to_35": {
+        "same_family": 54,
+        "superfamily_only": 0,
+        "unclassified_pair": 0
+      },
+      "over_35": {
+        "same_family": 365,
+        "superfamily_only": 0,
+        "unclassified_pair": 0
+      },
+      "under_25": {
+        "same_family": 265,
+        "superfamily_only": 0,
+        "unclassified_pair": 0
+      }
+    },
+    "A1AIE2": {
+      "25_to_35": {
+        "same_family": 61,
+        "superfamily_only": 7,
+        "unclassified_pair": 0
+      },
+      "over_35": {
+        "same_family": 93,
+        "superfamily_only": 7,
+        "unclassified_pair": 0
+      },
+      "under_25": {
+        "same_family": 5,
+        "superfamily_only": 15,
+        "unclassified_pair": 0
+      }
+    }
+  },
+  "recovery": {
+    "A0A084GDU5": {
+      "hits": 18,
+      "recovery_rate": 0.054487,
+      "same_family_asserted": 312,
+      "same_family_detected": 17,
+      "same_family_missed": 295,
+      "superfamily_only_detected": 1
+    },
+    "A0AI79": {
+      "hits": 771,
+      "recovery_rate": 0.869222,
+      "same_family_asserted": 887,
+      "same_family_detected": 771,
+      "same_family_missed": 116,
+      "superfamily_only_detected": 0
+    },
+    "A0AMD1": {
+      "hits": 856,
+      "recovery_rate": 0.965051,
+      "same_family_asserted": 887,
+      "same_family_detected": 856,
+      "same_family_missed": 31,
+      "superfamily_only_detected": 0
+    },
+    "A0LDC6": {
+      "hits": 684,
+      "recovery_rate": 0.771139,
+      "same_family_asserted": 887,
+      "same_family_detected": 684,
+      "same_family_missed": 203,
+      "superfamily_only_detected": 0
+    },
+    "A1AIE2": {
+      "hits": 188,
+      "recovery_rate": 0.657025,
+      "same_family_asserted": 242,
+      "same_family_detected": 159,
+      "same_family_missed": 83,
+      "superfamily_only_detected": 29
+    }
+  }
+}

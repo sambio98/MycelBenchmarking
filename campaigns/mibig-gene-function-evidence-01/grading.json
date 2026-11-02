@@ -1,0 +1,348 @@
+{
+  "campaign_id": "mibig-gene-function-evidence-01",
+  "template_id": "mibig-annotation-audit",
+  "grading_spec_version": "1.0.0",
+  "rungs": [
+    {
+      "rung_id": "r1",
+      "ordinal": 1,
+      "name": "execute",
+      "gold_tier": "G1",
+      "composition": "product",
+      "pass_threshold": 1.0,
+      "chance_level": 1.0,
+      "components": [
+        {
+          "name": "report_present",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:present.report",
+            "gold": 1
+          }
+        },
+        {
+          "name": "corpus_entries",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:corpus_entries",
+            "gold": "gold:corpus_entries"
+          }
+        },
+        {
+          "name": "entries_with_annotations",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:entries_with_annotations",
+            "gold": "gold:entries_with_annotations"
+          }
+        },
+        {
+          "name": "total_function_annotations",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:total_function_annotations",
+            "gold": "gold:total_function_annotations"
+          }
+        },
+        {
+          "name": "function_vocabulary",
+          "scorer": "set_exact",
+          "args": {
+            "pred": "pred:function_vocabulary",
+            "gold": "gold:function_vocabulary"
+          }
+        }
+      ],
+      "chance_level_note": "Nominal rather than measured, as in the other corpus campaign: the entry and annotation counts cannot be guessed, so the no-computation ablation fails R1 outright. Kept at 1.0 because any system that reads the archive clears it, and the capped floor is computed over R2 upward.\n"
+    },
+    {
+      "rung_id": "r2",
+      "ordinal": 2,
+      "name": "correct",
+      "gold_tier": "G1",
+      "composition": "product",
+      "pass_threshold": 1.0,
+      "chance_level": 0.004,
+      "components": [
+        {
+          "name": "backed_Activation___processing",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:backed_by_function.Activation / processing",
+            "gold": "gold:backed_by_function.Activation / processing"
+          }
+        },
+        {
+          "name": "backed_Precursor_biosynthesis",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:backed_by_function.Precursor biosynthesis",
+            "gold": "gold:backed_by_function.Precursor biosynthesis"
+          }
+        },
+        {
+          "name": "backed_Regulation",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:backed_by_function.Regulation",
+            "gold": "gold:backed_by_function.Regulation"
+          }
+        },
+        {
+          "name": "backed_Resistance_immunity",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:backed_by_function.Resistance/immunity",
+            "gold": "gold:backed_by_function.Resistance/immunity"
+          }
+        },
+        {
+          "name": "backed_Scaffold_biosynthesis",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:backed_by_function.Scaffold biosynthesis",
+            "gold": "gold:backed_by_function.Scaffold biosynthesis"
+          }
+        },
+        {
+          "name": "backed_Tailoring",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:backed_by_function.Tailoring",
+            "gold": "gold:backed_by_function.Tailoring"
+          }
+        },
+        {
+          "name": "backed_Transport",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:backed_by_function.Transport",
+            "gold": "gold:backed_by_function.Transport"
+          }
+        },
+        {
+          "name": "unbacked_Activation___processing",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:unbacked_by_function.Activation / processing",
+            "gold": "gold:unbacked_by_function.Activation / processing"
+          }
+        },
+        {
+          "name": "unbacked_Precursor_biosynthesis",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:unbacked_by_function.Precursor biosynthesis",
+            "gold": "gold:unbacked_by_function.Precursor biosynthesis"
+          }
+        },
+        {
+          "name": "unbacked_Regulation",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:unbacked_by_function.Regulation",
+            "gold": "gold:unbacked_by_function.Regulation"
+          }
+        },
+        {
+          "name": "unbacked_Resistance_immunity",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:unbacked_by_function.Resistance/immunity",
+            "gold": "gold:unbacked_by_function.Resistance/immunity"
+          }
+        },
+        {
+          "name": "unbacked_Scaffold_biosynthesis",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:unbacked_by_function.Scaffold biosynthesis",
+            "gold": "gold:unbacked_by_function.Scaffold biosynthesis"
+          }
+        },
+        {
+          "name": "unbacked_Tailoring",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:unbacked_by_function.Tailoring",
+            "gold": "gold:unbacked_by_function.Tailoring"
+          }
+        },
+        {
+          "name": "unbacked_Transport",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:unbacked_by_function.Transport",
+            "gold": "gold:unbacked_by_function.Transport"
+          }
+        },
+        {
+          "name": "method_totals",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:function_evidence_method_totals",
+            "gold": "gold:function_evidence_method_totals"
+          }
+        }
+      ]
+    },
+    {
+      "rung_id": "r3",
+      "ordinal": 3,
+      "name": "commit",
+      "gold_tier": "G1",
+      "composition": "product",
+      "pass_threshold": 1.0,
+      "chance_level": 0.002,
+      "components": [
+        {
+          "name": "admissible_Activation___processing",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:admissible_by_function.Activation / processing",
+            "gold": "gold:admissible_by_function.Activation / processing"
+          }
+        },
+        {
+          "name": "admissible_Precursor_biosynthesis",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:admissible_by_function.Precursor biosynthesis",
+            "gold": "gold:admissible_by_function.Precursor biosynthesis"
+          }
+        },
+        {
+          "name": "admissible_Regulation",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:admissible_by_function.Regulation",
+            "gold": "gold:admissible_by_function.Regulation"
+          }
+        },
+        {
+          "name": "admissible_Resistance_immunity",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:admissible_by_function.Resistance/immunity",
+            "gold": "gold:admissible_by_function.Resistance/immunity"
+          }
+        },
+        {
+          "name": "admissible_Scaffold_biosynthesis",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:admissible_by_function.Scaffold biosynthesis",
+            "gold": "gold:admissible_by_function.Scaffold biosynthesis"
+          }
+        },
+        {
+          "name": "admissible_Tailoring",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:admissible_by_function.Tailoring",
+            "gold": "gold:admissible_by_function.Tailoring"
+          }
+        },
+        {
+          "name": "admissible_Transport",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:admissible_by_function.Transport",
+            "gold": "gold:admissible_by_function.Transport"
+          }
+        },
+        {
+          "name": "backed_minus_admissible",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:backed_minus_admissible",
+            "gold": "gold:backed_minus_admissible"
+          }
+        },
+        {
+          "name": "focal_admissible_entries",
+          "scorer": "set_exact",
+          "args": {
+            "pred": "pred:focal_admissible_entries",
+            "gold": "gold:focal_admissible_entries"
+          }
+        }
+      ]
+    },
+    {
+      "rung_id": "r4",
+      "ordinal": 4,
+      "name": "counterfactual",
+      "gold_tier": "G1",
+      "composition": "product",
+      "pass_threshold": 1.0,
+      "chance_level": 0.001,
+      "components": [
+        {
+          "name": "variant_v1_knockout_only",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:policy_variants.v1_knockout_only.admissible_by_function",
+            "gold": "gold:policy_variants.v1_knockout_only.admissible_by_function"
+          }
+        },
+        {
+          "name": "variant_v1_knockout_only_total",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:policy_variants.v1_knockout_only.total",
+            "gold": "gold:policy_variants.v1_knockout_only.total"
+          }
+        },
+        {
+          "name": "variant_v2_plus_activity_assay",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:policy_variants.v2_plus_activity_assay.admissible_by_function",
+            "gold": "gold:policy_variants.v2_plus_activity_assay.admissible_by_function"
+          }
+        },
+        {
+          "name": "variant_v2_plus_activity_assay_total",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:policy_variants.v2_plus_activity_assay.total",
+            "gold": "gold:policy_variants.v2_plus_activity_assay.total"
+          }
+        },
+        {
+          "name": "variant_v3_any_locus_evidence",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:policy_variants.v3_any_locus_evidence.admissible_by_function",
+            "gold": "gold:policy_variants.v3_any_locus_evidence.admissible_by_function"
+          }
+        },
+        {
+          "name": "variant_v3_any_locus_evidence_total",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:policy_variants.v3_any_locus_evidence.total",
+            "gold": "gold:policy_variants.v3_any_locus_evidence.total"
+          }
+        },
+        {
+          "name": "variant_v4_include_inactive",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:policy_variants.v4_include_inactive.admissible_by_function",
+            "gold": "gold:policy_variants.v4_include_inactive.admissible_by_function"
+          }
+        },
+        {
+          "name": "variant_v4_include_inactive_total",
+          "scorer": "exact",
+          "args": {
+            "pred": "pred:policy_variants.v4_include_inactive.total",
+            "gold": "gold:policy_variants.v4_include_inactive.total"
+          }
+        }
+      ]
+    }
+  ]
+}

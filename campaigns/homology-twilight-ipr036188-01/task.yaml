@@ -1,0 +1,283 @@
+campaign_id: homology-twilight-ipr036188-01
+template_id: remote-homology
+track: EX
+family: boundary_and_robustness
+layer: L2_enzyme_and_function
+np_class: mixed
+version: 1.0.0
+horizon_tier: T-short
+license_class: open
+grader_version: "2.0.0+9fc95658"
+grading_spec_version: "1.0.0"
+min_tool_surface: S1
+tool_surface_note: >
+  Needs one sequence searcher and nothing else. R1 reports the search binary's
+  identity and the hit count per declared query, so the no-tool ablation fails
+  the first rung, and every rung above it is made of search runs over the same
+  indexed corpus.
+
+license_notice:
+  sources:
+    - name: UniProtKB reviewed (Swiss-Prot), release 2026_03
+      license: CC BY 4.0
+      attribution: >
+        UniProt Consortium, UniProtKB release 2026_03
+        (https://www.uniprot.org/). Sequences are redistributed unchanged under
+        a published selection rule.
+    - name: InterPro 110.0
+      license: CC0 1.0
+      attribution: >
+        InterPro release 110.0 (https://www.ebi.ac.uk/interpro/). Entry types and
+        per-protein assignments are redistributed as a table.
+  redistribution: >
+    inputs/ carries the corpus sequences and the InterPro assignment table, both
+    under licences that permit redistribution with attribution. The searched
+    database is not shipped: it is built from the shipped corpus by the declared
+    invocation. The mutated queries are not shipped either -- they follow from
+    the declared shuffle rule.
+
+objective: >
+  Remote homology is the standard question with no oracle: at thirty per cent
+  identity two proteins may share an ancestor, and asking a system whether they
+  do is asking it to agree with whoever curated the answer. So this campaign does
+  not ask it. Build the declared search database from the shipped corpus, select
+  the declared queries from the shipped label table by the declared rule, run the
+  pinned search, and report what it found -- per identity band, against what
+  InterPro itself asserts about each pair. Then classify each band from a closed
+  vocabulary, and finally shuffle a declared window of residues in each query and
+  report which hits survive.
+
+method_guidance: partial
+
+scope_note: >
+  Gold is the declared projection of a pinned searcher's own output over one
+  corpus, joined to a published curation, plus exact arithmetic over both. Tier
+  G1.
+
+  Four things are load-bearing.
+
+  The label is a PUBLISHED CURATION with a release, not a judgement. InterPro
+  states which entries a protein carries and what type each entry is; two
+  proteins sharing an entry of type `family` are related by that assertion, and
+  two sharing only a `homologous_superfamily` entry are related more distantly by
+  the same resource's own hierarchy. The campaign grades what the search reports
+  against that, never whether the assertion is right.
+
+  And the vocabulary refuses the obvious overreach. A pair sharing no entry is
+  NOT labelled non-homologous: InterPro records what has been classified, which
+  is not the same as what is related. The third label is `unclassified_pair` for
+  that reason.
+
+  Every pair in this corpus is already a pair InterPro places in ONE homologous
+  superfamily, because that is how the corpus was selected. So the question is
+  never whether two members are related at all. It is whether a pairwise search
+  can see a relationship asserted at family level, and what it reports for the
+  rest.
+
+  The counterfactual is a WINDOW LADDER, and the reason is measured. The
+  catalogued R4 shuffled "the region carrying the shared motif", which is
+  degenerate on this data: an InterPro family match on these proteins covers
+  almost the whole sequence, so that perturbation destroys the protein and grades
+  one answer. A ladder of declared window lengths asks how much local disorder a
+  hit survives instead.
+
+catalog_deviation: >
+  Two changes, each forced by a measurement.
+
+  The catalogued R3 was "homologous or not per candidate, with the evidence
+  class". The first half has no oracle at the identities this campaign is about,
+  and scoring a system against a curator's reading is the human judgement this
+  benchmark excludes from grading. What replaces it is a declared classification
+  of each identity band from the search's own census against InterPro's own
+  assertion -- computed by a published rule, not judged -- and the catalogued
+  claim is excluded by name.
+
+  The catalogued R4 was "the query region carrying the shared motif is shuffled
+  -- predict which hits survive". Measured, the region carrying the shared
+  signature is nearly the whole protein, so shuffling it is a whole-sequence
+  shuffle and every hit dies: one answer, repeated per query. The ladder of
+  declared window lengths replaces it, and measured, the response is not uniform
+  -- some queries hold flat across the lower windows and collapse at the widest,
+  others degrade from the narrowest upward -- which is what makes the rung worth
+  grading.
+
+template_params:
+  corpus_input: inputs/corpus_ipr036188_reviewed_2026_03.fasta.gz
+  labels_input: inputs/interpro_labels_110_0.json.gz
+
+output_contract:
+  homology_report.json:
+    label_resource / corpus_superfamily / sensitivity / evalue / max_seqs / threads / format_fields: >
+      Reported for the record and NOT graded. The resource and the superfamily
+      name what the campaign is, and the rest are echoes of the pinned rules
+      table.
+    mmseqs_version: >
+      What ran the search. With the flags this is the whole of the pin: the
+      searcher reads only the corpus it is given.
+    corpus_sequences / corpus_sha256: >
+      The corpus as you parsed it -- the digest over the SEQUENCES in accession
+      order, not over the file, so a rewrapped or recompressed copy fingerprints
+      the same.
+    query_table: >
+      Per declared family entry, the query the declared rule selects, its length,
+      how many corpus members THAT FAMILY covers, and the family's InterPro name.
+
+      `family_members` is not the same number as `recovery.same_family_asserted`
+      and they are not meant to match. A query stands for one declared family,
+      and `family_members` is that family's size; but a protein commonly carries
+      several InterPro families, and `same_family_asserted` counts every corpus
+      member sharing ANY family with the query. Measured here they differ on
+      every declared query, and reading one for the other would make the recovery
+      rate look wrong.
+
+      Keys, exactly: one entry per key the data supplies, each carrying `accession`,
+      `family_members`, `family_name`, `length`.
+    baseline_hits / baseline_band_sizes: >
+      How many hits each query has, and how they fall across the declared
+      identity bands. Every loss rate in the ladder is a fraction of one of
+      these, so the denominators are reported with them.
+    recovery: >
+      Per query: how many corpus members InterPro places in a family with it, how
+      many of those the search found, how many it missed, the rate, and how many
+      hits it found that are not asserted at family level.
+
+      Keys, exactly: one entry per key the data supplies, each carrying `hits`,
+      `recovery_rate`, `same_family_asserted`, `same_family_detected`,
+      `same_family_missed`, `superfamily_only_detected`.
+    band_census: >
+      Per query and declared band, how many hits carry each of the three labels.
+
+      Keys, exactly: one entry per query, each carrying one entry per declared band,
+      each of those carrying `same_family`, `superfamily_only`, `unclassified_pair`.
+    band_verdicts / verdict_census: >
+      The declared verdict per query and band, and the count per verdict.
+
+      Keys, exactly: `verdict_census` keys `overlapping`, `search_only`, `separable`,
+      `unresolved`.
+    shuffle_ladder: >
+      Per declared window and query: how many hits survive, how many were lost,
+      the loss count and rate per band OF THE BASELINE HIT, and whether the rates
+      fall from the distant band to the close one.
+
+      Keys, exactly: one entry per declared window, each carrying one entry per
+      query, each of those carrying `hits`, `lost`, `lost_by_band`,
+      `loss_rate_by_band` and `band_order_held`, where the two by-band maps carry
+      one entry per declared band.
+
+constraints:
+  reference_dir: reference
+  pinned_tables:
+    - reference/homology_rules.json   # flags, bands, query rule, windows, vocabulary
+  external_resources: []
+  external_resources_note: >
+    None. The searcher reads the corpus it is given and no reference database, so
+    the version and the flags are the whole of the pin. The InterPro label is
+    shipped in inputs/ rather than read from the image, and no Pfam release is
+    involved: the pinned image carries Pfam 35.0 for other campaigns, and nothing
+    here reads it.
+
+snapshots_required:
+  shipped: [uniprot@2026_03, interpro@110.0]
+  fetched: []
+  image: [mmseqs2@18.8cc5c]
+
+budgets:
+  wall_clock_minutes: 45
+  cpu: 2
+  memory_gb: 8
+  network: off
+  budget_note: >
+    Four search runs over one indexed corpus of a few thousand sequences: one for
+    the declared queries and one per declared shuffle window. Each run rebuilds
+    and reindexes the database, which is the dominant cost at this corpus size,
+    and the rest is reading a gzipped FASTA and a label table.
+
+rungs:
+  - {rung_id: r1, ordinal: 1, name: execute,        gold_tier: G1, warm_start_bundle: null}
+  - {rung_id: r2, ordinal: 2, name: correct,        gold_tier: G1, warm_start_bundle: gold/warm/r2}
+  - {rung_id: r3, ordinal: 3, name: commit,         gold_tier: G1, warm_start_bundle: gold/warm/r3}
+  - {rung_id: r4, ordinal: 4, name: counterfactual, gold_tier: G1, warm_start_bundle: gold/warm/r4}
+
+# The campaign shuffles the queries itself, so what the perturbation is, is known
+# by construction. The control is the zero-width window, which must reproduce the
+# baseline exactly or the search is not deterministic under this invocation.
+
+harness:
+  gold_command: ["python3", "-m", "npbench_c.templates.remote_homology.build", "{campaign}"]
+  solve_command: ["python3", "-m", "npbench_c.templates.remote_homology.solve", "{campaign}", "{submission}"]
+  measure_command: ["python3", "-m", "npbench_c.templates.remote_homology.measure", "{campaign}", "{submission}", "{measurement}"]
+  stub_module: npbench_c.sweep.stubs.stub_homology
+  stub_args: []
+  stub_levels:
+    - {name: stub-reader,     level: reader, timeout_s: 3600}
+    - {name: stub-recover,    level: recover, reference: true, timeout_s: 3600}
+    - {name: stub-verdict,    level: verdict, timeout_s: 3600}
+    - {name: stub-complete,   level: complete, timeout_s: 3600}
+    - {name: stub-selfhit,    level: selfhit, timeout_s: 3600}
+    - {name: stub-noncompute, level: noncompute, mode: no_tool, timeout_s: 600}
+
+grading:
+  chance_levels: {r1: 1.0, r2: 0.001, r3: 0.001, r4: 0.001}
+  chance_level_notes:
+    r1: >
+      Nominal rather than measured. The per-query hit counts and the corpus digest
+      cannot be guessed, so the no-tool ablation fails R1 outright; the level stays
+      at 1.0 because any system that parses the corpus and runs the search clears
+      it, and the capped floor is computed over R2 upward.
+
+excluded_from_grading:
+  - field: whether any pair of corpus members is really homologous
+    reason: >
+      The catalogued R3's literal claim, and it has no oracle at the identities
+      this campaign is about. The resources disagree, the thresholds are
+      conventions, and scoring a system against a curator's reading is the human
+      judgement this benchmark excludes from grading. What replaces it is a
+      declared classification of the search's own census against InterPro's own
+      assertion, computed rather than judged.
+  - field: whether a pair sharing no InterPro entry is non-homologous
+    reason: >
+      Not decidable from what the resource publishes, and not what the campaign
+      asks. InterPro records what has been classified, which is not the same as
+      what is related, so the third label is `unclassified_pair` and no rung
+      treats it as a negative.
+  - field: label_resource, corpus_superfamily, sensitivity, evalue, max_seqs, threads, format_fields
+    reason: >
+      Echoes. The resource and the superfamily name what the campaign is, and the
+      search flags are the pinned rules table read back; all of them are stated in
+      reference/homology_rules.json, so a component for one would measure a copy
+      out of the cold sandbox. Reported so a run records what it was, and graded
+      only inside the one `environment` claim, which also carries the search
+      binary's version -- and that the sandbox does not state.
+  - field: the alignment coordinates of each hit
+    reason: >
+      Dropped from the declared projection rather than graded. Start and end
+      positions move with the aligner's banding between builds of the same
+      version, which would make a correct run differ from gold on a detail that
+      is not what a hit is. The identity, the alignment length and the two scores
+      carry the claim.
+
+notes_for_audit:
+  - >
+    These notes say what to recompute and from where. They state no graded value:
+    an auditor has gold and docs/npbench-c.md, which carry the numbers, and a
+    system reading this file does not.
+  - >
+    First, the zero-window rung of the ladder. It re-runs each unperturbed query
+    and must reproduce that query's baseline hit set exactly. Anything else means
+    the search is not deterministic under this invocation -- the thread count, the
+    cap or the index -- and every loss above it is uncalibrated. The build refuses
+    gold in that case.
+  - >
+    Then the recovery column against the label table. Take one declared query,
+    list the corpus members InterPro places in a family with it, and compare that
+    against the search's own hit list. The gap is the campaign's subject, and it
+    is the one number most worth re-deriving by hand.
+  - >
+    Then the loss rates in the ladder, against the baseline band sizes reported
+    beside them. A rate without its denominator is not a measurement, and the
+    bands differ in size by two orders of magnitude on some queries, so the
+    absolute loss counts and the rates tell different stories on purpose.
+  - >
+    The searched database and the mutated queries are not shipped and must not be.
+    Both follow from the declared rules, and shipping either would hand over the
+    search's own setup or the perturbation.

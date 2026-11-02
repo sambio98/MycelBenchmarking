@@ -1,0 +1,196 @@
+{
+  "activities_of_declared_type": 1117,
+  "activities_total": 1749,
+  "admission_variants": {
+    "v0_baseline": {
+      "admitted_total": 739,
+      "aggregator": "median",
+      "eligible_molecules": 173,
+      "focal_selective_counts": {
+        "10": 74,
+        "100": 18,
+        "2": 122
+      },
+      "reference_selective_counts": {
+        "10": 3,
+        "100": 1,
+        "2": 21
+      }
+    },
+    "v1_admit_censored": {
+      "admitted_total": 799,
+      "aggregator": "median",
+      "eligible_molecules": 193,
+      "focal_selective_counts": {
+        "10": 87,
+        "100": 21,
+        "2": 136
+      },
+      "reference_selective_counts": {
+        "10": 3,
+        "100": 1,
+        "2": 23
+      }
+    },
+    "v2_admit_flagged": {
+      "admitted_total": 771,
+      "aggregator": "median",
+      "eligible_molecules": 179,
+      "focal_selective_counts": {
+        "10": 75,
+        "100": 18,
+        "2": 124
+      },
+      "reference_selective_counts": {
+        "10": 3,
+        "100": 1,
+        "2": 23
+      }
+    },
+    "v3_admit_duplicates": {
+      "admitted_total": 768,
+      "aggregator": "median",
+      "eligible_molecules": 173,
+      "focal_selective_counts": {
+        "10": 75,
+        "100": 18,
+        "2": 123
+      },
+      "reference_selective_counts": {
+        "10": 3,
+        "100": 1,
+        "2": 22
+      }
+    },
+    "v4_minimum_not_median": {
+      "admitted_total": 739,
+      "aggregator": "minimum",
+      "eligible_molecules": 173,
+      "focal_selective_counts": {
+        "10": 90,
+        "100": 25,
+        "2": 138
+      },
+      "reference_selective_counts": {
+        "10": 0,
+        "100": 0,
+        "2": 10
+      }
+    }
+  },
+  "admitted_by_target": {
+    "CHEMBL3038482": 527,
+    "CHEMBL3038508": 212
+  },
+  "aggregated_by_target": {
+    "CHEMBL3038482": 469,
+    "CHEMBL3038508": 199
+  },
+  "aggregated_pairs": 668,
+  "assay_confidence_scores": {
+    "7": 105
+  },
+  "distinct_assays": 105,
+  "eligible_molecules": 173,
+  "focal_selective_at_highest_threshold": [
+    "CHEMBL2165064",
+    "CHEMBL2424874",
+    "CHEMBL2424876",
+    "CHEMBL2424877",
+    "CHEMBL2424886",
+    "CHEMBL2424889",
+    "CHEMBL303984",
+    "CHEMBL36506",
+    "CHEMBL4448131",
+    "CHEMBL4555272",
+    "CHEMBL4853297",
+    "CHEMBL4854247",
+    "CHEMBL4861334",
+    "CHEMBL4864841",
+    "CHEMBL4872821",
+    "CHEMBL4876514",
+    "CHEMBL5590170",
+    "CHEMBL6152473"
+  ],
+  "focal_selective_counts": {
+    "10": 74,
+    "100": 18,
+    "2": 122
+  },
+  "focal_target": "CHEMBL3038482",
+  "most_selective_molecule": "CHEMBL4555272",
+  "most_selective_ratio": 16666.666667,
+  "ratio_extremes": {
+    "most_focal_selective": [
+      [
+        -16666.666667,
+        "CHEMBL4555272"
+      ],
+      [
+        -1379.310345,
+        "CHEMBL303984"
+      ],
+      [
+        -734.375,
+        "CHEMBL36506"
+      ],
+      [
+        -382.352941,
+        "CHEMBL6152473"
+      ],
+      [
+        -292.857143,
+        "CHEMBL4872821"
+      ]
+    ],
+    "most_reference_selective": [
+      [
+        0.009816,
+        "CHEMBL4875924"
+      ],
+      [
+        0.028656,
+        "CHEMBL4848487"
+      ],
+      [
+        0.045516,
+        "CHEMBL4869929"
+      ],
+      [
+        0.121519,
+        "CHEMBL4869043"
+      ],
+      [
+        0.143357,
+        "CHEMBL4856026"
+      ]
+    ]
+  },
+  "reference_selective_counts": {
+    "10": 3,
+    "100": 1,
+    "2": 21
+  },
+  "reference_target": "CHEMBL3038508",
+  "rejected_by_target": {
+    "CHEMBL3038482": {
+      "censored_or_missing_relation": 178,
+      "flagged_by_chembl": 27,
+      "low_confidence_assay": 0,
+      "no_value": 0,
+      "non_positive": 0,
+      "potential_duplicate": 23,
+      "unconvertible_units": 73
+    },
+    "CHEMBL3038508": {
+      "censored_or_missing_relation": 57,
+      "flagged_by_chembl": 6,
+      "low_confidence_assay": 0,
+      "no_value": 0,
+      "non_positive": 0,
+      "potential_duplicate": 6,
+      "unconvertible_units": 8
+    }
+  },
+  "release": "ChEMBL_37"
+}

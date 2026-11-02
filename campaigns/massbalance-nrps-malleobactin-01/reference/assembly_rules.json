@@ -1,0 +1,27 @@
+{
+  "description": "Rules and conventions the task's gold depends on. Published so that no legitimate answer can be marked wrong on a convention the task never stated.",
+  "element_order": ["C", "H", "N", "O", "P", "S", "Cl", "Br", "F", "Fe", "Zn"],
+  "element_order_note": "Hill order: carbon first, hydrogen second, then other elements alphabetically. Formulas must be rendered in this order so two correct answers cannot differ in string form.",
+  "water_formula": "H2O",
+  "mass_decimals": 4,
+  "naive_assembly_rule": "Sum the molecular formulas of the monomers loaded by the annotated modules, in module order, then subtract one H2O for each peptide bond formed. A linear assembly of n monomers forms n-1 peptide bonds.",
+  "peptide_bonds_rule": "n_modules - 1 for a linear assembly.",
+  "residual_rule": "residual = product_formula - naive_assembly_formula, element by element, signed. Negative counts are retained.",
+  "verdict_vocabulary": [
+    "balanced",
+    "cyclisation_only",
+    "additional_chemistry_required",
+    "deficit_unexplained",
+    "insufficient"
+  ],
+  "verdict_rules": {
+    "balanced": "every residual element count is zero",
+    "cyclisation_only": "the residual is exactly H:-2, O:-1 (loss of one further water, consistent with macrocyclisation or lactonisation)",
+    "additional_chemistry_required": "any residual element count is positive, i.e. the product contains atoms the annotated modules do not supply",
+    "deficit_unexplained": "all non-zero residual counts are negative but the residual is not exactly H:-2, O:-1",
+    "insufficient": "the entry does not annotate a monomer for every module, so no assembly formula can be computed"
+  },
+  "verdict_precedence": ["insufficient", "balanced", "cyclisation_only", "additional_chemistry_required", "deficit_unexplained"],
+  "verdict_precedence_note": "Evaluated in this order; the first matching rule applies. Precedence is declared because 'additional_chemistry_required' and 'deficit_unexplained' could otherwise both be argued for a mixed-sign residual.",
+  "scope_note": "MIBiG annotates the enzymatic module count, which is not the number of monomer incorporations in the final product: iterative module reuse, non-NRPS moieties such as fatty-acid starters and prenyl groups, and metal coordination all break the correspondence. Only 1 of 43 admissible entries is exactly balanced and 4 differ by one water, so a non-zero residual is the normal case and quantifying it is the task, not a defect to be explained away."
+}

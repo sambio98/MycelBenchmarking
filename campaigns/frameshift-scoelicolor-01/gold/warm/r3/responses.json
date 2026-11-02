@@ -1,0 +1,347 @@
+{
+  "response_table": {
+    "100": {
+      "bases_of_the_target_still_called": 0,
+      "calls_after": 7757,
+      "calls_before": 7758,
+      "deleted_at": 1239157,
+      "new_call_lengths": [],
+      "other_calls_gained": 1,
+      "other_calls_lost": 1,
+      "overlapping_new_calls": 0,
+      "target_end": 1239206,
+      "target_length": 99,
+      "target_start": 1239108,
+      "target_strand": "-",
+      "verdict": "abolished"
+    },
+    "10000": {
+      "bases_of_the_target_still_called": 10732,
+      "calls_after": 7759,
+      "calls_before": 7758,
+      "deleted_at": 6912778,
+      "new_call_lengths": [
+        4986,
+        5746
+      ],
+      "other_calls_gained": 0,
+      "other_calls_lost": 0,
+      "overlapping_new_calls": 2,
+      "target_end": 6918143,
+      "target_length": 10731,
+      "target_start": 6907413,
+      "target_strand": "-",
+      "verdict": "split_into_two"
+    },
+    "1200": {
+      "bases_of_the_target_still_called": 1159,
+      "calls_after": 7759,
+      "calls_before": 7758,
+      "deleted_at": 838080,
+      "new_call_lengths": [
+        769,
+        390
+      ],
+      "other_calls_gained": 0,
+      "other_calls_lost": 0,
+      "overlapping_new_calls": 2,
+      "target_end": 838680,
+      "target_length": 1200,
+      "target_start": 837481,
+      "target_strand": "+",
+      "verdict": "split_into_two"
+    },
+    "150": {
+      "bases_of_the_target_still_called": 0,
+      "calls_after": 7757,
+      "calls_before": 7758,
+      "deleted_at": 221488,
+      "new_call_lengths": [],
+      "other_calls_gained": 0,
+      "other_calls_lost": 0,
+      "overlapping_new_calls": 0,
+      "target_end": 221563,
+      "target_length": 150,
+      "target_start": 221414,
+      "target_strand": "-",
+      "verdict": "abolished"
+    },
+    "170": {
+      "bases_of_the_target_still_called": 171,
+      "calls_after": 7758,
+      "calls_before": 7758,
+      "deleted_at": 44890,
+      "new_call_lengths": [
+        970
+      ],
+      "other_calls_gained": 0,
+      "other_calls_lost": 0,
+      "overlapping_new_calls": 1,
+      "target_end": 44975,
+      "target_length": 171,
+      "target_start": 44805,
+      "target_strand": "+",
+      "verdict": "truncated_to_one"
+    },
+    "180": {
+      "bases_of_the_target_still_called": 0,
+      "calls_after": 7757,
+      "calls_before": 7758,
+      "deleted_at": 40312,
+      "new_call_lengths": [],
+      "other_calls_gained": 0,
+      "other_calls_lost": 0,
+      "overlapping_new_calls": 0,
+      "target_end": 40402,
+      "target_length": 180,
+      "target_start": 40223,
+      "target_strand": "-",
+      "verdict": "abolished"
+    },
+    "190": {
+      "bases_of_the_target_still_called": 189,
+      "calls_after": 7758,
+      "calls_before": 7758,
+      "deleted_at": 882920,
+      "new_call_lengths": [
+        208
+      ],
+      "other_calls_gained": 0,
+      "other_calls_lost": 0,
+      "overlapping_new_calls": 1,
+      "target_end": 883014,
+      "target_length": 189,
+      "target_start": 882826,
+      "target_strand": "-",
+      "verdict": "truncated_to_one"
+    },
+    "200": {
+      "bases_of_the_target_still_called": 0,
+      "calls_after": 7757,
+      "calls_before": 7758,
+      "deleted_at": 821948,
+      "new_call_lengths": [],
+      "other_calls_gained": 0,
+      "other_calls_lost": 0,
+      "overlapping_new_calls": 0,
+      "target_end": 822048,
+      "target_length": 201,
+      "target_start": 821848,
+      "target_strand": "-",
+      "verdict": "abolished"
+    },
+    "20000": {
+      "bases_of_the_target_still_called": 22420,
+      "calls_after": 7759,
+      "calls_before": 7758,
+      "deleted_at": 3554530,
+      "new_call_lengths": [
+        11233,
+        11187
+      ],
+      "other_calls_gained": 0,
+      "other_calls_lost": 0,
+      "overlapping_new_calls": 2,
+      "target_end": 3565726,
+      "target_length": 22392,
+      "target_start": 3543335,
+      "target_strand": "+",
+      "verdict": "split_into_two"
+    },
+    "210": {
+      "bases_of_the_target_still_called": 0,
+      "calls_after": 7757,
+      "calls_before": 7758,
+      "deleted_at": 2322493,
+      "new_call_lengths": [],
+      "other_calls_gained": 0,
+      "other_calls_lost": 0,
+      "overlapping_new_calls": 0,
+      "target_end": 2322598,
+      "target_length": 210,
+      "target_start": 2322389,
+      "target_strand": "+",
+      "verdict": "abolished"
+    },
+    "220": {
+      "bases_of_the_target_still_called": 0,
+      "calls_after": 7757,
+      "calls_before": 7758,
+      "deleted_at": 22952,
+      "new_call_lengths": [],
+      "other_calls_gained": 0,
+      "other_calls_lost": 0,
+      "overlapping_new_calls": 0,
+      "target_end": 23061,
+      "target_length": 219,
+      "target_start": 22843,
+      "target_strand": "+",
+      "verdict": "abolished"
+    },
+    "230": {
+      "bases_of_the_target_still_called": 0,
+      "calls_after": 7757,
+      "calls_before": 7758,
+      "deleted_at": 444556,
+      "new_call_lengths": [],
+      "other_calls_gained": 0,
+      "other_calls_lost": 0,
+      "overlapping_new_calls": 0,
+      "target_end": 444671,
+      "target_length": 231,
+      "target_start": 444441,
+      "target_strand": "+",
+      "verdict": "abolished"
+    },
+    "240": {
+      "bases_of_the_target_still_called": 0,
+      "calls_after": 7757,
+      "calls_before": 7758,
+      "deleted_at": 431431,
+      "new_call_lengths": [],
+      "other_calls_gained": 0,
+      "other_calls_lost": 0,
+      "overlapping_new_calls": 0,
+      "target_end": 431551,
+      "target_length": 240,
+      "target_start": 431312,
+      "target_strand": "+",
+      "verdict": "abolished"
+    },
+    "250": {
+      "bases_of_the_target_still_called": 205,
+      "calls_after": 7758,
+      "calls_before": 7758,
+      "deleted_at": 695745,
+      "new_call_lengths": [
+        205
+      ],
+      "other_calls_gained": 0,
+      "other_calls_lost": 0,
+      "overlapping_new_calls": 1,
+      "target_end": 695869,
+      "target_length": 249,
+      "target_start": 695621,
+      "target_strand": "+",
+      "verdict": "truncated_to_one"
+    },
+    "260": {
+      "bases_of_the_target_still_called": 0,
+      "calls_after": 7757,
+      "calls_before": 7758,
+      "deleted_at": 805908,
+      "new_call_lengths": [],
+      "other_calls_gained": 0,
+      "other_calls_lost": 0,
+      "overlapping_new_calls": 0,
+      "target_end": 806038,
+      "target_length": 261,
+      "target_start": 805778,
+      "target_strand": "+",
+      "verdict": "abolished"
+    },
+    "270": {
+      "bases_of_the_target_still_called": 0,
+      "calls_after": 7757,
+      "calls_before": 7758,
+      "deleted_at": 324482,
+      "new_call_lengths": [],
+      "other_calls_gained": 0,
+      "other_calls_lost": 0,
+      "overlapping_new_calls": 0,
+      "target_end": 324617,
+      "target_length": 270,
+      "target_start": 324348,
+      "target_strand": "+",
+      "verdict": "abolished"
+    },
+    "280": {
+      "bases_of_the_target_still_called": 190,
+      "calls_after": 7758,
+      "calls_before": 7758,
+      "deleted_at": 15456,
+      "new_call_lengths": [
+        220
+      ],
+      "other_calls_gained": 0,
+      "other_calls_lost": 0,
+      "overlapping_new_calls": 1,
+      "target_end": 15595,
+      "target_length": 279,
+      "target_start": 15317,
+      "target_strand": "-",
+      "verdict": "truncated_to_one"
+    },
+    "300": {
+      "bases_of_the_target_still_called": 293,
+      "calls_after": 7758,
+      "calls_before": 7758,
+      "deleted_at": 89315,
+      "new_call_lengths": [
+        694
+      ],
+      "other_calls_gained": 1,
+      "other_calls_lost": 1,
+      "overlapping_new_calls": 1,
+      "target_end": 89465,
+      "target_length": 300,
+      "target_start": 89166,
+      "target_strand": "+",
+      "verdict": "truncated_to_one"
+    },
+    "3000": {
+      "bases_of_the_target_still_called": 2977,
+      "calls_after": 7759,
+      "calls_before": 7758,
+      "deleted_at": 1376082,
+      "new_call_lengths": [
+        1501,
+        1632
+      ],
+      "other_calls_gained": 0,
+      "other_calls_lost": 0,
+      "overlapping_new_calls": 2,
+      "target_end": 1377582,
+      "target_length": 3000,
+      "target_start": 1374583,
+      "target_strand": "-",
+      "verdict": "split_into_two"
+    },
+    "450": {
+      "bases_of_the_target_still_called": 484,
+      "calls_after": 7759,
+      "calls_before": 7758,
+      "deleted_at": 916560,
+      "new_call_lengths": [
+        216,
+        268
+      ],
+      "other_calls_gained": 0,
+      "other_calls_lost": 0,
+      "overlapping_new_calls": 2,
+      "target_end": 916785,
+      "target_length": 450,
+      "target_start": 916336,
+      "target_strand": "-",
+      "verdict": "split_into_two"
+    },
+    "700": {
+      "bases_of_the_target_still_called": 564,
+      "calls_after": 7759,
+      "calls_before": 7758,
+      "deleted_at": 1462427,
+      "new_call_lengths": [
+        324,
+        240
+      ],
+      "other_calls_gained": 0,
+      "other_calls_lost": 0,
+      "overlapping_new_calls": 2,
+      "target_end": 1462776,
+      "target_length": 699,
+      "target_start": 1462078,
+      "target_strand": "-",
+      "verdict": "split_into_two"
+    }
+  }
+}

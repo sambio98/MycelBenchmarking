@@ -1,0 +1,37 @@
+{
+  "canonical_absent_by_section": {
+    "reviewed": 0,
+    "unreviewed": 1346
+  },
+  "canonical_absent_total": 1346,
+  "canonical_present_by_section": {
+    "reviewed": 29,
+    "unreviewed": 6300
+  },
+  "length_profile": {
+    "canonical_absent": {
+      "count": 1346,
+      "max": 1284,
+      "median": 466.0,
+      "min": 38,
+      "shorter_than": {
+        "100": 10,
+        "200": 19,
+        "300": 32,
+        "348": 38
+      }
+    },
+    "canonical_present": {
+      "count": 6329,
+      "max": 3519,
+      "median": 367.0,
+      "min": 33,
+      "shorter_than": {
+        "100": 80,
+        "200": 320,
+        "300": 797,
+        "348": 1499
+      }
+    }
+  }
+}

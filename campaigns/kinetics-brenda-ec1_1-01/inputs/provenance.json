@@ -1,0 +1,27 @@
+{
+  "access": {
+    "acceptance_recorded": "The CC BY 4.0 licence was accepted on 2026-10-06 to obtain this file, at the direction of the project owner, who asked for the offline download in place of the API.",
+    "gate": "A licence-acceptance checkbox, NOT a registration wall. No account, no credentials, no API key. The project previously recorded this row as blocked on credentials; that was wrong and is corrected in docs/regrounding-2026-10-02.md.",
+    "method": "HTTP POST to download.php with dlfile=dl-json and accept-license=1",
+    "url": "https://www.brenda-enzymes.org/download.php"
+  },
+  "extraction": {
+    "by": "npbench_c.templates.kinetics_consistency.prepare_input",
+    "ec_prefix": "1.1.",
+    "rule": "EC subclass 1.1.- , the oxidoreductases acting on the CH-OH group of donors. Chosen because it carries the most complete kinetic triples of any subclass (2,528 against 1,757 for the next), which is a size criterion over the inputs and not a selection on the answer: the agreement rate was not consulted in choosing it.",
+    "verbatim": "Value strings, protein lists and reference lists are copied unchanged, so the parsing problem is BRENDA's own."
+  },
+  "license": "CC BY 4.0",
+  "license_statement": "The BRENDA download page states: \"All copyrightable parts of BRENDA are licensed under Creative Commons Attribution License 4.0 (CC BY 4.0).\"",
+  "obligation_note": "BRENDA's terms of use carry a notice about benefit-sharing obligations for Digital Sequence Information under the UN Convention on Biological Diversity, including monetary contributions to the Cali Fund from COMMERCIAL users. That is not a copyright restriction and does not affect the CC BY 4.0 grant, but a commercial evaluator should know it exists; it is recorded here for the same reason NPAtlas carries its non-commercial flag.",
+  "release": "2026.1 (March 2026)",
+  "retrieved": "2026-10-06",
+  "source": "BRENDA",
+  "source_archive": {
+    "bytes": 83199555,
+    "ec_numbers": 8129,
+    "name": "brenda_2026_1.json.tar.gz",
+    "sha256": "bb2549d02b7255de2272b35701c331493caad16b82eb38a41adb2e03bbb0d2e1",
+    "uncompressed_bytes": 709658292
+  }
+}

@@ -1,0 +1,116 @@
+{
+  "admissible_codon_counts": {
+    "*": 3,
+    "A": 2,
+    "C": 2,
+    "D": 2,
+    "E": 2,
+    "F": 2,
+    "G": 2,
+    "H": 2,
+    "I": 3,
+    "K": 2,
+    "L": 6,
+    "M": 1,
+    "N": 2,
+    "P": 2,
+    "Q": 2,
+    "R": 4,
+    "S": 6,
+    "T": 4,
+    "V": 4,
+    "W": 1,
+    "Y": 2
+  },
+  "cloning_strategy": "pet28a_ndei_xhoi",
+  "conflicting_constraints": [],
+  "constraint_vocabulary": [
+    "forbidden_codons",
+    "gc_global_min",
+    "forbidden_sites",
+    "gc_window",
+    "homopolymer",
+    "direct_repeat",
+    "internal_rbs"
+  ],
+  "constructive_witness": {
+    "encodes_declared_protein": true,
+    "gc_fraction": 0.569994,
+    "note": "Existence witness for the feasible verdict. Not graded: many designs satisfy the set, and grading one would grade our optimiser rather than the agent's reasoning.",
+    "violations": {
+      "direct_repeat": 0,
+      "forbidden_codons": 0,
+      "forbidden_sites": 0,
+      "gc_global_min": 0,
+      "gc_window": 0,
+      "homopolymer": 0,
+      "internal_rbs": 0
+    }
+  },
+  "each_constraint_satisfiable_alone": {
+    "forbidden_codons": true,
+    "gc_global_min": true
+  },
+  "expect": "feasible",
+  "forbidden_codons": [
+    "CCC",
+    "CCG",
+    "CGC",
+    "CGG",
+    "GCC",
+    "GCG",
+    "GGC",
+    "GGG"
+  ],
+  "gc_global_min": 0.55,
+  "host": "ecoli_bl21",
+  "orf_length_nt": 1593,
+  "protein_length_aa": 530,
+  "restricted_gc_max": 0.584432,
+  "restricted_gc_min": 0.308223,
+  "single_constraint_relaxations": {
+    "direct_repeat": {
+      "gc_requirement_reachable": true,
+      "max_achievable_gc": 0.584432,
+      "note": "does not change which codons are available, so the GC bound is unmoved"
+    },
+    "forbidden_codons": {
+      "gc_requirement_reachable": true,
+      "max_achievable_gc": 0.677338,
+      "note": "all codons allowed again"
+    },
+    "forbidden_sites": {
+      "gc_requirement_reachable": true,
+      "max_achievable_gc": 0.584432,
+      "note": "does not change which codons are available, so the GC bound is unmoved"
+    },
+    "gc_global_min": {
+      "gc_requirement_reachable": true,
+      "max_achievable_gc": 0.584432,
+      "note": "the GC requirement is removed, so it is vacuously met"
+    },
+    "gc_window": {
+      "gc_requirement_reachable": true,
+      "max_achievable_gc": 0.584432,
+      "note": "does not change which codons are available, so the GC bound is unmoved"
+    },
+    "homopolymer": {
+      "gc_requirement_reachable": true,
+      "max_achievable_gc": 0.584432,
+      "note": "does not change which codons are available, so the GC bound is unmoved"
+    },
+    "internal_rbs": {
+      "gc_requirement_reachable": true,
+      "max_achievable_gc": 0.584432,
+      "note": "does not change which codons are available, so the GC bound is unmoved"
+    }
+  },
+  "unrestricted_gc_max": 0.677338,
+  "unrestricted_gc_min": 0.308223,
+  "verdict": "feasible",
+  "witness": {
+    "margin": -0.034432,
+    "max_achievable_gc_under_forbidden_codons": 0.584432,
+    "required_gc_min": 0.55
+  }
+}
