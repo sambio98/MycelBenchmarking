@@ -46,7 +46,7 @@ depth: 5
 
 tool_versions:
   matchms: "0.33.1"   # ModifiedCosine was renamed ModifiedCosineGreedy here
-  networkx: "3.7"
+  networkx: "3.4.2"
   python: "3.13"
 
 solution:

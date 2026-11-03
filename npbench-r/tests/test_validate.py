@@ -293,3 +293,46 @@ def test_report_counts_errors_and_notes(bundle):
     (bundle / "truth" / "bgc_inventory.csv").unlink()
     text = report(validate_task(bundle))
     assert "1 error(s), 0 note(s)" in text
+
+
+def test_every_task_yaml_pin_matches_its_lock():
+    """A version in task.yaml that disagrees with the lock is a trap.
+
+    The lock is what truth was produced under; task.yaml's tool_versions is
+    what a reader pins from. Task 01 claimed networkx 3.7 while its lock
+    pinned 3.4.2, so anyone following the documentation would have installed a
+    version the answer key was never built against. Only pip-installable tools
+    are checked here -- a database release like `mibig: 4.0` or
+    `npatlas: 2024_09` has no lock line to compare against.
+    """
+    import re
+
+    pip_tools = {
+        "matchms", "networkx", "numpy", "scipy", "rdkit",
+        "pyrodigal", "pyhmmer", "pyteomics", "biopython", "gecco",
+    }
+
+    def normalise(version: str) -> str:
+        # rdkit reports 2026.09.1 and pins as 2026.9.1.
+        return ".".join(part.lstrip("0") or "0" for part in str(version).split("."))
+
+    mismatches = []
+    for task_yaml in sorted(Path(__file__).parents[1].glob("tasks/*/task.yaml")):
+        meta = yaml.safe_load(task_yaml.read_text()) or {}
+        lock_path = task_yaml.parent / "environment" / "requirements.lock"
+        if not lock_path.is_file():
+            continue
+        lock = {}
+        for line in lock_path.read_text().splitlines():
+            pinned = re.match(r"^([A-Za-z0-9_.\-]+)==(.+)$", line.strip())
+            if pinned:
+                lock[pinned.group(1).lower()] = pinned.group(2)
+        for tool, claimed in (meta.get("tool_versions") or {}).items():
+            if tool not in pip_tools:
+                continue
+            found = lock.get(tool.lower())
+            if found is None or normalise(claimed) != normalise(found):
+                mismatches.append(
+                    f"{task_yaml.parent.name}: {tool} task.yaml={claimed} lock={found}"
+                )
+    assert mismatches == [], "; ".join(mismatches)

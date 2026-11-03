@@ -220,7 +220,17 @@ them as difficulty:
 - **Six-peak floors are nearly no-ops** on both task 01's consensus spectra and
   task 09's profile-mode scans, where 99.9% of filtered scans clear them.
 
-### 4.5 A reproducibility hazard to watch
+### 4.5 Keep task.yaml's pins honest
+`task.yaml`'s `tool_versions` is what a reader installs from; the lock is what
+truth was actually produced under. Task 01 claimed `networkx: 3.7` while its
+lock pinned 3.4.2, so anyone following the documentation would have installed a
+version the answer key was never built against. Fixed, and
+`tests/test_validate.py::test_every_task_yaml_pin_matches_its_lock` now fails on
+any such drift for every pip-installable tool. Database releases
+(`mibig: 4.0`, `npatlas: 2024_09`, `pfam: 35.0`) have no lock line and are not
+covered — check those by hand when adding a task.
+
+### 4.6 A reproducibility hazard to watch
 NP Atlas serves its current release from an **unversioned URL**. Task 07 pins
 the bytes by sha256 and its solution asserts the 36,454-record count before
 doing any work, so drift fails loudly rather than silently producing different

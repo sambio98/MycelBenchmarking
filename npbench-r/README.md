@@ -237,7 +237,7 @@ Three things to know before you budget a machine:
   `make validate` compares them automatically once truth/ exists. A mismatch
   means a dependency moved or a reference database drifted, and it should be
   explained before any score is trusted — see
-  [`TODO.md`](TODO.md) §4.5 for the one database that serves from an
+  [`TODO.md`](TODO.md) §4.6 for the one database that serves from an
   unversioned URL.
 
 Task 09's spectra come through a proxy that throttles to about 1 MB/s sustained
